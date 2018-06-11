@@ -1,4 +1,3 @@
-//Comentario Luis, nuevo comentario
 package org.salutem.beans;
 
 import java.io.Serializable;
