@@ -1,0 +1,248 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : Instituciones
+    Fecha       : 23 de Noviembre de 2017, 06:31:07 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+
+    <h:body >
+
+        <ui:composition template="../plantillas/Plantilla.xhtml">
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{salutemSeguridad.titulo}"
+                           closable="false"
+                           toggleable="true">
+                    <h:panelGrid columns="7">
+
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemInstituciones.buscar()}"/>
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemInstituciones.crear()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+
+                </ace:panel>
+
+                <ace:panel 
+                    header="Resultado Búsqueda"
+                    closable="false"
+                    toggleable="true">
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <h:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{salutemInstituciones.formulario.tipo}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{salutemInstituciones.formulario.tipo}" 
+                                          target="tabla" 
+                                          fileName="#{salutemSeguridad.titulo}"
+                                          excludeColumns="1"/>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       lazy="true"
+                                       paginatorAlwaysVisible="true"
+                                       value="#{salutemInstituciones.instituciones}"
+                                       var="item"
+                                       paginator="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="#{salutemInstituciones.formulario.rowsPerPageTemplate}"
+                                       currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="5">
+                            <ace:tableConfigPanel dragHandle=".ui-tableconf-header"
+                                                  columnNameConfigurable="true"
+                                                  columnVisibilityConfigurable="true"
+                                                  columnOrderingConfigurable="true"
+                                                  columnSortingConfigurable="true"
+                                                  modal="true"/>
+                            <ace:columnGroup type="header">
+                                <ace:row>
+                                    <ace:column colspan="4"/>
+                                    <ace:column headerText="Dirección" colspan="5"/>
+                                    <ace:column headerText="Teléfonos" colspan="2"/>
+                                    <ace:column colspan="2"/>
+                                </ace:row>
+                                <ace:row>
+                                    <ace:column headerText="Registro"/>
+                                    <ace:column headerText="Operaciones"/>
+                                    <ace:column headerText="Logotipo"/>
+                                    <ace:column headerText="Nombre"
+                                                sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains"/>
+                                    <ace:column  headerText="Ciudad" 
+                                                 sortBy="#{item.direccion.ciudad}" filterBy="#{item.direccion.ciudad}" filterMatchMode="contains"/>
+                                    <ace:column  headerText="Calle Primaria" 
+                                                 sortBy="#{item.direccion.primaria}" filterBy="#{item.direccion.primaria}" filterMatchMode="contains"/>
+                                    <ace:column  headerText="Número" 
+                                                 sortBy="#{item.direccion.numero}" filterBy="#{item.direccion.numero}" filterMatchMode="contains"/>
+                                    <ace:column  headerText="Calle Secundaria" 
+                                                 sortBy="#{item.direccion.secundaria}" filterBy="#{item.direccion.secundaria}" filterMatchMode="contains"/>
+                                    <ace:column  headerText="Edificio/Piso" 
+                                                 sortBy="#{item.direccion.piso}" filterBy="#{item.direccion.piso}" filterMatchMode="contains"/>
+                                    <ace:column  headerText="Fijo"
+                                                 sortBy="#{item.direccion.fijo}" filterBy="#{item.direccion.fijo}" filterMatchMode="contains"/>
+                                    <ace:column  headerText="Móvil"
+                                                 sortBy="#{item.direccion.movil}" filterBy="#{item.direccion.movil}" filterMatchMode="contains"/>
+                                    <ace:column headerText="Email"
+                                                sortBy="#{item.email}" filterBy="#{item.email}" filterMatchMode="contains"/>
+                                    <ace:column headerText="Página Web"
+                                                sortBy="#{item.web}" filterBy="#{item.web}" filterMatchMode="contains"/>
+                                </ace:row>
+                            </ace:columnGroup>
+                            <ace:column style="text-align: right">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{salutemInstituciones.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{salutemInstituciones.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column>
+                            <ace:column style="text-align: center;">
+                                <ace:graphicImage value="#{salutemImagenes.traerImagen(item.logotipo.ruta)}" name="#{item.id}_#{item.logotipo.nombre}" id="resourceGraphicImage" style="height: 50px " rendered="#{item.logotipo ne null and item.logotipo.ruta ne null}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.nombre}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.direccion.ciudad}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.direccion.primaria}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.direccion.numero}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.direccion.secundaria}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.direccion.piso}" />
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.direccion.fijo}" />
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.direccion.movil} " />
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.email} " />
+                            </ace:column>
+                            <ace:column style="text-align: left;">
+                                <h:outputText  value="#{item.web} " />
+                            </ace:column>
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+
+                <ace:dialog 
+                    header="#{salutemSeguridad.titulo}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{salutemInstituciones.formulario.mostrar}"
+                    visible="#{salutemInstituciones.formulario.mostrar}">
+                    <ace:tabSet>
+                        <ace:tabPane label="Inf. General">
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Nombre:"/>
+                                <ace:textEntry value="#{salutemInstituciones.institucion.nombre}" title="Nombre" style="width: 300px;"/>
+                                <h:outputLabel value="E-mail:"/>
+                                <ace:textEntry value="#{salutemInstituciones.institucion.email}" title="E-mail" style="width: 300px;" >
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Página Web"/>
+                                <ace:textEntry value="#{salutemInstituciones.institucion.web}" title="Página Web" style="width: 300px;" />
+                                <h:outputLabel value="Fecha de Creación:" />
+                                <ace:dateTimeEntry navigator="true" id="fecha" value="#{salutemInstituciones.institucion.fecha}" 
+                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </ace:dateTimeEntry>
+                                <h:outputText value="¿Laboratorio?"/>
+                                <h:selectBooleanCheckbox value="#{salutemInstituciones.institucion.laboratorio}"/>
+                            </h:panelGrid>
+
+
+
+
+
+                        </ace:tabPane>
+                        <ace:tabPane label="Dirección">
+                            <h:panelGrid columns="4">
+                                <h:outputLabel value="Ciudad:" for="ciudad"/>
+                                <ace:textEntry id="ciudad" value="#{salutemInstituciones.direccion.ciudad}" title="Ciudad" />
+                                <h:outputLabel value="Calle Primaria:" for="primaria" />
+                                <ace:textEntry id="primaria" value="#{salutemInstituciones.direccion.primaria}" title="Primaria" />
+                                <h:outputLabel value="Número:" for="numero" />
+                                <ace:textEntry id="numero" value="#{salutemInstituciones.direccion.numero}" title="Numero" />
+                                <h:outputLabel value="Calle Secundaria:" for="secundaria" />
+                                <ace:textEntry id="secundaria" value="#{salutemInstituciones.direccion.secundaria}" title="Secundaria" />
+                                <h:outputLabel value="Teléfono fijo:" />
+                                <ace:textEntry value="#{salutemInstituciones.direccion.fijo}" title="Teléfono fijo" />
+                                <h:outputLabel value="Teléfono móvil:" />
+                                <ace:textEntry value="#{salutemInstituciones.direccion.movil}" title="Teléfono móvil" />
+                                <h:outputLabel value="Edificio/Piso:" />
+                                <ace:textAreaEntry value="#{salutemInstituciones.direccion.piso}"
+                                                   rows="2" cols="22"/>
+                                <h:outputLabel value="Referencia:"/>
+                                <ace:textAreaEntry value="#{salutemInstituciones.direccion.referencia}" 
+                                                   rows="2" cols="22"/>
+                            </h:panelGrid>
+                        </ace:tabPane>
+                        <ace:tabPane label="Logotipo">
+                            <center>
+                                <ace:graphicImage value="#{salutemImagenes.archivo.archivo}" name="#{salutemImagenes.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " rendered="#{salutemImagenes.archivo.archivo ne null}"/>
+                            </center>
+                            <h:panelGrid columns="2">
+                                <ace:fileEntry 
+                                    relativePath="/files/"
+                                    maxFileCount="1"
+                                    maxFileCountMessage="Sólo se puede subir 1 archivo"
+                                    fileEntryListener="#{salutemImagenes.ficheroDocumento}"
+                                    maxFileSize="10485760"
+                                    maxFileSizeMessage="El archivo supera el tamaño predefinido 10 MB"                                                                                                                 
+                                    useOriginalFilename="true"
+                                    label="Subido con éxito"
+                                    useSessionSubdir="true" />
+                                <h:commandButton  type="submit" value="Subir Archivo" />
+                            </h:panelGrid>
+                        </ace:tabPane>
+
+                    </ace:tabSet>
+                    <h:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
+                                          action="#{salutemInstituciones.insertar()}"
+                                          rendered="#{salutemInstituciones.formulario.crear}"/>
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemInstituciones.grabar()}" 
+                                          rendered="#{salutemInstituciones.formulario.editar}"/>
+                            <ace:menuItem action="#{salutemInstituciones.remover()}" 
+                                          value="Eliminar" icon="ui-icon ui-icon-trash"
+                                          rendered="#{salutemInstituciones.formulario.eliminar}"/>
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemInstituciones.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                </ace:dialog>
+
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

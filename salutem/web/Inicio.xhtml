@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Document   : LoginVista
+    Created on : 27/08/2011, 07:34:58 PM
+    Author     : luisfernando
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+
+    <h:body>
+        <h:form id="form">
+            <ui:composition template="./plantillas/PlantillaLogin.xhtml">
+                <ui:define name="content">
+                    <ace:panel header="¡Bienvenido!" style="margin: 0 auto; width: 275px;">
+                        <h:panelGrid columns="2" width="100%" style="text-align: center;">
+                            <h:outputLabel value="Usuario:"/>
+                            <ace:textEntry value="#{ingresoSistema.usr}" title="Usuario"/>
+                            <h:outputLabel  value="Contraseña:"/>
+                            <ace:textEntry value="#{ingresoSistema.pwd}" secret="true" title="Constraseña"/>
+                        </h:panelGrid>
+                        <ace:messages/>
+                        <h:panelGrid width="100%" style="text-align: center;">
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Ingresar" icon="ui-icon ui-icon-key" action="#{ingresoSistema.login()}"/>
+                            </ace:menuBar>
+                            <icecore:defaultAction action="#{ingresoSistema.login()}" key="Enter"/>                                 
+                        </h:panelGrid>
+                    </ace:panel>
+                    
+                    <ace:dialog 
+                        header="Cambio de Clave"
+                        closable="false"
+                        modal="true"
+                        draggable="false"
+                        showEffect="clip"
+                        hideEffect="fade"
+                        rendered="#{ingresoSistema.formulario.mostrar}"
+                        visible="#{ingresoSistema.formulario.mostrar}">
+                        <h:panelGroup>
+                            <h:panelGrid columns="2">
+                                <h:outputLabel  value="Contraseña Anterior:"/>
+                                <ace:textEntry value="#{ingresoSistema.claveAnterior}" secret="true"/>
+                                <h:outputLabel  value="Contraseña Nueva:"/>
+                                <ace:textEntry value="#{ingresoSistema.claveNueva}" secret="true"/>
+                                <h:outputLabel  value="Digite otra vez su Constraseña Nueva:"/>
+                                <ace:textEntry value="#{ingresoSistema.claveRetipeada}" secret="true"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="1" width="100%">
+                                <ace:menuBar autoSubmenuDisplay="true" >
+                                    <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" action="#{ingresoSistema.cambio()}"/>
+                                </ace:menuBar>                                 
+                            </h:panelGrid>
+                        </h:panelGroup>
+                    </ace:dialog>
+                </ui:define>
+            </ui:composition>
+        </h:form>:
+    </h:body>
+</html>

@@ -1,0 +1,285 @@
+package org.salutem.beans;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import org.controladores.salutem.InstitucionesFacade;
+import org.controladores.salutem.ParametrosFacade;
+import org.controladores.salutem.PersonasFacade;
+import org.entidades.salutem.Instituciones;
+import org.entidades.salutem.Parametros;
+import org.entidades.salutem.Personas;
+import org.excepciones.salutem.ExcepcionDeConsulta;
+import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.salutem.utilitarios.Codificador;
+import org.salutem.utilitarios.Formulario;
+import org.salutem.utilitarios.Mensajes;
+
+@ManagedBean(name = "ingresoSistema")
+@ViewScoped
+public class IngresoSistemaBean implements Serializable {
+
+    @ManagedProperty("#{salutemSeguridad}")
+    private SeguridadBean seguridadBean;
+
+    private Personas usuario;
+
+    private String usr;
+    private String pwd;
+    private String claveNueva;
+    private String claveRetipeada;
+    private String claveAnterior;
+    private Instituciones institucion;
+    private Formulario formulario = new Formulario();
+
+    @EJB
+    private PersonasFacade ejbPersonas;
+    @EJB
+    private ParametrosFacade ejbParametros;
+    @EJB
+    private InstitucionesFacade ejbInstituciones;
+
+    public IngresoSistemaBean() {
+    }
+
+    @PostConstruct
+    private void iniciar() {
+        try {
+            Map params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+            String mensaje = (String) params.get("m");
+            if (mensaje != null && !mensaje.isEmpty()) {
+                Mensajes.informacion(mensaje);
+            }
+            Parametros aux = ejbParametros.traerParametro("PG", "INSP");
+            if (aux != null && aux.getParametros() != null & !aux.getParametros().trim().isEmpty()) {
+                institucion = ejbInstituciones.buscar(Integer.parseInt(aux.getParametros()));
+            }
+        } catch (NumberFormatException | ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(IngresoSistemaBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public String login() {
+        try {
+            formulario.cancelar();
+            if ((usr == null) && (usr.isEmpty())) {
+                Mensajes.advertencia("Ingrese un usuario válido");
+                return null;
+            }
+            if ((pwd == null) && (pwd.isEmpty())) {
+                Mensajes.advertencia("Ingrese una clave válida");
+                return null;
+            }
+            usuario = ejbPersonas.login(usr, Codificador.getEncoded(pwd, "MD5"));
+            if (usuario == null) {
+                Mensajes.advertencia("Usuario no registrado, o clave inválida");
+                return null;
+            }
+            if (!usuario.getActivo()) {
+                Mensajes.advertencia("Usuario no activo");
+                usuario = null;
+                return null;
+            }
+            if (usuario.getClave().equals(Codificador.getEncoded(usuario.getCedula(), "MD5"))) {
+                formulario.editar();
+                return null;
+            }
+            return seguridadBean.setCredenciales(usuario);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public String cancelar() {
+        formulario.cancelar();
+        return null;
+    }
+
+    public String cambio() {
+        try {
+            if ((claveAnterior == null) && (claveAnterior.isEmpty())) {
+                Mensajes.advertencia("Ingrese una clave válida");
+                return null;
+            }
+            if ((claveNueva == null) && (claveNueva.isEmpty())) {
+                Mensajes.advertencia("Ingrese una clave válida");
+                return null;
+            }
+            if ((claveRetipeada == null) && (claveRetipeada.isEmpty())) {
+                Mensajes.advertencia("Ingrese una clave válida");
+                return null;
+            }
+            String cnCodificada = Codificador.getEncoded(claveNueva, "MD5");
+            String caCodificada = Codificador.getEncoded(claveAnterior, "MD5");
+            String cnrCodificada = Codificador.getEncoded(claveRetipeada, "MD5");
+            if (!caCodificada.equals(usuario.getClave())) {
+                Mensajes.advertencia("Ingrese una clave anterior válida");
+                return null;
+            }
+            if (!cnCodificada.equals(cnrCodificada)) {
+                Mensajes.advertencia("Ingrese una clave retipeada igual a la nueva clave");
+                return null;
+            }
+            String where = " o.activo = true and o.userid=:userid and o.clave=:clave";
+
+            Map parametros = new HashMap();
+            parametros.put("userid", usr);
+            parametros.put("clave", cnCodificada);
+            try {
+                List<Personas> lista = ejbPersonas.buscar(where, parametros);
+                if (!lista.isEmpty()) {
+                    Mensajes.advertencia("Clave no válida, intentelo de nuevo.");
+                    return null;
+                }
+            } catch (ExcepcionDeConsulta ex) {
+                Logger.getLogger(IngresoSistemaBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            usuario.setClave(cnCodificada);
+            ejbPersonas.actualizar(usuario, null);
+        } catch (ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        formulario.cancelar();
+        return null;
+    }
+
+    /**
+     * @return the seguridadBean
+     */
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
+    }
+
+    /**
+     * @return the usuario
+     */
+    public Personas getUsuario() {
+        return usuario;
+    }
+
+    /**
+     * @return the usr
+     */
+    public String getUsr() {
+        return usr;
+    }
+
+    /**
+     * @return the pwd
+     */
+    public String getPwd() {
+        return pwd;
+    }
+
+    /**
+     * @return the claveNueva
+     */
+    public String getClaveNueva() {
+        return claveNueva;
+    }
+
+    /**
+     * @return the claveRetipeada
+     */
+    public String getClaveRetipeada() {
+        return claveRetipeada;
+    }
+
+    /**
+     * @return the claveAnterior
+     */
+    public String getClaveAnterior() {
+        return claveAnterior;
+    }
+
+    /**
+     * @return the formulario
+     */
+    public Formulario getFormulario() {
+        return formulario;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
+    }
+
+    /**
+     * @param usuario the usuario to set
+     */
+    public void setUsuario(Personas usuario) {
+        this.usuario = usuario;
+    }
+
+    /**
+     * @param usr the usr to set
+     */
+    public void setUsr(String usr) {
+        this.usr = usr;
+    }
+
+    /**
+     * @param pwd the pwd to set
+     */
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+
+    /**
+     * @param claveNueva the claveNueva to set
+     */
+    public void setClaveNueva(String claveNueva) {
+        this.claveNueva = claveNueva;
+    }
+
+    /**
+     * @param claveRetipeada the claveRetipeada to set
+     */
+    public void setClaveRetipeada(String claveRetipeada) {
+        this.claveRetipeada = claveRetipeada;
+    }
+
+    /**
+     * @param claveAnterior the claveAnterior to set
+     */
+    public void setClaveAnterior(String claveAnterior) {
+        this.claveAnterior = claveAnterior;
+    }
+
+    /**
+     * @param formulario the formulario to set
+     */
+    public void setFormulario(Formulario formulario) {
+        this.formulario = formulario;
+    }
+
+    /**
+     * @return the institucion
+     */
+    public Instituciones getInstitucion() {
+        return institucion;
+    }
+
+    /**
+     * @param institucion the institucion to set
+     */
+    public void setInstitucion(Instituciones institucion) {
+        this.institucion = institucion;
+    }
+
+}

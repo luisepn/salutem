@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <h:body>
+        <ui:composition>
+            <h:panelGrid width="100%" style="text-align: center;">
+                <ace:graphicImage value="#{salutemImagenes.traerImagen(ingresoSistema.institucion.logotipo.ruta)}" 
+                                  name="#{ingresoSistema.institucion.id}_#{ingresoSistema.institucion.nombre}" 
+                                  rendered="#{ingresoSistema.institucion ne null and ingresoSistema.institucion.logotipo ne null and ingresoSistema.institucion.logotipo.ruta ne null}"
+                                  alt="logo" height="100px" />
+                <ace:growlMessages 
+                    hideEffectDuration="slow"
+                    maxVisibleMessages="5"
+                    header="¡Atención!"
+                    autoHide="false"
+                    messageStyleClass="mensajes"
+                    escape="false"/>
+            </h:panelGrid>    
+
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,547 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : Consultas
+    Fecha       : 28 de Noviembre de 2017, 09:16:18 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <h:body>
+
+        <ui:composition template="../plantillas/Plantilla.xhtml">
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{salutemPacientes.perfil.menu.texto}"
+                           closable="false"
+                           toggleable="true"       >
+                    <h:panelGrid columns="7">
+                        <h:panelGrid columns="2" rendered="#{datosLogueo.usuario.grupo.codigo eq ('adm')}">
+                            <h:outputLabel value="Institución:"/>
+                            <h:selectOneMenu value="#{salutemPacientes.institucion}" disabled="#{!datosLogueo.usuario.grupo.codigo eq ('adm')}" >
+                                <f:selectItems value="#{combos.instituciones}" />
+                                <ace:ajax execute="@all"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemPacientes.buscarPacientes()}"/>
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemPacientes.crearPaciente()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                </ace:panel>
+
+                <ace:panel 
+                    header="Resultado Búsqueda"
+                    closable="false"
+                    toggleable="true"              >
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <h:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{salutemPacientes.formulario.tipo}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{salutemPacientes.formulario.tipo}" 
+                                          target="tabla"  
+                                          fileName="Pacientes"
+                                          excludeColumns="1"/>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       lazy="true"
+                                       paginatorAlwaysVisible="true"
+                                       value="#{salutemPacientes.pacientes}"
+                                       var="item"
+                                       paginator="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="#{salutemPacientes.formulario.rowsPerPageTemplate}"
+                                       currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="5">
+                            <ace:tableConfigPanel dragHandle=".ui-tableconf-header"
+                                                  columnNameConfigurable="true"
+                                                  columnVisibilityConfigurable="true"
+                                                  columnOrderingConfigurable="true"
+                                                  columnSortingConfigurable="true"
+                                                  modal="true"/>
+                            <ace:column  headerText="Registro" style="text-align: right">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column headerText="Operaciones" style="text-align: left" >
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{salutemPacientes.nuevaConsulta()}" value="Consulta" icon="ui-icon ui-icon-document"/>
+                                    <ace:menuItem action="#{salutemPacientes.verHistorial()}" value="Historial" icon="ui-icon ui-icon-script"/>
+                                    <ace:menuItem action="#{salutemPacientes.editarPaciente()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{salutemPacientes.borrarPaciente()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column>
+                            <ace:column headerText="Fotografía" >
+                                <ace:graphicImage value="#{salutemImagenes.traerImagen(item.persona.fotografia.ruta)}" 
+                                                  name="#{item.id}_#{item.persona.fotografia.nombre}" id="resourceGraphicImage" style="height: 50px;" 
+                                                  rendered="#{item.persona.fotografia ne null and item.persona.fotografia.ruta ne null}"/>
+                            </ace:column> 
+                            <ace:column headerText="Cédula de Identidad" sortBy="#{item.persona.cedula}" style="text-align: left" 
+                                        filterBy="#{item.persona.cedula}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.cedula}"/>
+                            </ace:column>                            
+                            <ace:column headerText="Nombres" sortBy="#{item.persona.apellidos}" style="text-align: left" 
+                                        filterBy="#{item.persona.apellidos}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.toString()}"/>
+                            </ace:column>
+                            <ace:column headerText="E-mail" sortBy="#{item.persona.email}" style="text-align: left" 
+                                        filterBy="#{item.persona.email}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.email}"/>
+                            </ace:column>
+                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.persona.fecha}" style="text-align: left">
+                                <h:outputText  value="#{item.persona.fecha}">
+                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column headerText="Teléfono fijo" sortBy="#{item.persona.direccion.fijo}" style="text-align: left" 
+                                        filterBy="#{item.persona.direccion.fijo}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.direccion.fijo}"/>
+                            </ace:column>
+                            <ace:column headerText="Teléfono movil" sortBy="#{item.persona.direccion.movil}" style="text-align: left" 
+                                        filterBy="#{item.persona.direccion.movil}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.direccion.movil}"/>
+                            </ace:column>
+                            <ace:column headerText="Ciudad" style="text-align: left" sortBy="#{item.persona.direccion.ciudad}"
+                                        filterBy="#{item.persona.direccion.ciudad}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.direccion.ciudad}"/>
+                            </ace:column>
+                            <ace:column headerText="Dirección" style="text-align: left">
+                                <h:outputText  value="#{item.persona.direccion.toString()}"/>
+                            </ace:column>
+                            <ace:column headerText="Edificio/Piso" style="text-align: left" sortBy="#{item.persona.direccion.piso}"
+                                        filterBy="#{item.persona.direccion.piso}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.direccion.piso}"/>
+                            </ace:column>
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+
+
+
+                <ace:dialog 
+                    header="#{salutemPacientes.perfil.menu.texto}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    rendered="#{salutemPacientes.formulario.mostrar}"
+                    visible="#{salutemPacientes.formulario.mostrar}"
+                    zindex="1000">
+                    <ace:tabSet style="width: 100%">          
+                        <ace:tabPane label="Paciente">
+                            <h:panelGrid columns="2" rendered="#{!salutemPacientes.formularioExiste.crear}">
+                                <h:outputLabel value="C.I.:" for="cedula" /> 
+                                <ace:textEntry id="cedula" value="#{salutemPacientes.persona.cedula}" title="Cédula" valueChangeListener="#{salutemPacientes.cambiaCedula}">
+                                    <ace:ajax execute="@all"/>
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Nombres:" for="nombres" />
+                                <ace:textEntry id="nombres" value="#{salutemPacientes.persona.nombres}" title="Nombres" />
+                                <h:outputLabel value="Apellidos:" for="apellidos" />
+                                <ace:textEntry id="apellidos" value="#{salutemPacientes.persona.apellidos}" title="Apellidos" />
+                                <h:outputLabel value="e-mail:" for="email" />
+                                <ace:textEntry id="email" value="#{salutemPacientes.persona.email}" title="Email" >
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Ocupación:" for="ocupacion" />
+                                <ace:textEntry id="ocupacion" value="#{salutemPacientes.persona.ocupacion}" title="Ocupación"/>
+                                <!--                                    <h:outputLabel value="Userid:" for="userid" />
+                                                                    <ace:textEntry id="userid" value="#{salutemPacientes.persona.userid}" title="Userid" />-->
+                                <h:outputLabel value="Fecha de Nacimiento:" />
+                                <ace:dateTimeEntry navigator="true" id="fecha" value="#{salutemPacientes.persona.fecha}" 
+                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </ace:dateTimeEntry>
+                                <h:outputLabel value="Género:"/>
+                                <h:selectOneMenu value="#{salutemPacientes.persona.genero}">
+                                    <f:selectItems value="#{salutemCombos.genero}" />
+                                </h:selectOneMenu>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2" rendered="#{salutemPacientes.formularioExiste.crear}">
+                                <h:outputLabel value="C.I.:" for="cedula" /> 
+                                <ace:textEntry value="#{salutemPacientes.persona.cedula}" title="Cédula" valueChangeListener="#{salutemPacientes.cambiaCedula}">
+                                    <ace:ajax execute="@all"/>
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Nombres:" for="nombres" />
+                                <ace:textEntry value="#{salutemPacientes.persona.nombres}" title="Nombres" />
+                                <h:outputLabel value="Apellidos:" for="apellidos" />
+                                <ace:textEntry value="#{salutemPacientes.persona.apellidos}" title="Apellidos" />
+                                <h:outputLabel value="e-mail:" for="email" />
+                                <ace:textEntry value="#{salutemPacientes.persona.email}" title="Email" >
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Ocupación:" for="ocupacion" />
+                                <ace:textEntry value="#{salutemPacientes.persona.ocupacion}" title="Ocupación"/>
+                                <!--                                    <h:outputLabel value="Userid:" for="userid" />
+                                                                    <ace:textEntry id="userid" value="#{salutemPacientes.persona.userid}" title="Userid" />-->
+                                <h:outputLabel value="Fecha de Nacimiento:" />
+                                <ace:dateTimeEntry navigator="true" value="#{salutemPacientes.persona.fecha}" 
+                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </ace:dateTimeEntry>
+                                <h:outputLabel value="Género:"/>
+                                <h:selectOneMenu value="#{salutemPacientes.persona.genero}">
+                                    <f:selectItems value="#{salutemCombos.genero}" />
+                                </h:selectOneMenu>
+                            </h:panelGrid>
+                        </ace:tabPane>
+                        <ace:tabPane label="Dirección">
+                            <h:panelGrid columns="4">
+                                <h:outputLabel value="Ciudad:" for="ciudad" />
+                                <ace:textEntry id="ciudad" value="#{salutemPacientes.direccion.ciudad}" title="Ciudad" />
+                                <h:outputLabel value="Calle Primaria:" for="primaria" />
+                                <ace:textEntry id="primaria" value="#{salutemPacientes.direccion.primaria}" title="Primaria" />
+                                <h:outputLabel value="Calle Secundaria:" for="secundaria" />
+                                <ace:textEntry id="secundaria" value="#{salutemPacientes.direccion.secundaria}" title="Secundaria" />
+                                <h:outputLabel value="Número:" for="numero" />
+                                <ace:textEntry id="numero" value="#{salutemPacientes.direccion.numero}" title="Numero" />
+                                <h:outputLabel value="Teléfono fijo:" />
+                                <ace:textEntry value="#{salutemPacientes.direccion.fijo}" title="Teléfono fijo" />
+                                <h:outputLabel value="Teléfono móvil:" />
+                                <ace:textEntry value="#{salutemPacientes.direccion.movil}" title="Teléfono móvil" />
+                                <h:outputLabel value="Edificio/Piso:"/>
+                                <ace:textAreaEntry value="#{salutemPacientes.direccion.piso}"
+                                                   rows="2" cols="22"/>
+                                <h:outputLabel value="Referencia:"/>
+                                <ace:textAreaEntry value="#{salutemPacientes.direccion.referencia}" 
+                                                   rows="2" cols="22"/>
+                            </h:panelGrid>
+                        </ace:tabPane>
+
+                        <ace:tabPane label="Fotografía">
+                            <center>
+                                <ace:graphicImage value="#{salutemImagenes.archivo.archivo}" name="#{salutemImagenes.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " />
+                            </center>
+                            <h:panelGrid columns="2">
+                                <ace:fileEntry 
+                                    relativePath="/files/"
+                                    maxFileCount="1"
+                                    maxFileCountMessage="Sólo se puede subir 1 archivo"
+                                    fileEntryListener="#{salutemImagenes.ficheroDocumento}"
+                                    maxFileSize="10485760"
+                                    maxFileSizeMessage="El archivo supera el tamaño predefinido 10 MB"                                                                                                                 
+                                    useOriginalFilename="true"
+                                    label="Subido con éxito"
+                                    useSessionSubdir="true" />
+                                <h:commandButton  type="submit" value="Subir Archivo" />
+                            </h:panelGrid>
+
+                        </ace:tabPane>
+
+                    </ace:tabSet>
+
+                    <h:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemPacientes.grabarPaciente()}"/>
+                            <ace:menuItem value="Eliminar" icon="ui-icon ui-icon-trash" 
+                                          action="#{salutemPacientes.removerPaciente()}" 
+                                          rendered="#{salutemPacientes.formulario.eliminar}" />
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemPacientes.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                </ace:dialog>
+
+                <ace:dialog 
+                    header="#{salutemPacientes.perfil.menu.texto}"
+                    closable="false"
+                    modal="true"
+                    draggable="true"
+                    resizable="false"
+                    rendered="#{salutemPacientes.formularioConsulta.mostrar}"
+                    visible="#{salutemPacientes.formularioConsulta.mostrar}"
+                    zindex="3000">
+
+
+                    <ace:tabSet>
+                        <ace:tabPane label="Motivo de la Consulta">
+                            <ace:panel style="border: 0px">                               
+                                <ace:dynamicResource 
+                                    fileName="#{salutemPacientes.paciente.toString()}"                                            
+                                    attachment="true"                                             
+                                    label="Descargar archivo"
+                                    mimeType="application/pdf"
+                                    resource="#{salutemPacientes.recursoPdf}" 
+                                    type="button" rendered="#{salutemPacientes.recursoPdf ne null}"/>
+
+                                <h:panelGrid columns="3" width="100%">
+
+                                    <ace:panel header="LENSOMETRÍA">
+                                        <h:panelGrid columns="2">
+                                            <h:outputText value="OD" styleClass="bold"/>
+                                            <ace:textEntry value="#{salutemPacientes.formula.lod}" title="Ojo derecho" style="width: 60px;"/>
+                                            <h:outputText value="OI" styleClass="bold"/>
+                                            <ace:textEntry value="#{salutemPacientes.formula.lod}" title="Ojo izquierdo" style="width: 60px;"/>
+                                        </h:panelGrid>                              
+                                    </ace:panel>
+
+                                    <ace:panel header="AV SC">
+                                        <h:panelGrid columns="2">
+                                            <h:outputText value="OD" styleClass="bold"/>
+                                            <ace:textEntry value="#{salutemPacientes.formula.avscod}" title="Ojo derecho" style="width: 60px;"/>
+                                            <h:outputText value="OI" styleClass="bold"/>
+                                            <ace:textEntry value="#{salutemPacientes.formula.avscoi}" title="Ojo izquierdo" style="width: 60px;"/>
+                                        </h:panelGrid>                              
+                                    </ace:panel>
+
+                                    <ace:panel header="AV CC">
+                                        <h:panelGrid columns="2">
+                                            <h:outputText value="OD" styleClass="bold"/>
+                                            <ace:textEntry value="#{salutemPacientes.formula.avccod}" title="Ojo derecho" style="width: 60px;"/>
+                                            <h:outputText value="OI" styleClass="bold"/>
+                                            <ace:textEntry value="#{salutemPacientes.formula.avccoi}" title="Ojo izquierdo" style="width: 60px;"/>
+                                        </h:panelGrid>                              
+                                    </ace:panel>
+
+                                </h:panelGrid>
+
+                                <ace:dataTable>
+                                    <ace:row condition="predicate">
+                                        <ace:column headerText=""/>
+                                        <ace:column headerText="Esfera"/>
+                                        <ace:column headerText="Cilindro"/>
+                                        <ace:column headerText="Eje"/>
+                                        <ace:column headerText="ADD"/>
+                                        <ace:column headerText="DP"/>
+                                        <ace:column headerText="AV"/>
+                                    </ace:row>
+                                    <ace:row>
+                                        <ace:column>
+                                            <h:outputText value="OD"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.esferaod}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.cilindrood}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.ejeod}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.addod}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.dpod}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.avccod}"/>
+                                        </ace:column>
+                                    </ace:row>                                    
+                                    <ace:row>
+                                        <ace:column>
+                                            <h:outputText value="OD"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.esferaoi}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.cilindrooi}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.ejeoi}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.addoi}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.dpoi}"/>
+                                        </ace:column>
+                                        <ace:column style="text-align: center">
+                                            <h:outputText value="#{salutemPacientes.formula.avccoi}"/>
+                                        </ace:column>
+                                    </ace:row>                                    
+                                </ace:dataTable>
+
+                                <h:panelGrid columns="10">
+                                    <h:outputLabel value="Tipo Foco:  "/>
+                                    <h:selectOneMenu value="#{salutemCombos.foco}" title="Tipo Foco">
+                                        <f:selectItems value="#{salutemCombos.focos}"/>
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel value="Tipo Material:  "/>
+                                    <h:selectOneMenu value="#{salutemCombos.tipo}" title="Tipo Material">
+                                        <f:selectItems value="#{salutemCombos.tipoMaterial}"/>
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel value="Material:  "/>
+                                    <h:selectOneMenu value="#{salutemPacientes.formula.material}" title="Tipo Material" valueChangeListener="#{salutemPacientes.cambiaMaterial}" >
+                                        <f:selectItems value="#{salutemCombos.materiales}"/>
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel value="Tratamiento:  "/>
+                                    <h:selectOneMenu value="#{salutemPacientes.formula.tratamiento}" title="Tipo Material">
+                                        <f:selectItems value="#{salutemCombos.tratamientos}"/>
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel value="Altura:  "/>
+                                    <ace:textEntry value="#{salutemPacientes.formula.altura}" style="width: 80px;" />
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2" width="100%">
+
+                                    <h:panelGrid>
+                                        <h:outputText value="Observaciones:"/>
+                                        <ace:textAreaEntry cols="60" rows="4" value="#{salutemPacientes.consulta.observaciones}" style="width: 100%" />      
+                                    </h:panelGrid>
+                                    <h:panelGrid>
+                                        <h:outputText value="Indicaciones:"/>
+                                        <ace:textAreaEntry cols="60" rows="4" value="#{salutemPacientes.consulta.indicaciones}" style="width: 100%"/>            
+                                    </h:panelGrid>
+
+                                </h:panelGrid>
+                            </ace:panel>
+
+                            <h:panelGrid width="100%">
+                                <ace:menuBar autoSubmenuDisplay="true" >
+                                    <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                                  action="#{salutemPacientes.insertarConsulta()}"
+                                                  rendered="#{salutemPacientes.formularioConsulta.crear}"/>
+                                    <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                                  action="#{salutemPacientes.grabarConsulta()}"
+                                                  rendered="#{salutemPacientes.formularioConsulta.editar}"/>
+                                    <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                                  rendered="#{salutemPacientes.nuevo}" 
+                                                  action="#{salutemPacientes.formularioConsulta.cancelar()}"/>
+                                    <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                                  rendered="#{salutemPacientes.formularioConsulta.editar and !salutemPacientes.nuevo}"
+                                                  action="#{salutemPacientes.cancelarConsulta()}"/>                
+                                </ace:menuBar>
+                            </h:panelGrid>
+                        </ace:tabPane>
+                        <ace:tabPane label="Orden de Laboratorio" rendered="#{salutemPacientes.consulta.id!=null}" >
+                            <ace:panel style="border: 0px">
+                                <ace:dynamicResource 
+                                    fileName="#{salutemPacientes.paciente.toString()}"                                            
+                                    attachment="true"                                             
+                                    label="Descargar archivo"
+                                    mimeType="application/pdf"
+                                    resource="#{salutemPacientes.ordenPdf}" 
+                                    type="button" rendered="#{salutemPacientes.ordenPdf ne null}"/>
+
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Laboratorio:"/>
+                                    <h:selectOneMenu value="#{salutemPacientes.orden.laboratorio}" >
+                                        <f:selectItems value="#{salutemCombos.laboratorios}" />
+                                    </h:selectOneMenu>
+                                    <h:outputLabel value="Factura:"/>
+                                    <ace:textEntry value="#{salutemPacientes.orden.factura}"/>
+                                </h:panelGrid>
+
+
+                                <h:panelGrid columns="2" width="100%">
+
+                                    <h:panelGrid>
+                                        <h:outputText value="Indicaciones:"/>
+                                        <ace:textAreaEntry cols="60" rows="4" value="#{salutemPacientes.traerIndicaciones()}" style="width: 100%" readonly="true" disabled="true"/>            
+                                    </h:panelGrid>
+
+                                </h:panelGrid>
+                            </ace:panel>
+                            <h:panelGrid width="100%">
+                                <ace:menuBar autoSubmenuDisplay="true" >
+                                    <ace:menuItem value="Grabar Orden" icon="ui-icon ui-icon-disk" 
+                                                  action="#{salutemPacientes.grabarOrden()}"/>             
+                                </ace:menuBar>
+                            </h:panelGrid>
+                        </ace:tabPane>
+                    </ace:tabSet>
+
+
+
+
+
+
+                </ace:dialog>
+                <ace:dialog 
+                    header="Historial #{salutemPacientes.paciente.persona.toString()}"
+                    closable="false"
+                    modal="true"
+                    draggable="true"
+                    resizable="false"
+
+
+                    rendered="#{salutemPacientes.formularioConsultas.mostrar}"
+                    visible="#{salutemPacientes.formularioConsultas.mostrar}"
+                    zindex="4000">
+
+                    <ace:panel header="Parámetros de Búsqueda" style="width: 100%">
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Número de Consulta:"/>
+                            <ace:textEntry value="#{salutemPacientes.nroConsulta}" title="Número de Consulta"/>                                
+                        </h:panelGrid> 
+                        <h:panelGrid>
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search" 
+                                              action="#{salutemPacientes.buscarConsulta()}"/>
+                            </ace:menuBar> 
+                        </h:panelGrid>
+
+
+                    </ace:panel>
+                    <ace:dataTable 
+                        style="width: 100%"
+                        paginatorAlwaysVisible="true"
+                        value="#{salutemPacientes.listaConsultas}"
+                        var="consulta"
+                        paginator="true"
+                        lazy="false"
+                        resizableColumns="true"
+                        rowIndexVar="row"
+                        paginatorPosition="both"
+                        rowsPerPageTemplate="5,10,15,30,50,100"
+                        paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                        rows="5" 
+                        binding="#{salutemPacientes.formularioConsulta.fila}">
+                        <ace:column style="text-align: left" >
+                            <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                <ace:menuItem action="#{salutemPacientes.modificarConsulta()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                            </ace:menuButton>
+                        </ace:column> 
+                        <ace:column  headerText="Número de Consulta" style="text-align: left">
+                            <h:outputText value="#{salutemPacientes.formatearNumero(consulta.id)}"/>
+                        </ace:column>
+                        <ace:column  headerText="Fecha" style="text-align: left">
+                            <h:outputText  value="#{consulta.fecha}">
+                                <f:convertDateTime  parent="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </ace:column>
+                        <ace:column  headerText="Observaciones" style="text-align: left">
+                            <h:outputText  value="#{consulta.observaciones}"/>
+                        </ace:column>
+                        <ace:column  headerText="Indicaciones" style="text-align: left">
+                            <h:outputText  value="#{consulta.indicaciones}"/>
+                        </ace:column>
+                    </ace:dataTable> 
+
+
+                    <h:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem 
+                                value="Salir" icon="ui-icon ui-icon-close" 
+                                action="#{salutemPacientes.formularioConsultas.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+
+                </ace:dialog>
+
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

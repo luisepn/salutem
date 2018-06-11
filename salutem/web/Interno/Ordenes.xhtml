@@ -1,0 +1,197 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : CambioClaveVista
+    Created on : 28/08/2017, 09:40:03 AM
+    Author     : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <h:body>
+
+        <ui:composition template="../plantillas/Plantilla.xhtml">
+            <!-- Aqui va todo el codigo de la pagina -->
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{ordenes.perfil.menu.texto}"
+                           closable="false"
+                           toggleable="true"       >
+                    <h:panelGrid>
+                        <h:panelGrid columns="2" rendered="#{datosLogueo.usuario.grupo.codigo eq ('adm')}">
+                            <h:outputLabel value="Institución:"/>
+                            <h:selectOneMenu value="#{ordenes.institucion}" valueChangeListener="#{ordenes.cambiaInstitucion}" disabled="#{!datosLogueo.usuario.grupo.codigo eq ('adm')}" >
+                                <f:selectItems value="#{instituciones.comboInstituciones}" />
+                                <ace:ajax execute="@all"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Laboratorio:"/>
+                            <h:selectOneMenu value="#{ordenes.laboratorio}">
+                                <f:selectItems value="#{instituciones.comboLaboratorios}" />
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{ordenes.buscarOrdenes()}"/>
+                            </ace:menuBar>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <ace:messages/>
+                </ace:panel>
+
+                <ace:panel
+                    header="Resultado Búsqueda"
+                    closable="false"
+                    toggleable="true"              >
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <h:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{ordenes.formulario.pantalla}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="pdf" itemLabel="PDF"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{ordenes.formulario.pantalla}" 
+                                          target="tabla" fileName="datos"/>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       paginatorAlwaysVisible="true"
+                                       value="#{ordenes.listaOrdenes}"
+                                       var="item"
+                                       paginator="true"
+                                       lazy="true"
+                                       resizableColumns="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="5,10,15,30,50,100"
+                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="30" >
+                            <ace:row condition="group" groupBy="#{item.consulta.paciente.institucion.nombre}" pos="before" styleClass="grupo">
+                                <ace:column style="text-align: center" colspan="20">
+                                    <h:outputText value="#{item.consulta.paciente.institucion.nombre}" />
+                                </ace:column>
+                            </ace:row>
+                            <ace:column  headerText="Registro" style="text-align: right">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left" >
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                </ace:menuButton>
+                            </ace:column> 
+                            <ace:column  headerText="Laboratorio" style="text-align: left">
+                                <h:outputText  value="#{item.laboratorio.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Orden" style="text-align: left">
+                                <h:outputText  value="#{item.consulta.id}"/>
+                            </ace:column>
+                            <ace:column  headerText="Factura" style="text-align: left">
+                                <h:outputText  value="#{item.factura}"/>
+                            </ace:column>
+                            <ace:column  headerText="Paciente" style="text-align: left">
+                                <h:outputText  value="#{item.consulta.paciente.toString()}"/>
+                            </ace:column>
+                            <ace:column  headerText="Fecha" style="text-align: left">
+                                <h:outputText  value="#{item.fecha}">
+                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Fecha Entrega" style="text-align: left">
+                                <h:outputText  value="#{item.entrega}">
+                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </ace:column>
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+
+
+                <!--                <ace:dialog 
+                                    header="Registrar Entrega"
+                                    closable="false"
+                                    modal="true"
+                                    draggable="true"
+                                    resizable="false"
+                                    showEffect="clip"
+                                    hideEffect="fade"
+                                    rendered="#{consultas.formularioConsultas.mostrar}"
+                                    visible="#{consultas.formularioConsultas.mostrar}">
+                
+                                    <ace:panel header="Parámetros de Búsqueda" style="width: 100%">
+                                        <h:panelGrid columns="2">
+                                            <h:outputText value="Número de Consulta:"/>
+                                            <h:inputText value="#{consultas.nroConsulta}" title="Número de Consulta"/>                                
+                                        </h:panelGrid> 
+                                        <h:panelGrid>
+                                            <ace:menuBar autoSubmenuDisplay="true" >
+                                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search" 
+                                                              action="#{consultas.buscarConsulta()}"/>
+                                            </ace:menuBar> 
+                                        </h:panelGrid>
+                
+                
+                                    </ace:panel>
+                                    <ace:dataTable 
+                                        style="width: 100%"
+                                        paginatorAlwaysVisible="true"
+                                        value="#{consultas.listaConsultas}"
+                                        var="consulta"
+                                        paginator="true"
+                                        lazy="false"
+                                        resizableColumns="true"
+                                        rowIndexVar="row"
+                                        paginatorPosition="both"
+                                        rowsPerPageTemplate="5,10,15,30,50,100"
+                                        paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                        rows="5" 
+                                        binding="#{consultas.formularioConsulta.fila}">
+                                        <ace:column style="text-align: left" >
+                                            <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                                <ace:menuItem action="#{consultas.modificarConsulta()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                            </ace:menuButton>
+                                        </ace:column> 
+                                        <ace:column  headerText="Número de Consulta" style="text-align: left">
+                                            <h:outputText value="#{consultas.formatearNumero(consulta.id)}"/>
+                                        </ace:column>
+                                        <ace:column  headerText="Fecha" style="text-align: left">
+                                            <h:outputText  value="#{consulta.fecha}">
+                                                <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </ace:column>
+                                        <ace:column  headerText="Observaciones" style="text-align: left">
+                                            <h:outputText  value="#{consulta.observaciones}"/>
+                                        </ace:column>
+                                        <ace:column  headerText="Indicaciones" style="text-align: left">
+                                            <h:outputText  value="#{consulta.indicaciones}"/>
+                                        </ace:column>
+                                    </ace:dataTable> 
+                
+                
+                                    <h:panelGrid columns="1" width="100%">
+                                        <ace:menuBar autoSubmenuDisplay="true" >
+                                            <ace:menuItem 
+                                                value="Salir" icon="ui-icon ui-icon-close" 
+                                                action="#{consultas.formularioConsultas.cancelar()}"/>
+                                        </ace:menuBar>
+                                        <ace:messages />
+                                    </h:panelGrid>
+                
+                                </ace:dialog>-->
+
+
+
+
+            </ui:define>
+            <!-- Fin -->
+        </ui:composition>
+
+    </h:body>
+
+</html>

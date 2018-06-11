@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : Personas
+    Fecha       : 20 de Noviembre de 2017, 06:45:20 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+
+    <h:body>
+
+        <ui:composition template="../plantillas/Plantilla.xhtml">
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{salutemSeguridad.titulo}"
+                           closable="false"
+                           toggleable="true">
+                    <h:panelGrid>
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemPersonas.buscar()}"/>
+                            <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemPersonas.crear()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                </ace:panel>
+
+                <ace:panel 
+                    header="Resultado Búsqueda"
+                    closable="false"
+                    toggleable="true"
+                    >
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <h:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{salutemPersonas.formulario.tipo}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{salutemPersonas.formulario.tipo}" 
+                                          target="tabla"
+                                          fileName="#{salutemSeguridad.titulo}"
+                                          excludeColumns="1"/>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       lazy="true"
+                                       paginatorAlwaysVisible="true"
+                                       value="#{salutemPersonas.personas}"
+                                       var="item"
+                                       paginator="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="#{salutemPersonas.formulario.rowsPerPageTemplate}"
+                                       currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="5">
+                            <ace:column headerText="Registro" style="text-align: right; width: 50px;">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column headerText="Operaciones" style="text-align: left; width: 50px;">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{salutemPersonas.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{salutemPersonas.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column> 
+                            <ace:column  headerText="Cédula de Identidad" sortBy="#{item.cedula}" style="text-align: left"
+                                         filterBy="#{item.cedula}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.cedula}"/>
+                            </ace:column>
+                            <ace:column  headerText="Apellidos" sortBy="#{item.apellidos}" style="text-align: left"
+                                         filterBy="#{item.apellidos}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.apellidos}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombres" sortBy="#{item.nombres}" style="text-align: left"
+                                         filterBy="#{item.nombres}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.nombres}"/>
+                            </ace:column>
+                            <ace:column  headerText="email" sortBy="#{item.email}" style="text-align: left"
+                                         filterBy="#{item.email}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.email}"/>
+                            </ace:column>
+                            <ace:column  headerText="Userid" sortBy="#{item.userid}" style="text-align: left"
+                                         filterBy="#{item.userid}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.userid}"/>
+                            </ace:column>
+                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.fecha}" style="text-align: left"
+                                         filterBy="#{item.fecha}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.fecha}">
+                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </ace:column>
+
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+                <ace:dialog 
+                    header="#{salutemSeguridad.titulo}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{salutemPersonas.formulario.mostrar}"
+                    visible="#{salutemPersonas.formulario.mostrar}">
+                    <ace:tabSet>
+                        <ace:tabPane>
+                            <f:facet name="label">Inf. General</f:facet>
+                            <h:panelGrid columns="2" rendered="#{!salutemPersonas.formularioExiste.crear}">
+                                <h:outputLabel value="C.I.:" for="cedula" />
+                                <ace:textEntry id="cedula" value="#{salutemPersonas.persona.cedula}" title="Cédula" valueChangeListener="#{salutemPersonas.cambiaCedula}">
+                                    <ace:ajax execute="@all"/>
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Nombres:" for="nombres" />
+                                <ace:textEntry id="nombres" value="#{salutemPersonas.persona.nombres}" title="Nombres" />
+                                <h:outputLabel value="Apellidos:" for="apellidos" />
+                                <ace:textEntry id="apellidos" value="#{salutemPersonas.persona.apellidos}" title="Apellidos" />
+                                <h:outputLabel value="e-mail:" for="email" />
+                                <ace:textEntry id="email" value="#{salutemPersonas.persona.email}" title="Email">
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Userid:" for="userid" />
+                                <ace:textEntry id="userid" value="#{salutemPersonas.persona.userid}" title="Userid" />
+
+                                <h:outputLabel value="Fecha de Nacimiento:" />
+                                <ace:dateTimeEntry navigator="true" id="fecha" value="#{salutemPersonas.persona.fecha}" 
+                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </ace:dateTimeEntry>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2" rendered="#{salutemPersonas.formularioExiste.crear}">
+                                <h:outputLabel value="C.I.:"/>
+                                <ace:textEntry value="#{salutemPersonas.persona.cedula}" title="Cédula" valueChangeListener="#{salutemPersonas.cambiaCedula}">
+                                    <ace:ajax execute="@all"/>
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Nombres:"/>
+                                <ace:textEntry value="#{salutemPersonas.persona.nombres}" title="Nombres" />
+                                <h:outputLabel value="Apellidos:"/>
+                                <ace:textEntry value="#{salutemPersonas.persona.apellidos}" title="Apellidos" />
+                                <h:outputLabel value="e-mail:"/>
+                                <ace:textEntry value="#{salutemPersonas.persona.email}" title="Email">
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Userid:"/>
+                                <ace:textEntry value="#{salutemPersonas.persona.userid}" title="Userid" />
+
+                                <h:outputLabel value="Fecha de Nacimiento:" />
+                                <ace:dateTimeEntry navigator="true" value="#{salutemPersonas.persona.fecha}" 
+                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </ace:dateTimeEntry>
+                            </h:panelGrid>
+                        </ace:tabPane>
+                    </ace:tabSet>
+                    <h:panelGroup>
+
+                    </h:panelGroup>
+                    <h:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
+                                          action="#{salutemPersonas.insertar()}"
+                                          rendered="#{salutemPersonas.formulario.crear}"/>
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemPersonas.grabar()}" 
+                                          rendered="#{salutemPersonas.formulario.editar}"/>
+                            <ace:menuItem action="#{salutemPersonas.remover()}" 
+                                          value="Eliminar" icon="ui-icon ui-icon-trash"
+                                          rendered="#{salutemPersonas.formulario.eliminar}"/>
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemPersonas.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                </ace:dialog>
+
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

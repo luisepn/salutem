@@ -1,0 +1,210 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package org.entidades.salutem;
+
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+/**
+ *
+ * @author fernando
+ */
+@Entity
+@Table(name = "parametros")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Parametros.findAll", query = "SELECT p FROM Parametros p")
+    , @NamedQuery(name = "Parametros.findById", query = "SELECT p FROM Parametros p WHERE p.id = :id")
+    , @NamedQuery(name = "Parametros.findByNombre", query = "SELECT p FROM Parametros p WHERE p.nombre = :nombre")
+    , @NamedQuery(name = "Parametros.findByCodigo", query = "SELECT p FROM Parametros p WHERE p.codigo = :codigo")
+    , @NamedQuery(name = "Parametros.findByDescripcion", query = "SELECT p FROM Parametros p WHERE p.descripcion = :descripcion")
+    , @NamedQuery(name = "Parametros.findByParametros", query = "SELECT p FROM Parametros p WHERE p.parametros = :parametros")
+    , @NamedQuery(name = "Parametros.findByActivo", query = "SELECT p FROM Parametros p WHERE p.activo = :activo")})
+public class Parametros implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "nombre")
+    private String nombre;
+    @Size(max = 2147483647)
+    @Column(name = "codigo")
+    private String codigo;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Size(max = 2147483647)
+    @Column(name = "parametros")
+    private String parametros;
+    @Column(name = "activo")
+    private Boolean activo;
+    @OneToMany(mappedBy = "tratamiento")
+    private List<Formulas> formulasList;
+    @OneToMany(mappedBy = "especialidad")
+    private List<Consultas> consultasList;
+    @OneToMany(mappedBy = "foco")
+    private List<Materiales> materialesList;
+    @OneToMany(mappedBy = "tipo")
+    private List<Materiales> materialesList1;
+    @JoinColumn(name = "maestro", referencedColumnName = "id")
+    @ManyToOne
+    private Maestros maestro;
+    @OneToMany(mappedBy = "genero")
+    private List<Personas> personasList;
+
+    public Parametros() {
+    }
+
+    public Parametros(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getParametros() {
+        return parametros;
+    }
+
+    public void setParametros(String parametros) {
+        this.parametros = parametros;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
+
+    @XmlTransient
+    public List<Formulas> getFormulasList() {
+        return formulasList;
+    }
+
+    public void setFormulasList(List<Formulas> formulasList) {
+        this.formulasList = formulasList;
+    }
+
+    @XmlTransient
+    public List<Consultas> getConsultasList() {
+        return consultasList;
+    }
+
+    public void setConsultasList(List<Consultas> consultasList) {
+        this.consultasList = consultasList;
+    }
+
+    @XmlTransient
+    public List<Materiales> getMaterialesList() {
+        return materialesList;
+    }
+
+    public void setMaterialesList(List<Materiales> materialesList) {
+        this.materialesList = materialesList;
+    }
+
+    @XmlTransient
+    public List<Materiales> getMaterialesList1() {
+        return materialesList1;
+    }
+
+    public void setMaterialesList1(List<Materiales> materialesList1) {
+        this.materialesList1 = materialesList1;
+    }
+
+    public Maestros getMaestro() {
+        return maestro;
+    }
+
+    public void setMaestro(Maestros maestro) {
+        this.maestro = maestro;
+    }
+
+    @XmlTransient
+    public List<Personas> getPersonasList() {
+        return personasList;
+    }
+
+    public void setPersonasList(List<Personas> personasList) {
+        this.personasList = personasList;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Parametros)) {
+            return false;
+        }
+        Parametros other = (Parametros) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+}

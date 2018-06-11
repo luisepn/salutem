@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : Maestros
+    Fecha       : 19 de Noviembre de 2017, 07:56:09 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+
+    <h:body >
+
+        <ui:composition template="../plantillas/Plantilla.xhtml">
+            <!-- Aqui va todo el codigo de la pagina -->
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{salutemSeguridad.titulo}"
+                           closable="false"
+                           toggleable="true" >
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Maestro:" />
+                        <h:selectOneMenu value="#{salutemParametros.maestro}">
+                            <f:selectItems value="#{salutemCombos.maestros}"/>
+                            <ace:ajax execute="@all"/>
+                        </h:selectOneMenu>
+                    </h:panelGrid>
+                    <h:panelGrid>
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemParametros.buscar()}"/>
+                            <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemParametros.crear()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+
+                </ace:panel>
+                <ace:panel 
+                    header="Resultado Búsqueda"
+                    closable="false"
+                    toggleable="true" >
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <h:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{salutemParametros.formulario.tipo}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{salutemParametros.formulario.tipo}" 
+                                          target="tabla" 
+                                          fileName="#{salutemSeguridad.titulo}"
+                                          excludeColumns="1"/>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       lazy="true"
+                                       paginatorAlwaysVisible="true"
+                                       value="#{salutemParametros.parametros}"
+                                       var="item"
+                                       paginator="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="#{salutemParametros.formulario.rowsPerPageTemplate}"
+                                       currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="5">
+                            <ace:column headerText="Registro" style="text-align: right; width: 50px;">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column headerText="Operaciones" style="text-align: left; width: 50px;">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{salutemParametros.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{salutemParametros.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column> 
+                            <ace:column  headerText="Código" sortBy="#{item.codigo}" filterBy="#{item.codigo}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.codigo}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombre" sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
+                            </ace:column>
+                            <ace:column  headerText="Parámetros" sortBy="#{item.parametros}" filterBy="#{item.parametros}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.parametros}"/>
+                            </ace:column>
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+                <ace:dialog 
+                    header="#{salutemSeguridad.titulo}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{salutemParametros.formulario.mostrar}"
+                    visible="#{salutemParametros.formulario.mostrar}">
+                    <h:panelGroup>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Código:" for="codigo" />
+                            <ace:textEntry id="codigo" value="#{salutemParametros.parametro.codigo}" title="Código" disabled="#{!salutemParametros.formulario.crear}"/>
+                            <h:outputLabel value="Nombre:" for="nombre" />
+                            <ace:textEntry id="nombre" value="#{salutemParametros.parametro.nombre}" title="Nombre" />
+                            <h:outputLabel value="Descripción:" for="descripcion" />
+                            <ace:textAreaEntry id="descripcion" value="#{salutemParametros.parametro.descripcion}" cols="22" rows="2"/>
+                            <h:outputLabel value="Parámetros:" for="parametros" />
+                            <ace:textAreaEntry id="parametros" value="#{salutemParametros.parametro.parametros}" cols="22" rows="2"/>
+                        </h:panelGrid>
+                    </h:panelGroup>
+                    <h:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
+                                          action="#{salutemParametros.insertar()}"
+                                          rendered="#{salutemParametros.formulario.crear}"/>
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemParametros.grabar()}" 
+                                          rendered="#{salutemParametros.formulario.editar}"/>
+                            <ace:menuItem value="Eliminar" icon="ui-icon ui-icon-trash"
+                                          action="#{salutemParametros.remover()}" 
+                                          rendered="#{salutemParametros.formulario.eliminar}"/>
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemParametros.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                </ace:dialog>
+
+            </ui:define>
+            <!-- Fin -->
+        </ui:composition>
+
+    </h:body>
+
+</html>

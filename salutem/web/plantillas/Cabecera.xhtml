@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <h:body>
+        <ui:composition>
+            <ace:panel>
+                <h:panelGrid style="width: 100%;" columns="3" columnClasses="columna1, columna2, columna3">
+                    <h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid>
+                        <ace:graphicImage 
+                            value="#{salutemImagenes.traerImagen(salutemSeguridad.institucion.logotipo.ruta)}" 
+                            name="#{salutemSeguridad.institucion.id}_#{salutemSeguridad.institucion.nombre}" 
+                            rendered="#{salutemSeguridad.institucion ne null and salutemSeguridad.institucion.logotipo ne null and salutemSeguridad.institucion.logotipo.ruta ne null}"
+                            alt="logo" height="100px" />
+                    </h:panelGrid>
+                    <h:panelGrid>
+                        <ace:tabSet>
+                            <ace:tabPane label="Datos de Usuario">
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Módulo:" styleClass="etiquetas"/>
+                                    <h:selectOneMenu value="#{salutemSeguridad.usuario}" valueChangeListener="#{salutemSeguridad.cambiarUsuarioPorGrupo}">
+                                        <f:selectItems value="#{salutemSeguridad.comboUsuariosPorGrupo}"/>
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectOneMenu>
+                                    <h:outputText value="Grupo:" styleClass="etiquetas"/>
+                                    <h:outputText value="#{salutemSeguridad.usuario.grupo.nombre}"/>
+                                    <h:outputText value="Institución:" styleClass="etiquetas"/>
+                                    <h:outputText value="#{salutemSeguridad.usuario.institucion.nombre}"/>
+                                    <h:outputText value="Usuario:" styleClass="etiquetas"/>
+                                    <h:outputText value="#{salutemSeguridad.logueado.toString()}"/>
+                                    <h:outputText value="Versión:" styleClass="etiquetas"/>
+                                    <h:outputText value="Jueves 11 de Enero de 2018 [21:47]"/>
+                                </h:panelGrid>
+                            </ace:tabPane>
+                            <ace:tabPane label="Errores">
+                                <ace:messages redisplay="false"/>
+                            </ace:tabPane>
+
+                        </ace:tabSet>
+                    </h:panelGrid>
+
+                </h:panelGrid> 
+            </ace:panel>
+            <ace:growlMessages 
+                hideEffectDuration="slow"
+                maxVisibleMessages="5"
+                header="¡Atención!"
+                autoHide="false"
+                messageStyleClass="mensajes"
+                escape="false"/>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!--
+    Documento   : CambioClaveVista
+    Created on : 28/08/2017, 09:40:03 AM
+    Author     : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="../recursos/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="../recursos/css/estilo.css" rel="stylesheet" type="text/css" />
+        <link rel="shortcut icon" href="../recursos/icon.png" type="image/png" />
+
+        <title>#{salutemSeguridad.titulo}</title>
+
+    </h:head>
+
+    <h:body>
+        <h:form id="principal">
+            <div id="top">
+                <ui:insert name="top">
+                    <ui:include src="../plantillas/Cabecera.xhtml" />
+                </ui:insert>
+            </div>
+
+            <h:panelGrid columns="2" width="100%" style="text-align: left;" columnClasses="menu1, menu2">
+                <ace:menuBar autoSubmenuDisplay="true" model="#{salutemSeguridad.menu}" rendered="#{salutemSeguridad.menu ne null}" style="width: 100%"/>
+                <h:panelGrid>
+                    <ace:menuButton id="menuButton100" effect="slide" value="Sistema">
+                        <ace:menuItem value="#{salutemSeguridad.logueado.userid}" icon="ui-icon ui-icon-person"/>
+                        <ace:menuItem value="Cambiar de clave" icon="ui-icon ui-icon-key" action="#{salutemSeguridad.cambiarClave()}"/>
+                        <ace:menuItem value="Salir del Sistema" icon="ui-icon ui-icon-close" action="#{salutemSeguridad.logout()}" />
+                    </ace:menuButton>
+                </h:panelGrid>
+            </h:panelGrid> 
+
+            <ace:dialog 
+                header="Cambio de Clave"
+                closable="false"
+                modal="true"
+                draggable="false"
+                showEffect="clip"
+                hideEffect="fade"
+                rendered="#{salutemSeguridad.formulario.mostrar}"
+                visible="#{salutemSeguridad.formulario.mostrar}">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="Contraseña Anterior:" />
+                    <ace:textEntry value="#{salutemSeguridad.clave}" secret="true"/>
+                    <h:outputLabel value="Contraseña Nueva:" />
+                    <ace:textEntry value="#{salutemSeguridad.claveNueva}" secret="true"/>
+                    <h:outputLabel value="Digite otra vez su Constraseña Nueva:" />
+                    <ace:textEntry  value="#{salutemSeguridad.claveNuevaRetipeada}" secret="true"/>
+                </h:panelGrid>
+
+                <h:panelGrid columns="2" style="text-align: center;">
+                    <ace:menuBar autoSubmenuDisplay="true" >
+                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" action="#{salutemSeguridad.grabarClave()}" />
+                        <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" action="#{salutemSeguridad.cancelarCambiarClave()}" />
+                    </ace:menuBar>
+                    <ace:messages/>
+                </h:panelGrid>
+            </ace:dialog>            
+
+
+            <div id="content"  class="center_content" style="margin-top:5px;">
+                <h:panelGrid width="100%">
+                    <ui:insert name="content"/>
+                </h:panelGrid>
+            </div>
+
+            <div id="bottom">
+                <ui:insert name="bottom">
+                    <ui:include src="../plantillas/Pie.xhtml" />
+                </ui:insert>
+
+            </div>
+        </h:form>
+    </h:body>
+</html>
