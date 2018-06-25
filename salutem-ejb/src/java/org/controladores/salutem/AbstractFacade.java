@@ -2,7 +2,8 @@
  *Hacer commint en GitHub:
  * 1: Clic derecho sobre todos los archivos del proyecto
  * 2: Seleccionar Git/Commit
- * 3: Selecciona
+ * 3: En la ventana hacer clic en confirmar
+ * 
  */
 package org.controladores.salutem;
 
