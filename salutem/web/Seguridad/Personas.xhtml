@@ -30,8 +30,7 @@
                 <ace:panel 
                     header="Resultado Búsqueda"
                     closable="false"
-                    toggleable="true"
-                    >
+                    toggleable="true">
                     <h:panelGrid columns="3" styleClass="centeredPanelGrid">
                         <h:outputLabel  value="Exportar a:"/>
                         <h:selectOneRadio  value="#{salutemPersonas.formulario.tipo}" required="true">
@@ -111,7 +110,7 @@
                     <ace:tabSet>
                         <ace:tabPane>
                             <f:facet name="label">Inf. General</f:facet>
-                            <h:panelGrid columns="2" rendered="#{!salutemPersonas.formularioExiste.crear}">
+                            <h:panelGrid columns="2">
                                 <h:outputLabel value="C.I.:" for="cedula" />
                                 <ace:textEntry id="cedula" value="#{salutemPersonas.persona.cedula}" title="Cédula" valueChangeListener="#{salutemPersonas.cambiaCedula}">
                                     <ace:ajax execute="@all"/>
@@ -130,30 +129,6 @@
 
                                 <h:outputLabel value="Fecha de Nacimiento:" />
                                 <ace:dateTimeEntry navigator="true" id="fecha" value="#{salutemPersonas.persona.fecha}" 
-                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
-                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
-                                    <f:convertDateTime pattern="dd/MM/yyyy" />
-                                </ace:dateTimeEntry>
-                            </h:panelGrid>
-                            <h:panelGrid columns="2" rendered="#{salutemPersonas.formularioExiste.crear}">
-                                <h:outputLabel value="C.I.:"/>
-                                <ace:textEntry value="#{salutemPersonas.persona.cedula}" title="Cédula" valueChangeListener="#{salutemPersonas.cambiaCedula}">
-                                    <ace:ajax execute="@all"/>
-                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
-                                </ace:textEntry>
-                                <h:outputLabel value="Nombres:"/>
-                                <ace:textEntry value="#{salutemPersonas.persona.nombres}" title="Nombres" />
-                                <h:outputLabel value="Apellidos:"/>
-                                <ace:textEntry value="#{salutemPersonas.persona.apellidos}" title="Apellidos" />
-                                <h:outputLabel value="e-mail:"/>
-                                <ace:textEntry value="#{salutemPersonas.persona.email}" title="Email">
-                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
-                                </ace:textEntry>
-                                <h:outputLabel value="Userid:"/>
-                                <ace:textEntry value="#{salutemPersonas.persona.userid}" title="Userid" />
-
-                                <h:outputLabel value="Fecha de Nacimiento:" />
-                                <ace:dateTimeEntry navigator="true" value="#{salutemPersonas.persona.fecha}" 
                                                    popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                                    pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
                                     <f:convertDateTime pattern="dd/MM/yyyy" />

@@ -20,9 +20,14 @@ import javax.faces.validator.ValidatorException;
 @FacesValidator("org.salutem.utilitarios.ValidadorEmail")
 public class ValidadorEmail implements Validator {
 
-    private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\."
-            + "[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*"
-            + "(\\.[A-Za-z]{2,})$";
+    //  private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\."
+    //  + "[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*"
+    //  + "(\\.[A-Za-z]{2,})$";
+    
+    //  Nuevo patron de validación, permite emails con formatos como: louis.fercho@dominio-ec.com
+    private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    
     private Pattern pattern;
     private Matcher matcher;
 

@@ -1,5 +1,3 @@
-///hola---nada qiue hacer 
-
 package org.salutem.beans;
 
 import java.io.Serializable;
@@ -408,29 +406,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         String t = formula.getTratamiento() != null ? formula.getTratamiento().getNombre() : "";
 
         return m + " " + t + "\n" + consulta.getIndicaciones();
-    }
-
-    public void existeCedula(ValueChangeEvent event) {
-        String nuevaCedula = (String) event.getNewValue();
-        String where = "upper(o.cedula)=:cedula";
-        Map parametros = new HashMap();
-        parametros.put("cedula", nuevaCedula);
-
-        try {
-            if (ejbPersonas.contar(where, parametros) > 0) {
-                Mensajes.informacion("Existe una persona registrada con el número de cédula digitado, ¿desea editar su registro?");
-                getFormularioExiste().insertar();
-            }
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.error(ex.getMessage());
-            Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public String cancelarExiste() {
-        crear();
-        getFormularioExiste().cancelar();
-        return null;
     }
 
     /**

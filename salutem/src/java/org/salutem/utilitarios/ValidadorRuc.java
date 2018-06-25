@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.salutem.utilitarios;
 
 import javax.faces.validator.Validator;
@@ -44,7 +40,7 @@ public class ValidadorRuc implements Validator {
         }
         if (numero.length() < 10) {
             FacesMessage msg = new FacesMessage("RUC invalidado menor a 10 caracteres");
-            msg.setDetail(" RUC invalidado menor a 10 caracteres");
+            msg.setDetail("RUC invalidado menor a 10 caracteres");
             //msg.setSumamry("Fecha menor que Periodo Vigente");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
@@ -56,7 +52,7 @@ public class ValidadorRuc implements Validator {
 
             if (provincia <= 0 || provincia > numeroProvincias) {
                 FacesMessage msg = new FacesMessage("RUC invalido provincia inconsistente");
-                msg.setDetail(" RUC invalido provincia inconsistente");
+                msg.setDetail("RUC invalido provincia inconsistente");
                 //msg.setSumamry("Fecha menor que Periodo Vigente");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
@@ -77,7 +73,7 @@ public class ValidadorRuc implements Validator {
         } catch (NumberFormatException ex) {
 
             FacesMessage msg = new FacesMessage("RUC debe ser  sólo numérico");
-            msg.setDetail(" RUC debe ser  sólo numérico");
+            msg.setDetail("RUC debe ser  sólo numérico");
             //msg.setSumamry("Fecha menor que Periodo Vigente");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
@@ -89,7 +85,7 @@ public class ValidadorRuc implements Validator {
         // menor que 6 (0,1,2,3,4,5) para personas naturales
         if (d3 == 7 || d3 == 8) {
             FacesMessage msg = new FacesMessage("RUC invalido no corresponde a formato");
-            msg.setDetail(" RUC invalido no corresponde a formato");
+            msg.setDetail("RUC invalido no corresponde a formato");
             //msg.setSumamry("Fecha menor que Periodo Vigente");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);
@@ -179,8 +175,7 @@ public class ValidadorRuc implements Validator {
         if (publica == true) {
             if (digitoVerificador != d9) {
                 FacesMessage msg = new FacesMessage("RUC invalido digito sector público inconsistente");
-                msg.setDetail(" RUC invalido dígito sevtor público inconsistente");
-                //msg.setSumamry("Fecha menor que Periodo Vigente");
+                msg.setDetail("RUC invalido dígito sevtor público inconsistente");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
 
@@ -188,8 +183,7 @@ public class ValidadorRuc implements Validator {
             /* El ruc de las empresas del sector publico terminan con 0001 */
             if (!numero.substring(9, longitud).equals("0001")) {
                 FacesMessage msg = new FacesMessage("RUC invalido sector público termina en 001");
-                msg.setDetail(" RUC invalido provincia sector público termina en 001");
-                //msg.setSumamry("Fecha menor que Periodo Vigente");
+                msg.setDetail("RUC invalido provincia sector público termina en 001");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
 
@@ -198,15 +192,14 @@ public class ValidadorRuc implements Validator {
 
         if (privada == true) {
             if (digitoVerificador != d10) {
-                FacesMessage msg = new FacesMessage("RUC invalido ");
-                msg.setDetail(" RUC invalido ");
-                //msg.setSumamry("Fecha menor que Periodo Vigente");
+                FacesMessage msg = new FacesMessage("RUC invalido");
+                msg.setDetail("RUC invalido ");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
 
             }
             if (!numero.substring(10, longitud).equals("001")) {
                 FacesMessage msg = new FacesMessage("RUC invalido sector privado termina en 001");
-                msg.setDetail(" RUC invalido sector privado termina en 001");
+                msg.setDetail("RUC invalido sector privado termina en 001");
                 //msg.setSumamry("Fecha menor que Periodo Vigente");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
@@ -217,17 +210,14 @@ public class ValidadorRuc implements Validator {
         if (natural == true) {
             if (digitoVerificador != d10) {
                 FacesMessage msg = new FacesMessage("RUC invalido de persona natural");
-                msg.setDetail(" RUC invalido de persona natural");
-                //msg.setSumamry("Fecha menor que Periodo Vigente");
+                msg.setDetail("RUC invalido de persona natural");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
 
             }
-            if (numero.length() > 10 && !numero.substring(10, longitud).equals(
-                    "001")) {
+            if (numero.length() > 10 && !numero.substring(10, longitud).equals("001")) {
                 FacesMessage msg = new FacesMessage("RUC invalido de persona natural termina en 001");
-                msg.setDetail(" RUC invalido de persona natural termina en 001");
-                //msg.setSumamry("Fecha menor que Periodo Vigente");
+                msg.setDetail("RUC invalido de persona natural termina en 001");
                 msg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 throw new ValidatorException(msg);
 

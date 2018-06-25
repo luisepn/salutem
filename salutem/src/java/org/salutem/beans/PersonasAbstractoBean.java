@@ -39,7 +39,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
     protected ImagenesBean imagenesBean;
 
     protected Formulario formulario = new Formulario();
-    protected Formulario formularioExiste = new Formulario();
     protected LazyDataModel<Personas> personas;
     protected Personas persona;
     protected Direcciones direccion;
@@ -114,7 +113,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         direccion = new Direcciones();
         imagenesBean.setArchivo(new Archivos());
         formulario.insertar();
-        formularioExiste.cancelar();
         return null;
     }
 
@@ -129,7 +127,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
         imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.editar();
-        formularioExiste.cancelar();
         return null;
     }
 
@@ -152,15 +149,15 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return true;
         }
         if ((persona.getNombres() == null) || (persona.getNombres().trim().isEmpty())) {
-            Mensajes.advertencia("Nombres son obligatorio");
+            Mensajes.advertencia("Nombres son obligatorios");
             return true;
         }
         if ((persona.getApellidos() == null) || (persona.getApellidos().trim().isEmpty())) {
-            Mensajes.advertencia("Apellidos son obligatorio");
+            Mensajes.advertencia("Apellidos son obligatorios");
             return true;
         }
         if (persona.getFecha() != null && persona.getFecha().after(new Date())) {
-            Mensajes.advertencia("La fecha de nacimiento no puede ser mayor a la fecha de hoy");
+            Mensajes.advertencia("La fecha de nacimiento no puede ser mayor a la fecha actual");
             return true;
         }
         return false;
@@ -174,13 +171,15 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         if (validar()) {
             return null;
         }
-        persona.setUserid(persona.getCedula());
-        persona.setActivo(Boolean.TRUE);
         try {
             ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid());
             persona.setDireccion(direccion);
+
             imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), "Fotografias", null);
             persona.setFotografia(imagenesBean.getArchivo());
+
+            persona.setUserid(persona.getCedula());
+            persona.setActivo(Boolean.TRUE);
             persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
             ejbPersonas.crear(persona, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
@@ -188,7 +187,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -201,15 +199,17 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return null;
         }
         try {
-            persona.setActivo(Boolean.TRUE);
             if (direccion.getId() == null) {
                 ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid());
             } else {
                 ejbDirecciones.actualizar(direccion, seguridadBean.getLogueado().getUserid());
             }
             persona.setDireccion(direccion);
+
             imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), "Fotografias", null);
             persona.setFotografia(imagenesBean.getArchivo());
+
+            persona.setActivo(Boolean.TRUE);
             ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -233,15 +233,12 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
     @Override
     public String cancelar() {
         formulario.cancelar();
-        formularioExiste.cancelar();
-        buscar();
         return null;
     }
 
@@ -254,12 +251,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         try {
             List<Personas> lista = ejbPersonas.buscar(where, parametros);
             if (!lista.isEmpty()) {
-                formularioExiste.insertar();
                 persona = lista.get(0);
-                direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
-                imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
-            } else {
-                formularioExiste.cancelar();
+                editar();
             }
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
@@ -310,13 +303,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
      */
     public Formulario getFormulario() {
         return formulario;
-    }
-
-    /**
-     * @return the formularioExiste
-     */
-    public Formulario getFormularioExiste() {
-        return formularioExiste;
     }
 
     /**
@@ -373,13 +359,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
      */
     public void setFormulario(Formulario formulario) {
         this.formulario = formulario;
-    }
-
-    /**
-     * @param formularioExiste the formularioExiste to set
-     */
-    public void setFormularioExiste(Formulario formularioExiste) {
-        this.formularioExiste = formularioExiste;
     }
 
     /**
