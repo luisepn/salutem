@@ -1,3 +1,5 @@
+///hola
+
 package org.salutem.beans;
 
 import java.io.Serializable;
