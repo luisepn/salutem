@@ -3,7 +3,7 @@
  * 1: Clic derecho sobre todos los archivos del proyecto
  * 2: Seleccionar Git/Commit
  * 3: En la ventana hacer clic en confirmar
- * 4: Seleccionar Git/Commit/Remote/Pull
+ * 4: Seleccionar Git/Commit/Remote/Push
  */
 package org.controladores.salutem;
 
