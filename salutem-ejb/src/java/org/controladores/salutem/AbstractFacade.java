@@ -1,10 +1,14 @@
 /**
- *Hacer commint en GitHub:
+ * Hacer commint en GitHub:
  * 1: Clic derecho sobre todos los archivos del proyecto
  * 2: Seleccionar Git/Commit
  * 3: En la ventana hacer clic en confirmar
  * 4: Seleccionar Git/Commit/Remote/Push
- * 
+ *
+ * Hacer Update desde GitHub
+ * 1: Clic derecho sobre todos los archivos del proyecto
+ * 2: Seleccionar Git/Commit/Remote/Push
+ *
  */
 package org.controladores.salutem;
 
