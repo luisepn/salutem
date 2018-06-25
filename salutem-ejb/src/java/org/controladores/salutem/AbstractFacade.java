@@ -7,7 +7,7 @@
  *
  * Hacer Update desde GitHub
  * 1: Clic derecho sobre todos los archivos del proyecto
- * 2: Seleccionar Git/Commit/Remote/Push
+ * 2: Seleccionar Git/Commit/Remote/Pull
  *
  */
 package org.controladores.salutem;
