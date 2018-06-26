@@ -137,18 +137,19 @@ public class ValidadorRuc implements Validator {
         // Solo para sociedades publicas (modulo 11)
         // Aqui el digito verficador esta en la posicion 9, en las otras 2
         // en la pos. 10
-        if (d3 == 6) {
-            publica = true;
-            p1 = d1 * 3;
-            p2 = d2 * 2;
-            p3 = d3 * 7;
-            p4 = d4 * 6;
-            p5 = d5 * 5;
-            p6 = d6 * 4;
-            p7 = d7 * 3;
-            p8 = d8 * 2;
-            p9 = 0;
-        }
+        //se comentó porque los extranjeros tienen números de cédula tipo 17-6 (d3)
+//        if (d3 == 6) {
+//            publica = true;
+//            p1 = d1 * 3;
+//            p2 = d2 * 2;
+//            p3 = d3 * 7;
+//            p4 = d4 * 6;
+//            p5 = d5 * 5;
+//            p6 = d6 * 4;
+//            p7 = d7 * 3;
+//            p8 = d8 * 2;
+//            p9 = 0;
+//        }
 
         /* Solo para entidades privadas (modulo 11) */
         if (d3 == 9) {
