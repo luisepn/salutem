@@ -41,18 +41,19 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Ordenes.findByEntrega", query = "SELECT o FROM Ordenes o WHERE o.entrega = :entrega")})
 public class Ordenes implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "factura")
     private String factura;
     @Size(max = 2147483647)
     @Column(name = "usuario")
     private String usuario;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @Column(name = "registro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date registro;
@@ -84,21 +85,6 @@ public class Ordenes implements Serializable {
         this.id = id;
     }
 
-    public String getFactura() {
-        return factura;
-    }
-
-    public void setFactura(String factura) {
-        this.factura = factura;
-    }
-
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
 
     public Date getRegistro() {
         return registro;
@@ -163,6 +149,22 @@ public class Ordenes implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Ordenes[ id=" + id + " ]";
+    }
+
+    public String getFactura() {
+        return factura;
+    }
+
+    public void setFactura(String factura) {
+        this.factura = factura;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
     
 }

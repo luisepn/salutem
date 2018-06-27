@@ -38,18 +38,19 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Menus.findByFormulario", query = "SELECT m FROM Menus m WHERE m.formulario = :formulario")})
 public class Menus implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "texto")
     private String texto;
     @Size(max = 2147483647)
     @Column(name = "formulario")
     private String formulario;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "menu")
     private List<Perfiles> perfilesList;
     @OneToMany(mappedBy = "menupadre")
@@ -76,21 +77,6 @@ public class Menus implements Serializable {
         this.id = id;
     }
 
-    public String getTexto() {
-        return texto;
-    }
-
-    public void setTexto(String texto) {
-        this.texto = texto;
-    }
-
-    public String getFormulario() {
-        return formulario;
-    }
-
-    public void setFormulario(String formulario) {
-        this.formulario = formulario;
-    }
 
     @XmlTransient
     public List<Perfiles> getPerfilesList() {
@@ -149,6 +135,22 @@ public class Menus implements Serializable {
     @Override
     public String toString() {
         return texto;
+    }
+
+    public String getTexto() {
+        return texto;
+    }
+
+    public void setTexto(String texto) {
+        this.texto = texto;
+    }
+
+    public String getFormulario() {
+        return formulario;
+    }
+
+    public void setFormulario(String formulario) {
+        this.formulario = formulario;
     }
     
 }

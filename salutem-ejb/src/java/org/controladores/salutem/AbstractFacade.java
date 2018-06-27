@@ -1,5 +1,5 @@
 /**
- * 
+ *
  * Hacer commint en GitHub:
  * 1: Clic derecho sobre todos los archivos del proyecto
  * 2: Seleccionar Git/Commit
@@ -80,6 +80,7 @@ public abstract class AbstractFacade<T> {
      */
     public void eliminar(T entity, String usuario) throws ExcepcionDeEliminacion {
         try {
+            entity = getEntityManager().merge(entity);
             getEntityManager().remove(entity);
         } catch (Exception e) {
             throw new ExcepcionDeEliminacion(entity.toString(), e);

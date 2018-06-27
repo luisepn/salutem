@@ -40,12 +40,6 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Parametros.findByActivo", query = "SELECT p FROM Parametros p WHERE p.activo = :activo")})
 public class Parametros implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
@@ -58,6 +52,21 @@ public class Parametros implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "parametros")
     private String parametros;
+    @OneToMany(mappedBy = "grupo")
+    private List<Perfiles> perfilesList;
+    @OneToMany(mappedBy = "grupo")
+    private List<Usuarios> usuariosList;
+    @OneToMany(mappedBy = "modulo")
+    private List<Usuarios> usuariosList1;
+    @OneToMany(mappedBy = "modulo")
+    private List<Menus> menusList;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @Column(name = "activo")
     private Boolean activo;
     @OneToMany(mappedBy = "tratamiento")
@@ -89,37 +98,6 @@ public class Parametros implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getParametros() {
-        return parametros;
-    }
-
-    public void setParametros(String parametros) {
-        this.parametros = parametros;
-    }
 
     public Boolean getActivo() {
         return activo;
@@ -205,6 +183,74 @@ public class Parametros implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getParametros() {
+        return parametros;
+    }
+
+    public void setParametros(String parametros) {
+        this.parametros = parametros;
+    }
+
+    @XmlTransient
+    public List<Perfiles> getPerfilesList() {
+        return perfilesList;
+    }
+
+    public void setPerfilesList(List<Perfiles> perfilesList) {
+        this.perfilesList = perfilesList;
+    }
+
+    @XmlTransient
+    public List<Usuarios> getUsuariosList() {
+        return usuariosList;
+    }
+
+    public void setUsuariosList(List<Usuarios> usuariosList) {
+        this.usuariosList = usuariosList;
+    }
+
+    @XmlTransient
+    public List<Usuarios> getUsuariosList1() {
+        return usuariosList1;
+    }
+
+    public void setUsuariosList1(List<Usuarios> usuariosList1) {
+        this.usuariosList1 = usuariosList1;
+    }
+
+    @XmlTransient
+    public List<Menus> getMenusList() {
+        return menusList;
+    }
+
+    public void setMenusList(List<Menus> menusList) {
+        this.menusList = menusList;
     }
 
 }

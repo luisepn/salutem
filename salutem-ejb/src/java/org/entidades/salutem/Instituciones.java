@@ -44,18 +44,9 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Instituciones.findByActivo", query = "SELECT i FROM Instituciones i WHERE i.activo = :activo")})
 public class Instituciones implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
-    @Column(name = "fecha")
-    @Temporal(TemporalType.DATE)
-    private Date fecha;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "email")
@@ -63,6 +54,18 @@ public class Instituciones implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "web")
     private String web;
+    @OneToMany(mappedBy = "institucion")
+    private List<Usuarios> usuariosList;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "fecha")
+    @Temporal(TemporalType.DATE)
+    private Date fecha;
     @Column(name = "laboratorio")
     private Boolean laboratorio;
     @Column(name = "activo")
@@ -93,13 +96,6 @@ public class Instituciones implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
 
     public Date getFecha() {
         return fecha;
@@ -109,21 +105,6 @@ public class Instituciones implements Serializable {
         this.fecha = fecha;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getWeb() {
-        return web;
-    }
-
-    public void setWeb(String web) {
-        this.web = web;
-    }
 
     public Boolean getLaboratorio() {
         return laboratorio;
@@ -198,6 +179,39 @@ public class Instituciones implements Serializable {
     @Override
     public String toString() {
         return nombre;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getWeb() {
+        return web;
+    }
+
+    public void setWeb(String web) {
+        this.web = web;
+    }
+
+    @XmlTransient
+    public List<Usuarios> getUsuariosList() {
+        return usuariosList;
+    }
+
+    public void setUsuariosList(List<Usuarios> usuariosList) {
+        this.usuariosList = usuariosList;
     }
     
 }

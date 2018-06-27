@@ -39,12 +39,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Direcciones.findByCiudad", query = "SELECT d FROM Direcciones d WHERE d.ciudad = :ciudad")})
 public class Direcciones implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "primaria")
     private String primaria;
@@ -69,6 +63,12 @@ public class Direcciones implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "ciudad")
     private String ciudad;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @OneToOne(mappedBy = "direccion")
     private Instituciones instituciones;
     @OneToOne(mappedBy = "direccion")
@@ -87,6 +87,52 @@ public class Direcciones implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+
+    public Instituciones getInstituciones() {
+        return instituciones;
+    }
+
+    public void setInstituciones(Instituciones instituciones) {
+        this.instituciones = instituciones;
+    }
+
+    public Personas getPersonas() {
+        return personas;
+    }
+
+    public void setPersonas(Personas personas) {
+        this.personas = personas;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Direcciones)) {
+            return false;
+        }
+        Direcciones other = (Direcciones) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return (primaria != null && numero != null && secundaria != null)
+                ? primaria + " " + numero + " y " + secundaria
+                : (primaria != null ? primaria : "") + " "
+                + (numero != null ? numero : "")
+                + (secundaria != null ? secundaria : "");
     }
 
     public String getPrimaria() {
@@ -151,51 +197,6 @@ public class Direcciones implements Serializable {
 
     public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
-    }
-
-    public Instituciones getInstituciones() {
-        return instituciones;
-    }
-
-    public void setInstituciones(Instituciones instituciones) {
-        this.instituciones = instituciones;
-    }
-
-    public Personas getPersonas() {
-        return personas;
-    }
-
-    public void setPersonas(Personas personas) {
-        this.personas = personas;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Direcciones)) {
-            return false;
-        }
-        Direcciones other = (Direcciones) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return (primaria != null && numero != null && secundaria != null)
-                ? primaria + " " + numero + " y " + secundaria
-                : (primaria != null ? primaria : "") + " "
-                + (numero != null ? numero : "")
-                + (secundaria != null ? secundaria : "");
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -21,6 +22,7 @@ import org.entidades.salutem.Personas;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.event.TextChangeEvent;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
@@ -43,6 +45,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
     protected Personas persona;
     protected Direcciones direccion;
     protected Perfiles perfil;
+    private Boolean activo = true;
 
     protected List<Personas> listaPersonas;
     protected String claveBusqueda;
@@ -72,7 +75,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             public List<Personas> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
                 try {
                     Map parameters = new HashMap();
-                    String where = " o.activo=true ";
+                    String where = " o.activo=:activo ";
+                    parameters.put("activo", activo);
                     for (Map.Entry e : map.entrySet()) {
                         String clave = (String) e.getKey();
                         String valor = (String) e.getValue();
@@ -121,7 +125,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        if (personas.getRowCount() != 0) {
+        if (personas.getRowIndex() > -1) {
+            //Por defecto una tabla lazy devuelve -1 cuando no hay seleccionada ninguna línea
             persona = (Personas) personas.getRowData();
         }
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
@@ -135,7 +140,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
         }
-        persona = ((Personas) personas.getRowData());
+        persona = (Personas) personas.getRowData();
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
         imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.eliminar();
@@ -160,6 +165,14 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             Mensajes.advertencia("La fecha de nacimiento no puede ser mayor a la fecha actual");
             return true;
         }
+        if (formulario.isEditar()) {
+            Personas p = traerPersona(persona.getCedula());
+            if (p != null && !Objects.equals(p.getId(), persona.getId())) {
+                Mensajes.advertencia("Otra persona con la cédula " + p.getCedula() + " ya se encuentra registrada en el sistema."
+                        + (p.getActivo() == null || !p.getActivo() ? " Busque en los registros inactivos." : ""));
+                return true;
+            }
+        }
         return false;
     }
 
@@ -179,7 +192,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             persona.setFotografia(imagenesBean.getArchivo());
 
             persona.setUserid(persona.getCedula());
-            persona.setActivo(Boolean.TRUE);
             persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
             ejbPersonas.crear(persona, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
@@ -209,7 +221,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), "Fotografias", null);
             persona.setFotografia(imagenesBean.getArchivo());
 
-            persona.setActivo(Boolean.TRUE);
             ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -226,12 +237,13 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return null;
         }
         try {
-            persona.setActivo(Boolean.FALSE);
-            ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid());
-        } catch (ExcepcionDeActualizacion ex) {
+            ejbPersonas.eliminar(persona, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
+
         formulario.cancelar();
         return null;
     }
@@ -244,19 +256,10 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
 
     public void cambiaCedula(ValueChangeEvent event) {
         String nuevaCedula = (String) event.getNewValue();
-        String where = "upper(o.cedula)=:pin";
-        Map parametros = new HashMap();
-        parametros.put("pin", nuevaCedula);
-
-        try {
-            List<Personas> lista = ejbPersonas.buscar(where, parametros);
-            if (!lista.isEmpty()) {
-                persona = lista.get(0);
-                editar();
-            }
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.error(ex.getMessage());
-            Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
+        Personas p = traerPersona(nuevaCedula);
+        if (p != null) {
+            persona = p;
+            editar();
         }
     }
 
@@ -289,6 +292,27 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
                 persona = p;
             }
         }
+    }
+
+    /**
+     *
+     * @param cedula Una cadena de texto
+     * @return Una persona que coincida con la cédula enviada com parámetro
+     */
+    public Personas traerPersona(String cedula) {
+        String where = "upper(o.cedula)=:cedula";
+        Map parametros = new HashMap();
+        parametros.put("cedula", cedula);
+        try {
+            List<Personas> lista = ejbPersonas.buscar(where, parametros);
+            if (!lista.isEmpty()) {
+                return lista.get(0);
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
+            Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     /**
@@ -415,6 +439,20 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
      */
     public void setImagenesBean(ImagenesBean imagenesBean) {
         this.imagenesBean = imagenesBean;
+    }
+
+    /**
+     * @return the activo
+     */
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    /**
+     * @param activo the activo to set
+     */
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
 }

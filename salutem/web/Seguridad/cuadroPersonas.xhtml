@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : Usuarios
+    Fecha       : 26 de Junio de 2018, 13:47:12 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <h:panelGrid columns="2">
+        <h:outputLabel value="C.I.:"/>
+        <ace:textEntry value="#{salutemPersonas.persona.cedula}" title="Cédula" rendered="#{salutemPersonas.formulario.crear}" valueChangeListener="#{salutemPersonas.cambiaCedula}" disabled="#{salutemPersonas.formulario.eliminar}">
+            <ace:ajax execute="@all"/>
+            <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
+        </ace:textEntry>
+        <ace:textEntry value="#{salutemPersonas.persona.cedula}" title="Cédula" rendered="#{salutemPersonas.formulario.editar or salutemPersonas.formulario.eliminar}" disabled="#{salutemPersonas.formulario.eliminar}">
+            <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
+        </ace:textEntry>
+        <h:outputLabel value="Nombres:"/>
+        <ace:textEntry value="#{salutemPersonas.persona.nombres}" title="Nombres" />
+        <h:outputLabel value="Apellidos:"/>
+        <ace:textEntry value="#{salutemPersonas.persona.apellidos}" title="Apellidos" />
+        <h:outputLabel value="e-mail:"/>
+        <ace:textEntry value="#{salutemPersonas.persona.email}" title="Email">
+            <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
+        </ace:textEntry>
+        <h:outputLabel value="Userid:"/>
+        <ace:textEntry value="#{salutemPersonas.persona.userid}" title="Userid" />
+
+        <h:outputLabel value="Fecha de Nacimiento:" />
+        <ace:dateTimeEntry navigator="true" value="#{salutemPersonas.persona.fecha}" 
+                           popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                           pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
+            <f:convertDateTime pattern="dd/MM/yyyy" />
+        </ace:dateTimeEntry>
+        <h:outputLabel value="Activo:" />
+        <h:selectBooleanCheckbox value="#{salutemPersonas.persona.activo}"/>
+    </h:panelGrid>
+    <ace:messages/>
+</html>

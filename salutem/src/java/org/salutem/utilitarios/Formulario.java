@@ -4,9 +4,7 @@
  */
 package org.salutem.utilitarios;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIData;
-import javax.faces.context.FacesContext;
 
 /**
  *

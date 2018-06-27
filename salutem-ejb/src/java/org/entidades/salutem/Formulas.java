@@ -52,12 +52,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Formulas.findByAltura", query = "SELECT f FROM Formulas f WHERE f.altura = :altura")})
 public class Formulas implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "lod")
     private String lod;
@@ -115,6 +109,12 @@ public class Formulas implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "altura")
     private String altura;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @OneToOne(mappedBy = "formula")
     private Ordenes ordenes;
     @JoinColumn(name = "consulta", referencedColumnName = "id")
@@ -140,6 +140,52 @@ public class Formulas implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+    public Ordenes getOrdenes() {
+        return ordenes;
+    }
+    public void setOrdenes(Ordenes ordenes) {
+        this.ordenes = ordenes;
+    }
+    public Consultas getConsulta() {
+        return consulta;
+    }
+    public void setConsulta(Consultas consulta) {
+        this.consulta = consulta;
+    }
+    public Materiales getMaterial() {
+        return material;
+    }
+    public void setMaterial(Materiales material) {
+        this.material = material;
+    }
+    public Parametros getTratamiento() {
+        return tratamiento;
+    }
+    public void setTratamiento(Parametros tratamiento) {
+        this.tratamiento = tratamiento;
+    }
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Formulas)) {
+            return false;
+        }
+        Formulas other = (Formulas) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+    @Override
+    public String toString() {
+        return "org.entidades.salutem.Formulas[ id=" + id + " ]";
     }
 
     public String getLod() {
@@ -292,63 +338,6 @@ public class Formulas implements Serializable {
 
     public void setAltura(String altura) {
         this.altura = altura;
-    }
-
-    public Ordenes getOrdenes() {
-        return ordenes;
-    }
-
-    public void setOrdenes(Ordenes ordenes) {
-        this.ordenes = ordenes;
-    }
-
-    public Consultas getConsulta() {
-        return consulta;
-    }
-
-    public void setConsulta(Consultas consulta) {
-        this.consulta = consulta;
-    }
-
-    public Materiales getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(Materiales material) {
-        this.material = material;
-    }
-
-    public Parametros getTratamiento() {
-        return tratamiento;
-    }
-
-    public void setTratamiento(Parametros tratamiento) {
-        this.tratamiento = tratamiento;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Formulas)) {
-            return false;
-        }
-        Formulas other = (Formulas) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "org.entidades.salutem.Formulas[ id=" + id + " ]";
     }
     
 }

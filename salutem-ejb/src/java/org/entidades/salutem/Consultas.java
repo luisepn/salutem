@@ -43,6 +43,15 @@ public class Consultas implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "motivo")
     private String motivo;
+    @Size(max = 2147483647)
+    @Column(name = "observaciones")
+    private String observaciones;
+    @Size(max = 2147483647)
+    @Column(name = "indicaciones")
+    private String indicaciones;
+    @Size(max = 2147483647)
+    @Column(name = "usuario")
+    private String usuario;
     @OneToOne(mappedBy = "consulta")
     private Formulas formulas;
 
@@ -55,15 +64,6 @@ public class Consultas implements Serializable {
     @Column(name = "fecha")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
-    @Size(max = 2147483647)
-    @Column(name = "observaciones")
-    private String observaciones;
-    @Size(max = 2147483647)
-    @Column(name = "indicaciones")
-    private String indicaciones;
-    @Size(max = 2147483647)
-    @Column(name = "usuario")
-    private String usuario;
     @JoinColumn(name = "paciente", referencedColumnName = "id")
     @ManyToOne
     private Pacientes paciente;
@@ -94,29 +94,6 @@ public class Consultas implements Serializable {
         this.fecha = fecha;
     }
 
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
-    }
-
-    public String getIndicaciones() {
-        return indicaciones;
-    }
-
-    public void setIndicaciones(String indicaciones) {
-        this.indicaciones = indicaciones;
-    }
-
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
 
     public Pacientes getPaciente() {
         return paciente;
@@ -159,6 +136,15 @@ public class Consultas implements Serializable {
         return "org.entidades.salutem.Consultas[ id=" + id + " ]";
     }
 
+
+    public Formulas getFormulas() {
+        return formulas;
+    }
+
+    public void setFormulas(Formulas formulas) {
+        this.formulas = formulas;
+    }
+
     public String getMotivo() {
         return motivo;
     }
@@ -167,12 +153,28 @@ public class Consultas implements Serializable {
         this.motivo = motivo;
     }
 
-    public Formulas getFormulas() {
-        return formulas;
+    public String getObservaciones() {
+        return observaciones;
     }
 
-    public void setFormulas(Formulas formulas) {
-        this.formulas = formulas;
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public String getIndicaciones() {
+        return indicaciones;
+    }
+
+    public void setIndicaciones(String indicaciones) {
+        this.indicaciones = indicaciones;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
     
 }

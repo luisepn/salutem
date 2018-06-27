@@ -41,20 +41,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Archivos.findByRuta", query = "SELECT a FROM Archivos a WHERE a.ruta = :ruta")})
 public class Archivos implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
-    @Column(name = "fecha")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fecha;
     @Size(max = 2147483647)
     @Column(name = "clasificador")
     private String clasificador;
-    @Column(name = "identificador")
-    private Integer identificador;
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
@@ -64,6 +53,18 @@ public class Archivos implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "ruta")
     private String ruta;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "fecha")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
+    @Column(name = "identificador")
+    private Integer identificador;
     @OneToOne(mappedBy = "logotipo")
     private Instituciones instituciones;
     @OneToOne(mappedBy = "fotografia")
@@ -95,13 +96,6 @@ public class Archivos implements Serializable {
         this.fecha = fecha;
     }
 
-    public String getClasificador() {
-        return clasificador;
-    }
-
-    public void setClasificador(String clasificador) {
-        this.clasificador = clasificador;
-    }
 
     public Integer getIdentificador() {
         return identificador;
@@ -111,29 +105,6 @@ public class Archivos implements Serializable {
         this.identificador = identificador;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public String getRuta() {
-        return ruta;
-    }
-
-    public void setRuta(String ruta) {
-        this.ruta = ruta;
-    }
 
     public Instituciones getInstituciones() {
         return instituciones;
@@ -188,6 +159,38 @@ public class Archivos implements Serializable {
      */
     public void setArchivo(byte[] archivo) {
         this.archivo = archivo;
+    }
+
+    public String getClasificador() {
+        return clasificador;
+    }
+
+    public void setClasificador(String clasificador) {
+        this.clasificador = clasificador;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getRuta() {
+        return ruta;
+    }
+
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
     }
 
 }

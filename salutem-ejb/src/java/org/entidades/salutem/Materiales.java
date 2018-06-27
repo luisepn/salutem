@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,9 +17,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -34,15 +37,18 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Materiales.findByActivo", query = "SELECT m FROM Materiales m WHERE m.activo = :activo")})
 public class Materiales implements Serializable {
 
+    @Size(max = 2147483647)
+    @Column(name = "nombre")
+    private String nombre;
+    @OneToMany(mappedBy = "material")
+    private List<Formulas> formulasList;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 2147483647)
-    @Column(name = "nombre")
-    private String nombre;
     @Column(name = "activo")
     private Boolean activo;
     @JoinColumn(name = "foco", referencedColumnName = "id")
@@ -67,13 +73,6 @@ public class Materiales implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
 
     public Boolean getActivo() {
         return activo;
@@ -122,6 +121,23 @@ public class Materiales implements Serializable {
     @Override
     public String toString() {
         return nombre;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    @XmlTransient
+    public List<Formulas> getFormulasList() {
+        return formulasList;
+    }
+
+    public void setFormulasList(List<Formulas> formulasList) {
+        this.formulasList = formulasList;
     }
     
 }

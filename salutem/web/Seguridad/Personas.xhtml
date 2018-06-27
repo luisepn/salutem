@@ -20,6 +20,12 @@
                            closable="false"
                            toggleable="true">
                     <h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Sólo activos:" />
+                            <h:selectBooleanCheckbox value="#{salutemPersonas.activo}">
+                                <ace:ajax execute="@all"/>
+                            </h:selectBooleanCheckbox>
+                        </h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemPersonas.buscar()}"/>
                             <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemPersonas.crear()}"/>
@@ -108,32 +114,14 @@
                     rendered="#{salutemPersonas.formulario.mostrar}"
                     visible="#{salutemPersonas.formulario.mostrar}">
                     <ace:tabSet>
-                        <ace:tabPane>
-                            <f:facet name="label">Inf. General</f:facet>
-                            <h:panelGrid columns="2">
-                                <h:outputLabel value="C.I.:" for="cedula" />
-                                <ace:textEntry id="cedula" value="#{salutemPersonas.persona.cedula}" title="Cédula" valueChangeListener="#{salutemPersonas.cambiaCedula}">
-                                    <ace:ajax execute="@all"/>
-                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
-                                </ace:textEntry>
-                                <h:outputLabel value="Nombres:" for="nombres" />
-                                <ace:textEntry id="nombres" value="#{salutemPersonas.persona.nombres}" title="Nombres" />
-                                <h:outputLabel value="Apellidos:" for="apellidos" />
-                                <ace:textEntry id="apellidos" value="#{salutemPersonas.persona.apellidos}" title="Apellidos" />
-                                <h:outputLabel value="e-mail:" for="email" />
-                                <ace:textEntry id="email" value="#{salutemPersonas.persona.email}" title="Email">
-                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
-                                </ace:textEntry>
-                                <h:outputLabel value="Userid:" for="userid" />
-                                <ace:textEntry id="userid" value="#{salutemPersonas.persona.userid}" title="Userid" />
-
-                                <h:outputLabel value="Fecha de Nacimiento:" />
-                                <ace:dateTimeEntry navigator="true" id="fecha" value="#{salutemPersonas.persona.fecha}" 
-                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
-                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
-                                    <f:convertDateTime pattern="dd/MM/yyyy" />
-                                </ace:dateTimeEntry>
-                            </h:panelGrid>
+                        <ace:tabPane label="Inf. General" rendered="#{salutemPersonas.formulario.crear}">
+                            <ui:include src="cuadroPersonas.xhtml" />
+                        </ace:tabPane>
+                        <ace:tabPane label="Inf. General" rendered="#{salutemPersonas.formulario.editar}">
+                            <ui:include src="cuadroPersonas.xhtml"/>
+                        </ace:tabPane>
+                        <ace:tabPane label="Inf. General" rendered="#{salutemPersonas.formulario.eliminar}">
+                            <ui:include src="cuadroPersonas.xhtml"/>
                         </ace:tabPane>
                     </ace:tabSet>
                     <h:panelGroup>
