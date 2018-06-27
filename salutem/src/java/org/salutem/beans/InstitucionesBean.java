@@ -21,6 +21,7 @@ import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
@@ -46,6 +47,7 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
     private Instituciones institucion;
     private Direcciones direccion;
     private Perfiles perfil;
+    private Boolean activo = true;
 
     @EJB
     private InstitucionesFacade ejbInstituciones;
@@ -68,16 +70,18 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
     }
 
     private List<Instituciones> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
-        Map parametros = new HashMap();
-        String where = " o.activo=true ";
+        Map parameters = new HashMap();
+        String where = " o.activo=:activo ";
+        parameters.put("activo", getActivo());
         for (Map.Entry e : map.entrySet()) {
             String clave = (String) e.getKey();
             String valor = (String) e.getValue();
             where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-            parametros.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+            parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
         }
         try {
-            int total = ejbInstituciones.contar(where, parametros);
+            int total = ejbInstituciones.contar(where, parameters);
+            formulario.setTotal(total);
             int endIndex = i + pageSize;
             if (endIndex > total) {
                 endIndex = total;
@@ -89,7 +93,7 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
-            return ejbInstituciones.buscar(where, parametros, order, i, endIndex);
+            return ejbInstituciones.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -193,7 +197,7 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
+        Mensajes.informacion("Creación exitoso.\n" + institucion.toString());
         return null;
     }
 
@@ -215,7 +219,7 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
+        Mensajes.informacion("Modificación exitosa.\n" + institucion.toString());
         return null;
     }
 
@@ -225,14 +229,13 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            institucion.setActivo(Boolean.FALSE);
-            ejbInstituciones.actualizar(institucion, seguridadBean.getLogueado().getUserid());
-        } catch (ExcepcionDeActualizacion ex) {
+            ejbInstituciones.eliminar(institucion, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
+        Mensajes.informacion("Eliminación exitosa.\n" + institucion.toString());
         return null;
     }
 
@@ -339,6 +342,20 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
      */
     public void setImagenesBean(ImagenesBean imagenesBean) {
         this.imagenesBean = imagenesBean;
+    }
+
+    /**
+     * @return the activo
+     */
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    /**
+     * @param activo the activo to set
+     */
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
 }

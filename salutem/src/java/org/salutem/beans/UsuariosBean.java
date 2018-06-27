@@ -159,7 +159,26 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             Mensajes.advertencia("Seleccione un grupo");
             return true;
         }
+        Map parameters = new HashMap();
+        String where = "o.persona=:persona and o.grupo=:grupo and o.modulo=:modulo";
+        parameters.put("persona", usuario.getPersona());
+        parameters.put("grupo", usuario.getGrupo());
+        parameters.put("modulo", usuario.getModulo());
 
+        if (usuario.getId() != null) {
+            where += " and o.id!=:id";
+            parameters.put("id", usuario.getId());
+        }
+
+        try {
+            if (ejbUsuarios.contar(where, parameters) > 0) {
+                Mensajes.advertencia("Ya existe un registro con los mismos datos");
+                return true;
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return false;
     }
 
@@ -172,14 +191,13 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             return null;
         }
         try {
-            usuario.setPersona(persona);
             ejbUsuarios.crear(usuario, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
+        Mensajes.informacion("Creación exitoso.\n" + persona.toString());
         return null;
     }
 
@@ -198,7 +216,7 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
+        Mensajes.informacion("Modificación exitosa.\n" + persona.toString());
         return null;
     }
 
@@ -214,7 +232,7 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
+        Mensajes.informacion("Eliminación exitosa.\n" + persona.toString());
         return null;
     }
 

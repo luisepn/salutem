@@ -20,7 +20,7 @@ public class ExcepcionDeCreacion extends Exception {
      * @param cause Causa del error
      */
     public ExcepcionDeCreacion(String message, Throwable cause) {
-        super("Ha ocurrido un error al tratar de crear el registro:\n" + message + " - " + cause.getMessage(), cause);
+        super("Ha ocurrido un error al tratar de crear el registro:\n" + message + " \n " + cause.getMessage(), cause);
     }
 
     /**

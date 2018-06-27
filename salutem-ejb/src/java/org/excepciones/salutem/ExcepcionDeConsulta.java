@@ -12,7 +12,7 @@ public class ExcepcionDeConsulta extends Exception {
      * @param cause Causa del error
      */
     public ExcepcionDeConsulta(String message, Throwable cause) {
-        super("Ha ocurrido un error al tratar de consultar en la base de datos:\n" + message + " - " + cause.getMessage(), cause);
+        super("Ha ocurrido un error al tratar de consultar en la base de datos:\n" + message + " \n " + cause.getMessage(), cause);
     }
 
     /**

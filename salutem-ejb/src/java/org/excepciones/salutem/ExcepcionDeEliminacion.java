@@ -16,7 +16,7 @@ public class ExcepcionDeEliminacion
      * @param cause Causa del error
      */
     public ExcepcionDeEliminacion(String message, Throwable cause) {
-        super("Ha ocurrido un error al tratar de eliminar el registro:\n" + message + " - " + cause.getMessage(), cause);
+        super("Ha ocurrido un error al tratar de eliminar el registro:\n" + message + " \n " + cause.getMessage(), cause);
     }
 
     /**

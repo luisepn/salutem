@@ -26,10 +26,13 @@
                                 <ace:ajax execute="@all"/>
                             </h:selectBooleanCheckbox>
                         </h:panelGrid>
-                        <ace:menuBar autoSubmenuDisplay="true" >
-                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemPersonas.buscar()}"/>
-                            <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemPersonas.crear()}"/>
-                        </ace:menuBar>
+                        <h:panelGrid columns="2">
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemPersonas.buscar()}"/>
+                                <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemPersonas.crear()}"/>
+                            </ace:menuBar>
+                            <ace:messages style="white-space: pre-wrap" rendered="#{!salutemPersonas.formulario.mostrar}"/>
+                        </h:panelGrid>
                     </h:panelGrid>
                 </ace:panel>
 
@@ -113,21 +116,20 @@
                     hideEffect="fade"
                     rendered="#{salutemPersonas.formulario.mostrar}"
                     visible="#{salutemPersonas.formulario.mostrar}">
-                    <ace:tabSet>
-                        <ace:tabPane label="Inf. General" rendered="#{salutemPersonas.formulario.crear}">
-                            <ui:include src="cuadroPersonas.xhtml" />
-                        </ace:tabPane>
-                        <ace:tabPane label="Inf. General" rendered="#{salutemPersonas.formulario.editar}">
-                            <ui:include src="cuadroPersonas.xhtml"/>
-                        </ace:tabPane>
-                        <ace:tabPane label="Inf. General" rendered="#{salutemPersonas.formulario.eliminar}">
-                            <ui:include src="cuadroPersonas.xhtml"/>
-                        </ace:tabPane>
-                    </ace:tabSet>
                     <h:panelGroup>
-
+                        <ace:tabSet>
+                            <ace:tabPane label="Inf. General" rendered="#{salutemPersonas.formulario.crear}">
+                                <ui:include src="cuadroPersonas.xhtml" />
+                            </ace:tabPane>
+                            <ace:tabPane label="Inf. General" rendered="#{salutemPersonas.formulario.editar}">
+                                <ui:include src="cuadroPersonas.xhtml"/>
+                            </ace:tabPane>
+                            <ace:tabPane label="Inf. General" rendered="#{salutemPersonas.formulario.eliminar}">
+                                <ui:include src="cuadroPersonas.xhtml"/>
+                            </ace:tabPane>
+                        </ace:tabSet>
                     </h:panelGroup>
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
                                           action="#{salutemPersonas.insertar()}"
@@ -141,6 +143,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemPersonas.cancelar()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap"/>
                     </h:panelGrid>
                 </ace:dialog>
 

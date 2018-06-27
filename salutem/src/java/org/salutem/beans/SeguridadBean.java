@@ -91,7 +91,7 @@ public class SeguridadBean implements Serializable {
         SelectItem[] items = new SelectItem[usuariosPorGrupo.size()];
         int i = 0;
         for (Usuarios x : usuariosPorGrupo) {
-            items[i++] = new SelectItem(x, x.getModulo() != null ? x.getModulo().getNombre() : x.getId().toString());
+            items[i++] = new SelectItem(x, x.getModulo() != null ? x.getModulo().getNombre() + " - " + x.getGrupo().getNombre() : x.getId().toString());
         }
         return items;
     }

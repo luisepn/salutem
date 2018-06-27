@@ -49,6 +49,7 @@ public abstract class AbstractFacade<T> {
     public void crear(T entity, String usuario) throws ExcepcionDeCreacion {
         try {
             getEntityManager().persist(entity);
+            getEntityManager().flush();
         } catch (Exception e) {
             throw new ExcepcionDeCreacion(entity.toString(), e);
         } finally {
@@ -65,6 +66,7 @@ public abstract class AbstractFacade<T> {
     public void actualizar(T entity, String usuario) throws ExcepcionDeActualizacion {
         try {
             getEntityManager().merge(entity);
+            getEntityManager().flush();
         } catch (Exception e) {
             throw new ExcepcionDeActualizacion(entity.toString(), e);
         } finally {
@@ -82,6 +84,7 @@ public abstract class AbstractFacade<T> {
         try {
             entity = getEntityManager().merge(entity);
             getEntityManager().remove(entity);
+            getEntityManager().flush();
         } catch (Exception e) {
             throw new ExcepcionDeEliminacion(entity.toString(), e);
         } finally {

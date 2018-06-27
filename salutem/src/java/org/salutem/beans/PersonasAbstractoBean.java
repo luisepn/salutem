@@ -45,7 +45,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
     protected Personas persona;
     protected Direcciones direccion;
     protected Perfiles perfil;
-    private Boolean activo = true;
+    protected Boolean activo = true;
 
     protected List<Personas> listaPersonas;
     protected String claveBusqueda;
@@ -114,6 +114,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return null;
         }
         persona = new Personas();
+        persona.setActivo(Boolean.TRUE);
         direccion = new Direcciones();
         imagenesBean.setArchivo(new Archivos());
         formulario.insertar();
@@ -199,6 +200,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
+        Mensajes.informacion("Creación exitoso.\n" + persona.toString());
         return null;
     }
 
@@ -227,7 +229,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
+        Mensajes.informacion("Modificación exitosa.\n" + persona.toString());
         return null;
     }
 
@@ -243,8 +245,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-
         formulario.cancelar();
+        Mensajes.informacion("Eliminación exitosa.\n" + persona.toString());
         return null;
     }
 

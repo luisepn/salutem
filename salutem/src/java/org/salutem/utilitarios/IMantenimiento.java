@@ -40,7 +40,7 @@ public interface IMantenimiento {
                     Mensajes.advertencia("No tiene autorización para Crear");
                 }
                 return perfil.getNuevo();
-            case 'R': //Read
+            case 'R': //read
                 if (!perfil.getConsulta()) {
                     Mensajes.advertencia("No tiene autorización para Leer");
                 }

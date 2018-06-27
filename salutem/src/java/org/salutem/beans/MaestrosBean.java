@@ -17,6 +17,7 @@ import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
@@ -216,9 +217,8 @@ public class MaestrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            maestro.setActivo(Boolean.FALSE);
-            ejbMaestros.actualizar(maestro, seguridadBean.getLogueado().getUserid());
-        } catch (ExcepcionDeActualizacion ex) {
+            ejbMaestros.eliminar(maestro, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }

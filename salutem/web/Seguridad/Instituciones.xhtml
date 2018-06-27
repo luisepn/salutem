@@ -19,14 +19,19 @@
                            header="#{salutemSeguridad.titulo}"
                            closable="false"
                            toggleable="true">
-                    <h:panelGrid columns="7">
-
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Sólo activos:" />
+                        <h:selectBooleanCheckbox value="#{salutemInstituciones.activo}">
+                            <ace:ajax execute="@all"/>
+                        </h:selectBooleanCheckbox>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemInstituciones.buscar()}"/>
                             <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemInstituciones.crear()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemInstituciones.formulario.mostrar}"/>
                     </h:panelGrid>
-
                 </ace:panel>
 
                 <ace:panel 
@@ -113,7 +118,7 @@
                                 <ace:graphicImage value="#{salutemImagenes.traerImagen(item.logotipo.ruta)}" name="#{item.id}_#{item.logotipo.nombre}" id="resourceGraphicImage" style="height: 50px " rendered="#{item.logotipo ne null and item.logotipo.ruta ne null}"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
-                                <h:outputText  value="#{item.nombre}"/>
+                                <h:outputText  value="#{item.nombre} [#{item.id}]"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
                                 <h:outputText  value="#{item.direccion.ciudad}"/>
@@ -164,7 +169,7 @@
                                 <ace:textEntry value="#{salutemInstituciones.institucion.email}" title="E-mail" style="width: 300px;" >
                                     <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
                                 </ace:textEntry>
-                                <h:outputLabel value="Página Web"/>
+                                <h:outputLabel value="Página Web:"/>
                                 <ace:textEntry value="#{salutemInstituciones.institucion.web}" title="Página Web" style="width: 300px;" />
                                 <h:outputLabel value="Fecha de Creación:" />
                                 <ace:dateTimeEntry navigator="true" id="fecha" value="#{salutemInstituciones.institucion.fecha}" 
@@ -172,14 +177,11 @@
                                                    pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
                                     <f:convertDateTime pattern="dd/MM/yyyy" />
                                 </ace:dateTimeEntry>
-                                <h:outputText value="¿Laboratorio?"/>
+                                <h:outputText value="Laboratorio:"/>
                                 <h:selectBooleanCheckbox value="#{salutemInstituciones.institucion.laboratorio}"/>
+                                <h:outputLabel value="Activo:" />
+                                <h:selectBooleanCheckbox value="#{salutemInstituciones.institucion.activo}"/>
                             </h:panelGrid>
-
-
-
-
-
                         </ace:tabPane>
                         <ace:tabPane label="Dirección">
                             <h:panelGrid columns="4">
@@ -223,7 +225,7 @@
                         </ace:tabPane>
 
                     </ace:tabSet>
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
                                           action="#{salutemInstituciones.insertar()}"
@@ -237,6 +239,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemInstituciones.cancelar()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap"/>
                     </h:panelGrid>
                 </ace:dialog>
 

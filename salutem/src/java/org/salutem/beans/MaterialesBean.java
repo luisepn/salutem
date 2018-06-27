@@ -76,6 +76,7 @@ public class MaterialesBean implements Serializable, IMantenimiento {
         }
         try {
             int total = ejbMateriales.contar(where, parametros);
+            formulario.setTotal(total);
             int endIndex = i + pageSize;
             if (endIndex > total) {
                 endIndex = total;

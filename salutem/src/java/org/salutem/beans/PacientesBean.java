@@ -159,10 +159,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
             return null;
         }
         editar = false;
-        if (!perfil.getNuevo()) {
-            Mensajes.advertencia("No tiene autorización para crear un registro");
-            return null;
-        }
         if (institucion == null) {
             Mensajes.advertencia("Seleccione una institución primero");
             return null;
@@ -200,7 +196,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
             return null;
         }
         editar = true;
-        paciente = ((Pacientes) pacientes.getRowData());
+        paciente = (Pacientes) pacientes.getRowData();
         institucion = paciente.getInstitucion();
         persona = paciente.getPersona();
         imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());

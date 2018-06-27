@@ -40,7 +40,7 @@
                             </ace:autoCompleteEntry>
                         </h:panelGrid>
 
-                        <h:panelGrid rendered="#{!salutemUsuarios.formulario.mostrar}" >
+                        <h:panelGrid>
                             <ace:panel rendered="#{salutemUsuarios.persona ne null}">
                                 <h:panelGrid columns="4" >
                                     <h:outputLabel value="Nombres:" for="nombreidca" styleClass="bold" />
@@ -53,10 +53,13 @@
                                     <h:outputLabel id="emailidca" value="#{salutemUsuarios.persona.email}"/>
                                 </h:panelGrid>
                             </ace:panel>
-                            <ace:menuBar autoSubmenuDisplay="true" >
-                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemUsuarios.buscar()}"/>
-                                <ace:menuItem value="Crear" icon="ui-icon ui-icon-document"  action="#{salutemUsuarios.crear()}"/>
-                            </ace:menuBar>
+                            <h:panelGrid columns="2">
+                                <ace:menuBar autoSubmenuDisplay="true" >
+                                    <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemUsuarios.buscar()}"/>
+                                    <ace:menuItem value="Crear" icon="ui-icon ui-icon-document"  action="#{salutemUsuarios.crear()}"/>
+                                </ace:menuBar>
+                                <ace:messages style="white-space: pre-wrap" rendered="#{!salutemUsuarios.formulario.mostrar}"/>
+                            </h:panelGrid>
                         </h:panelGrid>
                     </ace:panel>
                     <ace:panel 
@@ -143,7 +146,7 @@
                                 </h:selectOneMenu>
                             </h:panelGrid>
                         </h:panelGroup>
-                        <h:panelGrid columns="1" width="100%">
+                        <h:panelGrid>
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
                                               action="#{salutemUsuarios.insertar()}"
@@ -157,6 +160,7 @@
                                 <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                               action="#{salutemUsuarios.cancelar()}"/>
                             </ace:menuBar>
+                            <ace:messages style="white-space: pre-wrap"/>
                         </h:panelGrid>
                     </ace:dialog>
                 </ui:define>

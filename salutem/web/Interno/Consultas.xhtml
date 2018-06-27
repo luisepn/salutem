@@ -137,66 +137,15 @@
                     rendered="#{salutemPacientes.formulario.mostrar}"
                     visible="#{salutemPacientes.formulario.mostrar}"
                     zindex="1000">
-                    <ace:tabSet style="width: 100%">          
-                        <ace:tabPane label="Paciente">
-                            <h:panelGrid columns="2" rendered="#{!salutemPacientes.formularioExiste.crear}">
-                                <h:outputLabel value="C.I.:" for="cedula" /> 
-                                <ace:textEntry id="cedula" value="#{salutemPacientes.persona.cedula}" title="Cédula" valueChangeListener="#{salutemPacientes.cambiaCedula}">
-                                    <ace:ajax execute="@all"/>
-                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
-                                </ace:textEntry>
-                                <h:outputLabel value="Nombres:" for="nombres" />
-                                <ace:textEntry id="nombres" value="#{salutemPacientes.persona.nombres}" title="Nombres" />
-                                <h:outputLabel value="Apellidos:" for="apellidos" />
-                                <ace:textEntry id="apellidos" value="#{salutemPacientes.persona.apellidos}" title="Apellidos" />
-                                <h:outputLabel value="e-mail:" for="email" />
-                                <ace:textEntry id="email" value="#{salutemPacientes.persona.email}" title="Email" >
-                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
-                                </ace:textEntry>
-                                <h:outputLabel value="Ocupación:" for="ocupacion" />
-                                <ace:textEntry id="ocupacion" value="#{salutemPacientes.persona.ocupacion}" title="Ocupación"/>
-                                <!--                                    <h:outputLabel value="Userid:" for="userid" />
-                                                                    <ace:textEntry id="userid" value="#{salutemPacientes.persona.userid}" title="Userid" />-->
-                                <h:outputLabel value="Fecha de Nacimiento:" />
-                                <ace:dateTimeEntry navigator="true" id="fecha" value="#{salutemPacientes.persona.fecha}" 
-                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
-                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
-                                    <f:convertDateTime pattern="dd/MM/yyyy" />
-                                </ace:dateTimeEntry>
-                                <h:outputLabel value="Género:"/>
-                                <h:selectOneMenu value="#{salutemPacientes.persona.genero}">
-                                    <f:selectItems value="#{salutemCombos.genero}" />
-                                </h:selectOneMenu>
-                            </h:panelGrid>
-                            <h:panelGrid columns="2" rendered="#{salutemPacientes.formularioExiste.crear}">
-                                <h:outputLabel value="C.I.:" for="cedula" /> 
-                                <ace:textEntry value="#{salutemPacientes.persona.cedula}" title="Cédula" valueChangeListener="#{salutemPacientes.cambiaCedula}">
-                                    <ace:ajax execute="@all"/>
-                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
-                                </ace:textEntry>
-                                <h:outputLabel value="Nombres:" for="nombres" />
-                                <ace:textEntry value="#{salutemPacientes.persona.nombres}" title="Nombres" />
-                                <h:outputLabel value="Apellidos:" for="apellidos" />
-                                <ace:textEntry value="#{salutemPacientes.persona.apellidos}" title="Apellidos" />
-                                <h:outputLabel value="e-mail:" for="email" />
-                                <ace:textEntry value="#{salutemPacientes.persona.email}" title="Email" >
-                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
-                                </ace:textEntry>
-                                <h:outputLabel value="Ocupación:" for="ocupacion" />
-                                <ace:textEntry value="#{salutemPacientes.persona.ocupacion}" title="Ocupación"/>
-                                <!--                                    <h:outputLabel value="Userid:" for="userid" />
-                                                                    <ace:textEntry id="userid" value="#{salutemPacientes.persona.userid}" title="Userid" />-->
-                                <h:outputLabel value="Fecha de Nacimiento:" />
-                                <ace:dateTimeEntry navigator="true" value="#{salutemPacientes.persona.fecha}" 
-                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
-                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
-                                    <f:convertDateTime pattern="dd/MM/yyyy" />
-                                </ace:dateTimeEntry>
-                                <h:outputLabel value="Género:"/>
-                                <h:selectOneMenu value="#{salutemPacientes.persona.genero}">
-                                    <f:selectItems value="#{salutemCombos.genero}" />
-                                </h:selectOneMenu>
-                            </h:panelGrid>
+                    <ace:tabSet style="width: 100%">
+                        <ace:tabPane label="Paciente" rendered="#{salutemPersonas.formulario.crear}">
+                            <ui:include src="cuadroPacientes.xhtml" />
+                        </ace:tabPane>
+                        <ace:tabPane label="Paciente" rendered="#{salutemPersonas.formulario.editar}">
+                            <ui:include src="cuadroPacientes.xhtml"/>
+                        </ace:tabPane>
+                        <ace:tabPane label="Paciente" rendered="#{salutemPersonas.formulario.eliminar}">
+                            <ui:include src="cuadroPacientes.xhtml"/>
                         </ace:tabPane>
                         <ace:tabPane label="Dirección">
                             <h:panelGrid columns="4">
@@ -220,7 +169,6 @@
                                                    rows="2" cols="22"/>
                             </h:panelGrid>
                         </ace:tabPane>
-
                         <ace:tabPane label="Fotografía">
                             <center>
                                 <ace:graphicImage value="#{salutemImagenes.archivo.archivo}" name="#{salutemImagenes.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " />
@@ -256,7 +204,7 @@
                     </h:panelGrid>
                 </ace:dialog>
 
-                <ace:dialog 
+<!--                <ace:dialog 
                     header="#{salutemPacientes.perfil.menu.texto}"
                     closable="false"
                     modal="true"
@@ -537,7 +485,7 @@
                         </ace:menuBar>
                     </h:panelGrid>
 
-                </ace:dialog>
+                </ace:dialog>-->
 
             </ui:define>
         </ui:composition>

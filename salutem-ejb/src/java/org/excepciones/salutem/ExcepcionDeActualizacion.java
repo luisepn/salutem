@@ -15,7 +15,7 @@ public class ExcepcionDeActualizacion extends Exception {
      * @param cause Causa del error
      */
     public ExcepcionDeActualizacion(String message, Throwable cause) {
-        super("Ha ocurrido un error al tratar de actualizar el registro:\n" + message + " - " + cause.getMessage(), cause);
+        super("Ha ocurrido un error al tratar de actualizar el registro:\n" + message + " \n " + cause.getMessage(), cause);
     }
 
     /**
