@@ -49,8 +49,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     private Consultas consulta;
     private Formulas formula;
     private Pacientes paciente;
-    private boolean editar;
-    private boolean nuevo;
     private Integer nroConsulta;
     private Ordenes orden;
     private Formulario formularioConsulta = new Formulario();
@@ -158,7 +156,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
-        editar = false;
         if (institucion == null) {
             Mensajes.advertencia("Seleccione una institución primero");
             return null;
@@ -195,13 +192,12 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        editar = true;
         paciente = (Pacientes) pacientes.getRowData();
         institucion = paciente.getInstitucion();
         persona = paciente.getPersona();
         imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         editar();
-        getFormulario().editar();
+        formulario.editar();
         return null;
     }
 
@@ -209,12 +205,11 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
         }
-        editar = true;
         paciente = ((Pacientes) pacientes.getRowData());
         persona = paciente.getPersona();
         imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         institucion = paciente.getInstitucion();
-        getFormulario().eliminar();
+        formulario.eliminar();
         return null;
     }
 
@@ -242,8 +237,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        buscarPacientes();
-
         return null;
     }
 
@@ -258,7 +251,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        getFormulario().cancelar();
+        formulario.cancelar();
         return null;
     }
 
@@ -270,14 +263,12 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     public String nuevaConsulta() {
-        nuevo = true;
         paciente = ((Pacientes) pacientes.getRowData());
         consulta = new Consultas();
         formula = new Formulas();
         consulta.setPaciente(paciente);
         orden = new Ordenes();
         formularioConsulta.insertar();
-
         return null;
     }
 
@@ -298,7 +289,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         formularioConsulta.cancelar();
         formularioConsulta.setMostrar(true);
         formularioConsulta.editar();
-        nuevo = true;
         return null;
     }
 
@@ -342,7 +332,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     public String modificarConsulta() {
-        nuevo = false;
         consulta = ((Consultas) listaConsultas.get(formularioConsulta.getFila().getRowIndex()));
         formula = consulta.getFormulas();
         orden = formula.getOrdenes();
@@ -447,20 +436,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     /**
-     * @return the editar
-     */
-    public boolean isEditar() {
-        return editar;
-    }
-
-    /**
-     * @return the nuevo
-     */
-    public boolean isNuevo() {
-        return nuevo;
-    }
-
-    /**
      * @return the nroConsulta
      */
     public Integer getNroConsulta() {
@@ -549,20 +524,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
      */
     public void setPaciente(Pacientes paciente) {
         this.paciente = paciente;
-    }
-
-    /**
-     * @param editar the editar to set
-     */
-    public void setEditar(boolean editar) {
-        this.editar = editar;
-    }
-
-    /**
-     * @param nuevo the nuevo to set
-     */
-    public void setNuevo(boolean nuevo) {
-        this.nuevo = nuevo;
     }
 
     /**

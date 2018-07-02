@@ -138,13 +138,13 @@
                     visible="#{salutemPacientes.formulario.mostrar}"
                     zindex="1000">
                     <ace:tabSet style="width: 100%">
-                        <ace:tabPane label="Paciente" rendered="#{salutemPersonas.formulario.crear}">
+                        <ace:tabPane label="Paciente" rendered="#{salutemPacientes.formulario.crear}">
                             <ui:include src="cuadroPacientes.xhtml" />
                         </ace:tabPane>
-                        <ace:tabPane label="Paciente" rendered="#{salutemPersonas.formulario.editar}">
+                        <ace:tabPane label="Paciente" rendered="#{salutemPacientes.formulario.editar}">
                             <ui:include src="cuadroPacientes.xhtml"/>
                         </ace:tabPane>
-                        <ace:tabPane label="Paciente" rendered="#{salutemPersonas.formulario.eliminar}">
+                        <ace:tabPane label="Paciente" rendered="#{salutemPacientes.formulario.eliminar}">
                             <ui:include src="cuadroPacientes.xhtml"/>
                         </ace:tabPane>
                         <ace:tabPane label="Dirección">
