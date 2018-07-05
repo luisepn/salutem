@@ -38,15 +38,13 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Ordenes.findByUsuario", query = "SELECT o FROM Ordenes o WHERE o.usuario = :usuario")
     , @NamedQuery(name = "Ordenes.findByRegistro", query = "SELECT o FROM Ordenes o WHERE o.registro = :registro")
     , @NamedQuery(name = "Ordenes.findByEnvio", query = "SELECT o FROM Ordenes o WHERE o.envio = :envio")
-    , @NamedQuery(name = "Ordenes.findByEntrega", query = "SELECT o FROM Ordenes o WHERE o.entrega = :entrega")})
+    , @NamedQuery(name = "Ordenes.findByEntrega", query = "SELECT o FROM Ordenes o WHERE o.entrega = :entrega")
+    , @NamedQuery(name = "Ordenes.findByDescripcion", query = "SELECT o FROM Ordenes o WHERE o.descripcion = :descripcion")
+    , @NamedQuery(name = "Ordenes.findByCreado", query = "SELECT o FROM Ordenes o WHERE o.creado = :creado")
+    , @NamedQuery(name = "Ordenes.findByCreadopor", query = "SELECT o FROM Ordenes o WHERE o.creadopor = :creadopor")
+    , @NamedQuery(name = "Ordenes.findByActualizado", query = "SELECT o FROM Ordenes o WHERE o.actualizado = :actualizado")
+    , @NamedQuery(name = "Ordenes.findByActualizadopor", query = "SELECT o FROM Ordenes o WHERE o.actualizadopor = :actualizadopor")})
 public class Ordenes implements Serializable {
-
-    @Size(max = 2147483647)
-    @Column(name = "factura")
-    private String factura;
-    @Size(max = 2147483647)
-    @Column(name = "usuario")
-    private String usuario;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -54,6 +52,12 @@ public class Ordenes implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "factura")
+    private String factura;
+    @Size(max = 2147483647)
+    @Column(name = "usuario")
+    private String usuario;
     @Column(name = "registro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date registro;
@@ -63,6 +67,21 @@ public class Ordenes implements Serializable {
     @Column(name = "entrega")
     @Temporal(TemporalType.TIMESTAMP)
     private Date entrega;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @JoinColumn(name = "formula", referencedColumnName = "id")
     @OneToOne
     private Formulas formula;
@@ -85,6 +104,21 @@ public class Ordenes implements Serializable {
         this.id = id;
     }
 
+    public String getFactura() {
+        return factura;
+    }
+
+    public void setFactura(String factura) {
+        this.factura = factura;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
 
     public Date getRegistro() {
         return registro;
@@ -108,6 +142,46 @@ public class Ordenes implements Serializable {
 
     public void setEntrega(Date entrega) {
         this.entrega = entrega;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
     }
 
     public Formulas getFormula() {
@@ -149,22 +223,6 @@ public class Ordenes implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Ordenes[ id=" + id + " ]";
-    }
-
-    public String getFactura() {
-        return factura;
-    }
-
-    public void setFactura(String factura) {
-        this.factura = factura;
-    }
-
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
     }
     
 }

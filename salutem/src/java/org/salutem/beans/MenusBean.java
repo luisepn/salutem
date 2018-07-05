@@ -85,7 +85,7 @@ public class MenusBean implements Serializable, IMantenimiento {
             menus.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.texto";
+                order = "o.nombre";
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
@@ -156,7 +156,7 @@ public class MenusBean implements Serializable, IMantenimiento {
 
     @Override
     public boolean validar() {
-        if ((menu.getTexto() == null) || (menu.getTexto().isEmpty())) {
+        if ((menu.getNombre() == null) || (menu.getNombre().isEmpty())) {
             Mensajes.advertencia("Es necesario Texto a desplegar");
             return true;
         }

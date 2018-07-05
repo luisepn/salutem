@@ -35,11 +35,21 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Consultas.findAll", query = "SELECT c FROM Consultas c")
     , @NamedQuery(name = "Consultas.findById", query = "SELECT c FROM Consultas c WHERE c.id = :id")
     , @NamedQuery(name = "Consultas.findByFecha", query = "SELECT c FROM Consultas c WHERE c.fecha = :fecha")
+    , @NamedQuery(name = "Consultas.findByMotivo", query = "SELECT c FROM Consultas c WHERE c.motivo = :motivo")
     , @NamedQuery(name = "Consultas.findByObservaciones", query = "SELECT c FROM Consultas c WHERE c.observaciones = :observaciones")
     , @NamedQuery(name = "Consultas.findByIndicaciones", query = "SELECT c FROM Consultas c WHERE c.indicaciones = :indicaciones")
     , @NamedQuery(name = "Consultas.findByUsuario", query = "SELECT c FROM Consultas c WHERE c.usuario = :usuario")})
 public class Consultas implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "fecha")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
     @Size(max = 2147483647)
     @Column(name = "motivo")
     private String motivo;
@@ -54,16 +64,6 @@ public class Consultas implements Serializable {
     private String usuario;
     @OneToOne(mappedBy = "consulta")
     private Formulas formulas;
-
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
-    @Column(name = "fecha")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fecha;
     @JoinColumn(name = "paciente", referencedColumnName = "id")
     @ManyToOne
     private Pacientes paciente;
@@ -94,6 +94,45 @@ public class Consultas implements Serializable {
         this.fecha = fecha;
     }
 
+    public String getMotivo() {
+        return motivo;
+    }
+
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public String getIndicaciones() {
+        return indicaciones;
+    }
+
+    public void setIndicaciones(String indicaciones) {
+        this.indicaciones = indicaciones;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    public Formulas getFormulas() {
+        return formulas;
+    }
+
+    public void setFormulas(Formulas formulas) {
+        this.formulas = formulas;
+    }
 
     public Pacientes getPaciente() {
         return paciente;
@@ -134,47 +173,6 @@ public class Consultas implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Consultas[ id=" + id + " ]";
-    }
-
-
-    public Formulas getFormulas() {
-        return formulas;
-    }
-
-    public void setFormulas(Formulas formulas) {
-        this.formulas = formulas;
-    }
-
-    public String getMotivo() {
-        return motivo;
-    }
-
-    public void setMotivo(String motivo) {
-        this.motivo = motivo;
-    }
-
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
-    }
-
-    public String getIndicaciones() {
-        return indicaciones;
-    }
-
-    public void setIndicaciones(String indicaciones) {
-        this.indicaciones = indicaciones;
-    }
-
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
     }
     
 }

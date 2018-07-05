@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -20,6 +21,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -34,16 +37,14 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Menus.findAll", query = "SELECT m FROM Menus m")
     , @NamedQuery(name = "Menus.findById", query = "SELECT m FROM Menus m WHERE m.id = :id")
-    , @NamedQuery(name = "Menus.findByTexto", query = "SELECT m FROM Menus m WHERE m.texto = :texto")
-    , @NamedQuery(name = "Menus.findByFormulario", query = "SELECT m FROM Menus m WHERE m.formulario = :formulario")})
+    , @NamedQuery(name = "Menus.findByNombre", query = "SELECT m FROM Menus m WHERE m.nombre = :nombre")
+    , @NamedQuery(name = "Menus.findByFormulario", query = "SELECT m FROM Menus m WHERE m.formulario = :formulario")
+    , @NamedQuery(name = "Menus.findByDescripcion", query = "SELECT m FROM Menus m WHERE m.descripcion = :descripcion")
+    , @NamedQuery(name = "Menus.findByCreado", query = "SELECT m FROM Menus m WHERE m.creado = :creado")
+    , @NamedQuery(name = "Menus.findByCreadopor", query = "SELECT m FROM Menus m WHERE m.creadopor = :creadopor")
+    , @NamedQuery(name = "Menus.findByActualizado", query = "SELECT m FROM Menus m WHERE m.actualizado = :actualizado")
+    , @NamedQuery(name = "Menus.findByActualizadopor", query = "SELECT m FROM Menus m WHERE m.actualizadopor = :actualizadopor")})
 public class Menus implements Serializable {
-
-    @Size(max = 2147483647)
-    @Column(name = "texto")
-    private String texto;
-    @Size(max = 2147483647)
-    @Column(name = "formulario")
-    private String formulario;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -51,6 +52,27 @@ public class Menus implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "nombre")
+    private String nombre;
+    @Size(max = 2147483647)
+    @Column(name = "formulario")
+    private String formulario;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "menu")
     private List<Perfiles> perfilesList;
     @OneToMany(mappedBy = "menupadre")
@@ -77,6 +99,61 @@ public class Menus implements Serializable {
         this.id = id;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getFormulario() {
+        return formulario;
+    }
+
+    public void setFormulario(String formulario) {
+        this.formulario = formulario;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
 
     @XmlTransient
     public List<Perfiles> getPerfilesList() {
@@ -134,23 +211,7 @@ public class Menus implements Serializable {
 
     @Override
     public String toString() {
-        return texto;
-    }
-
-    public String getTexto() {
-        return texto;
-    }
-
-    public void setTexto(String texto) {
-        this.texto = texto;
-    }
-
-    public String getFormulario() {
-        return formulario;
-    }
-
-    public void setFormulario(String formulario) {
-        this.formulario = formulario;
+        return nombre;
     }
     
 }

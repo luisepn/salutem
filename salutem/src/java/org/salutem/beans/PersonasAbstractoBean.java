@@ -45,7 +45,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
     protected Personas persona;
     protected Direcciones direccion;
     protected Perfiles perfil;
-    protected Boolean activo = true;
 
     protected List<Personas> listaPersonas;
     protected String claveBusqueda;
@@ -76,7 +75,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
                 try {
                     Map parameters = new HashMap();
                     String where = " o.activo=:activo ";
-                    parameters.put("activo", activo);
+                    parameters.put("activo", seguridadBean.getActivo());
                     for (Map.Entry e : map.entrySet()) {
                         String clave = (String) e.getKey();
                         String valor = (String) e.getValue();
@@ -194,6 +193,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
 
             persona.setUserid(persona.getCedula());
             persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
+            persona.setCreado(new Date());
+            persona.setCreadopor(seguridadBean.getLogueado().getUserid());
             ejbPersonas.crear(persona, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -441,20 +442,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
      */
     public void setImagenesBean(ImagenesBean imagenesBean) {
         this.imagenesBean = imagenesBean;
-    }
-
-    /**
-     * @return the activo
-     */
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    /**
-     * @param activo the activo to set
-     */
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
     }
 
 }

@@ -147,7 +147,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
 
     @Override
     public boolean validar() {
-        if ((menu.getTexto() == null) || (menu.getTexto().isEmpty())) {
+        if ((menu.getNombre() == null) || (menu.getNombre().isEmpty())) {
             Mensajes.advertencia("Es necesario Texto a desplegar");
             return true;
         }

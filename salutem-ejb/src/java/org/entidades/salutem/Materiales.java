@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -19,6 +20,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -34,14 +37,13 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Materiales.findAll", query = "SELECT m FROM Materiales m")
     , @NamedQuery(name = "Materiales.findById", query = "SELECT m FROM Materiales m WHERE m.id = :id")
     , @NamedQuery(name = "Materiales.findByNombre", query = "SELECT m FROM Materiales m WHERE m.nombre = :nombre")
-    , @NamedQuery(name = "Materiales.findByActivo", query = "SELECT m FROM Materiales m WHERE m.activo = :activo")})
+    , @NamedQuery(name = "Materiales.findByActivo", query = "SELECT m FROM Materiales m WHERE m.activo = :activo")
+    , @NamedQuery(name = "Materiales.findByDescripcion", query = "SELECT m FROM Materiales m WHERE m.descripcion = :descripcion")
+    , @NamedQuery(name = "Materiales.findByCreado", query = "SELECT m FROM Materiales m WHERE m.creado = :creado")
+    , @NamedQuery(name = "Materiales.findByCreadopor", query = "SELECT m FROM Materiales m WHERE m.creadopor = :creadopor")
+    , @NamedQuery(name = "Materiales.findByActualizado", query = "SELECT m FROM Materiales m WHERE m.actualizado = :actualizado")
+    , @NamedQuery(name = "Materiales.findByActualizadopor", query = "SELECT m FROM Materiales m WHERE m.actualizadopor = :actualizadopor")})
 public class Materiales implements Serializable {
-
-    @Size(max = 2147483647)
-    @Column(name = "nombre")
-    private String nombre;
-    @OneToMany(mappedBy = "material")
-    private List<Formulas> formulasList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -49,8 +51,28 @@ public class Materiales implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "nombre")
+    private String nombre;
     @Column(name = "activo")
     private Boolean activo;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+    @OneToMany(mappedBy = "material")
+    private List<Formulas> formulasList;
     @JoinColumn(name = "foco", referencedColumnName = "id")
     @ManyToOne
     private Parametros foco;
@@ -73,6 +95,13 @@ public class Materiales implements Serializable {
         this.id = id;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
     public Boolean getActivo() {
         return activo;
@@ -80,6 +109,55 @@ public class Materiales implements Serializable {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
+    @XmlTransient
+    public List<Formulas> getFormulasList() {
+        return formulasList;
+    }
+
+    public void setFormulasList(List<Formulas> formulasList) {
+        this.formulasList = formulasList;
     }
 
     public Parametros getFoco() {
@@ -121,23 +199,6 @@ public class Materiales implements Serializable {
     @Override
     public String toString() {
         return nombre;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    @XmlTransient
-    public List<Formulas> getFormulasList() {
-        return formulasList;
-    }
-
-    public void setFormulasList(List<Formulas> formulasList) {
-        this.formulasList = formulasList;
     }
     
 }

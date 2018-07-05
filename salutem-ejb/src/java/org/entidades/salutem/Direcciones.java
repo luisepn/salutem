@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -36,9 +39,21 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Direcciones.findByReferencia", query = "SELECT d FROM Direcciones d WHERE d.referencia = :referencia")
     , @NamedQuery(name = "Direcciones.findByFijo", query = "SELECT d FROM Direcciones d WHERE d.fijo = :fijo")
     , @NamedQuery(name = "Direcciones.findByMovil", query = "SELECT d FROM Direcciones d WHERE d.movil = :movil")
-    , @NamedQuery(name = "Direcciones.findByCiudad", query = "SELECT d FROM Direcciones d WHERE d.ciudad = :ciudad")})
+    , @NamedQuery(name = "Direcciones.findByCiudad", query = "SELECT d FROM Direcciones d WHERE d.ciudad = :ciudad")
+    , @NamedQuery(name = "Direcciones.findByDescripcion", query = "SELECT d FROM Direcciones d WHERE d.descripcion = :descripcion")
+    , @NamedQuery(name = "Direcciones.findByCreado", query = "SELECT d FROM Direcciones d WHERE d.creado = :creado")
+    , @NamedQuery(name = "Direcciones.findByCreadopor", query = "SELECT d FROM Direcciones d WHERE d.creadopor = :creadopor")
+    , @NamedQuery(name = "Direcciones.findByActualizado", query = "SELECT d FROM Direcciones d WHERE d.actualizado = :actualizado")
+    , @NamedQuery(name = "Direcciones.findByActualizadopor", query = "SELECT d FROM Direcciones d WHERE d.actualizadopor = :actualizadopor")
+    , @NamedQuery(name = "Direcciones.findByActivo", query = "SELECT d FROM Direcciones d WHERE d.activo = :activo")})
 public class Direcciones implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "primaria")
     private String primaria;
@@ -63,12 +78,23 @@ public class Direcciones implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "ciudad")
     private String ciudad;
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+    @Column(name = "activo")
+    private Boolean activo;
     @OneToOne(mappedBy = "direccion")
     private Instituciones instituciones;
     @OneToOne(mappedBy = "direccion")
@@ -87,52 +113,6 @@ public class Direcciones implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-
-    public Instituciones getInstituciones() {
-        return instituciones;
-    }
-
-    public void setInstituciones(Instituciones instituciones) {
-        this.instituciones = instituciones;
-    }
-
-    public Personas getPersonas() {
-        return personas;
-    }
-
-    public void setPersonas(Personas personas) {
-        this.personas = personas;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Direcciones)) {
-            return false;
-        }
-        Direcciones other = (Direcciones) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return (primaria != null && numero != null && secundaria != null)
-                ? primaria + " " + numero + " y " + secundaria
-                : (primaria != null ? primaria : "") + " "
-                + (numero != null ? numero : "")
-                + (secundaria != null ? secundaria : "");
     }
 
     public String getPrimaria() {
@@ -197,6 +177,99 @@ public class Direcciones implements Serializable {
 
     public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Instituciones getInstituciones() {
+        return instituciones;
+    }
+
+    public void setInstituciones(Instituciones instituciones) {
+        this.instituciones = instituciones;
+    }
+
+    public Personas getPersonas() {
+        return personas;
+    }
+
+    public void setPersonas(Personas personas) {
+        this.personas = personas;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Direcciones)) {
+            return false;
+        }
+        Direcciones other = (Direcciones) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return (primaria != null && !primaria.isEmpty() && numero != null && secundaria != null && !secundaria.isEmpty())
+                ? primaria + " " + numero + " y " + secundaria
+                : (primaria != null ? primaria : "") + " "
+                + (numero != null ? numero : "")
+                + (secundaria != null ? secundaria : "");
     }
 
 }

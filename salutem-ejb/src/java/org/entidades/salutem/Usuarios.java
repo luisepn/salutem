@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +18,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -28,7 +32,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Usuarios.findAll", query = "SELECT u FROM Usuarios u")
-    , @NamedQuery(name = "Usuarios.findById", query = "SELECT u FROM Usuarios u WHERE u.id = :id")})
+    , @NamedQuery(name = "Usuarios.findById", query = "SELECT u FROM Usuarios u WHERE u.id = :id")
+    , @NamedQuery(name = "Usuarios.findByDescripcion", query = "SELECT u FROM Usuarios u WHERE u.descripcion = :descripcion")
+    , @NamedQuery(name = "Usuarios.findByCreado", query = "SELECT u FROM Usuarios u WHERE u.creado = :creado")
+    , @NamedQuery(name = "Usuarios.findByCreadopor", query = "SELECT u FROM Usuarios u WHERE u.creadopor = :creadopor")
+    , @NamedQuery(name = "Usuarios.findByActualizado", query = "SELECT u FROM Usuarios u WHERE u.actualizado = :actualizado")
+    , @NamedQuery(name = "Usuarios.findByActualizadopor", query = "SELECT u FROM Usuarios u WHERE u.actualizadopor = :actualizadopor")})
 public class Usuarios implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,6 +46,21 @@ public class Usuarios implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
     @ManyToOne
     private Instituciones institucion;
@@ -63,6 +87,46 @@ public class Usuarios implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
     }
 
     public Instituciones getInstitucion() {
@@ -119,7 +183,7 @@ public class Usuarios implements Serializable {
 
     @Override
     public String toString() {
-        return persona != null ? persona.toString() : id.toString();
+        return persona != null ? persona.toString() : "[" + id + "]";
     }
 
 }

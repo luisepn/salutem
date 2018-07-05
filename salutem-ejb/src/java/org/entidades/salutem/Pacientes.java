@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -19,6 +20,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -32,11 +36,13 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Pacientes.findAll", query = "SELECT p FROM Pacientes p")
     , @NamedQuery(name = "Pacientes.findById", query = "SELECT p FROM Pacientes p WHERE p.id = :id")
-    , @NamedQuery(name = "Pacientes.findByActivo", query = "SELECT p FROM Pacientes p WHERE p.activo = :activo")})
+    , @NamedQuery(name = "Pacientes.findByActivo", query = "SELECT p FROM Pacientes p WHERE p.activo = :activo")
+    , @NamedQuery(name = "Pacientes.findByDescripcion", query = "SELECT p FROM Pacientes p WHERE p.descripcion = :descripcion")
+    , @NamedQuery(name = "Pacientes.findByCreado", query = "SELECT p FROM Pacientes p WHERE p.creado = :creado")
+    , @NamedQuery(name = "Pacientes.findByCreadopor", query = "SELECT p FROM Pacientes p WHERE p.creadopor = :creadopor")
+    , @NamedQuery(name = "Pacientes.findByActualizado", query = "SELECT p FROM Pacientes p WHERE p.actualizado = :actualizado")
+    , @NamedQuery(name = "Pacientes.findByActualizadopor", query = "SELECT p FROM Pacientes p WHERE p.actualizadopor = :actualizadopor")})
 public class Pacientes implements Serializable {
-
-    @OneToMany(mappedBy = "paciente")
-    private List<Consultas> consultasList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -46,6 +52,23 @@ public class Pacientes implements Serializable {
     private Integer id;
     @Column(name = "activo")
     private Boolean activo;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+    @OneToMany(mappedBy = "paciente")
+    private List<Consultas> consultasList;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
     @ManyToOne
     private Instituciones institucion;
@@ -74,6 +97,55 @@ public class Pacientes implements Serializable {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
+    @XmlTransient
+    public List<Consultas> getConsultasList() {
+        return consultasList;
+    }
+
+    public void setConsultasList(List<Consultas> consultasList) {
+        this.consultasList = consultasList;
     }
 
     public Instituciones getInstitucion() {
@@ -114,16 +186,7 @@ public class Pacientes implements Serializable {
 
     @Override
     public String toString() {
-        return persona != null ? persona.toString() : id.toString();
+        return persona != null ? persona.toString() : "[" + id + "]";
     }
 
-    @XmlTransient
-    public List<Consultas> getConsultasList() {
-        return consultasList;
-    }
-
-    public void setConsultasList(List<Consultas> consultasList) {
-        this.consultasList = consultasList;
-    }
-    
 }

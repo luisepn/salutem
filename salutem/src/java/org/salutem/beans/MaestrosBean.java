@@ -63,7 +63,8 @@ public class MaestrosBean implements Serializable, IMantenimiento {
     private List<Maestros> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
             Map parameters = new HashMap();
-            String where = " o.activo=true";
+            String where = " o.activo=:activo ";
+            parameters.put("activo", seguridadBean.getActivo());
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();

@@ -47,9 +47,20 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Personas.findByFecha", query = "SELECT p FROM Personas p WHERE p.fecha = :fecha")
     , @NamedQuery(name = "Personas.findByRol", query = "SELECT p FROM Personas p WHERE p.rol = :rol")
     , @NamedQuery(name = "Personas.findByActivo", query = "SELECT p FROM Personas p WHERE p.activo = :activo")
-    , @NamedQuery(name = "Personas.findByOcupacion", query = "SELECT p FROM Personas p WHERE p.ocupacion = :ocupacion")})
+    , @NamedQuery(name = "Personas.findByOcupacion", query = "SELECT p FROM Personas p WHERE p.ocupacion = :ocupacion")
+    , @NamedQuery(name = "Personas.findByDescripcion", query = "SELECT p FROM Personas p WHERE p.descripcion = :descripcion")
+    , @NamedQuery(name = "Personas.findByCreado", query = "SELECT p FROM Personas p WHERE p.creado = :creado")
+    , @NamedQuery(name = "Personas.findByCreadopor", query = "SELECT p FROM Personas p WHERE p.creadopor = :creadopor")
+    , @NamedQuery(name = "Personas.findByActualizado", query = "SELECT p FROM Personas p WHERE p.actualizado = :actualizado")
+    , @NamedQuery(name = "Personas.findByActualizadopor", query = "SELECT p FROM Personas p WHERE p.actualizadopor = :actualizadopor")})
 public class Personas implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "nombres")
     private String nombres;
@@ -63,36 +74,42 @@ public class Personas implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "userid")
     private String userid;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "clave")
     private String clave;
     @Basic(optional = false)
-    @NotNull()
+    @NotNull
     @Size(min = 1, max = 2147483647)
     @Column(name = "cedula")
     private String cedula;
-    @Size(max = 2147483647)
-    @Column(name = "rol")
-    private String rol;
-    @Size(max = 2147483647)
-    @Column(name = "ocupacion")
-    private String ocupacion;
-    @OneToMany(mappedBy = "persona")
-    private List<Usuarios> usuariosList;
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
+    @Size(max = 2147483647)
+    @Column(name = "rol")
+    private String rol;
     @Column(name = "activo")
     private Boolean activo;
+    @Size(max = 2147483647)
+    @Column(name = "ocupacion")
+    private String ocupacion;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @OneToMany(mappedBy = "persona")
-    private List<Pacientes> pacientesList;
+    private List<Usuarios> usuariosList;
     @JoinColumn(name = "fotografia", referencedColumnName = "id")
     @OneToOne
     private Archivos fotografia;
@@ -102,6 +119,8 @@ public class Personas implements Serializable {
     @JoinColumn(name = "genero", referencedColumnName = "id")
     @ManyToOne
     private Parametros genero;
+    @OneToMany(mappedBy = "persona")
+    private List<Pacientes> pacientesList;
 
     public Personas() {
     }
@@ -121,83 +140,6 @@ public class Personas implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
-
-
-    @XmlTransient
-    public List<Pacientes> getPacientesList() {
-        return pacientesList;
-    }
-
-    public void setPacientesList(List<Pacientes> pacientesList) {
-        this.pacientesList = pacientesList;
-    }
-
-    public Archivos getFotografia() {
-        return fotografia;
-    }
-
-    public void setFotografia(Archivos fotografia) {
-        this.fotografia = fotografia;
-    }
-
-    public Direcciones getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(Direcciones direccion) {
-        this.direccion = direccion;
-    }
-
-    public Parametros getGenero() {
-        return genero;
-    }
-
-    public void setGenero(Parametros genero) {
-        this.genero = genero;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Personas)) {
-            return false;
-        }
-        Personas other = (Personas) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return (apellidos != null ? apellidos : "") + " " + (nombres != null ? nombres : "");
     }
 
     public String getNombres() {
@@ -248,12 +190,28 @@ public class Personas implements Serializable {
         this.cedula = cedula;
     }
 
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
     public String getRol() {
         return rol;
     }
 
     public void setRol(String rol) {
         this.rol = rol;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     public String getOcupacion() {
@@ -264,6 +222,46 @@ public class Personas implements Serializable {
         this.ocupacion = ocupacion;
     }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
     @XmlTransient
     public List<Usuarios> getUsuariosList() {
         return usuariosList;
@@ -271,6 +269,64 @@ public class Personas implements Serializable {
 
     public void setUsuariosList(List<Usuarios> usuariosList) {
         this.usuariosList = usuariosList;
+    }
+
+    public Archivos getFotografia() {
+        return fotografia;
+    }
+
+    public void setFotografia(Archivos fotografia) {
+        this.fotografia = fotografia;
+    }
+
+    public Direcciones getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(Direcciones direccion) {
+        this.direccion = direccion;
+    }
+
+    public Parametros getGenero() {
+        return genero;
+    }
+
+    public void setGenero(Parametros genero) {
+        this.genero = genero;
+    }
+
+    @XmlTransient
+    public List<Pacientes> getPacientesList() {
+        return pacientesList;
+    }
+
+    public void setPacientesList(List<Pacientes> pacientesList) {
+        this.pacientesList = pacientesList;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Personas)) {
+            return false;
+        }
+        Personas other = (Personas) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return (apellidos != null ? apellidos : "") + " " + (nombres != null ? nombres : "");
     }
     
 }

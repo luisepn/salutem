@@ -56,6 +56,7 @@ public class SeguridadBean implements Serializable {
     private String clave;
     private String claveNueva;
     private String claveNuevaRetipeada;
+    private Boolean activo = true;
 
     @EJB
     private UsuariosFacade ejbUsuarios;
@@ -124,7 +125,7 @@ public class SeguridadBean implements Serializable {
         for (Menus menusistema : ml) {
             Submenu nuevoSubmenu = new Submenu();
             nuevoSubmenu.setId("sm_" + menusistema.getId());
-            nuevoSubmenu.setLabel(menusistema.getTexto());
+            nuevoSubmenu.setLabel(menusistema.getNombre());
 
             where = " o.menu.menupadre=:menu and o.grupo=:grupo";
             order = " o.menu.texto";
@@ -135,7 +136,7 @@ public class SeguridadBean implements Serializable {
             for (Perfiles p : pl) {
                 MenuItem nuevo = new MenuItem();
                 nuevo.setId(nuevoSubmenu.getId() + "_mmi_" + p.getId());
-                nuevo.setValue(p.getMenu().getTexto());
+                nuevo.setValue(p.getMenu().getNombre());
                 nuevo.setUrl(p.getMenu().getFormulario().trim() + ".jsf?faces-redirect=true&p=" + p.getId());
                 nuevoSubmenu.getChildren().add(nuevo);
             }
@@ -181,7 +182,7 @@ public class SeguridadBean implements Serializable {
             if (!perfil.getGrupo().equals(usuario.getGrupo())) {
                 ctx.redirect(ctxPath + "?m=Usuario logueado no est&aacute; en el grupo correcto");
             }
-            titulo = perfil.getMenu().getTexto();
+            titulo = perfil.getMenu().getNombre();
 
             return perfil;
 
@@ -397,6 +398,20 @@ public class SeguridadBean implements Serializable {
      */
     public void setClaveNuevaRetipeada(String claveNuevaRetipeada) {
         this.claveNuevaRetipeada = claveNuevaRetipeada;
+    }
+
+    /**
+     * @return the activo
+     */
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    /**
+     * @param activo the activo to set
+     */
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
 }

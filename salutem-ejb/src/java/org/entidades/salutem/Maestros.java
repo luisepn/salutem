@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -17,6 +18,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -33,15 +36,13 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Maestros.findById", query = "SELECT m FROM Maestros m WHERE m.id = :id")
     , @NamedQuery(name = "Maestros.findByCodigo", query = "SELECT m FROM Maestros m WHERE m.codigo = :codigo")
     , @NamedQuery(name = "Maestros.findByNombre", query = "SELECT m FROM Maestros m WHERE m.nombre = :nombre")
-    , @NamedQuery(name = "Maestros.findByActivo", query = "SELECT m FROM Maestros m WHERE m.activo = :activo")})
+    , @NamedQuery(name = "Maestros.findByActivo", query = "SELECT m FROM Maestros m WHERE m.activo = :activo")
+    , @NamedQuery(name = "Maestros.findByDescripcion", query = "SELECT m FROM Maestros m WHERE m.descripcion = :descripcion")
+    , @NamedQuery(name = "Maestros.findByCreado", query = "SELECT m FROM Maestros m WHERE m.creado = :creado")
+    , @NamedQuery(name = "Maestros.findByCreadopor", query = "SELECT m FROM Maestros m WHERE m.creadopor = :creadopor")
+    , @NamedQuery(name = "Maestros.findByActualizado", query = "SELECT m FROM Maestros m WHERE m.actualizado = :actualizado")
+    , @NamedQuery(name = "Maestros.findByActualizadopor", query = "SELECT m FROM Maestros m WHERE m.actualizadopor = :actualizadopor")})
 public class Maestros implements Serializable {
-
-    @Size(max = 2147483647)
-    @Column(name = "codigo")
-    private String codigo;
-    @Size(max = 2147483647)
-    @Column(name = "nombre")
-    private String nombre;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -49,8 +50,29 @@ public class Maestros implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "codigo")
+    private String codigo;
+    @Size(max = 2147483647)
+    @Column(name = "nombre")
+    private String nombre;
     @Column(name = "activo")
     private Boolean activo;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @OneToMany(mappedBy = "maestro")
     private List<Parametros> parametrosList;
 
@@ -69,6 +91,21 @@ public class Maestros implements Serializable {
         this.id = id;
     }
 
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
     public Boolean getActivo() {
         return activo;
@@ -76,6 +113,46 @@ public class Maestros implements Serializable {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
     }
 
     @XmlTransient
@@ -110,22 +187,6 @@ public class Maestros implements Serializable {
     @Override
     public String toString() {
         return nombre;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
     
 }

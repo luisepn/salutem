@@ -37,26 +37,26 @@ public interface IMantenimiento {
         switch (operacion) {
             case 'C': //create
                 if (!perfil.getNuevo()) {
-                    Mensajes.advertencia("No tiene autorización para Crear");
+                    Mensajes.advertencia("¡No tiene autorización para Crear!");
                 }
                 return perfil.getNuevo();
             case 'R': //read
                 if (!perfil.getConsulta()) {
-                    Mensajes.advertencia("No tiene autorización para Leer");
+                    Mensajes.advertencia("¡No tiene autorización para Leer!");
                 }
                 return perfil.getConsulta();
             case 'U': //update
                 if (!perfil.getModificacion()) {
-                    Mensajes.advertencia("No tiene autorización para Actualizar");
+                    Mensajes.advertencia("¡No tiene autorización para Actualizar!");
                 }
                 return perfil.getModificacion();
             case 'D': //delete
                 if (!perfil.getBorrado()) {
-                    Mensajes.advertencia("No tiene autorización para Eliminar");
+                    Mensajes.advertencia("¡No tiene autorización para Eliminar!");
                 }
                 return perfil.getBorrado();
             default:
-                Mensajes.advertencia("No puede ejecutar ninguna opción");
+                Mensajes.advertencia("¡No puede ejecutar ninguna Acción!");
                 return false;
         }
 

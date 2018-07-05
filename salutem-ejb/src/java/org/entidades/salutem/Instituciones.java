@@ -41,21 +41,13 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Instituciones.findByEmail", query = "SELECT i FROM Instituciones i WHERE i.email = :email")
     , @NamedQuery(name = "Instituciones.findByWeb", query = "SELECT i FROM Instituciones i WHERE i.web = :web")
     , @NamedQuery(name = "Instituciones.findByLaboratorio", query = "SELECT i FROM Instituciones i WHERE i.laboratorio = :laboratorio")
-    , @NamedQuery(name = "Instituciones.findByActivo", query = "SELECT i FROM Instituciones i WHERE i.activo = :activo")})
+    , @NamedQuery(name = "Instituciones.findByActivo", query = "SELECT i FROM Instituciones i WHERE i.activo = :activo")
+    , @NamedQuery(name = "Instituciones.findByDescripcion", query = "SELECT i FROM Instituciones i WHERE i.descripcion = :descripcion")
+    , @NamedQuery(name = "Instituciones.findByCreado", query = "SELECT i FROM Instituciones i WHERE i.creado = :creado")
+    , @NamedQuery(name = "Instituciones.findByCreadopor", query = "SELECT i FROM Instituciones i WHERE i.creadopor = :creadopor")
+    , @NamedQuery(name = "Instituciones.findByActualizado", query = "SELECT i FROM Instituciones i WHERE i.actualizado = :actualizado")
+    , @NamedQuery(name = "Instituciones.findByActualizadopor", query = "SELECT i FROM Instituciones i WHERE i.actualizadopor = :actualizadopor")})
 public class Instituciones implements Serializable {
-
-    @Size(max = 2147483647)
-    @Column(name = "nombre")
-    private String nombre;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
-    @Size(max = 2147483647)
-    @Column(name = "email")
-    private String email;
-    @Size(max = 2147483647)
-    @Column(name = "web")
-    private String web;
-    @OneToMany(mappedBy = "institucion")
-    private List<Usuarios> usuariosList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -63,19 +55,46 @@ public class Instituciones implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "nombre")
+    private String nombre;
     @Column(name = "fecha")
     @Temporal(TemporalType.DATE)
     private Date fecha;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
+    @Size(max = 2147483647)
+    @Column(name = "email")
+    private String email;
+    @Size(max = 2147483647)
+    @Column(name = "web")
+    private String web;
     @Column(name = "laboratorio")
     private Boolean laboratorio;
     @Column(name = "activo")
     private Boolean activo;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @JoinColumn(name = "logotipo", referencedColumnName = "id")
     @OneToOne
     private Archivos logotipo;
     @JoinColumn(name = "direccion", referencedColumnName = "id")
     @OneToOne
     private Direcciones direccion;
+    @OneToMany(mappedBy = "institucion")
+    private List<Usuarios> usuariosList;
     @OneToMany(mappedBy = "laboratorio")
     private List<Ordenes> ordenesList;
     @OneToMany(mappedBy = "institucion")
@@ -96,6 +115,13 @@ public class Instituciones implements Serializable {
         this.id = id;
     }
 
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
     public Date getFecha() {
         return fecha;
@@ -105,6 +131,21 @@ public class Instituciones implements Serializable {
         this.fecha = fecha;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getWeb() {
+        return web;
+    }
+
+    public void setWeb(String web) {
+        this.web = web;
+    }
 
     public Boolean getLaboratorio() {
         return laboratorio;
@@ -122,6 +163,46 @@ public class Instituciones implements Serializable {
         this.activo = activo;
     }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
     public Archivos getLogotipo() {
         return logotipo;
     }
@@ -136,6 +217,15 @@ public class Instituciones implements Serializable {
 
     public void setDireccion(Direcciones direccion) {
         this.direccion = direccion;
+    }
+
+    @XmlTransient
+    public List<Usuarios> getUsuariosList() {
+        return usuariosList;
+    }
+
+    public void setUsuariosList(List<Usuarios> usuariosList) {
+        this.usuariosList = usuariosList;
     }
 
     @XmlTransient
@@ -179,39 +269,6 @@ public class Instituciones implements Serializable {
     @Override
     public String toString() {
         return nombre;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getWeb() {
-        return web;
-    }
-
-    public void setWeb(String web) {
-        this.web = web;
-    }
-
-    @XmlTransient
-    public List<Usuarios> getUsuariosList() {
-        return usuariosList;
-    }
-
-    public void setUsuariosList(List<Usuarios> usuariosList) {
-        this.usuariosList = usuariosList;
     }
     
 }
