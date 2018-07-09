@@ -64,13 +64,11 @@ public class Formulario {
         if (total == null) {
             return "0";
         } else if (total > 100) {
-            return "5,10,50,100," + total.toString();
+            return "10,50,100," + total.toString();
         } else if (total > 50) {
-            return "5,10,50," + total.toString();
+            return "10,50," + total.toString();
         } else if (total > 10) {
-            return "5,10," + total.toString();
-        } else if (total > 5) {
-            return "5," + total.toString();
+            return "10," + total.toString();
         } else {
             return total.toString();
         }

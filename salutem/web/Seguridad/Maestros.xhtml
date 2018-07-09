@@ -22,7 +22,7 @@
                     <h:panelGrid>
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Sólo activos:" />
-                            <h:selectBooleanCheckbox value="#{salutemMaestros.activo}">
+                            <h:selectBooleanCheckbox value="#{salutemSeguridad.activo}">
                                 <ace:ajax execute="@all"/>
                             </h:selectBooleanCheckbox>
                         </h:panelGrid>
@@ -68,7 +68,7 @@
                                        rowsPerPageTemplate="#{salutemMaestros.formulario.rowsPerPageTemplate}"
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="5">
+                                       rows="10">
                             <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
@@ -83,6 +83,9 @@
                             </ace:column>
                             <ace:column  headerText="Nombre" sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
                             </ace:column>
 
                         </ace:dataTable>
@@ -103,6 +106,10 @@
                             <ace:textEntry id="codigo" value="#{salutemMaestros.maestro.codigo}" title="Código" disabled="#{!salutemMaestros.formulario.crear}"/>
                             <h:outputLabel value="Nombre:" for="nombre" />
                             <ace:textEntry id="nombre" value="#{salutemMaestros.maestro.nombre}" title="Nombre" />
+                            <h:outputLabel value="Descripción:" for="descripcion" />
+                            <ace:textAreaEntry id="descripcion" value="#{salutemMaestros.maestro.descripcion}" cols="19" rows="2"/>
+                            <h:outputLabel value="Activo:" />
+                            <h:selectBooleanCheckbox value="#{salutemMaestros.maestro.activo}" title="Activo"/>
                         </h:panelGrid>
                     </h:panelGroup>
                     <h:panelGrid>

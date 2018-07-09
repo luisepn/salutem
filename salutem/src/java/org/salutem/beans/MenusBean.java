@@ -1,6 +1,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,9 +67,14 @@ public class MenusBean implements Serializable, IMantenimiento {
             if (modulo == null) {
                 return null;
             }
+            String where = " o.activo=:activo";
             Map parameters = new HashMap();
-            parameters.put("modulo", modulo);
-            String where = " o.modulo=:modulo";
+            parameters.put("activo", seguridadBean.getActivo());
+            if (modulo != null) {
+                where += " and o.modulo=:modulo";
+                parameters.put("modulo", modulo);
+            }
+
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
@@ -125,6 +131,7 @@ public class MenusBean implements Serializable, IMantenimiento {
             return null;
         }
         menu = new Menus();
+        menu.setActivo(Boolean.TRUE);
         if (modulo != null) {
             menu.setModulo(modulo);
         }
@@ -172,13 +179,14 @@ public class MenusBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            menu.setCreado(new Date());
+            menu.setCreadopor(seguridadBean.getLogueado().getUserid());
             ejbMenus.crear(menu, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MenusBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -191,13 +199,14 @@ public class MenusBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            menu.setActualizado(new Date());
+            menu.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbMenus.actualizar(menu, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MenusBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -213,14 +222,12 @@ public class MenusBean implements Serializable, IMantenimiento {
             Logger.getLogger(MenusBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
     @Override
     public String cancelar() {
         formulario.cancelar();
-        buscar();
         return null;
     }
 

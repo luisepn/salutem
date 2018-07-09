@@ -82,9 +82,9 @@
                                     <ace:menuItem action="#{salutemSubmenus.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                 </ace:menuButton>
                             </ace:column>
-                            <ace:column  headerText="Texto a Mostrar" sortBy="#{item.texto}" style="text-align: left"
-                                         filterBy="#{item.texto}" filterMatchMode="contains">
-                                <h:outputText  value="#{item.texto}"/>
+                            <ace:column  headerText="Texto a Mostrar" sortBy="#{item.nombre}" style="text-align: left"
+                                         filterBy="#{item.nombre}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.nombre}"/>
                             </ace:column>
                             <ace:column  headerText="Formulario" sortBy="#{item.formulario}" style="text-align: left"
                                          filterBy="#{item.formulario}" filterMatchMode="contains">
@@ -105,7 +105,7 @@
                     <h:panelGroup>
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Texto a Mostrar:" for="codigo" />
-                            <ace:textEntry id="codigo" value="#{salutemSubmenus.menu.texto}" title="Texto a Mostrar" />
+                            <ace:textEntry id="codigo" value="#{salutemSubmenus.menu.nombre}" title="Texto a Mostrar" />
                             <h:outputLabel value="Formulario:" for="nombre" />
                             <ace:textEntry id="nombre" value="#{salutemSubmenus.menu.formulario}" title="Formulario" />
 

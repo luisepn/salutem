@@ -116,7 +116,7 @@ public class SeguridadBean implements Serializable {
         this.institucion = usuario.getInstitucion();
 
         String where = " o.modulo=:modulo";
-        String order = " o.texto";
+        String order = " o.nombre";
         Map parameters = new HashMap();
         parameters.put("modulo", usuario.getModulo());
         List<Menus> ml = ejbMenus.buscar(where, parameters, order);
@@ -128,7 +128,7 @@ public class SeguridadBean implements Serializable {
             nuevoSubmenu.setLabel(menusistema.getNombre());
 
             where = " o.menu.menupadre=:menu and o.grupo=:grupo";
-            order = " o.menu.texto";
+            order = " o.menu.nombre";
             parameters = new HashMap();
             parameters.put("menu", menusistema);
             parameters.put("grupo", grupo);
@@ -183,7 +183,7 @@ public class SeguridadBean implements Serializable {
                 ctx.redirect(ctxPath + "?m=Usuario logueado no est&aacute; en el grupo correcto");
             }
             titulo = perfil.getMenu().getNombre();
-
+            activo = true;
             return perfil;
 
         } catch (ExcepcionDeConsulta | IOException ex) {

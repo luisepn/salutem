@@ -84,8 +84,8 @@
                                 </ace:menuButton>
                             </ace:column>   
                             <ace:column  headerText="Menú"  style="text-align: left"
-                                         filterBy="#{item.menu.texto}" filterMatchMode="contains">
-                                <h:outputText  value="#{item.menu.texto}"/>
+                                         filterBy="#{item.menu.nombre}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.menu.nombre}"/>
                             </ace:column>
                             <ace:column  headerText="¿Crear?" >
                                 <h:outputText value="#{item.nuevo ? 'SI' : 'NO'}" style="color: #{item.nuevo ? 'green' : 'red'}"/>
@@ -117,7 +117,7 @@
                             <h:selectOneMenu value="#{salutemPerfiles.perfil.menu}" rendered="#{salutemPerfiles.formulario.crear}">
                                 <f:selectItems value="#{salutemCombos.subMenusDisponibles}"/>
                             </h:selectOneMenu>
-                            <h:outputLabel value="#{salutemPerfiles.perfil.menu.texto}" rendered="#{!salutemPerfiles.formulario.crear}"/>
+                            <h:outputLabel value="#{salutemPerfiles.perfil.menu.nombre}" rendered="#{!salutemPerfiles.formulario.crear}"/>
                             <h:outputLabel value="¿Crear?: "/>
                             <ace:checkboxButton value="#{salutemPerfiles.perfil.nuevo}"/>
                             <h:outputLabel value="¿Actualizar?: "/>

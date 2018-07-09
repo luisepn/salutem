@@ -1,6 +1,6 @@
 /**
  *
- * Hacer commint en GitHub:
+ * Hacer commit en GitHub:
  * 1: Clic derecho sobre todos los archivos del proyecto
  * 2: Seleccionar Git/Commit
  * 3: En la ventana hacer clic en confirmar

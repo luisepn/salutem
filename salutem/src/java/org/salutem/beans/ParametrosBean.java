@@ -1,6 +1,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
@@ -62,14 +64,14 @@ public class ParametrosBean implements Serializable, IMantenimiento {
 
     private List<Parametros> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
-            if (maestro == null) {
-                parametros.setRowCount(0);
-                formulario.setTotal(0);
-                return null;
-            }
             Map parameters = new HashMap();
-            parameters.put("maestro", maestro);
-            String where = " o.activo=true and o.maestro=:maestro";
+            String where = " o.activo=:activo";
+            parameters.put("activo", seguridadBean.getActivo());
+            if (maestro != null) {
+                where += " and o.maestro=:maestro";
+                parameters.put("maestro", maestro);
+            }
+
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
@@ -85,7 +87,7 @@ public class ParametrosBean implements Serializable, IMantenimiento {
             parametros.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.nombre";
+                order = "o.maestro.codigo, o.codigo";
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
@@ -100,10 +102,6 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     @Override
     public String buscar() {
         if (!IMantenimiento.validarPerfil(perfil, 'R')) {
-            return null;
-        }
-        if (maestro == null) {
-            Mensajes.advertencia("Seleccione un maestro primero");
             return null;
         }
         parametros = new LazyDataModel<Parametros>() {
@@ -153,29 +151,36 @@ public class ParametrosBean implements Serializable, IMantenimiento {
 
     @Override
     public boolean validar() {
-        if ((parametro.getCodigo() == null) || (parametro.getCodigo().isEmpty())) {
-            Mensajes.advertencia("Es necesario código");
-            return true;
-        }
-        if ((parametro.getNombre() == null) || (parametro.getNombre().isEmpty())) {
-            Mensajes.advertencia("Es necesario nombre");
-            return true;
-        }
-        if ((parametro.getDescripcion() == null) || (parametro.getDescripcion().isEmpty())) {
-            Mensajes.advertencia("Es necesario descripción");
-            return true;
-        }
-        if (formulario.isCrear()) {
-            try {
-                Map parameters = new HashMap();
-                parameters.put("codigo", maestro.getCodigo());
-                if (ejbParametros.contar("o.activo=true and o.codigo=:codigo", parameters) > 0) {
-                    Mensajes.advertencia("No se permiten parámetros con código duplicado");
-                    return true;
-                }
-            } catch (ExcepcionDeConsulta ex) {
-                Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            if ((parametro.getCodigo() == null) || (parametro.getCodigo().isEmpty())) {
+                Mensajes.advertencia("Es necesario código");
+                return true;
             }
+            if ((parametro.getNombre() == null) || (parametro.getNombre().isEmpty())) {
+                Mensajes.advertencia("Es necesario nombre");
+                return true;
+            }
+            if ((parametro.getDescripcion() == null) || (parametro.getDescripcion().isEmpty())) {
+                Mensajes.advertencia("Es necesario descripción");
+                return true;
+            }
+
+            String where = " o.maestro=:maestro and o.codigo=:codigo";
+            Map parameters = new HashMap();
+            parameters.put("maestro", parametro.getMaestro());
+            parameters.put("codigo", parametro.getCodigo());
+            if (parametro.getId() != null) {
+                where += " and o.id!=:id";
+                parameters.put("id", parametro.getId());
+            }
+            if (ejbParametros.contar(where, parameters) > 0) {
+                Mensajes.advertencia("No se permiten maestros con código duplicado");
+                return true;
+            }
+
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -189,26 +194,14 @@ public class ParametrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            Map parameters = new HashMap();
-            parameters.put("codigo", parametro.getCodigo());
-            List<Parametros> lp = ejbParametros.buscar("o.codigo=:codigo", parameters);
-            if (lp.isEmpty()) {
-                ejbParametros.crear(parametro, seguridadBean.getLogueado().getUserid());
-            } else {
-                Parametros p = lp.get(0);
-                p.setActivo(Boolean.TRUE);
-                p.setNombre(parametro.getNombre());
-                p.setMaestro(parametro.getMaestro());
-                p.setDescripcion(parametro.getDescripcion());
-                ejbParametros.actualizar(p, seguridadBean.getLogueado().getUserid());
-            }
-
-        } catch (ExcepcionDeCreacion | ExcepcionDeConsulta | ExcepcionDeActualizacion ex) {
+            parametro.setCreado(new Date());
+            parametro.setCreadopor(seguridadBean.getLogueado().getUserid());
+            ejbParametros.crear(parametro, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -221,13 +214,14 @@ public class ParametrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            parametro.setActualizado(new Date());
+            parametro.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbParametros.actualizar(parametro, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -237,21 +231,18 @@ public class ParametrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            parametro.setActivo(Boolean.FALSE);
-            ejbParametros.actualizar(parametro, seguridadBean.getLogueado().getUserid());
-        } catch (ExcepcionDeActualizacion ex) {
+            ejbParametros.eliminar(parametro, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
     @Override
     public String cancelar() {
         formulario.cancelar();
-        buscar();
         return null;
     }
 

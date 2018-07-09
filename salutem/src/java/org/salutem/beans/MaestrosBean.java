@@ -1,6 +1,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,17 +150,21 @@ public class MaestrosBean implements Serializable, IMantenimiento {
             Mensajes.advertencia("Es necesario nombre");
             return true;
         }
-        if (formulario.isCrear()) {
-            try {
-                Map parametros = new HashMap();
-                parametros.put("codigo", maestro.getCodigo());
-                if (ejbMaestros.contar("o.activo=true and o.codigo=:codigo", parametros) > 0) {
-                    Mensajes.advertencia("No se permiten maestros con código duplicado");
-                    return true;
-                }
-            } catch (ExcepcionDeConsulta ex) {
-                Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            String where = "o.codigo=:codigo";
+            Map parametros = new HashMap();
+            parametros.put("codigo", maestro.getCodigo());
+            if (maestro.getId() != null) {
+                where += " and o.id!=:id";
+                parametros.put("id", maestro.getId());
             }
+            if (ejbMaestros.contar(where, parametros) > 0) {
+                Mensajes.advertencia("No se permiten maestros con código duplicado");
+                return true;
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -173,23 +178,14 @@ public class MaestrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            Map parameters = new HashMap();
-            parameters.put("codigo", maestro.getCodigo());
-            List<Maestros> lm = ejbMaestros.buscar("o.codigo=:codigo", parameters);
-            if (lm.isEmpty()) {
-                ejbMaestros.crear(maestro, seguridadBean.getLogueado().getUserid());
-            } else {
-                Maestros m = lm.get(0);
-                m.setActivo(Boolean.TRUE);
-                m.setNombre(maestro.getNombre());
-                ejbMaestros.actualizar(m, seguridadBean.getLogueado().getUserid());
-            }
-        } catch (ExcepcionDeCreacion | ExcepcionDeConsulta | ExcepcionDeActualizacion ex) {
+            maestro.setCreado(new Date());
+            maestro.setCreadopor(seguridadBean.getLogueado().getUserid());
+            ejbMaestros.crear(maestro, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -208,7 +204,6 @@ public class MaestrosBean implements Serializable, IMantenimiento {
             Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -224,14 +219,12 @@ public class MaestrosBean implements Serializable, IMantenimiento {
             Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
     @Override
     public String cancelar() {
         formulario.cancelar();
-        buscar();
         return null;
     }
 

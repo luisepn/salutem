@@ -21,17 +21,22 @@
                            closable="false"
                            toggleable="true" >
                     <h:panelGrid columns="2">
+                        <h:outputLabel value="Sólo activos:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.activo}">
+                            <ace:ajax execute="@all"/>
+                        </h:selectBooleanCheckbox>
                         <h:outputLabel value="Maestro:" />
                         <h:selectOneMenu value="#{salutemParametros.maestro}">
                             <f:selectItems value="#{salutemCombos.maestros}"/>
                             <ace:ajax execute="@all"/>
                         </h:selectOneMenu>
                     </h:panelGrid>
-                    <h:panelGrid>
+                    <h:panelGrid columns="2">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemParametros.buscar()}"/>
                             <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemParametros.crear()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemParametros.formulario.mostrar}"/>
                     </h:panelGrid>
 
                 </ace:panel>
@@ -66,7 +71,13 @@
                                        rowsPerPageTemplate="#{salutemParametros.formulario.rowsPerPageTemplate}"
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="5">
+                                       rows="10">
+                            <ace:row condition="group" groupBy="#{item.maestro.nombre}" pos="before" styleClass="grupo">
+                                <ace:column style="text-align: center" colspan="7">
+                                    <ace:excludeFromExport/>
+                                    <h:outputText value="#{item.maestro.nombre}" />
+                                </ace:column>
+                            </ace:row>
                             <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
@@ -88,6 +99,9 @@
                             <ace:column  headerText="Parámetros" sortBy="#{item.parametros}" filterBy="#{item.parametros}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.parametros}"/>
                             </ace:column>
+                            <ace:column  headerText="Maestro" rendered="#{salutemParametros.maestro eq null}" sortBy="#{item.maestro.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.maestro.nombre}"/>
+                            </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
                 </ace:panel>
@@ -107,9 +121,9 @@
                             <h:outputLabel value="Nombre:" for="nombre" />
                             <ace:textEntry id="nombre" value="#{salutemParametros.parametro.nombre}" title="Nombre" />
                             <h:outputLabel value="Descripción:" for="descripcion" />
-                            <ace:textAreaEntry id="descripcion" value="#{salutemParametros.parametro.descripcion}" cols="22" rows="2"/>
+                            <ace:textAreaEntry id="descripcion" value="#{salutemParametros.parametro.descripcion}" cols="19" rows="2"/>
                             <h:outputLabel value="Parámetros:" for="parametros" />
-                            <ace:textAreaEntry id="parametros" value="#{salutemParametros.parametro.parametros}" cols="22" rows="2"/>
+                            <ace:textAreaEntry id="parametros" value="#{salutemParametros.parametro.parametros}" cols="19" rows="2"/>
                         </h:panelGrid>
                     </h:panelGroup>
                     <h:panelGrid columns="1" width="100%">

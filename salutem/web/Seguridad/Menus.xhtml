@@ -20,17 +20,22 @@
                            closable="false"
                            toggleable="true">
                     <h:panelGrid columns="2">
+                        <h:outputLabel value="Sólo activos:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.activo}">
+                            <ace:ajax execute="@all"/>
+                        </h:selectBooleanCheckbox>
                         <h:outputLabel value="Módulo:" />
                         <h:selectOneMenu value="#{salutemMenus.modulo}">
                             <f:selectItems value="#{salutemCombos.modulos}"/>
                             <ace:ajax execute="@all"/>
                         </h:selectOneMenu>
                     </h:panelGrid>
-                    <h:panelGrid>
+                    <h:panelGrid columns="2">
                         <ace:menuBar autoSubmenuDisplay="true">
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemMenus.buscar()}"/>
                             <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemMenus.crear()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemMenus.formulario.mostrar}"/>
                     </h:panelGrid>
                 </ace:panel>
                 <ace:panel 
@@ -75,9 +80,9 @@
                                     <ace:menuItem action="#{salutemMenus.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                 </ace:menuButton>
                             </ace:column> 
-                            <ace:column  headerText="Texto a Mostrar" sortBy="#{item.texto}" style="text-align: left"
-                                         filterBy="#{item.texto}" filterMatchMode="contains">
-                                <h:outputText  value="#{item.texto}"/>
+                            <ace:column  headerText="Texto a Mostrar" sortBy="#{item.nombre}" style="text-align: left"
+                                         filterBy="#{item.nombre}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.nombre}"/>
                             </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
@@ -94,10 +99,10 @@
                     <h:panelGroup>
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Texto a Mostrar:" for="codigo" />
-                            <ace:textEntry id="codigo" value="#{salutemMenus.menu.texto}" title="Texto a Mostrar" />
+                            <ace:textEntry id="codigo" value="#{salutemMenus.menu.nombre}" title="Texto a Mostrar" />
                         </h:panelGrid>
                     </h:panelGroup>
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
                                           action="#{salutemMenus.insertar()}"
@@ -111,6 +116,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemMenus.cancelar()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap"/>
                     </h:panelGrid>
                 </ace:dialog>
 

@@ -88,7 +88,7 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             perfiles.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.menu.texto";
+                order = "o.menu.nombre";
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }

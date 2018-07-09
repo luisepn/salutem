@@ -84,7 +84,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             menus.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.texto";
+                order = "o.nombre";
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
