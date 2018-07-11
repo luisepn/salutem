@@ -94,7 +94,36 @@
                             <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.descripcion}"/>
                             </ace:column>
-
+                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                         filterBy="#{item.creado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                         filterValueMax="#{salutemSeguridad.finCreado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                         filterBy="#{item.actualizado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                         filterValueMax="#{salutemSeguridad.finActualizado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizadopor}"/>
+                            </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
                 </ace:panel>

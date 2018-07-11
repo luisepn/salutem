@@ -11,12 +11,8 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import org.controladores.salutem.InstitucionesFacade;
-import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.PersonasFacade;
 import org.entidades.salutem.Instituciones;
-import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Personas;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
@@ -43,30 +39,14 @@ public class IngresoSistemaBean implements Serializable {
 
     @EJB
     private PersonasFacade ejbPersonas;
-    @EJB
-    private ParametrosFacade ejbParametros;
-    @EJB
-    private InstitucionesFacade ejbInstituciones;
 
     public IngresoSistemaBean() {
     }
 
     @PostConstruct
     private void iniciar() {
-        try {
-            Map params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-            String mensaje = (String) params.get("m");
-            if (mensaje != null && !mensaje.isEmpty()) {
-                Mensajes.informacion(mensaje);
-            }
-            Parametros aux = ejbParametros.traerParametro("PG", "INSP");
-            if (aux != null && aux.getParametros() != null & !aux.getParametros().trim().isEmpty()) {
-                institucion = ejbInstituciones.buscar(Integer.parseInt(aux.getParametros()));
-            }
-        } catch (NumberFormatException | ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(IngresoSistemaBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        seguridadBean.iniciar();
+        institucion = seguridadBean.getInstitucion();
     }
 
     public String login() {

@@ -73,6 +73,17 @@ public class MaestrosBean implements Serializable, IMantenimiento {
                 parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
             }
 
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado()!= null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
+            }
+
             int total = ejbMaestros.contar(where, parameters);
             formulario.setTotal(total);
             int endIndex = i + pageSize;
@@ -180,6 +191,8 @@ public class MaestrosBean implements Serializable, IMantenimiento {
         try {
             maestro.setCreado(new Date());
             maestro.setCreadopor(seguridadBean.getLogueado().getUserid());
+            maestro.setActualizado(maestro.getCreado());
+            maestro.setActualizadopor(maestro.getCreadopor());
             ejbMaestros.crear(maestro, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -198,6 +211,8 @@ public class MaestrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            maestro.setActualizado(new Date());
+            maestro.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbMaestros.actualizar(maestro, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());

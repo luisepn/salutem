@@ -81,6 +81,16 @@ public class ParametrosBean implements Serializable, IMantenimiento {
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
             }
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
+            }
             int total = ejbParametros.contar(where, parameters);
             formulario.setTotal(total);
             int endIndex = i + pageSize;

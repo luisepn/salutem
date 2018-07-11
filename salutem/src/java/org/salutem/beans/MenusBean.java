@@ -82,6 +82,17 @@ public class MenusBean implements Serializable, IMantenimiento {
                 }
             }
 
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
+            }
+
             int total = ejbMenus.contar(where, parameters);
             formulario.setTotal(total);
             int endIndex = i + pageSize;
@@ -93,7 +104,7 @@ public class MenusBean implements Serializable, IMantenimiento {
             if (scs.length == 0) {
                 order = "o.modulo.nombre, o.codigo";
             } else {
-                 order = (seguridadBean.getVerAgrupado() ? "o.modulo.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+                order = (seguridadBean.getVerAgrupado() ? "o.modulo.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return ejbMenus.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {

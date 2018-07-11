@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.ArchivosFacade;
 import org.controladores.salutem.ParametrosFacade;
@@ -40,6 +41,9 @@ import org.salutem.utilitarios.Recurso;
 @ManagedBean(name = "salutemImagenes")
 @ViewScoped
 public class ImagenesBean implements Serializable {
+
+    @ManagedProperty("#{salutemSeguridad}")
+    private SeguridadBean seguridadBean;
 
     private Archivos archivo;
 
@@ -88,10 +92,10 @@ public class ImagenesBean implements Serializable {
         if (archivo == null) {
             return null;
         }
-        Parametros ruta = ejbParametros.traerParametro("PGI", "DARCH");
-        if (ruta != null && ruta.getParametros() != null && !ruta.getParametros().trim().isEmpty()) {
+
+        if (seguridadBean.getDirectorioArchivos() == null) {
             try {
-                File folder = new File(ruta.getParametros().trim() + "/" + directorio);
+                File folder = new File(seguridadBean.getDirectorioArchivos() + "/" + directorio);
                 if (!folder.exists()) {
                     folder.mkdirs();
                 }
@@ -107,7 +111,7 @@ public class ImagenesBean implements Serializable {
                 Logger.getLogger(ImagenesBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            Mensajes.error("Directorio de Imágenes no especificado en Parámetros Generales [Maestro: PG; Parámetro: DIRIMG (parametros)]");
+            Mensajes.error("Se necesita un parámetro de sistema:\nMaestro = [PG] Parámetros Generales\nParámetro = [DARCH] Directorio de Archivos\n Especifique en Parámetros la ruta absoluta");
         }
         return null;
     }
@@ -147,6 +151,20 @@ public class ImagenesBean implements Serializable {
     public void setArchivo(Archivos archivo) {
         this.archivo = archivo;
         this.archivo.setArchivo(traerImagen(archivo.getRuta()));
+    }
+
+    /**
+     * @return the seguridadBean
+     */
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
     }
 
 }

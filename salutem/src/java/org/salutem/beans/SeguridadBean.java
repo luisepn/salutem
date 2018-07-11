@@ -2,6 +2,7 @@ package org.salutem.beans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,10 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import org.controladores.salutem.InstitucionesFacade;
 import org.controladores.salutem.UsuariosFacade;
 import org.controladores.salutem.MenusFacade;
+import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.PerfilesFacade;
 import org.controladores.salutem.PersonasFacade;
 import org.entidades.salutem.Parametros;
@@ -56,8 +59,18 @@ public class SeguridadBean implements Serializable {
     private String clave;
     private String claveNueva;
     private String claveNuevaRetipeada;
+
+    //Parámetros iniciales
     private Boolean verActivos = true;
     private Boolean verAgrupado = true;
+    private Date inicioCreado;
+    private Date finCreado;
+    private Date inicioActualizado;
+    private Date finActualizado;
+
+    private String formatoFecha;
+    private String formatoFechaHora;
+    private String directorioArchivos;
 
     @EJB
     private UsuariosFacade ejbUsuarios;
@@ -67,6 +80,52 @@ public class SeguridadBean implements Serializable {
     private PerfilesFacade ejbPerfiles;
     @EJB
     private MenusFacade ejbMenus;
+    @EJB
+    private ParametrosFacade ejbParametros;
+
+    @EJB
+    private InstitucionesFacade ejbInstituciones;
+
+    public SeguridadBean() {
+    }
+
+    public void iniciar() {
+        try {
+            Map params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+            String mensaje = (String) params.get("m");
+            if (mensaje != null && !mensaje.isEmpty()) {
+                Mensajes.informacion(mensaje);
+            }
+            List<Parametros> lista = ejbParametros.traerParametros("PG");
+            for (Parametros p : lista) {
+                switch (p.getCodigo()) {
+                    case "INSP":
+                        institucion = ejbInstituciones.buscar(p.getParametros() != null && !p.getParametros().isEmpty() ? Integer.parseInt(p.getParametros().trim()) : 0);
+                        break;
+                    case "FTF":
+                        formatoFecha = p.getParametros() != null && !p.getParametros().isEmpty() ? p.getParametros().trim() : null;
+                        break;
+                    case "FFH":
+                        formatoFechaHora = p.getParametros() != null && !p.getParametros().isEmpty() ? p.getParametros().trim() : null;
+                        break;
+                    case "DARCH":
+                        directorioArchivos = p.getParametros() != null && !p.getParametros().isEmpty() ? p.getParametros().trim() : null;
+                        break;
+                }
+            }
+
+            if (formatoFecha == null) {
+                formatoFecha = "dd/MM/yyyy";
+            }
+            if (formatoFechaHora == null) {
+                formatoFechaHora = "dd/MM/yyyy hh:mm:ss";
+            }
+
+        } catch (NumberFormatException | ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(IngresoSistemaBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public String setCredenciales(Personas logueado) {
         try {
@@ -185,6 +244,11 @@ public class SeguridadBean implements Serializable {
             }
             titulo = perfil.getMenu().getNombre();
             verActivos = true;
+            verAgrupado = true;
+            inicioCreado = null;
+            finCreado = null;
+            inicioActualizado = null;
+            finActualizado = null;
             return perfil;
 
         } catch (ExcepcionDeConsulta | IOException ex) {
@@ -427,6 +491,104 @@ public class SeguridadBean implements Serializable {
      */
     public void setVerAgrupado(Boolean verAgrupado) {
         this.verAgrupado = verAgrupado;
+    }
+
+    /**
+     * @return the formatoFecha
+     */
+    public String getFormatoFecha() {
+        return formatoFecha;
+    }
+
+    /**
+     * @param formatoFecha the formatoFecha to set
+     */
+    public void setFormatoFecha(String formatoFecha) {
+        this.formatoFecha = formatoFecha;
+    }
+
+    /**
+     * @return the formatoFechaHora
+     */
+    public String getFormatoFechaHora() {
+        return formatoFechaHora;
+    }
+
+    /**
+     * @param formatoFechaHora the formatoFechaHora to set
+     */
+    public void setFormatoFechaHora(String formatoFechaHora) {
+        this.formatoFechaHora = formatoFechaHora;
+    }
+
+    /**
+     * @return the directorioArchivos
+     */
+    public String getDirectorioArchivos() {
+        return directorioArchivos;
+    }
+
+    /**
+     * @param directorioArchivos the directorioArchivos to set
+     */
+    public void setDirectorioArchivos(String directorioArchivos) {
+        this.directorioArchivos = directorioArchivos;
+    }
+
+    /**
+     * @return the inicioCreado
+     */
+    public Date getInicioCreado() {
+        return inicioCreado;
+    }
+
+    /**
+     * @param inicioCreado the inicioCreado to set
+     */
+    public void setInicioCreado(Date inicioCreado) {
+        this.inicioCreado = inicioCreado;
+    }
+
+    /**
+     * @return the finCreado
+     */
+    public Date getFinCreado() {
+        return finCreado;
+    }
+
+    /**
+     * @param finCreado the finCreado to set
+     */
+    public void setFinCreado(Date finCreado) {
+        this.finCreado = finCreado;
+    }
+
+    /**
+     * @return the inicioActualizado
+     */
+    public Date getInicioActualizado() {
+        return inicioActualizado;
+    }
+
+    /**
+     * @param inicioActualizado the inicioActualizado to set
+     */
+    public void setInicioActualizado(Date inicioActualizado) {
+        this.inicioActualizado = inicioActualizado;
+    }
+
+    /**
+     * @return the finActualizado
+     */
+    public Date getFinActualizado() {
+        return finActualizado;
+    }
+
+    /**
+     * @param finActualizado the finActualizado to set
+     */
+    public void setFinActualizado(Date finActualizado) {
+        this.finActualizado = finActualizado;
     }
 
 }
