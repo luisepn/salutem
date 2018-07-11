@@ -75,7 +75,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
                 try {
                     Map parameters = new HashMap();
                     String where = " o.activo=:activo ";
-                    parameters.put("activo", seguridadBean.getActivo());
+                    parameters.put("activo", seguridadBean.getVerActivos());
                     for (Map.Entry e : map.entrySet()) {
                         String clave = (String) e.getKey();
                         String valor = (String) e.getValue();

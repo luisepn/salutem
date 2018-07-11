@@ -13,7 +13,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.MenusFacade;
-import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Menus;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
@@ -41,7 +40,7 @@ public class MenusBean implements Serializable, IMantenimiento {
     private Formulario formulario = new Formulario();
     private LazyDataModel<Menus> menus;
     private Menus menu;
-    private Parametros modulo;
+    private int modulo;
     private Perfiles perfil;
 
     @EJB
@@ -50,8 +49,8 @@ public class MenusBean implements Serializable, IMantenimiento {
     public MenusBean() {
         menus = new LazyDataModel<Menus>() {
             @Override
-            public List<Menus> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                return null;
+            public List<Menus> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+                return cargar(i, pageSize, scs, map);
             }
         };
     }
@@ -64,22 +63,23 @@ public class MenusBean implements Serializable, IMantenimiento {
 
     private List<Menus> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
-            if (modulo == null) {
-                return null;
-            }
-            String where = " o.activo=:activo";
+            String where = " o.activo=:activo and o.menupadre is null and o.modulo.activo=true";
             Map parameters = new HashMap();
-            parameters.put("activo", seguridadBean.getActivo());
-            if (modulo != null) {
-                where += " and o.modulo=:modulo";
-                parameters.put("modulo", modulo);
-            }
+            parameters.put("activo", seguridadBean.getVerActivos());
 
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                if (clave.contains("id")) {
+                    Integer id = Integer.parseInt(valor);
+                    if (id != 0) {
+                        where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
+                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    }
+                } else {
+                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
             }
 
             int total = ejbMenus.contar(where, parameters);
@@ -91,9 +91,9 @@ public class MenusBean implements Serializable, IMantenimiento {
             menus.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.nombre";
+                order = "o.modulo.nombre, o.codigo";
             } else {
-                order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+                 order = (seguridadBean.getVerAgrupado() ? "o.modulo.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return ejbMenus.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
@@ -106,10 +106,6 @@ public class MenusBean implements Serializable, IMantenimiento {
     @Override
     public String buscar() {
         if (!IMantenimiento.validarPerfil(perfil, 'R')) {
-            return null;
-        }
-        if (modulo == null) {
-            Mensajes.advertencia("Seleccione un Módulo del Sistema");
             return null;
         }
         menus = new LazyDataModel<Menus>() {
@@ -126,15 +122,8 @@ public class MenusBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
-        if (modulo == null) {
-            Mensajes.advertencia("Seleccione un módulo");
-            return null;
-        }
         menu = new Menus();
         menu.setActivo(Boolean.TRUE);
-        if (modulo != null) {
-            menu.setModulo(modulo);
-        }
         formulario.insertar();
         return null;
     }
@@ -145,7 +134,6 @@ public class MenusBean implements Serializable, IMantenimiento {
             return null;
         }
         menu = (Menus) menus.getRowData();
-        modulo = (menu.getModulo() != null ? menu.getModulo() : null);
         formulario.editar();
         return null;
     }
@@ -156,16 +144,40 @@ public class MenusBean implements Serializable, IMantenimiento {
             return null;
         }
         menu = (Menus) menus.getRowData();
-        modulo = (menu.getModulo() != null ? menu.getModulo() : null);
         formulario.eliminar();
         return null;
     }
 
     @Override
     public boolean validar() {
-        if ((menu.getNombre() == null) || (menu.getNombre().isEmpty())) {
-            Mensajes.advertencia("Es necesario Texto a desplegar");
+        if (menu.getModulo() == null) {
+            Mensajes.advertencia("Es necesario módulo");
             return true;
+        }
+        if ((menu.getCodigo() == null) || (menu.getCodigo().isEmpty())) {
+            Mensajes.advertencia("Es necesario código");
+            return true;
+        }
+        if ((menu.getNombre() == null) || (menu.getNombre().isEmpty())) {
+            Mensajes.advertencia("Es necesario nombre");
+            return true;
+        }
+        try {
+            String where = "o.codigo=:codigo and o.modulo=:modulo";
+            Map parametros = new HashMap();
+            parametros.put("codigo", menu.getCodigo());
+            parametros.put("modulo", menu.getModulo());
+            if (menu.getId() != null) {
+                where += " and o.id!=:id";
+                parametros.put("id", menu.getId());
+            }
+            if (ejbMenus.contar(where, parametros) > 0) {
+                Mensajes.advertencia("No se permiten menús con código duplicado");
+                return true;
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(MenusBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -262,7 +274,7 @@ public class MenusBean implements Serializable, IMantenimiento {
     /**
      * @return the modulo
      */
-    public Parametros getModulo() {
+    public int getModulo() {
         return modulo;
     }
 
@@ -304,7 +316,7 @@ public class MenusBean implements Serializable, IMantenimiento {
     /**
      * @param modulo the modulo to set
      */
-    public void setModulo(Parametros modulo) {
+    public void setModulo(int modulo) {
         this.modulo = modulo;
     }
 

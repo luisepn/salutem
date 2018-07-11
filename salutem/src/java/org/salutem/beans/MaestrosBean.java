@@ -65,7 +65,7 @@ public class MaestrosBean implements Serializable, IMantenimiento {
         try {
             Map parameters = new HashMap();
             String where = " o.activo=:activo ";
-            parameters.put("activo", seguridadBean.getActivo());
+            parameters.put("activo", seguridadBean.getVerActivos());
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
@@ -82,7 +82,7 @@ public class MaestrosBean implements Serializable, IMantenimiento {
             maestros.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.nombre";
+                order = "o.codigo";
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }

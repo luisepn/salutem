@@ -56,7 +56,8 @@ public class SeguridadBean implements Serializable {
     private String clave;
     private String claveNueva;
     private String claveNuevaRetipeada;
-    private Boolean activo = true;
+    private Boolean verActivos = true;
+    private Boolean verAgrupado = true;
 
     @EJB
     private UsuariosFacade ejbUsuarios;
@@ -183,7 +184,7 @@ public class SeguridadBean implements Serializable {
                 ctx.redirect(ctxPath + "?m=Usuario logueado no est&aacute; en el grupo correcto");
             }
             titulo = perfil.getMenu().getNombre();
-            activo = true;
+            verActivos = true;
             return perfil;
 
         } catch (ExcepcionDeConsulta | IOException ex) {
@@ -401,17 +402,31 @@ public class SeguridadBean implements Serializable {
     }
 
     /**
-     * @return the activo
+     * @return the verActivos
      */
-    public Boolean getActivo() {
-        return activo;
+    public Boolean getVerActivos() {
+        return verActivos;
     }
 
     /**
-     * @param activo the activo to set
+     * @param verActivos the verActivos to set
      */
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
+    public void setVerActivos(Boolean verActivos) {
+        this.verActivos = verActivos;
+    }
+
+    /**
+     * @return the verAgrupado
+     */
+    public Boolean getVerAgrupado() {
+        return verAgrupado;
+    }
+
+    /**
+     * @param verAgrupado the verAgrupado to set
+     */
+    public void setVerAgrupado(Boolean verAgrupado) {
+        this.verAgrupado = verAgrupado;
     }
 
 }

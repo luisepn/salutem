@@ -46,7 +46,7 @@ public class MenusFacade extends AbstractFacade<Menus> {
 
     public List<Menus> traerSubMenus(Menus menu) throws ExcepcionDeConsulta {
         try {
-            Query q = getEntityManager().createQuery("Select object(o) from Menus AS o WHERE o.menupadre =:menu ORDER BY o.nombre");
+            Query q = getEntityManager().createQuery("Select object(o) from Menus AS o WHERE o.menupadre =:menu ORDER BY o.codigo");
             q.setParameter("menu", menu);
             return q.getResultList();
         } catch (Exception e) {

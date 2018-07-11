@@ -1,6 +1,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +41,7 @@ public class CombosBean implements Serializable {
 
     private Parametros foco;
     private Parametros tipo;
-    
+
     @EJB
     private InstitucionesFacade ejbInstituciones;
     @EJB
@@ -54,7 +55,7 @@ public class CombosBean implements Serializable {
     @EJB
     private UsuariosFacade ejbUsuarios;
 
-    private SelectItem[] getSelectItems(List<?> entities, boolean selectOne) {
+    private SelectItem[] getSelectItems(List<?> entities, String clave, boolean selectOne) {
         if (entities == null) {
             return null;
         }
@@ -62,80 +63,101 @@ public class CombosBean implements Serializable {
         int i = 0;
         SelectItem[] items = new SelectItem[size];
         if (selectOne) {
-            items[i++] = new SelectItem(null, "--Seleccione uno--");
-        }
-        for (Object x : entities) {
-            items[i++] = new SelectItem(x, x.toString());
-        }
-        return items;
-    }
 
-    private SelectItem[] getSelectItemsToString(List<?> entities, boolean selectOne) {
-        if (entities == null) {
-            return null;
+            switch (clave) {
+                case "object":
+                    items[i++] = new SelectItem(null, "--Seleccione uno--");
+                    break;
+                case "id":
+                    items[i++] = new SelectItem(0, "--Seleccione uno--");
+                    break;
+                case "toString":
+                    items[i++] = new SelectItem("", "--Seleccione uno--");
+                    break;
+
+            }
+
         }
-        int size = selectOne ? entities.size() + 1 : entities.size();
-        int i = 0;
-        SelectItem[] items = new SelectItem[size];
-        if (selectOne) {
-            items[i++] = new SelectItem(null, "--Seleccione uno--");
-        }
+
         for (Object x : entities) {
-            items[i++] = new SelectItem(x.toString(), x.toString());
+
+            switch (clave) {
+                case "object":
+                    items[i++] = new SelectItem(x, x.toString());
+                    break;
+                case "id":
+                    items[i++] = new SelectItem(x.hashCode(), x.toString());
+                    break;
+                case "toString":
+                    items[i++] = new SelectItem(x.toString(), x.toString());
+                    break;
+
+            }
+
         }
         return items;
     }
 
     public SelectItem[] getInstituciones() {
-        return getSelectItems(traerInstituciones(Boolean.FALSE), true);
+        return getSelectItems(traerInstituciones(Boolean.FALSE), "object", true);
     }
 
     public SelectItem[] getLaboratorios() {
-        return getSelectItems(traerInstituciones(Boolean.TRUE), true);
+        return getSelectItems(traerInstituciones(Boolean.TRUE), "object", true);
     }
 
     public SelectItem[] getMaestros() {
-        return getSelectItems(traerMaestros(), true);
+        return getSelectItems(traerMaestros(), "object", true);
+    }
+
+    public SelectItem[] getMaestrosId() {
+        return getSelectItems(traerMaestros(), "id", true);
     }
 
     public SelectItem[] getMateriales() {
-        return getSelectItems(traerMateriales(), true);
+        return getSelectItems(traerMateriales(), "object", true);
     }
 
     public SelectItem[] getMenus() {
-        return getSelectItems(traerMenus(), true);
+        return getSelectItems(traerMenus(), "object", true);
+    }
+    public SelectItem[] getMenusId() {
+        return getSelectItems(traerMenus(), "id", true);
     }
 
     public SelectItem[] getSubMenus() {
-        return getSelectItems(traerSubMenus(), true);
+        return getSelectItems(traerSubMenus(), "object", true);
     }
 
     public SelectItem[] getSubMenusDisponibles() {
-        return getSelectItems(traerSubMenusDisponibles(), true);
+        return getSelectItems(traerSubMenusDisponibles(), "object", true);
     }
 
     public SelectItem[] getGrupoUsuarios() {
-        return getSelectItems(traerParametros(GRUPO_DE_USUARIO), true);
+        return getSelectItems(traerParametros(GRUPO_DE_USUARIO), "object", true);
     }
 
     public SelectItem[] getModulos() {
-        return getSelectItems(traerParametros(MODULOS_DE_SISTEMA), true);
+        return getSelectItems(traerParametros(MODULOS_DE_SISTEMA), "object", true);
+    }
+    public SelectItem[] getModulosId() {
+        return getSelectItems(traerParametros(MODULOS_DE_SISTEMA), "id", true);
     }
 
     public SelectItem[] getGenero() {
-        return getSelectItems(traerParametros(GENERO_HUMANO), true);
+        return getSelectItems(traerParametros(GENERO_HUMANO), "object", true);
     }
 
     public SelectItem[] getTipoMaterial() {
-        return getSelectItems(traerParametros(TIPO_DE_MATERIAL), true);
+        return getSelectItems(traerParametros(TIPO_DE_MATERIAL), "object", true);
     }
 
     public SelectItem[] getFocos() {
-        return getSelectItems(traerParametros(TIPO_DE_FOCO), true);
+        return getSelectItems(traerParametros(TIPO_DE_FOCO), "object", true);
     }
 
     public SelectItem[] getTratamientos() {
-        return getSelectItems(traerParametros(TIPO_DE_TRATAMIENTO), true);
+        return getSelectItems(traerParametros(TIPO_DE_TRATAMIENTO), "object", true);
     }
 
     private List<Instituciones> traerInstituciones(Boolean tipo) {

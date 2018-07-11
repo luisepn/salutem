@@ -21,14 +21,13 @@
                            toggleable="true">
                     <h:panelGrid columns="2">
                         <h:outputLabel value="Sólo activos:" />
-                        <h:selectBooleanCheckbox value="#{salutemSeguridad.activo}">
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
                             <ace:ajax execute="@all"/>
                         </h:selectBooleanCheckbox>
-                        <h:outputLabel value="Módulo:" />
-                        <h:selectOneMenu value="#{salutemMenus.modulo}">
-                            <f:selectItems value="#{salutemCombos.modulos}"/>
+                        <h:outputLabel value="Ver agrupado:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verAgrupado}">
                             <ace:ajax execute="@all"/>
-                        </h:selectOneMenu>
+                        </h:selectBooleanCheckbox>
                     </h:panelGrid>
                     <h:panelGrid columns="2">
                         <ace:menuBar autoSubmenuDisplay="true">
@@ -70,7 +69,20 @@
                                        rowsPerPageTemplate="#{salutemMenus.formulario.rowsPerPageTemplate}"
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="5">
+                                       rows="10">
+                            <ace:tableConfigPanel 
+                                dragHandle=".ui-tableconf-header"
+                                columnNameConfigurable="true"
+                                columnVisibilityConfigurable="true"
+                                columnOrderingConfigurable="true"
+                                columnSortingConfigurable="true"
+                                modal="true"/>
+                            <ace:row condition="group" groupBy="#{item.modulo.nombre}" pos="before" styleClass="grupo" rendered="#{salutemSeguridad.verAgrupado}">
+                                <ace:column style="text-align: center" colspan="7">
+                                    <ace:excludeFromExport/>
+                                    <h:outputText value="#{item.modulo.nombre}" />
+                                </ace:column>
+                            </ace:row>
                             <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
@@ -80,9 +92,23 @@
                                     <ace:menuItem action="#{salutemMenus.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                 </ace:menuButton>
                             </ace:column> 
-                            <ace:column  headerText="Texto a Mostrar" sortBy="#{item.nombre}" style="text-align: left"
-                                         filterBy="#{item.nombre}" filterMatchMode="contains">
+                            <ace:column  headerText="Código" sortBy="#{item.codigo}" filterBy="#{item.codigo}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.codigo}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombre" sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
+                            </ace:column>
+                            <ace:column  headerText="Módulo"                                         
+                                         sortBy="#{item.modulo.nombre}" 
+                                         filterBy="#{item.modulo.id}"
+                                         filterOptions="#{salutemCombos.modulosId}"                                          
+                                         filterValue="#{salutemMenus.modulo}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.modulo.nombre}"/>
                             </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
@@ -98,8 +124,18 @@
                     visible="#{salutemMenus.formulario.mostrar}">
                     <h:panelGroup>
                         <h:panelGrid columns="2">
-                            <h:outputLabel value="Texto a Mostrar:" for="codigo" />
-                            <ace:textEntry id="codigo" value="#{salutemMenus.menu.nombre}" title="Texto a Mostrar" />
+                            <h:outputLabel value="Módulo:" />
+                            <h:selectOneMenu value="#{salutemMenus.menu.modulo}">
+                                <f:selectItems value="#{salutemCombos.modulos}"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Código:" for="codigo" />
+                            <ace:textEntry id="codigo" value="#{salutemMenus.menu.codigo}" title="Código"/>
+                            <h:outputLabel value="Nombre:" for="nombre" />
+                            <ace:textEntry id="nombre" value="#{salutemMenus.menu.nombre}" title="Nombre" />
+                            <h:outputLabel value="Descripción:" for="descripcion" />
+                            <ace:textAreaEntry id="descripcion" value="#{salutemMenus.menu.descripcion}" cols="19" rows="2"/>
+                            <h:outputLabel value="Activo:" />
+                            <h:selectBooleanCheckbox value="#{salutemMenus.menu.activo}" title="Activo"/>
                         </h:panelGrid>
                     </h:panelGroup>
                     <h:panelGrid>

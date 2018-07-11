@@ -1,6 +1,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,8 @@ public class SubMenusBean implements Serializable, IMantenimiento {
     private Formulario formulario = new Formulario();
     private LazyDataModel<Menus> menus;
     private Menus menu;
-    private Menus menuPadre;
+    private int modulo;
+    private int menuPadre;
     private Perfiles perfil;
 
     @EJB
@@ -49,7 +51,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
         menus = new LazyDataModel<Menus>() {
             @Override
             public List<Menus> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                return null;
+                return cargar(i, i1, scs, map);
             }
         };
     }
@@ -62,17 +64,23 @@ public class SubMenusBean implements Serializable, IMantenimiento {
 
     private List<Menus> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
-            if (menuPadre == null) {
-                return null;
-            }
+            String where = " o.activo=:activo and o.menupadre.modulo.activo=true and o.menupadre.activo=true";
             Map parameters = new HashMap();
-            parameters.put("padre", menuPadre);
-            String where = "o.menupadre=:padre";
+            parameters.put("activo", seguridadBean.getVerActivos());
+
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                if (clave.contains("id")) {
+                    Integer id = Integer.parseInt(valor);
+                    if (id != 0) {
+                        where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
+                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    }
+                } else {
+                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
             }
 
             int total = ejbMenus.contar(where, parameters);
@@ -84,9 +92,9 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             menus.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.nombre";
+                order = "o.menupadre.modulo.nombre, o.menupadre.nombre, o.codigo";
             } else {
-                order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+                order = (seguridadBean.getVerAgrupado() ? "o.menupadre.modulo.nombre, o.menupadre.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return ejbMenus.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
@@ -99,10 +107,6 @@ public class SubMenusBean implements Serializable, IMantenimiento {
     @Override
     public String buscar() {
         if (!IMantenimiento.validarPerfil(perfil, 'R')) {
-            return null;
-        }
-        if (menuPadre == null) {
-            Mensajes.advertencia("Seleccione un menú primero");
             return null;
         }
         menus = new LazyDataModel<Menus>() {
@@ -120,7 +124,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             return null;
         }
         menu = new Menus();
-        menu.setMenupadre(menuPadre);
+        menu.setActivo(Boolean.TRUE);
         formulario.insertar();
         return null;
     }
@@ -147,16 +151,20 @@ public class SubMenusBean implements Serializable, IMantenimiento {
 
     @Override
     public boolean validar() {
+        if (menu.getMenupadre() == null) {
+            Mensajes.advertencia("Es necesario menú padre");
+            return true;
+        }
+        if ((menu.getCodigo() == null) || (menu.getCodigo().isEmpty())) {
+            Mensajes.advertencia("Es necesario código");
+            return true;
+        }
         if ((menu.getNombre() == null) || (menu.getNombre().isEmpty())) {
-            Mensajes.advertencia("Es necesario Texto a desplegar");
+            Mensajes.advertencia("Es necesario nombre");
             return true;
         }
         if ((menu.getFormulario() == null) || (menu.getFormulario().isEmpty())) {
             Mensajes.advertencia("Es necesario nombre de formulario");
-            return true;
-        }
-        if (menu.getMenupadre() == null) {
-            Mensajes.advertencia("Es necesario seleccionar un  Menú");
             return true;
         }
         return false;
@@ -171,6 +179,8 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            menu.setCreado(new Date());
+            menu.setCreadopor(seguridadBean.getLogueado().getUserid());
             ejbMenus.crear(menu, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -190,6 +200,8 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            menu.setActualizado(new Date());
+            menu.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbMenus.actualizar(menu, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -254,7 +266,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
     /**
      * @return the menuPadre
      */
-    public Menus getMenuPadre() {
+    public int getMenuPadre() {
         return menuPadre;
     }
 
@@ -296,7 +308,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
     /**
      * @param menuPadre the menuPadre to set
      */
-    public void setMenuPadre(Menus menuPadre) {
+    public void setMenuPadre(int menuPadre) {
         this.menuPadre = menuPadre;
     }
 
@@ -306,4 +318,19 @@ public class SubMenusBean implements Serializable, IMantenimiento {
     public void setPerfil(Perfiles perfil) {
         this.perfil = perfil;
     }
+
+    /**
+     * @return the modulo
+     */
+    public int getModulo() {
+        return modulo;
+    }
+
+    /**
+     * @param modulo the modulo to set
+     */
+    public void setModulo(int modulo) {
+        this.modulo = modulo;
+    }
+
 }

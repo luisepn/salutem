@@ -22,9 +22,9 @@
                     <h:panelGrid>
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Sólo activos:" />
-                            <h:selectBooleanCheckbox value="#{salutemSeguridad.activo}">
+                            <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
                                 <ace:ajax execute="@all"/>
-                            </h:selectBooleanCheckbox>
+                            </h:selectBooleanCheckbox>                            
                         </h:panelGrid>
                         <h:panelGrid columns="2">
                             <ace:menuBar autoSubmenuDisplay="true" >
@@ -69,6 +69,13 @@
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                        rows="10">
+                            <ace:tableConfigPanel 
+                                dragHandle=".ui-tableconf-header"
+                                columnNameConfigurable="true"
+                                columnVisibilityConfigurable="true"
+                                columnOrderingConfigurable="true"
+                                columnSortingConfigurable="true"
+                                modal="true"/>
                             <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
@@ -103,7 +110,7 @@
                     <h:panelGroup>
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Código:" for="codigo" />
-                            <ace:textEntry id="codigo" value="#{salutemMaestros.maestro.codigo}" title="Código" disabled="#{!salutemMaestros.formulario.crear}"/>
+                            <ace:textEntry id="codigo" value="#{salutemMaestros.maestro.codigo}" title="Código"/>
                             <h:outputLabel value="Nombre:" for="nombre" />
                             <ace:textEntry id="nombre" value="#{salutemMaestros.maestro.nombre}" title="Nombre" />
                             <h:outputLabel value="Descripción:" for="descripcion" />

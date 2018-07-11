@@ -18,9 +18,9 @@
                     <ace:panel header="¡Bienvenido!" style="margin: 0 auto; width: 275px;">
                         <h:panelGrid columns="2" width="100%" style="text-align: center;">
                             <h:outputLabel value="Usuario:"/>
-                            <ace:textEntry value="#{ingresoSistema.usr}" title="Usuario"/>
+                            <ace:textEntry value="#{ingresoSistema.usr}" title="Usuario" immediate="true"/>
                             <h:outputLabel  value="Contraseña:"/>
-                            <ace:textEntry value="#{ingresoSistema.pwd}" secret="true" title="Constraseña"/>
+                            <ace:textEntry value="#{ingresoSistema.pwd}" secret="true" title="Constraseña" immediate="true"/>
                         </h:panelGrid>
                         <ace:messages/>
                         <h:panelGrid width="100%" style="text-align: center;">

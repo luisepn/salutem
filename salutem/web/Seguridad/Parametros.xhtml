@@ -22,14 +22,13 @@
                            toggleable="true" >
                     <h:panelGrid columns="2">
                         <h:outputLabel value="Sólo activos:" />
-                        <h:selectBooleanCheckbox value="#{salutemSeguridad.activo}">
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
                             <ace:ajax execute="@all"/>
                         </h:selectBooleanCheckbox>
-                        <h:outputLabel value="Maestro:" />
-                        <h:selectOneMenu value="#{salutemParametros.maestro}">
-                            <f:selectItems value="#{salutemCombos.maestros}"/>
+                        <h:outputLabel value="Ver agrupado:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verAgrupado}">
                             <ace:ajax execute="@all"/>
-                        </h:selectOneMenu>
+                        </h:selectBooleanCheckbox>
                     </h:panelGrid>
                     <h:panelGrid columns="2">
                         <ace:menuBar autoSubmenuDisplay="true" >
@@ -72,7 +71,14 @@
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                        rows="10">
-                            <ace:row condition="group" groupBy="#{item.maestro.nombre}" pos="before" styleClass="grupo">
+                            <ace:tableConfigPanel 
+                                dragHandle=".ui-tableconf-header"
+                                columnNameConfigurable="true"
+                                columnVisibilityConfigurable="true"
+                                columnOrderingConfigurable="true"
+                                columnSortingConfigurable="true"
+                                modal="true"/>
+                            <ace:row condition="group" groupBy="#{item.maestro.nombre}" pos="before" styleClass="grupo" rendered="#{salutemSeguridad.verAgrupado}">
                                 <ace:column style="text-align: center" colspan="7">
                                     <ace:excludeFromExport/>
                                     <h:outputText value="#{item.maestro.nombre}" />
@@ -99,7 +105,13 @@
                             <ace:column  headerText="Parámetros" sortBy="#{item.parametros}" filterBy="#{item.parametros}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.parametros}"/>
                             </ace:column>
-                            <ace:column  headerText="Maestro" rendered="#{salutemParametros.maestro eq null}" sortBy="#{item.maestro.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" style="text-align: left">
+                            <ace:column  headerText="Maestro"                                         
+                                         sortBy="#{item.maestro.nombre}" 
+                                         filterBy="#{item.maestro.id}"
+                                         filterOptions="#{salutemCombos.maestrosId}"                                          
+                                         filterValue="#{salutemParametros.maestro}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
                                 <h:outputText  value="#{item.maestro.nombre}"/>
                             </ace:column>
                         </ace:dataTable>
@@ -116,17 +128,23 @@
                     visible="#{salutemParametros.formulario.mostrar}">
                     <h:panelGroup>
                         <h:panelGrid columns="2">
+                            <h:outputLabel value="Maestro:" />
+                            <h:selectOneMenu value="#{salutemParametros.parametro.maestro}">
+                                <f:selectItems value="#{salutemCombos.maestros}"/>
+                            </h:selectOneMenu>
                             <h:outputLabel value="Código:" for="codigo" />
-                            <ace:textEntry id="codigo" value="#{salutemParametros.parametro.codigo}" title="Código" disabled="#{!salutemParametros.formulario.crear}"/>
+                            <ace:textEntry id="codigo" value="#{salutemParametros.parametro.codigo}" title="Código"/>
                             <h:outputLabel value="Nombre:" for="nombre" />
                             <ace:textEntry id="nombre" value="#{salutemParametros.parametro.nombre}" title="Nombre" />
                             <h:outputLabel value="Descripción:" for="descripcion" />
                             <ace:textAreaEntry id="descripcion" value="#{salutemParametros.parametro.descripcion}" cols="19" rows="2"/>
                             <h:outputLabel value="Parámetros:" for="parametros" />
                             <ace:textAreaEntry id="parametros" value="#{salutemParametros.parametro.parametros}" cols="19" rows="2"/>
+                            <h:outputLabel value="Activo:" />
+                            <h:selectBooleanCheckbox value="#{salutemParametros.parametro.activo}" title="Activo"/>
                         </h:panelGrid>
                     </h:panelGroup>
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
                                           action="#{salutemParametros.insertar()}"
@@ -140,6 +158,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemParametros.cancelar()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" />
                     </h:panelGrid>
                 </ace:dialog>
 

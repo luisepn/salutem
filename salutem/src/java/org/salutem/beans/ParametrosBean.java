@@ -14,7 +14,6 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.ParametrosFacade;
 import org.entidades.salutem.Parametros;
-import org.entidades.salutem.Maestros;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
@@ -41,7 +40,7 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     private Formulario formulario = new Formulario();
     private LazyDataModel<Parametros> parametros;
     private Parametros parametro;
-    private Maestros maestro;
+    private int maestro;
     private Perfiles perfil;
 
     @EJB
@@ -50,8 +49,8 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     public ParametrosBean() {
         parametros = new LazyDataModel<Parametros>() {
             @Override
-            public List<Parametros> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                return null;
+            public List<Parametros> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+                return cargar(i, pageSize, scs, map);
             }
         };
     }
@@ -65,18 +64,22 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     private List<Parametros> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
             Map parameters = new HashMap();
-            String where = " o.activo=:activo";
-            parameters.put("activo", seguridadBean.getActivo());
-            if (maestro != null) {
-                where += " and o.maestro=:maestro";
-                parameters.put("maestro", maestro);
-            }
+            String where = " o.activo=:activo and o.maestro.activo=true";
+            parameters.put("activo", seguridadBean.getVerActivos());
 
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                if (clave.contains("id")) {
+                    Integer id = Integer.parseInt(valor);
+                    if (id != 0) {
+                        where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
+                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    }
+                } else {
+                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
             }
             int total = ejbParametros.contar(where, parameters);
             formulario.setTotal(total);
@@ -87,9 +90,9 @@ public class ParametrosBean implements Serializable, IMantenimiento {
             parametros.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.maestro.codigo, o.codigo";
+                order = "o.maestro.nombre, o.codigo";
             } else {
-                order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+                order = (seguridadBean.getVerAgrupado() ? "o.maestro.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return ejbParametros.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
@@ -118,12 +121,7 @@ public class ParametrosBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
-        if (maestro == null) {
-            Mensajes.advertencia("Seleccione una tabla maestra primero");
-            return null;
-        }
         parametro = new Parametros();
-        parametro.setMaestro(maestro);
         parametro.setActivo(Boolean.TRUE);
         formulario.insertar();
         return null;
@@ -152,6 +150,10 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     @Override
     public boolean validar() {
         try {
+            if (parametro.getMaestro() == null) {
+                Mensajes.advertencia("Es necesario maestro");
+                return true;
+            }
             if ((parametro.getCodigo() == null) || (parametro.getCodigo().isEmpty())) {
                 Mensajes.advertencia("Es necesario código");
                 return true;
@@ -277,7 +279,7 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     /**
      * @return the maestro
      */
-    public Maestros getMaestro() {
+    public int getMaestro() {
         return maestro;
     }
 
@@ -319,7 +321,7 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     /**
      * @param maestro the maestro to set
      */
-    public void setMaestro(Maestros maestro) {
+    public void setMaestro(int maestro) {
         this.maestro = maestro;
     }
 

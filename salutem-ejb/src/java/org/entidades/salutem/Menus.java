@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,7 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author fernando
+ * @author usuario
  */
 @Entity
 @Table(name = "menus")
@@ -37,15 +36,15 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Menus.findAll", query = "SELECT m FROM Menus m")
     , @NamedQuery(name = "Menus.findById", query = "SELECT m FROM Menus m WHERE m.id = :id")
-    , @NamedQuery(name = "Menus.findByCodigo", query = "SELECT m FROM Menus m WHERE m.codigo = :codigo")
     , @NamedQuery(name = "Menus.findByNombre", query = "SELECT m FROM Menus m WHERE m.nombre = :nombre")
     , @NamedQuery(name = "Menus.findByFormulario", query = "SELECT m FROM Menus m WHERE m.formulario = :formulario")
-    , @NamedQuery(name = "Menus.findByActivo", query = "SELECT m FROM Menus m WHERE m.activo = :activo")
     , @NamedQuery(name = "Menus.findByDescripcion", query = "SELECT m FROM Menus m WHERE m.descripcion = :descripcion")
     , @NamedQuery(name = "Menus.findByCreado", query = "SELECT m FROM Menus m WHERE m.creado = :creado")
     , @NamedQuery(name = "Menus.findByCreadopor", query = "SELECT m FROM Menus m WHERE m.creadopor = :creadopor")
     , @NamedQuery(name = "Menus.findByActualizado", query = "SELECT m FROM Menus m WHERE m.actualizado = :actualizado")
-    , @NamedQuery(name = "Menus.findByActualizadopor", query = "SELECT m FROM Menus m WHERE m.actualizadopor = :actualizadopor")})
+    , @NamedQuery(name = "Menus.findByActualizadopor", query = "SELECT m FROM Menus m WHERE m.actualizadopor = :actualizadopor")
+    , @NamedQuery(name = "Menus.findByActivo", query = "SELECT m FROM Menus m WHERE m.activo = :activo")
+    , @NamedQuery(name = "Menus.findByCodigo", query = "SELECT m FROM Menus m WHERE m.codigo = :codigo")})
 public class Menus implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,13 +54,8 @@ public class Menus implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Size(max = 2147483647)
-    @Column(name = "codigo")
-    private String codigo;
-    @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
-    @Column(name = "activo")
-    private Boolean activo;
     @Size(max = 2147483647)
     @Column(name = "formulario")
     private String formulario;
@@ -80,8 +74,11 @@ public class Menus implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "menu")
-    private List<Perfiles> perfilesList;
+    @Column(name = "activo")
+    private Boolean activo;
+    @Size(max = 2147483647)
+    @Column(name = "codigo")
+    private String codigo;
     @OneToMany(mappedBy = "menupadre")
     private List<Menus> menusList;
     @JoinColumn(name = "menupadre", referencedColumnName = "id")
@@ -106,28 +103,12 @@ public class Menus implements Serializable {
         this.id = id;
     }
 
-    public String getCodigo() {
-        return nombre;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
     public String getNombre() {
         return nombre;
     }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
     }
 
     public String getFormulario() {
@@ -178,13 +159,20 @@ public class Menus implements Serializable {
         this.actualizadopor = actualizadopor;
     }
 
-    @XmlTransient
-    public List<Perfiles> getPerfilesList() {
-        return perfilesList;
+    public Boolean getActivo() {
+        return activo;
     }
 
-    public void setPerfilesList(List<Perfiles> perfilesList) {
-        this.perfilesList = perfilesList;
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     @XmlTransient
@@ -236,5 +224,5 @@ public class Menus implements Serializable {
     public String toString() {
         return nombre;
     }
-
+    
 }
