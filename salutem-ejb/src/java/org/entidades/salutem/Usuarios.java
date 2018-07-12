@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author fernando
+ * @author usuario
  */
 @Entity
 @Table(name = "usuarios")
@@ -37,7 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Usuarios.findByCreado", query = "SELECT u FROM Usuarios u WHERE u.creado = :creado")
     , @NamedQuery(name = "Usuarios.findByCreadopor", query = "SELECT u FROM Usuarios u WHERE u.creadopor = :creadopor")
     , @NamedQuery(name = "Usuarios.findByActualizado", query = "SELECT u FROM Usuarios u WHERE u.actualizado = :actualizado")
-    , @NamedQuery(name = "Usuarios.findByActualizadopor", query = "SELECT u FROM Usuarios u WHERE u.actualizadopor = :actualizadopor")})
+    , @NamedQuery(name = "Usuarios.findByActualizadopor", query = "SELECT u FROM Usuarios u WHERE u.actualizadopor = :actualizadopor")
+    , @NamedQuery(name = "Usuarios.findByActivo", query = "SELECT u FROM Usuarios u WHERE u.activo = :activo")})
 public class Usuarios implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -61,6 +62,8 @@ public class Usuarios implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    @Column(name = "activo")
+    private Boolean activo;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
     @ManyToOne
     private Instituciones institucion;
@@ -129,6 +132,14 @@ public class Usuarios implements Serializable {
         this.actualizadopor = actualizadopor;
     }
 
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
     public Instituciones getInstitucion() {
         return institucion;
     }
@@ -185,5 +196,5 @@ public class Usuarios implements Serializable {
     public String toString() {
         return persona != null ? persona.toString() : "[" + id + "]";
     }
-
+    
 }

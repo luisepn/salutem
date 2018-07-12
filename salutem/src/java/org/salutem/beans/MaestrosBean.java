@@ -78,7 +78,7 @@ public class MaestrosBean implements Serializable, IMantenimiento {
                 parameters.put("iniciocreado", seguridadBean.getInicioCreado());
                 parameters.put("fincreado", seguridadBean.getFinCreado());
             }
-            if (seguridadBean.getInicioActualizado()!= null && seguridadBean.getFinActualizado() != null) {
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
                 where += " and o.actualizado between :inicioactualizado and :finactualizado";
                 parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
                 parameters.put("finactualizado", seguridadBean.getFinActualizado());

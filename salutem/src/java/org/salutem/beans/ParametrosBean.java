@@ -70,7 +70,7 @@ public class ParametrosBean implements Serializable, IMantenimiento {
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                if (clave.contains("id")) {
+                if (clave.contains(".id")) {
                     Integer id = Integer.parseInt(valor);
                     if (id != 0) {
                         where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
@@ -208,6 +208,8 @@ public class ParametrosBean implements Serializable, IMantenimiento {
         try {
             parametro.setCreado(new Date());
             parametro.setCreadopor(seguridadBean.getLogueado().getUserid());
+            parametro.setActualizado(parametro.getCreado());
+            parametro.setActualizadopor(parametro.getCreadopor());
             ejbParametros.crear(parametro, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());

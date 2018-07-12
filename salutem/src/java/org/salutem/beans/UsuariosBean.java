@@ -1,6 +1,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,7 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.UsuariosFacade;
-import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Usuarios;
-import org.entidades.salutem.Instituciones;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
@@ -33,9 +32,11 @@ import org.salutem.utilitarios.Mensajes;
 public class UsuariosBean extends PersonasAbstractoBean implements Serializable {
 
     private Usuarios usuario;
-    private Parametros modulo;
-    private Instituciones institucion;
     private LazyDataModel<Usuarios> usuarios;
+
+    private int modulo;
+    private int grupo;
+    private int institucion;
 
     @EJB
     private UsuariosFacade ejbUsuarios;
@@ -44,7 +45,7 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         usuarios = new LazyDataModel<Usuarios>() {
             @Override
             public List<Usuarios> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                return null;
+                return cargar(i, i1, scs, map);
             }
         };
     }
@@ -53,22 +54,42 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
     @Override
     public void activar() {
         perfil = seguridadBean.traerPerfil("Usuarios");
-        institucion = seguridadBean.getInstitucion();
     }
 
     private List<Usuarios> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
-            if (persona == null) {
-                return null;
-            }
             Map parameters = new HashMap();
-            parameters.put("persona", persona);
-            String where = " o.persona=:persona";
+            String where = " o.activo=:activo ";
+            parameters.put("activo", seguridadBean.getVerActivos());
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                if (clave.contains(".id")) {
+                    Integer id = Integer.parseInt(valor);
+                    if (id != 0) {
+                        where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
+                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    }
+                } else {
+                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
+            }
+
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
+            }
+
+            if (seguridadBean.getInstitucion() != null) {
+                where += " and o.institucion=:institucion";
+                parameters.put("institucion", seguridadBean.getInstitucion());
             }
 
             int total = ejbUsuarios.contar(where, parameters);
@@ -97,10 +118,6 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'R')) {
             return null;
         }
-        if (persona == null) {
-            Mensajes.informacion("Es necesario un usuario válido");
-            return null;
-        }
         usuarios = new LazyDataModel<Usuarios>() {
             @Override
             public List<Usuarios> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -115,13 +132,8 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
-        if (persona == null) {
-            Mensajes.informacion("Es necesario un usuario válido");
-            return null;
-        }
         usuario = new Usuarios();
-        usuario.setPersona(persona);
-        usuario.setInstitucion(institucion);
+        usuario.setActivo(Boolean.TRUE);
         formulario.insertar();
         return null;
     }
@@ -145,6 +157,7 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             return null;
         }
         usuario = (Usuarios) usuarios.getRowData();
+        persona = usuario.getPersona();
         formulario.eliminar();
         return null;
     }
@@ -191,13 +204,18 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             return null;
         }
         try {
+            usuario.setPersona(persona);
+            usuario.setCreado(new Date());
+            usuario.setCreadopor(seguridadBean.getLogueado().getUserid());
+            usuario.setActualizado(usuario.getCreado());
+            usuario.setActualizadopor(usuario.getCreadopor());
             ejbUsuarios.crear(usuario, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        Mensajes.informacion("Creación exitoso.\n" + persona.toString());
+        Mensajes.informacion("Creación exitosa.\n" + persona.toString());
         return null;
     }
 
@@ -210,6 +228,9 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             return null;
         }
         try {
+            usuario.setPersona(persona);
+            usuario.setActualizado(new Date());
+            usuario.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbUsuarios.actualizar(usuario, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -251,17 +272,10 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
     }
 
     /**
-     * @return the modulo
+     * @param usuario the usuario to set
      */
-    public Parametros getModulo() {
-        return modulo;
-    }
-
-    /**
-     * @return the institucion
-     */
-    public Instituciones getInstitucion() {
-        return institucion;
+    public void setUsuario(Usuarios usuario) {
+        this.usuario = usuario;
     }
 
     /**
@@ -272,31 +286,52 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
     }
 
     /**
-     * @param usuario the usuario to set
+     * @param usuarios the usuarios to set
      */
-    public void setUsuario(Usuarios usuario) {
-        this.usuario = usuario;
+    public void setUsuarios(LazyDataModel<Usuarios> usuarios) {
+        this.usuarios = usuarios;
+    }
+
+    /**
+     * @return the modulo
+     */
+    public int getModulo() {
+        return modulo;
     }
 
     /**
      * @param modulo the modulo to set
      */
-    public void setModulo(Parametros modulo) {
+    public void setModulo(int modulo) {
         this.modulo = modulo;
+    }
+
+    /**
+     * @return the grupo
+     */
+    public int getGrupo() {
+        return grupo;
+    }
+
+    /**
+     * @param grupo the grupo to set
+     */
+    public void setGrupo(int grupo) {
+        this.grupo = grupo;
+    }
+
+    /**
+     * @return the institucion
+     */
+    public int getInstitucion() {
+        return institucion;
     }
 
     /**
      * @param institucion the institucion to set
      */
-    public void setInstitucion(Instituciones institucion) {
+    public void setInstitucion(int institucion) {
         this.institucion = institucion;
-    }
-
-    /**
-     * @param usuarios the usuarios to set
-     */
-    public void setUsuarios(LazyDataModel<Usuarios> usuarios) {
-        this.usuarios = usuarios;
     }
 
 }

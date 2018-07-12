@@ -22,7 +22,7 @@
                     <h:panelGrid>
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Sólo activos:" />
-                            <h:selectBooleanCheckbox value="#{salutemPersonas.activo}">
+                            <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
                                 <ace:ajax execute="@all"/>
                             </h:selectBooleanCheckbox>
                         </h:panelGrid>
@@ -68,6 +68,13 @@
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                        rows="5">
+                            <ace:tableConfigPanel 
+                                dragHandle=".ui-tableconf-header"
+                                columnNameConfigurable="true"
+                                columnVisibilityConfigurable="true"
+                                columnOrderingConfigurable="true"
+                                columnSortingConfigurable="true"
+                                modal="true"/>
                             <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
@@ -97,13 +104,48 @@
                                          filterBy="#{item.userid}" filterMatchMode="contains">
                                 <h:outputText  value="#{item.userid}"/>
                             </ace:column>
-                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.fecha}" style="text-align: left"
-                                         filterBy="#{item.fecha}" filterMatchMode="contains">
+                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.fecha}"
+                                         filterBy="#{item.fecha}" 
+                                         filterDatePattern="dd/MM/yyyy"
+                                         filterValueMin="#{salutemPersonas.fechaInicio}"
+                                         filterValueMax="#{salutemPersonas.fechaFin}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left">
                                 <h:outputText  value="#{item.fecha}">
                                     <f:convertDateTime  parent="dd/MM/yyyy"/>
                                 </h:outputText>
                             </ace:column>
-
+                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                         filterBy="#{item.creado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                         filterValueMax="#{salutemSeguridad.finCreado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                         filterBy="#{item.actualizado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                         filterValueMax="#{salutemSeguridad.finActualizado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizadopor}"/>
+                            </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
                 </ace:panel>

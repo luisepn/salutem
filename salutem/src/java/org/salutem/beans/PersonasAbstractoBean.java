@@ -49,6 +49,9 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
     protected List<Personas> listaPersonas;
     protected String claveBusqueda;
 
+    protected Date fechaInicio;
+    protected Date fechaFin;
+
     @EJB
     protected PersonasFacade ejbPersonas;
     @EJB
@@ -58,10 +61,58 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         personas = new LazyDataModel<Personas>() {
             @Override
             public List<Personas> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                return null;
+                return cargar(i, i1, scs, map);
             }
         };
+    }
 
+    private List<Personas> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+        try {
+            Map parameters = new HashMap();
+            String where = " o.activo=:activo ";
+            parameters.put("activo", seguridadBean.getVerActivos());
+            for (Map.Entry e : map.entrySet()) {
+                String clave = (String) e.getKey();
+                String valor = (String) e.getValue();
+                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+            }
+
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
+            }
+            if (fechaInicio != null && fechaFin != null) {
+                where += " and o.fecha between :fechainicio and :fechafin";
+                parameters.put("fechainicio", fechaInicio);
+                parameters.put("fechafin", fechaFin);
+            }
+
+            int total = ejbPersonas.contar(where, parameters);
+            formulario.setTotal(total);
+            int endIndex = i + pageSize;
+            if (endIndex > total) {
+                endIndex = total;
+            }
+            personas.setRowCount(total);
+            String order;
+            if (scs.length == 0) {
+                order = "o.apellidos";
+            } else {
+                order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+            }
+            return ejbPersonas.buscar(where, parameters, order, i, endIndex);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
@@ -71,37 +122,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         }
         personas = new LazyDataModel<Personas>() {
             @Override
-            public List<Personas> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
-                try {
-                    Map parameters = new HashMap();
-                    String where = " o.activo=:activo ";
-                    parameters.put("activo", seguridadBean.getVerActivos());
-                    for (Map.Entry e : map.entrySet()) {
-                        String clave = (String) e.getKey();
-                        String valor = (String) e.getValue();
-                        where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                        parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
-                    }
-
-                    int total = ejbPersonas.contar(where, parameters);
-                    formulario.setTotal(total);
-                    int endIndex = i + pageSize;
-                    if (endIndex > total) {
-                        endIndex = total;
-                    }
-                    personas.setRowCount(total);
-                    String order;
-                    if (scs.length == 0) {
-                        order = "o.apellidos";
-                    } else {
-                        order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
-                    }
-                    return ejbPersonas.buscar(where, parameters, order, i, endIndex);
-                } catch (ExcepcionDeConsulta ex) {
-                    Mensajes.fatal(ex.getMessage());
-                    Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return null;
+            public List<Personas> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                return cargar(i, i1, scs, map);
             }
         };
         return null;
@@ -195,6 +217,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
             persona.setCreado(new Date());
             persona.setCreadopor(seguridadBean.getLogueado().getUserid());
+            persona.setActualizado(persona.getCreado());
+            persona.setActualizadopor(persona.getActualizadopor());
             ejbPersonas.crear(persona, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -442,6 +466,34 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
      */
     public void setImagenesBean(ImagenesBean imagenesBean) {
         this.imagenesBean = imagenesBean;
+    }
+
+    /**
+     * @return the fechaInicio
+     */
+    public Date getFechaInicio() {
+        return fechaInicio;
+    }
+
+    /**
+     * @param fechaInicio the fechaInicio to set
+     */
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    /**
+     * @return the fechaFin
+     */
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    /**
+     * @param fechaFin the fechaFin to set
+     */
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
 }

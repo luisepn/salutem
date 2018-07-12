@@ -21,38 +21,10 @@
                                toggleable="true">
 
                         <h:panelGrid columns="2">
-                            <h:outputLabel value="Apellidos:"/>
-                            <ace:autoCompleteEntry
-                                value="#{salutemUsuarios.claveBusqueda}"
-                                rows="10" width="400"
-                                listVar="usuario"
-                                filterBy="#{usuario.toString()}"
-                                filterMatchMode="contains"
-                                listValue="#{salutemUsuarios.listaPersonas}"
-                                valueChangeListener="#{salutemUsuarios.cambiaApellidos}"
-                                textChangeListener="#{salutemUsuarios.apellidosChangeEventHandler}">
-                                <f:facet name="row">
-                                    <h:panelGrid>
-                                        <h:outputText value="#{usuario.toString()}"/>
-                                    </h:panelGrid>
-                                </f:facet>
-                                <ace:ajax execute="@all"/>
-                            </ace:autoCompleteEntry>
+
                         </h:panelGrid>
 
-                        <h:panelGrid>
-                            <ace:panel rendered="#{salutemUsuarios.persona ne null}">
-                                <h:panelGrid columns="4" >
-                                    <h:outputLabel value="Nombres:" for="nombreidca" styleClass="bold" />
-                                    <h:outputLabel id="nombreidca" value="#{salutemUsuarios.persona.nombres}" />
-                                    <h:outputLabel value="Apellidos:" for="apellidosidca" styleClass="bold" />
-                                    <h:outputLabel id="apellidosidca" value="#{salutemUsuarios.persona.apellidos}"  />
-                                    <h:outputLabel value="CI:" for="ciidca" styleClass="bold"  />
-                                    <h:outputLabel id="ciidca" value="#{salutemUsuarios.persona.cedula}"/>
-                                    <h:outputLabel value="Email:" for="emailidca" styleClass="bold"  />
-                                    <h:outputLabel id="emailidca" value="#{salutemUsuarios.persona.email}"/>
-                                </h:panelGrid>
-                            </ace:panel>
+                        <h:panelGrid>                           
                             <h:panelGrid columns="2">
                                 <ace:menuBar autoSubmenuDisplay="true" >
                                     <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemUsuarios.buscar()}"/>
@@ -94,7 +66,13 @@
                                            currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                            rows="5">
-
+                                <ace:tableConfigPanel 
+                                    dragHandle=".ui-tableconf-header"
+                                    columnNameConfigurable="true"
+                                    columnVisibilityConfigurable="true"
+                                    columnOrderingConfigurable="true"
+                                    columnSortingConfigurable="true"
+                                    modal="true"/>
                                 <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                     <h:outputText value="#{row+1}"/>
                                 </ace:column>
@@ -104,19 +82,65 @@
                                         <ace:menuItem action="#{salutemUsuarios.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                     </ace:menuButton>
                                 </ace:column>  
-                                <ace:column  headerText="Módulo" style="text-align: left" sortBy="#{item.modulo.nombre}"
-                                             filterBy="#{item.modulo.nombre}" filterMatchMode="contains">
+                                <ace:column  headerText="Persona" sortBy="#{item.persona.apellidos}" filterBy="#{item.persona.apellidos}" filterMatchMode="contains" style="text-align: left">
+                                    <h:outputText  value="#{item.persona.toString()}"/>
+                                </ace:column>
+                                <ace:column  headerText="Módulo" style="text-align: left" 
+                                             sortBy="#{item.modulo.nombre}"
+                                             filterBy="#{item.modulo.id}"
+                                             filterOptions="#{salutemCombos.modulosId}"                                          
+                                             filterValue="#{salutemUsuarios.modulo}"
+                                             filterMatchMode="exact">
                                     <h:outputText  value="#{item.modulo.nombre}"/>
                                 </ace:column>
-                                <ace:column  headerText="Grupo" style="text-align: left" sortBy="#{item.grupo.nombre}"
-                                             filterBy="#{item.grupo.nombre}" filterMatchMode="contains">
+                                <ace:column  headerText="Grupo" style="text-align: left" 
+                                             sortBy="#{item.grupo.nombre}"
+                                             filterBy="#{item.grupo.id}"
+                                             filterOptions="#{salutemCombos.grupoUsuariosId}"                                          
+                                             filterValue="#{salutemUsuarios.grupo}"
+                                             filterMatchMode="exact">
                                     <h:outputText  value="#{item.grupo.nombre}"/>
                                 </ace:column>
                                 <ace:column  headerText="Institución" style="text-align: left" sortBy="#{item.institucion.nombre}"
-                                             filterBy="#{item.institucion.nombre}" filterMatchMode="contains">
+                                             filterBy="#{item.institucion.id}"
+                                             filterOptions="#{salutemCombos.institucionesId}"                                          
+                                             filterValue="#{salutemUsuarios.institucion}"
+                                             filterMatchMode="exact">
                                     <h:outputText  value="#{item.institucion.nombre}"/>
                                 </ace:column>
-
+                                <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                    <h:outputText  value="#{item.descripcion}"/>
+                                </ace:column>
+                                <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                             filterBy="#{item.creado}" 
+                                             filterDatePattern="dd/MM/yyyy HH:mm"
+                                             filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                             filterValueMax="#{salutemSeguridad.finCreado}"
+                                             type="DATE"
+                                             rangedFilter="true" 
+                                             style="text-align: left" rendered="false">
+                                    <h:outputText  value="#{item.creado}">
+                                        <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                    </h:outputText>
+                                </ace:column>
+                                <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                    <h:outputText  value="#{item.creadopor}"/>
+                                </ace:column>
+                                <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                             filterBy="#{item.actualizado}" 
+                                             filterDatePattern="dd/MM/yyyy HH:mm"
+                                             filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                             filterValueMax="#{salutemSeguridad.finActualizado}"
+                                             type="DATE"
+                                             rangedFilter="true" 
+                                             style="text-align: left" rendered="false">
+                                    <h:outputText  value="#{item.actualizado}">
+                                        <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                    </h:outputText>
+                                </ace:column>
+                                <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                    <h:outputText  value="#{item.actualizadopor}"/>
+                                </ace:column>
                             </ace:dataTable>
                         </h:panelGrid>
                     </ace:panel>
@@ -132,6 +156,36 @@
                         visible="#{salutemUsuarios.formulario.mostrar}">
                         <h:panelGroup>
                             <h:panelGrid columns="2">
+                                <h:outputLabel value="Apellidos:"/>
+                                <ace:autoCompleteEntry
+                                    value="#{salutemUsuarios.claveBusqueda}"
+                                    rows="10" width="400"
+                                    listVar="usuario"
+                                    filterBy="#{usuario.toString()}"
+                                    filterMatchMode="contains"
+                                    listValue="#{salutemUsuarios.listaPersonas}"
+                                    valueChangeListener="#{salutemUsuarios.cambiaApellidos}"
+                                    textChangeListener="#{salutemUsuarios.apellidosChangeEventHandler}">
+                                    <f:facet name="row">
+                                        <h:panelGrid>
+                                            <h:outputText value="#{usuario.toString()}"/>
+                                        </h:panelGrid>
+                                    </f:facet>
+                                    <ace:ajax execute="@all"/>
+                                </ace:autoCompleteEntry>
+                                <h:outputLabel/>
+                                <ace:panel rendered="#{salutemUsuarios.persona ne null}">
+                                    <h:panelGrid columns="4" >
+                                        <h:outputLabel value="Nombres:" for="nombreidca" styleClass="bold" />
+                                        <h:outputLabel id="nombreidca" value="#{salutemUsuarios.persona.nombres}" />
+                                        <h:outputLabel value="Apellidos:" for="apellidosidca" styleClass="bold" />
+                                        <h:outputLabel id="apellidosidca" value="#{salutemUsuarios.persona.apellidos}"  />
+                                        <h:outputLabel value="CI:" for="ciidca" styleClass="bold"  />
+                                        <h:outputLabel id="ciidca" value="#{salutemUsuarios.persona.cedula}"/>
+                                        <h:outputLabel value="Email:" for="emailidca" styleClass="bold"  />
+                                        <h:outputLabel id="emailidca" value="#{salutemUsuarios.persona.email}"/>
+                                    </h:panelGrid>
+                                </ace:panel>
                                 <h:outputLabel value="Módulo: " styleClass="bold" />
                                 <h:selectOneMenu value="#{salutemUsuarios.usuario.modulo}" >
                                     <f:selectItems value="#{salutemCombos.modulos}"/>
@@ -140,8 +194,8 @@
                                 <h:selectOneMenu value="#{salutemUsuarios.usuario.grupo}">
                                     <f:selectItems value="#{salutemCombos.grupoUsuarios}"/>
                                 </h:selectOneMenu>
-                                <h:outputLabel value="Institución:" styleClass="bold" rendered="#{salutemSeguridad.usuario.grupo.codigo eq ('adm')}" />
-                                <h:selectOneMenu value="#{salutemUsuarios.usuario.institucion}" rendered="#{salutemSeguridad.usuario.grupo.codigo eq ('adm')}" >
+                                <h:outputLabel value="Institución:" styleClass="bold"/>
+                                <h:selectOneMenu value="#{salutemUsuarios.usuario.institucion}" disabled="#{salutemSeguridad.institucion ne null}">
                                     <f:selectItems value="#{salutemCombos.instituciones}" />
                                 </h:selectOneMenu>
                             </h:panelGrid>

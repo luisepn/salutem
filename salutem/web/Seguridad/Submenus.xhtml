@@ -28,7 +28,7 @@
                         <h:outputLabel value="Ver agrupado:" />
                         <h:selectBooleanCheckbox value="#{salutemSeguridad.verAgrupado}">
                             <ace:ajax execute="@all"/>
-                        </h:selectBooleanCheckbox>                                             
+                        </h:selectBooleanCheckbox>   
                     </h:panelGrid>
                     <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
@@ -79,13 +79,13 @@
                                 columnSortingConfigurable="true"
                                 modal="true"/>
                             <ace:row condition="group" groupBy="#{item.menupadre.modulo.nombre}" pos="before" styleClass="grupo" rendered="#{salutemSeguridad.verAgrupado}">
-                                <ace:column style="text-align: center" colspan="7">
+                                <ace:column style="text-align: center" colspan="10">
                                     <ace:excludeFromExport/>
                                     <h:outputText value="#{item.menupadre.modulo.nombre}" />
                                 </ace:column>
                             </ace:row>
                             <ace:row condition="group" groupBy="#{item.menupadre.nombre}" pos="before" styleClass="subGrupo" rendered="#{salutemSeguridad.verAgrupado}">
-                                <ace:column style="text-align: center" colspan="7">
+                                <ace:column style="text-align: center" colspan="10">
                                     <ace:excludeFromExport/>
                                     <h:outputText value="#{item.menupadre.nombre}" />
                                 </ace:column>
@@ -118,12 +118,42 @@
                             </ace:column>
                             <ace:column  headerText="Menú"                                         
                                          sortBy="#{item.menupadre.nombre}" 
-                                         filterBy="#{item.modulo.id}"
+                                         filterBy="#{item.menupadre.id}"
                                          filterOptions="#{salutemCombos.menusId}"                                          
-                                         filterValue="#{salutemSubmenus.menu}"
+                                         filterValue="#{salutemSubmenus.menuPadre}"
                                          filterMatchMode="exact" 
                                          style="text-align: left">
                                 <h:outputText  value="#{item.menupadre.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                         filterBy="#{item.creado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                         filterValueMax="#{salutemSeguridad.finCreado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                         filterBy="#{item.actualizado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                         filterValueMax="#{salutemSeguridad.finActualizado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizadopor}"/>
                             </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>

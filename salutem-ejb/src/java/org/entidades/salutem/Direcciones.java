@@ -48,12 +48,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Direcciones.findByActivo", query = "SELECT d FROM Direcciones d WHERE d.activo = :activo")})
 public class Direcciones implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "primaria")
     private String primaria;
@@ -81,18 +75,24 @@ public class Direcciones implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "descripcion")
     private String descripcion;
-    @Column(name = "creado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creado;
     @Size(max = 2147483647)
     @Column(name = "creadopor")
     private String creadopor;
-    @Column(name = "actualizado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date actualizado;
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
     @Column(name = "activo")
     private Boolean activo;
     @OneToOne(mappedBy = "direccion")
@@ -113,6 +113,78 @@ public class Direcciones implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Instituciones getInstituciones() {
+        return instituciones;
+    }
+
+    public void setInstituciones(Instituciones instituciones) {
+        this.instituciones = instituciones;
+    }
+
+    public Personas getPersonas() {
+        return personas;
+    }
+
+    public void setPersonas(Personas personas) {
+        this.personas = personas;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Direcciones)) {
+            return false;
+        }
+        Direcciones other = (Direcciones) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return (primaria != null && !primaria.isEmpty() && numero != null && secundaria != null && !secundaria.isEmpty())
+                ? primaria + " " + numero + " y " + secundaria
+                : (primaria != null ? primaria : "") + " "
+                + (numero != null ? numero : "")
+                + (secundaria != null ? secundaria : "");
     }
 
     public String getPrimaria() {
@@ -187,14 +259,6 @@ public class Direcciones implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public Date getCreado() {
-        return creado;
-    }
-
-    public void setCreado(Date creado) {
-        this.creado = creado;
-    }
-
     public String getCreadopor() {
         return creadopor;
     }
@@ -203,73 +267,12 @@ public class Direcciones implements Serializable {
         this.creadopor = creadopor;
     }
 
-    public Date getActualizado() {
-        return actualizado;
-    }
-
-    public void setActualizado(Date actualizado) {
-        this.actualizado = actualizado;
-    }
-
     public String getActualizadopor() {
         return actualizadopor;
     }
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
-
-    public Instituciones getInstituciones() {
-        return instituciones;
-    }
-
-    public void setInstituciones(Instituciones instituciones) {
-        this.instituciones = instituciones;
-    }
-
-    public Personas getPersonas() {
-        return personas;
-    }
-
-    public void setPersonas(Personas personas) {
-        this.personas = personas;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Direcciones)) {
-            return false;
-        }
-        Direcciones other = (Direcciones) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return (primaria != null && !primaria.isEmpty() && numero != null && secundaria != null && !secundaria.isEmpty())
-                ? primaria + " " + numero + " y " + secundaria
-                : (primaria != null ? primaria : "") + " "
-                + (numero != null ? numero : "")
-                + (secundaria != null ? secundaria : "");
     }
 
 }

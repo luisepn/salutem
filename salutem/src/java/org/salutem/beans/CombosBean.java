@@ -1,11 +1,13 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 import org.controladores.salutem.InstitucionesFacade;
@@ -26,6 +28,9 @@ import org.salutem.utilitarios.Mensajes;
 @ManagedBean(name = "salutemCombos")
 @ViewScoped
 public class CombosBean implements Serializable {
+
+    @ManagedProperty("#{salutemSeguridad}")
+    private SeguridadBean seguridadBean;
 
     private final String TIPO_DE_MATERIAL = "TMT";
     private final String TIPO_DE_FOCO = "TF";
@@ -101,6 +106,16 @@ public class CombosBean implements Serializable {
         return getSelectItems(traerInstituciones(Boolean.FALSE), "object", true);
     }
 
+    public SelectItem[] getInstitucionesId() {
+        List<Instituciones> lista = new LinkedList<>();
+        if (seguridadBean.getInstitucion() != null) {
+            lista.add(seguridadBean.getInstitucion());
+        } else {
+            lista = traerInstituciones(Boolean.FALSE);
+        }
+        return getSelectItems(lista, "id", true);
+    }
+
     public SelectItem[] getLaboratorios() {
         return getSelectItems(traerInstituciones(Boolean.TRUE), "object", true);
     }
@@ -120,6 +135,7 @@ public class CombosBean implements Serializable {
     public SelectItem[] getMenus() {
         return getSelectItems(traerMenus(), "object", true);
     }
+
     public SelectItem[] getMenusId() {
         return getSelectItems(traerMenus(), "id", true);
     }
@@ -136,9 +152,14 @@ public class CombosBean implements Serializable {
         return getSelectItems(traerParametros(GRUPO_DE_USUARIO), "object", true);
     }
 
+    public SelectItem[] getGrupoUsuariosId() {
+        return getSelectItems(traerParametros(GRUPO_DE_USUARIO), "id", true);
+    }
+
     public SelectItem[] getModulos() {
         return getSelectItems(traerParametros(MODULOS_DE_SISTEMA), "object", true);
     }
+
     public SelectItem[] getModulosId() {
         return getSelectItems(traerParametros(MODULOS_DE_SISTEMA), "id", true);
     }
@@ -321,6 +342,20 @@ public class CombosBean implements Serializable {
      */
     public void setTipo(Parametros tipo) {
         this.tipo = tipo;
+    }
+
+    /**
+     * @return the seguridadBean
+     */
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
     }
 
 }

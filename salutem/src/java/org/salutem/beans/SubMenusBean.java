@@ -13,6 +13,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.MenusFacade;
+import org.controladores.salutem.ParametrosFacade;
 import org.entidades.salutem.Menus;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
@@ -36,6 +37,8 @@ public class SubMenusBean implements Serializable, IMantenimiento {
 
     @ManagedProperty("#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
+    @ManagedProperty("#{salutemCombos}")
+    private CombosBean combosBean;
 
     private Formulario formulario = new Formulario();
     private LazyDataModel<Menus> menus;
@@ -46,6 +49,8 @@ public class SubMenusBean implements Serializable, IMantenimiento {
 
     @EJB
     private MenusFacade ejbMenus;
+    @EJB
+    private ParametrosFacade ejbParametros;
 
     public SubMenusBean() {
         menus = new LazyDataModel<Menus>() {
@@ -71,7 +76,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                if (clave.contains("id")) {
+                if (clave.contains(".id")) {
                     Integer id = Integer.parseInt(valor);
                     if (id != 0) {
                         where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
@@ -81,6 +86,21 @@ public class SubMenusBean implements Serializable, IMantenimiento {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
+            }
+
+            if (modulo != 0) {
+                combosBean.setModulo(ejbParametros.buscar(modulo));
+            }
+
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
             }
 
             int total = ejbMenus.contar(where, parameters);
@@ -135,6 +155,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             return null;
         }
         menu = (Menus) menus.getRowData();
+        combosBean.setModulo(menu.getMenupadre().getModulo());
         formulario.editar();
         return null;
     }
@@ -145,6 +166,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             return null;
         }
         menu = (Menus) menus.getRowData();
+        combosBean.setModulo(menu.getMenupadre().getModulo());
         formulario.eliminar();
         return null;
     }
@@ -181,6 +203,8 @@ public class SubMenusBean implements Serializable, IMantenimiento {
         try {
             menu.setCreado(new Date());
             menu.setCreadopor(seguridadBean.getLogueado().getUserid());
+            menu.setActualizado(menu.getCreado());
+            menu.setActualizadopor(menu.getCreadopor());
             ejbMenus.crear(menu, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -331,6 +355,20 @@ public class SubMenusBean implements Serializable, IMantenimiento {
      */
     public void setModulo(int modulo) {
         this.modulo = modulo;
+    }
+
+    /**
+     * @return the combosBean
+     */
+    public CombosBean getCombosBean() {
+        return combosBean;
+    }
+
+    /**
+     * @param combosBean the combosBean to set
+     */
+    public void setCombosBean(CombosBean combosBean) {
+        this.combosBean = combosBean;
     }
 
 }

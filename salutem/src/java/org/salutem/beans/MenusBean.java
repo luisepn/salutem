@@ -70,7 +70,7 @@ public class MenusBean implements Serializable, IMantenimiento {
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                if (clave.contains("id")) {
+                if (clave.contains(".id")) {
                     Integer id = Integer.parseInt(valor);
                     if (id != 0) {
                         where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
@@ -204,6 +204,8 @@ public class MenusBean implements Serializable, IMantenimiento {
         try {
             menu.setCreado(new Date());
             menu.setCreadopor(seguridadBean.getLogueado().getUserid());
+            menu.setActualizado(menu.getCreado());
+            menu.setActualizadopor(menu.getCreadopor());
             ejbMenus.crear(menu, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
