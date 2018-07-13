@@ -78,7 +78,8 @@
                                     <ace:column colspan="4"/>
                                     <ace:column headerText="Dirección" colspan="5"/>
                                     <ace:column headerText="Teléfonos" colspan="2"/>
-                                    <ace:column colspan="2"/>
+                                    <ace:column colspan="4"/>
+                                    <ace:column colspan="4"/>
                                 </ace:row>
                                 <ace:row>
                                     <ace:column headerText="Registro"/>
@@ -104,6 +105,30 @@
                                                 sortBy="#{item.email}" filterBy="#{item.email}" filterMatchMode="contains"/>
                                     <ace:column headerText="Página Web"
                                                 sortBy="#{item.web}" filterBy="#{item.web}" filterMatchMode="contains"/>
+                                    <ace:column headerText="Descripción"
+                                                sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains"/>
+                                    <ace:column headerText="¿Laboratorio?"
+                                                sortBy="#{item.descripcion}"/>
+                                    <ace:column  headerText="Creación" 
+                                                 sortBy="#{item.creado}" filterBy="#{item.creado}" 
+                                                 filterDatePattern="dd/MM/yyyy HH:mm"
+                                                 filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                                 filterValueMax="#{salutemSeguridad.finCreado}"
+                                                 type="DATE" rangedFilter="true"
+                                                 rendered="false"  style="text-align: left"/>
+                                    <ace:column  headerText="Creador por" 
+                                                 sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" 
+                                                 filterMatchMode="contains" rendered="false"/>
+                                    <ace:column  headerText="Modificado" 
+                                                 sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" 
+                                                 filterDatePattern="dd/MM/yyyy HH:mm"
+                                                 filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                                 filterValueMax="#{salutemSeguridad.finActualizado}"
+                                                 type="DATE" rangedFilter="true"
+                                                 rendered="false"  style="text-align: left"/>
+                                    <ace:column  headerText="Modificado por" 
+                                                 sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" 
+                                                 filterMatchMode="contains" rendered="false"/>
                                 </ace:row>
                             </ace:columnGroup>
                             <ace:column style="text-align: right">
@@ -148,6 +173,28 @@
                             <ace:column style="text-align: left;">
                                 <h:outputText  value="#{item.web} " />
                             </ace:column>
+                            <ace:column style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left">
+                                <h:outputText value="#{item.laboratorio ? 'SI' : 'NO'}" style="color: #{item.laboratorio ? 'green' : 'red'}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column style="text-align: left">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column style="text-align: left">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column style="text-align: left">
+                                <h:outputText  value="#{item.actualizadopor}"/>
+                            </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
                 </ace:panel>
@@ -172,6 +219,8 @@
                                 </ace:textEntry>
                                 <h:outputLabel value="Página Web:"/>
                                 <ace:textEntry value="#{salutemInstituciones.institucion.web}" title="Página Web" style="width: 300px;" />
+                                <h:outputLabel value="Descripción:" for="descripcion" />
+                                <ace:textAreaEntry id="descripcion" value="#{salutemInstituciones.institucion.descripcion}" cols="24" rows="2" style="width: 300px;"/>
                                 <h:outputLabel value="Fecha de Creación:" />
                                 <ace:dateTimeEntry navigator="true" id="fecha" value="#{salutemInstituciones.institucion.fecha}" 
                                                    popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 

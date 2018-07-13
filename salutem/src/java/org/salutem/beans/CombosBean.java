@@ -171,9 +171,15 @@ public class CombosBean implements Serializable {
     public SelectItem[] getTipoMaterial() {
         return getSelectItems(traerParametros(TIPO_DE_MATERIAL), "object", true);
     }
+    public SelectItem[] getTipoMaterialId() {
+        return getSelectItems(traerParametros(TIPO_DE_MATERIAL), "id", true);
+    }
 
     public SelectItem[] getFocos() {
         return getSelectItems(traerParametros(TIPO_DE_FOCO), "object", true);
+    }
+    public SelectItem[] getFocosId() {
+        return getSelectItems(traerParametros(TIPO_DE_FOCO), "id", true);
     }
 
     public SelectItem[] getTratamientos() {

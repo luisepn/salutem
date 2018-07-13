@@ -81,7 +81,7 @@
                             <ace:row condition="group" groupBy="#{item.maestro.nombre}" pos="before" styleClass="grupo" rendered="#{salutemSeguridad.verAgrupado}">
                                 <ace:column style="text-align: center" colspan="11">
                                     <ace:excludeFromExport/>
-                                    <h:outputText value="#{item.maestro.nombre}" />
+                                    <h:outputText value="#{item.maestro.toString()}" />
                                 </ace:column>
                             </ace:row>
                             <ace:column headerText="Registro" style="text-align: right; width: 50px;">
@@ -112,7 +112,7 @@
                                          filterValue="#{salutemParametros.maestro}"
                                          filterMatchMode="exact" 
                                          style="text-align: left">
-                                <h:outputText  value="#{item.maestro.nombre}"/>
+                                <h:outputText  value="#{item.maestro.toString()}"/>
                             </ace:column>
                             <ace:column  headerText="Creación" sortBy="#{item.creado}" 
                                          filterBy="#{item.creado}" 

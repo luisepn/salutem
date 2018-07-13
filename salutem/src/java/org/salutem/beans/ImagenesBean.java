@@ -15,9 +15,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.ArchivosFacade;
-import org.controladores.salutem.ParametrosFacade;
 import org.entidades.salutem.Archivos;
-import org.entidades.salutem.Parametros;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
@@ -49,8 +47,6 @@ public class ImagenesBean implements Serializable {
 
     @EJB
     private ArchivosFacade ejbArchivos;
-    @EJB
-    private ParametrosFacade ejbParametros;
 
     public ImagenesBean() {
     }
@@ -93,7 +89,7 @@ public class ImagenesBean implements Serializable {
             return null;
         }
 
-        if (seguridadBean.getDirectorioArchivos() == null) {
+        if (seguridadBean.getDirectorioArchivos() != null) {
             try {
                 File folder = new File(seguridadBean.getDirectorioArchivos() + "/" + directorio);
                 if (!folder.exists()) {

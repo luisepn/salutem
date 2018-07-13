@@ -92,7 +92,6 @@ public class Maestros implements Serializable {
         this.id = id;
     }
 
-
     public Boolean getActivo() {
         return activo;
     }
@@ -100,7 +99,6 @@ public class Maestros implements Serializable {
     public void setActivo(Boolean activo) {
         this.activo = activo;
     }
-
 
     public Date getCreado() {
         return creado;
@@ -110,7 +108,6 @@ public class Maestros implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -118,7 +115,6 @@ public class Maestros implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     @XmlTransient
     public List<Parametros> getParametrosList() {
@@ -151,7 +147,7 @@ public class Maestros implements Serializable {
 
     @Override
     public String toString() {
-        return nombre;
+        return nombre + " [" + codigo + "]";
     }
 
     public String getCodigo() {
@@ -193,5 +189,5 @@ public class Maestros implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-    
+
 }

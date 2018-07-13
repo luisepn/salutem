@@ -21,17 +21,17 @@
                                toggleable="true">
 
                         <h:panelGrid columns="2">
-
+                            <h:outputLabel value="Sólo activos:" />
+                            <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
+                                <ace:ajax execute="@all"/>
+                            </h:selectBooleanCheckbox>                            
                         </h:panelGrid>
-
-                        <h:panelGrid>                           
-                            <h:panelGrid columns="2">
-                                <ace:menuBar autoSubmenuDisplay="true" >
-                                    <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemUsuarios.buscar()}"/>
-                                    <ace:menuItem value="Crear" icon="ui-icon ui-icon-document"  action="#{salutemUsuarios.crear()}"/>
-                                </ace:menuBar>
-                                <ace:messages style="white-space: pre-wrap" rendered="#{!salutemUsuarios.formulario.mostrar}"/>
-                            </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemUsuarios.buscar()}"/>
+                                <ace:menuItem value="Crear" icon="ui-icon ui-icon-document"  action="#{salutemUsuarios.crear()}"/>
+                            </ace:menuBar>
+                            <ace:messages style="white-space: pre-wrap" rendered="#{!salutemUsuarios.formulario.mostrar}"/>
                         </h:panelGrid>
                     </ace:panel>
                     <ace:panel 

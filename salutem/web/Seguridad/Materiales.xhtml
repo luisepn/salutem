@@ -19,11 +19,18 @@
                            header="#{salutemSeguridad.titulo}"
                            closable="false"
                            toggleable="true" >
-                    <h:panelGrid columns="7">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Sólo activos:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
+                            <ace:ajax execute="@all"/>
+                        </h:selectBooleanCheckbox>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemMateriales.buscar()}"/>
                             <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemMateriales.crear()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemMateriales.formulario.mostrar}"/>
                     </h:panelGrid>
 
                 </ace:panel>
@@ -59,7 +66,14 @@
                                        rowsPerPageTemplate="#{salutemMateriales.formulario.rowsPerPageTemplate}"
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="5">
+                                       rows="10">
+                            <ace:tableConfigPanel 
+                                dragHandle=".ui-tableconf-header"
+                                columnNameConfigurable="true"
+                                columnVisibilityConfigurable="true"
+                                columnOrderingConfigurable="true"
+                                columnSortingConfigurable="true"
+                                modal="true"/>
                             <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
@@ -69,14 +83,62 @@
                                     <ace:menuItem action="#{salutemMateriales.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                 </ace:menuButton>
                             </ace:column> 
-                            <ace:column  headerText="Tipo de Foco" style="text-align: left">
+                            <ace:column  headerText="Tipo de foco"                                         
+                                         sortBy="#{item.foco.nombre}" 
+                                         filterBy="#{item.foco.id}"
+                                         filterOptions="#{salutemCombos.focosId}"                                          
+                                         filterValue="#{salutemMateriales.foco}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
                                 <h:outputText  value="#{item.foco.nombre}"/>
                             </ace:column>
-                            <ace:column  headerText="Tipo de Material" style="text-align: left">
+                            <ace:column  headerText="Tipo de Material" 
+                                         sortBy="#{item.tipo.nombre}" 
+                                         filterBy="#{item.tipo.id}"
+                                         filterOptions="#{salutemCombos.tipoMaterialId}"                                          
+                                         filterValue="#{salutemMateriales.tipo}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
                                 <h:outputText  value="#{item.tipo.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Código" sortBy="#{item.codigo}" filterBy="#{item.codigo}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.codigo}"/>
                             </ace:column>
                             <ace:column  headerText="Nombre" style="text-align: left">
                                 <h:outputText  value="#{item.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
+                            </ace:column>
+                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                         filterBy="#{item.creado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                         filterValueMax="#{salutemSeguridad.finCreado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                         filterBy="#{item.actualizado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                         filterValueMax="#{salutemSeguridad.finActualizado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizadopor}"/>
                             </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
@@ -101,11 +163,17 @@
                             <h:selectOneMenu value="#{salutemMateriales.material.tipo}" title="Tipo Material">
                                 <f:selectItems value="#{salutemCombos.tipoMaterial}"/>
                             </h:selectOneMenu>
-                            <h:outputLabel value="Nombre: " for="nombre" />
-                            <ace:textEntry id="nombre" value="#{salutemMateriales.material.nombre}" title="Nombre"/>
+                            <h:outputLabel value="Código:" for="codigo" />
+                            <ace:textEntry id="codigo" value="#{salutemMateriales.material.codigo}" title="Código"/>
+                            <h:outputLabel value="Nombre:" for="nombre" />
+                            <ace:textEntry id="nombre" value="#{salutemMateriales.material.nombre}" title="Nombre" />
+                            <h:outputLabel value="Descripción:" for="descripcion" />
+                            <ace:textAreaEntry id="descripcion" value="#{salutemMateriales.material.descripcion}" cols="19" rows="2"/>
+                            <h:outputLabel value="Activo:" />
+                            <h:selectBooleanCheckbox value="#{salutemMateriales.material.activo}" title="Activo"/>
                         </h:panelGrid>
                     </h:panelGroup>
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
                                           action="#{salutemMateriales.insertar()}"
@@ -119,6 +187,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemMateriales.cancelar()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" />
                     </h:panelGrid>
                 </ace:dialog>
 

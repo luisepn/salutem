@@ -7,7 +7,6 @@ package org.entidades.salutem;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,17 +17,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author fernando
+ * @author usuario
  */
 @Entity
 @Table(name = "materiales")
@@ -42,7 +39,8 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Materiales.findByCreado", query = "SELECT m FROM Materiales m WHERE m.creado = :creado")
     , @NamedQuery(name = "Materiales.findByCreadopor", query = "SELECT m FROM Materiales m WHERE m.creadopor = :creadopor")
     , @NamedQuery(name = "Materiales.findByActualizado", query = "SELECT m FROM Materiales m WHERE m.actualizado = :actualizado")
-    , @NamedQuery(name = "Materiales.findByActualizadopor", query = "SELECT m FROM Materiales m WHERE m.actualizadopor = :actualizadopor")})
+    , @NamedQuery(name = "Materiales.findByActualizadopor", query = "SELECT m FROM Materiales m WHERE m.actualizadopor = :actualizadopor")
+    , @NamedQuery(name = "Materiales.findByCodigo", query = "SELECT m FROM Materiales m WHERE m.codigo = :codigo")})
 public class Materiales implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -71,8 +69,9 @@ public class Materiales implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
-    @OneToMany(mappedBy = "material")
-    private List<Formulas> formulasList;
+    @Size(max = 2147483647)
+    @Column(name = "codigo")
+    private String codigo;
     @JoinColumn(name = "foco", referencedColumnName = "id")
     @ManyToOne
     private Parametros foco;
@@ -151,13 +150,12 @@ public class Materiales implements Serializable {
         this.actualizadopor = actualizadopor;
     }
 
-    @XmlTransient
-    public List<Formulas> getFormulasList() {
-        return formulasList;
+    public String getCodigo() {
+        return codigo;
     }
 
-    public void setFormulasList(List<Formulas> formulasList) {
-        this.formulasList = formulasList;
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public Parametros getFoco() {
@@ -198,7 +196,7 @@ public class Materiales implements Serializable {
 
     @Override
     public String toString() {
-        return nombre;
+        return "org.entidades.salutem.Materiales[ id=" + id + " ]";
     }
     
 }

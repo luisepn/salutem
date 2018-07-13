@@ -1,6 +1,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +13,12 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.MaterialesFacade;
-import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Materiales;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
@@ -34,8 +35,8 @@ public class MaterialesBean implements Serializable, IMantenimiento {
     private Formulario formulario = new Formulario();
     private LazyDataModel<Materiales> materiales;
     private Materiales material;
-    private Parametros foco;
-    private Parametros tipo;
+    private int foco;
+    private int tipo;
     private Perfiles perfil;
 
     @EJB
@@ -58,24 +59,24 @@ public class MaterialesBean implements Serializable, IMantenimiento {
 
     private List<Materiales> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
 
-        Map parametros = new HashMap();
+        Map parameters = new HashMap();
         String where = " o.activo=true ";
         for (Map.Entry e : map.entrySet()) {
             String clave = (String) e.getKey();
             String valor = (String) e.getValue();
-            where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-            parametros.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
-        }
-        if (tipo != null) {
-            where = where + " and o.tipo=:tipo";
-            parametros.put("tipo", tipo);
-        }
-        if (foco != null) {
-            where = where + " and o.foco=:foco";
-            parametros.put("foco", foco);
+            if (clave.contains(".id")) {
+                Integer id = Integer.parseInt(valor);
+                if (id != 0) {
+                    where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), id);
+                }
+            } else {
+                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+            }
         }
         try {
-            int total = ejbMateriales.contar(where, parametros);
+            int total = ejbMateriales.contar(where, parameters);
             formulario.setTotal(total);
             int endIndex = i + pageSize;
             if (endIndex > total) {
@@ -88,7 +89,7 @@ public class MaterialesBean implements Serializable, IMantenimiento {
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
-            return ejbMateriales.buscar(where, parametros, order, i, endIndex);
+            return ejbMateriales.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -115,10 +116,6 @@ public class MaterialesBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
-        if (!perfil.getNuevo()) {
-            Mensajes.advertencia("No tiene autorización para crear un registro");
-            return null;
-        }
         material = new Materiales();
         material.setActivo(Boolean.TRUE);
         formulario.insertar();
@@ -130,10 +127,6 @@ public class MaterialesBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        if (!perfil.getModificacion()) {
-            Mensajes.advertencia("No tiene autorización para modificar un registro");
-            return null;
-        }
         material = (Materiales) materiales.getRowData();
         formulario.editar();
         return null;
@@ -143,9 +136,6 @@ public class MaterialesBean implements Serializable, IMantenimiento {
     public String eliminar() {
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
-        }
-        if (!perfil.getBorrado()) {
-            Mensajes.advertencia("No tiene autorización para borrar un registro");
         }
         material = (Materiales) materiales.getRowData();
         formulario.eliminar();
@@ -162,9 +152,29 @@ public class MaterialesBean implements Serializable, IMantenimiento {
             Mensajes.advertencia("Tipo del material es necesario");
             return true;
         }
+        if ((material.getCodigo() == null) || (material.getCodigo().isEmpty())) {
+            Mensajes.advertencia("Código del material es necesario");
+            return true;
+        }
         if ((material.getNombre() == null) || (material.getNombre().isEmpty())) {
             Mensajes.advertencia("Nombre del material es necesario");
             return true;
+        }
+        try {
+            String where = "o.codigo=:codigo";
+            Map parametros = new HashMap();
+            parametros.put("codigo", material.getCodigo());
+            if (material.getId() != null) {
+                where += " and o.id!=:id";
+                parametros.put("id", material.getId());
+            }
+            if (ejbMateriales.contar(where, parametros) > 0) {
+                Mensajes.advertencia("No se permiten materiales con código duplicado");
+                return true;
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -178,14 +188,16 @@ public class MaterialesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            material.setCreado(new Date());
+            material.setCreadopor(seguridadBean.getLogueado().getUserid());
+            material.setActualizado(material.getCreado());
+            material.setActualizadopor(material.getCreadopor());
             ejbMateriales.crear(material, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
-
         return null;
     }
 
@@ -198,14 +210,14 @@ public class MaterialesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            material.setActualizado(new Date());
+            material.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbMateriales.actualizar(material, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
-
         return null;
     }
 
@@ -218,21 +230,17 @@ public class MaterialesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            material.setActivo(Boolean.FALSE);
-            ejbMateriales.actualizar(material, seguridadBean.getLogueado().getUserid());
-        } catch (ExcepcionDeActualizacion ex) {
+            ejbMateriales.eliminar(material, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
-
         return null;
     }
 
     @Override
     public String cancelar() {
-        buscar();
         formulario.cancelar();
         return null;
     }
@@ -268,14 +276,14 @@ public class MaterialesBean implements Serializable, IMantenimiento {
     /**
      * @return the foco
      */
-    public Parametros getFoco() {
+    public int getFoco() {
         return foco;
     }
 
     /**
      * @return the tipo
      */
-    public Parametros getTipo() {
+    public int getTipo() {
         return tipo;
     }
 
@@ -317,14 +325,14 @@ public class MaterialesBean implements Serializable, IMantenimiento {
     /**
      * @param foco the foco to set
      */
-    public void setFoco(Parametros foco) {
+    public void setFoco(int foco) {
         this.foco = foco;
     }
 
     /**
      * @param tipo the tipo to set
      */
-    public void setTipo(Parametros tipo) {
+    public void setTipo(int tipo) {
         this.tipo = tipo;
     }
 

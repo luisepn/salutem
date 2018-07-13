@@ -19,27 +19,17 @@
                            closable="false"
                            toggleable="true">
                     <h:panelGrid columns="2">
-                        <h:outputLabel value="Módulo:" />
-                        <h:selectOneMenu value="#{salutemCombos.modulo}">
-                            <f:selectItems value="#{salutemCombos.modulos}"/>
+                        <h:outputLabel value="Sólo activos:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
                             <ace:ajax execute="@all"/>
-                        </h:selectOneMenu>
-                        <h:outputLabel value="Menús:" />
-                        <h:selectOneMenu value="#{salutemCombos.menu}">
-                            <f:selectItems value="#{salutemCombos.menus}"/>
-                            <ace:ajax execute="@all"/>
-                        </h:selectOneMenu>
-                        <h:outputLabel value="Grupo : "/>
-                        <h:selectOneMenu value="#{salutemCombos.grupo}">
-                            <f:selectItems value="#{salutemCombos.grupoUsuarios}"/>
-                            <ace:ajax execute="@all"/>
-                        </h:selectOneMenu>                        
-                    </h:panelGrid>                    
-                    <h:panelGrid>
+                        </h:selectBooleanCheckbox>                            
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemPerfiles.buscar()}"/>
                             <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemPerfiles.crear()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemPerfiles.formulario.mostrar}"/>
                     </h:panelGrid>
                 </ace:panel>
                 <ace:panel 
@@ -73,7 +63,14 @@
                                        rowsPerPageTemplate="#{salutemPerfiles.formulario.rowsPerPageTemplate}"
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="5">
+                                       rows="10">
+                            <ace:tableConfigPanel 
+                                dragHandle=".ui-tableconf-header"
+                                columnNameConfigurable="true"
+                                columnVisibilityConfigurable="true"
+                                columnOrderingConfigurable="true"
+                                columnSortingConfigurable="true"
+                                modal="true"/>
                             <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
@@ -83,21 +80,82 @@
                                     <ace:menuItem action="#{salutemPerfiles.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                 </ace:menuButton>
                             </ace:column>   
-                            <ace:column  headerText="Menú"  style="text-align: left"
+
+                            <ace:column  headerText="Grupo"                                         
+                                         sortBy="#{item.grupo.nombre}" 
+                                         filterBy="#{item.grupo.id}"
+                                         filterOptions="#{salutemCombos.grupoUsuariosId}"                                          
+                                         filterValue="#{salutemPerfiles.grupo}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.grupo.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Módulo"                                         
+                                         sortBy="#{item.menu.menupadre.modulo}" 
+                                         filterBy="#{item.menu.menupadre.modulo.id}"
+                                         filterOptions="#{salutemCombos.modulosId}"                                          
+                                         filterValue="#{salutemPerfiles.modulo}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.menu.menupadre.modulo.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Menú"                                         
+                                         sortBy="#{item.menu.menupadre.nombre}" 
+                                         filterBy="#{item.menu.menupadre.id}"
+                                         filterOptions="#{salutemCombos.menusId}"                                          
+                                         filterValue="#{salutemPerfiles.menu}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.menu.menupadre.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Submenú"  style="text-align: left" sortBy="#{item.menu.nombre}"
                                          filterBy="#{item.menu.nombre}" filterMatchMode="contains">
                                 <h:outputText  value="#{item.menu.nombre}"/>
                             </ace:column>
-                            <ace:column  headerText="¿Crear?" >
+                            <ace:column  headerText="¿Crear?" sortBy="#{item.nuevo}">
                                 <h:outputText value="#{item.nuevo ? 'SI' : 'NO'}" style="color: #{item.nuevo ? 'green' : 'red'}"/>
                             </ace:column>
-                            <ace:column  headerText="¿Actualizar?" >
+                            <ace:column  headerText="¿Actualizar?" sortBy="#{item.modificacion}">
                                 <h:outputText value="#{item.modificacion ? 'SI' : 'NO'}" style="color: #{item.modificacion ? 'green' : 'red'}"/>
                             </ace:column>
-                            <ace:column  headerText="¿Eliminar?" >
+                            <ace:column  headerText="¿Eliminar?" sortBy="#{item.borrado}">
                                 <h:outputText value="#{item.borrado ? 'SI' : 'NO'}" style="color: #{item.borrado ? 'green' : 'red'}"/>
                             </ace:column>
-                            <ace:column  headerText="¿Consultar?" >
+                            <ace:column  headerText="¿Consultar?" sortBy="#{item.consulta}">
                                 <h:outputText value="#{item.consulta ? 'SI' : 'NO'}" style="color: #{item.consulta ? 'green' : 'red'}"/>
+                            </ace:column>
+                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
+                            </ace:column>
+                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                         filterBy="#{item.creado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                         filterValueMax="#{salutemSeguridad.finCreado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                         filterBy="#{item.actualizado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                         filterValueMax="#{salutemSeguridad.finActualizado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizadopor}"/>
                             </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
@@ -113,11 +171,27 @@
                     visible="#{salutemPerfiles.formulario.mostrar}">
                     <h:panelGroup>
                         <h:panelGrid columns="2">
-                            <h:outputLabel value="Submenú : "/>
-                            <h:selectOneMenu value="#{salutemPerfiles.perfil.menu}" rendered="#{salutemPerfiles.formulario.crear}">
-                                <f:selectItems value="#{salutemCombos.subMenusDisponibles}"/>
+
+                            <h:outputLabel value="Grupo : "/>
+                            <h:selectOneMenu value="#{salutemPerfiles.perfil.grupo}">
+                                <f:selectItems value="#{salutemCombos.grupoUsuarios}"/>
+                            </h:selectOneMenu> 
+
+                            <h:outputLabel value="Módulo:" />
+                            <h:selectOneMenu value="#{salutemCombos.modulo}">
+                                <f:selectItems value="#{salutemCombos.modulos}"/>
+                                <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
-                            <h:outputLabel value="#{salutemPerfiles.perfil.menu.nombre}" rendered="#{!salutemPerfiles.formulario.crear}"/>
+                            <h:outputLabel value="Menús:" />
+                            <h:selectOneMenu value="#{salutemCombos.menu}">
+                                <f:selectItems value="#{salutemCombos.menus}"/>
+                                <ace:ajax execute="@all"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Submenú: "/>
+                            <h:selectOneMenu value="#{salutemPerfiles.perfil.menu}">
+                                <f:selectItems value="#{salutemCombos.subMenus}"/>
+                            </h:selectOneMenu>
+
                             <h:outputLabel value="¿Crear?: "/>
                             <ace:checkboxButton value="#{salutemPerfiles.perfil.nuevo}"/>
                             <h:outputLabel value="¿Actualizar?: "/>

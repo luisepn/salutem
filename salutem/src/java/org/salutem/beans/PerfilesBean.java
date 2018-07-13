@@ -1,6 +1,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,8 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import org.controladores.salutem.MenusFacade;
+import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.PerfilesFacade;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
@@ -42,14 +45,22 @@ public class PerfilesBean implements Serializable, IMantenimiento {
     private Perfiles perfil;
     private Perfiles perfilSistema;
 
+    private int grupo;
+    private int modulo;
+    private int menu;
+
     @EJB
     private PerfilesFacade ejbPerfiles;
+    @EJB
+    private ParametrosFacade ejbParametros;
+    @EJB
+    private MenusFacade ejbMenus;
 
     public PerfilesBean() {
         perfiles = new LazyDataModel<Perfiles>() {
             @Override
             public List<Perfiles> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                return null;
+                return cargar(i, i1, scs, map);
             }
         };
     }
@@ -62,21 +73,40 @@ public class PerfilesBean implements Serializable, IMantenimiento {
 
     private List<Perfiles> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
-            if (combosBean.getGrupo() == null) {
-                return null;
-            }
-            if (combosBean.getMenu() == null) {
-                return null;
-            }
             Map parameters = new HashMap();
-            parameters.put("grupo", combosBean.getGrupo());
-            parameters.put("menu", combosBean.getMenu());
-            String where = " o.grupo=:grupo and o.menu.menupadre=:menu";
+            String where = " o.activo=:activo ";
+            parameters.put("activo", seguridadBean.getVerActivos());
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                if (clave.contains(".id")) {
+                    Integer id = Integer.parseInt(valor);
+                    if (id != 0) {
+                        where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
+                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    }
+                } else {
+                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
+            }
+
+            if (modulo != 0) {
+                combosBean.setModulo(ejbParametros.buscar(modulo));
+            }
+            if (menu != 0) {
+                combosBean.setMenu(ejbMenus.buscar(menu));
+            }
+
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
             }
 
             int total = ejbPerfiles.contar(where, parameters);
@@ -105,14 +135,6 @@ public class PerfilesBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfilSistema, 'R')) {
             return null;
         }
-        if (combosBean.getGrupo() == null) {
-            Mensajes.advertencia("Por favor seleccione un grupo");
-            return null;
-        }
-        if (combosBean.getMenu() == null) {
-            Mensajes.advertencia("Seleccione un menú primero");
-            return null;
-        }
         perfiles = new LazyDataModel<Perfiles>() {
             @Override
             public List<Perfiles> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -127,17 +149,8 @@ public class PerfilesBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfilSistema, 'C')) {
             return null;
         }
-        if (combosBean.getMenu() == null) {
-            Mensajes.advertencia("Seleccione un menú primero");
-            return null;
-        }
-        if (combosBean.getGrupo() == null) {
-            Mensajes.advertencia("Por favor seleccione un grupo");
-            return null;
-        }
         perfil = new Perfiles();
-        perfil.setGrupo(combosBean.getGrupo());
-
+        perfil.setActivo(Boolean.TRUE);
         formulario.insertar();
         return null;
     }
@@ -148,6 +161,8 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             return null;
         }
         perfil = (Perfiles) perfiles.getRowData();
+        combosBean.setMenu(perfil.getMenu() != null ? perfil.getMenu().getMenupadre() : null);
+        combosBean.setModulo(combosBean.getMenu() != null ? combosBean.getMenu().getModulo() : null);
         formulario.editar();
         return null;
     }
@@ -158,6 +173,8 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             return null;
         }
         perfil = (Perfiles) perfiles.getRowData();
+        combosBean.setMenu(perfil.getMenu() != null ? perfil.getMenu().getMenupadre() : null);
+        combosBean.setModulo(combosBean.getMenu() != null ? combosBean.getMenu().getModulo() : null);
         formulario.eliminar();
         return null;
     }
@@ -184,13 +201,16 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            perfil.setCreado(new Date());
+            perfil.setCreadopor(seguridadBean.getLogueado().getUserid());
+            perfil.setActualizado(perfil.getCreado());
+            perfil.setActualizadopor(perfil.getCreadopor());
             ejbPerfiles.crear(perfil, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -203,13 +223,14 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            perfil.setActualizado(new Date());
+            perfil.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbPerfiles.actualizar(perfil, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -218,9 +239,6 @@ public class PerfilesBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfilSistema, 'D')) {
             return null;
         }
-        if (!perfilSistema.getBorrado()) {
-            Mensajes.advertencia("No tiene autorización para borrar un registro");
-        }
         try {
             ejbPerfiles.eliminar(perfil, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeEliminacion ex) {
@@ -228,14 +246,12 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
     @Override
     public String cancelar() {
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -321,5 +337,47 @@ public class PerfilesBean implements Serializable, IMantenimiento {
      */
     public void setPerfilSistema(Perfiles perfilSistema) {
         this.perfilSistema = perfilSistema;
+    }
+
+    /**
+     * @return the grupo
+     */
+    public int getGrupo() {
+        return grupo;
+    }
+
+    /**
+     * @param grupo the grupo to set
+     */
+    public void setGrupo(int grupo) {
+        this.grupo = grupo;
+    }
+
+    /**
+     * @return the modulo
+     */
+    public int getModulo() {
+        return modulo;
+    }
+
+    /**
+     * @param modulo the modulo to set
+     */
+    public void setModulo(int modulo) {
+        this.modulo = modulo;
+    }
+
+    /**
+     * @return the menu
+     */
+    public int getMenu() {
+        return menu;
+    }
+
+    /**
+     * @param menu the menu to set
+     */
+    public void setMenu(int menu) {
+        this.menu = menu;
     }
 }
