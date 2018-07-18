@@ -65,6 +65,10 @@ public class Parametros implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    @OneToMany(mappedBy = "dia")
+    private List<Horarios> horariosList;
+    @OneToMany(mappedBy = "especialidad")
+    private List<Profesionales> profesionalesList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -304,6 +308,24 @@ public class Parametros implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
+    }
+
+    @XmlTransient
+    public List<Horarios> getHorariosList() {
+        return horariosList;
+    }
+
+    public void setHorariosList(List<Horarios> horariosList) {
+        this.horariosList = horariosList;
+    }
+
+    @XmlTransient
+    public List<Profesionales> getProfesionalesList() {
+        return profesionalesList;
+    }
+
+    public void setProfesionalesList(List<Profesionales> profesionalesList) {
+        this.profesionalesList = profesionalesList;
     }
     
 }

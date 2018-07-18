@@ -57,9 +57,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     private Reportesds recursoPdf;
     private Reportesds ordenPdf;
 
-    private String nombre;
-    private String nombreOrden;
-
     private SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
     private DecimalFormat numero = new DecimalFormat("0000000.##");
 
@@ -389,7 +386,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     public String traerIndicaciones() {
         String m = formula.getMaterial() != null ? formula.getMaterial().getFoco().getNombre() + " - " + formula.getMaterial().getTipo().getNombre() + " - " + formula.getMaterial().getNombre() : "";
         String t = formula.getTratamiento() != null ? formula.getTratamiento().getNombre() : "";
-
         return m + " " + t + "\n" + consulta.getIndicaciones();
     }
 
