@@ -41,8 +41,7 @@
                 <ace:panel 
                     header="Resultado Búsqueda"
                     closable="false"
-                    toggleable="true"
-                    >
+                    toggleable="true">
                     <h:panelGrid columns="3" styleClass="centeredPanelGrid">
                         <h:outputLabel  value="Exportar a:"/>
                         <h:selectOneRadio  value="#{salutemSubmenus.formulario.tipo}" required="true">
@@ -99,7 +98,10 @@
                                     <ace:menuItem action="#{salutemSubmenus.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                 </ace:menuButton>
                             </ace:column>
-                            <ace:column  headerText="Texto a Mostrar" sortBy="#{item.nombre}" style="text-align: left"
+                            <ace:column  headerText="Código" sortBy="#{item.codigo}" filterBy="#{item.codigo}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.codigo}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombre" sortBy="#{item.nombre}" style="text-align: left"
                                          filterBy="#{item.nombre}" filterMatchMode="contains">
                                 <h:outputText  value="#{item.nombre}"/>
                             </ace:column>

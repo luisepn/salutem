@@ -174,6 +174,7 @@
                                     <ace:ajax execute="@all"/>
                                 </ace:autoCompleteEntry>
                                 <h:outputLabel/>
+                                <h:outputLabel rendered="#{salutemUsuarios.persona eq null}"/>
                                 <ace:panel rendered="#{salutemUsuarios.persona ne null}">
                                     <h:panelGrid columns="4" >
                                         <h:outputLabel value="Nombres:" for="nombreidca" styleClass="bold" />
@@ -195,7 +196,7 @@
                                     <f:selectItems value="#{salutemCombos.grupoUsuarios}"/>
                                 </h:selectOneMenu>
                                 <h:outputLabel value="Institución:" styleClass="bold"/>
-                                <h:selectOneMenu value="#{salutemUsuarios.usuario.institucion}" disabled="#{salutemSeguridad.institucion ne null}">
+                                <h:selectOneMenu value="#{salutemUsuarios.usuario.institucion}" disabled="#{salutemSeguridad.grupo.co}">
                                     <f:selectItems value="#{salutemCombos.instituciones}" />
                                 </h:selectOneMenu>
                             </h:panelGrid>

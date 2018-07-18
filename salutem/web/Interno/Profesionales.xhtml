@@ -1,0 +1,248 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : Profesionales
+    Fecha       : 18 de Julio de 2018, 11:27:59 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <h:body>
+
+        <ui:composition template="../plantillas/Plantilla.xhtml">
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{salutemProfesionales.perfil.menu.nombre}"
+                           closable="false"
+                           toggleable="true"       >
+                    <h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Sólo activos:" />
+                            <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
+                                <ace:ajax execute="@all"/>
+                            </h:selectBooleanCheckbox>
+                            <h:outputLabel value="Ver agrupado:" />
+                            <h:selectBooleanCheckbox value="#{salutemSeguridad.verAgrupado}">
+                                <ace:ajax execute="@all"/>
+                            </h:selectBooleanCheckbox>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemProfesionales.buscarProfesionales()}"/>
+                                <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemProfesionales.crearProfesional()}"/>
+                            </ace:menuBar>
+                            <ace:messages style="white-space: pre-wrap" rendered="#{!salutemProfesionales.formulario.mostrar}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </ace:panel>
+
+                <ace:panel 
+                    header="Resultado Búsqueda"
+                    closable="false"
+                    toggleable="true"              >
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <h:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{salutemProfesionales.formulario.tipo}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{salutemProfesionales.formulario.tipo}" 
+                                          target="tabla"  
+                                          fileName="Pacientes"
+                                          excludeColumns="1"/>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       lazy="true"
+                                       paginatorAlwaysVisible="true"
+                                       value="#{salutemProfesionales.profesionales}"
+                                       var="item"
+                                       paginator="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="#{salutemProfesionales.formulario.rowsPerPageTemplate}"
+                                       currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="5">
+                            <ace:tableConfigPanel dragHandle=".ui-tableconf-header"
+                                                  columnNameConfigurable="true"
+                                                  columnVisibilityConfigurable="true"
+                                                  columnOrderingConfigurable="true"
+                                                  columnSortingConfigurable="true"
+                                                  modal="true"/>
+                            <ace:column  headerText="Registro" style="text-align: right">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column headerText="Operaciones" style="text-align: left" >
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{salutemProfesionales.editarProfesional()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{salutemProfesionales.borrarProfesional()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column>
+                            <ace:column headerText="Fotografía" >
+                                <ace:graphicImage value="#{salutemImagenes.traerImagen(item.persona.fotografia.ruta)}" 
+                                                  name="#{item.id}_#{item.persona.fotografia.nombre}" id="resourceGraphicImage" style="height: 50px;" 
+                                                  rendered="#{item.persona.fotografia ne null and item.persona.fotografia.ruta ne null}"/>
+                            </ace:column> 
+                            <ace:column headerText="Cédula de Identidad" sortBy="#{item.persona.cedula}" style="text-align: left" 
+                                        filterBy="#{item.persona.cedula}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.cedula}"/>
+                            </ace:column>                            
+                            <ace:column headerText="Nombres" sortBy="#{item.persona.apellidos}" style="text-align: left" 
+                                        filterBy="#{item.persona.apellidos}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.toString()}"/>
+                            </ace:column>
+                            <ace:column headerText="E-mail" sortBy="#{item.persona.email}" style="text-align: left" 
+                                        filterBy="#{item.persona.email}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.email}"/>
+                            </ace:column>
+                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.persona.fecha}" style="text-align: left">
+                                <h:outputText  value="#{item.persona.fecha}">
+                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column headerText="Teléfono fijo" sortBy="#{item.persona.direccion.fijo}" style="text-align: left" 
+                                        filterBy="#{item.persona.direccion.fijo}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.direccion.fijo}"/>
+                            </ace:column>
+                            <ace:column headerText="Teléfono movil" sortBy="#{item.persona.direccion.movil}" style="text-align: left" 
+                                        filterBy="#{item.persona.direccion.movil}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.direccion.movil}"/>
+                            </ace:column>
+                            <ace:column headerText="Ciudad" style="text-align: left" sortBy="#{item.persona.direccion.ciudad}"
+                                        filterBy="#{item.persona.direccion.ciudad}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.direccion.ciudad}"/>
+                            </ace:column>
+                            <ace:column headerText="Dirección" style="text-align: left">
+                                <h:outputText  value="#{item.persona.direccion.toString()}"/>
+                            </ace:column>
+                            <ace:column headerText="Edificio/Piso" style="text-align: left" sortBy="#{item.persona.direccion.piso}"
+                                        filterBy="#{item.persona.direccion.piso}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.direccion.piso}"/>
+                            </ace:column>
+                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
+                            </ace:column>
+                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                         filterBy="#{item.creado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                         filterValueMax="#{salutemSeguridad.finCreado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                         filterBy="#{item.actualizado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                         filterValueMax="#{salutemSeguridad.finActualizado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizadopor}"/>
+                            </ace:column>
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+
+
+
+                <ace:dialog 
+                    header="#{salutemProfesionales.perfil.menu.nombre}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    rendered="#{salutemProfesionales.formulario.mostrar}"
+                    visible="#{salutemProfesionales.formulario.mostrar}"
+                    zindex="1000">
+                    <ace:tabSet style="width: 100%">
+                        <ace:tabPane label="Profesional" rendered="#{salutemProfesionales.formulario.crear}">
+                            <ui:include src="cuadroProfesionales.xhtml" />
+                        </ace:tabPane>
+                        <ace:tabPane label="Profesional" rendered="#{salutemProfesionales.formulario.editar}">
+                            <ui:include src="cuadroProfesionales.xhtml"/>
+                        </ace:tabPane>
+                        <ace:tabPane label="Profesional" rendered="#{salutemProfesionales.formulario.eliminar}">
+                            <ui:include src="cuadroProfesionales.xhtml"/>
+                        </ace:tabPane>
+                        <ace:tabPane label="Dirección">
+                            <h:panelGrid columns="4">
+                                <h:outputLabel value="Ciudad:" for="ciudad" />
+                                <ace:textEntry id="ciudad" value="#{salutemProfesionales.direccion.ciudad}" title="Ciudad" />
+                                <h:outputLabel value="Calle Primaria:" for="primaria" />
+                                <ace:textEntry id="primaria" value="#{salutemProfesionales.direccion.primaria}" title="Primaria" />
+                                <h:outputLabel value="Calle Secundaria:" for="secundaria" />
+                                <ace:textEntry id="secundaria" value="#{salutemProfesionales.direccion.secundaria}" title="Secundaria" />
+                                <h:outputLabel value="Número:" for="numero" />
+                                <ace:textEntry id="numero" value="#{salutemProfesionales.direccion.numero}" title="Numero" />
+                                <h:outputLabel value="Teléfono fijo:" />
+                                <ace:textEntry value="#{salutemProfesionales.direccion.fijo}" title="Teléfono fijo" />
+                                <h:outputLabel value="Teléfono móvil:" />
+                                <ace:textEntry value="#{salutemProfesionales.direccion.movil}" title="Teléfono móvil" />
+                                <h:outputLabel value="Edificio/Piso:"/>
+                                <ace:textAreaEntry value="#{salutemProfesionales.direccion.piso}"
+                                                   rows="2" cols="22"/>
+                                <h:outputLabel value="Referencia:"/>
+                                <ace:textAreaEntry value="#{salutemProfesionales.direccion.referencia}" 
+                                                   rows="2" cols="22"/>
+                            </h:panelGrid>
+                        </ace:tabPane>
+                        <ace:tabPane label="Fotografía">
+                            <center>
+                                <ace:graphicImage value="#{salutemImagenes.archivo.archivo}" name="#{salutemImagenes.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " />
+                            </center>
+                            <h:panelGrid columns="2">
+                                <ace:fileEntry 
+                                    absolutePath="/tmp/salutem"
+                                    maxFileCount="1"
+                                    maxFileCountMessage="Sólo se puede subir 1 archivo"
+                                    fileEntryListener="#{salutemImagenes.ficheroDocumento}"
+                                    maxFileSize="10485760"
+                                    maxFileSizeMessage="El archivo supera el tamaño predefinido 10 MB"                                                                                                                 
+                                    useOriginalFilename="true"
+                                    label="Subido con éxito"
+                                    useSessionSubdir="true" />
+                                <h:commandButton  type="submit" value="Subir Archivo" />
+                            </h:panelGrid>
+
+                        </ace:tabPane>
+
+                    </ace:tabSet>
+
+                    <h:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemProfesionales.grabarProfesional()}"/>
+                            <ace:menuItem value="Eliminar" icon="ui-icon ui-icon-trash" 
+                                          action="#{salutemProfesionales.removerProfesional()}" 
+                                          rendered="#{salutemProfesionales.formulario.eliminar}" />
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemProfesionales.cancelar()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+                </ace:dialog>
+            </ui:define>
+        </ui:composition>
+
+    </h:body>
+
+</html>

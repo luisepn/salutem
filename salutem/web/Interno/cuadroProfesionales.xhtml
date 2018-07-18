@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : Usuarios
+    Fecha       : 18 de Julio de 2018, 12:00:38 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <h:panelGrid columns="2">
+        <h:outputLabel value="C.I.:"/>
+        <ace:textEntry value="#{salutemProfesionales.persona.cedula}" title="Cédula" rendered="#{salutemProfesionales.formulario.crear}" valueChangeListener="#{salutemProfesionales.cambiaCedula}" disabled="#{salutemProfesionales.formulario.eliminar}">
+            <ace:ajax execute="@all"/>
+            <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
+        </ace:textEntry>
+        <ace:textEntry value="#{salutemProfesionales.persona.cedula}" title="Cédula" rendered="#{salutemProfesionales.formulario.editar or salutemProfesionales.formulario.eliminar}" disabled="#{salutemProfesionales.formulario.eliminar}">
+            <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
+        </ace:textEntry>
+        <h:outputLabel value="Nombres:"/>
+        <ace:textEntry value="#{salutemProfesionales.persona.nombres}" title="Nombres" />
+        <h:outputLabel value="Apellidos:"/>
+        <ace:textEntry value="#{salutemProfesionales.persona.apellidos}" title="Apellidos" />
+        <h:outputLabel value="e-mail:"/>
+        <ace:textEntry value="#{salutemProfesionales.persona.email}" title="Email">
+            <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
+        </ace:textEntry>
+        <h:outputLabel value="Userid:"/>
+        <ace:textEntry value="#{salutemProfesionales.persona.userid}" title="Userid" />
+        <h:outputLabel value="Fecha de Nacimiento:" />
+        <ace:dateTimeEntry navigator="true" value="#{salutemProfesionales.persona.fecha}" 
+                           popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                           pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
+            <f:convertDateTime pattern="dd/MM/yyyy" />
+        </ace:dateTimeEntry>
+        <h:outputLabel value="Ocupación:"/>
+        <ace:textEntry value="#{salutemProfesionales.persona.ocupacion}" title="Ocupación"/>        
+        <h:outputLabel value="Género:"/>
+        <h:selectOneMenu value="#{salutemProfesionales.persona.genero}">
+            <f:selectItems value="#{salutemCombos.genero}" />
+        </h:selectOneMenu>
+        <h:outputLabel value="Activo:" />
+        <h:selectBooleanCheckbox value="#{salutemProfesionales.persona.activo}"/>
+    </h:panelGrid>
+</html>

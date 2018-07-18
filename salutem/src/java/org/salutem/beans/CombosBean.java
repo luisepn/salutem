@@ -103,17 +103,24 @@ public class CombosBean implements Serializable {
     }
 
     public SelectItem[] getInstituciones() {
-        return getSelectItems(traerInstituciones(Boolean.FALSE), "object", true);
+        if (seguridadBean.getInstitucion() != null) {
+            List<Instituciones> lista = new LinkedList<>();
+            lista.add(seguridadBean.getInstitucion());
+            return getSelectItems(lista, "object", false);
+        } else {
+            return getSelectItems(traerInstituciones(Boolean.FALSE), "object", true);
+        }
     }
 
     public SelectItem[] getInstitucionesId() {
-        List<Instituciones> lista = new LinkedList<>();
         if (seguridadBean.getInstitucion() != null) {
+            List<Instituciones> lista = new LinkedList<>();
             lista.add(seguridadBean.getInstitucion());
+            return getSelectItems(lista, "id", false);
         } else {
-            lista = traerInstituciones(Boolean.FALSE);
+            return getSelectItems(traerInstituciones(Boolean.FALSE), "id", true);
         }
-        return getSelectItems(lista, "id", true);
+
     }
 
     public SelectItem[] getLaboratorios() {
@@ -171,6 +178,7 @@ public class CombosBean implements Serializable {
     public SelectItem[] getTipoMaterial() {
         return getSelectItems(traerParametros(TIPO_DE_MATERIAL), "object", true);
     }
+
     public SelectItem[] getTipoMaterialId() {
         return getSelectItems(traerParametros(TIPO_DE_MATERIAL), "id", true);
     }
@@ -178,6 +186,7 @@ public class CombosBean implements Serializable {
     public SelectItem[] getFocos() {
         return getSelectItems(traerParametros(TIPO_DE_FOCO), "object", true);
     }
+
     public SelectItem[] getFocosId() {
         return getSelectItems(traerParametros(TIPO_DE_FOCO), "id", true);
     }

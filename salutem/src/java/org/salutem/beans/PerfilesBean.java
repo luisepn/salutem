@@ -189,6 +189,23 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             Mensajes.advertencia("Es necesario seleccionar un  Menú");
             return true;
         }
+        try {
+            String where = "o.menu=:menu and o.grupo=:grupo";
+            Map parametros = new HashMap();
+            parametros.put("menu", perfil.getMenu());
+            parametros.put("grupo", perfil.getGrupo());
+            if (perfil.getId() != null) {
+                where += " and o.id!=:id";
+                parametros.put("id", perfil.getId());
+            }
+            if (ejbPerfiles.contar(where, parametros) > 0) {
+                Mensajes.advertencia("No se permiten perfiles con submenú y grupo duplicados");
+                return true;
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return false;
     }
 

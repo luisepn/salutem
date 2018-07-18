@@ -146,7 +146,6 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         usuario = (Usuarios) usuarios.getRowData();
         persona = usuario.getPersona();
         claveBusqueda = usuario.getPersona().toString();
-
         formulario.editar();
         return null;
     }
