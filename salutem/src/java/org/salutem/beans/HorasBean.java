@@ -6,6 +6,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,12 +18,14 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import org.controladores.salutem.HorasFacade;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Perfiles;
+import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
+import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
@@ -54,6 +57,9 @@ public class HorasBean implements Serializable, IMantenimiento {
         horas = new LazyDataModel<Horas>() {
             @Override
             public List<Horas> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return cargar(i, i1, scs, map);
             }
         };
@@ -104,20 +110,23 @@ public class HorasBean implements Serializable, IMantenimiento {
             horas.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.maestro.nombre, o.codigo";
+                order = "o.institucion.nombre, o.codigo";
             } else {
-                order = (seguridadBean.getVerAgrupado() ? "o.maestro.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+                order = (seguridadBean.getVerAgrupado() ? "o.institucion.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return ejbHoras.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
     @Override
     public String buscar() {
+        if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+            return null;
+        }
         horas = new LazyDataModel<Horas>() {
             @Override
             public List<Horas> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -135,139 +144,240 @@ public class HorasBean implements Serializable, IMantenimiento {
         hora = new Horas();
         hora.setActivo(Boolean.TRUE);
         formulario.insertar();
-        formulario.insertar();
-        return null;
-    }
-
-    public String modificar() {
-        if (!perfil.getModificacion()) {
-            Mensajes.advertencia("No tiene autorización para modificar un registro");
-            return null;
-        }
-        hora = (Horas) horas.get(formulario.getFila().getRowIndex());
-        formulario.editar();
-        return null;
-    }
-
-    public String eliminar() {
-        if (!perfil.getBorrado()) {
-            Mensajes.advertencia("No tiene autorización para borrar un registro");
-            return null;
-        }
-        hora = (Horas) horas.get(formulario.getFila().getRowIndex());
-        formulario.eliminar();
-        return null;
-    }
-
-    private boolean validar() {
-        if (hora.getNombre() == null || hora.getNombre().isEmpty()) {
-            Mensajes.advertencia("Nombre es necesario");
-            return true;
-        }
-        if (hora.getHorainicio() == null) {
-            Mensajes.advertencia("Hora de inicio es necesaria");
-            return true;
-        }
-        if (hora.getHorafin() == null) {
-            Mensajes.advertencia("Hora de fin es necesaria");
-            return true;
-        }
-        return false;
-    }
-
-    public String insertar() {
-        if (validar()) {
-            return null;
-        }
-        try {
-            ejbHoras.create(hora, seguridadBean.getEntidad().getUserid());
-        } catch (InsertarException ex) {
-            Mensajes.fatal(ex.getMessage() + "-" + ex.getCause());
-            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        formulario.cancelar();
-        buscar();
-        return null;
-    }
-
-    public String grabar() {
-        if (validar()) {
-            return null;
-        }
-        try {
-            ejbHoras.edit(hora, seguridadBean.getEntidad().getUserid());
-        } catch (GrabarException ex) {
-            Mensajes.fatal(ex.getMessage() + "-" + ex.getCause());
-            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        formulario.cancelar();
-        buscar();
-
-        return null;
-    }
-
-    public String borrar() {
-        hora.setActivo(Boolean.FALSE);
-        try {
-            ejbHoras.edit(hora, seguridadBean.getEntidad().getUserid());
-        } catch (GrabarException ex) {
-            Mensajes.fatal(ex.getMessage() + "-" + ex.getCause());
-            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        buscar();
-        formulario.cancelar();
-
-        return null;
-    }
-
-    public Horas traer(Integer id) throws ConsultarException {
-        return ejbHoras.find(id);
-    }
-
-    public SelectItem[] getComboHoras() {
-        List<Horas> li = new LinkedList<>();
-        Map parametros = new HashMap();
-        parametros.put(";where", "o.activo = true and o.centro=:centro");
-        parametros.put("centro", seguridadBean.getCentro());
-
-        try {
-            li = ejbHoras.encontarParametros(parametros);
-        } catch (ConsultarException ex) {
-            Mensajes.fatal(ex.getMessage() + "-" + ex.getCause());
-            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return Combos.SelectItems(li, true);
-    }
-
-    public SelectItem[] getComboHorasPaquete() {
-        List<Horas> li = new LinkedList<>();
-        Map parametros = new HashMap();
-        parametros.put(";where", "o.activo = true and o.centro=:centro and o.paquete = true");
-        parametros.put("centro", seguridadBean.getCentro());
-
-        try {
-            li = ejbHoras.encontarParametros(parametros);
-        } catch (ConsultarException ex) {
-            Mensajes.fatal(ex.getMessage() + "-" + ex.getCause());
-            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return Combos.SelectItems(li, true);
-    }
-
-    public String cancelar() {
-        formulario.cancelar();
-        buscar();
         return null;
     }
 
     @Override
     public String editar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!IMantenimiento.validarPerfil(perfil, 'U')) {
+            return null;
+        }
+        hora = (Horas) horas.getRowData();
+        formulario.editar();
+        return null;
+    }
+
+    @Override
+    public String eliminar() {
+        if (!IMantenimiento.validarPerfil(perfil, 'D')) {
+            return null;
+        }
+        hora = (Horas) horas.getRowData();
+        formulario.eliminar();
+        return null;
+    }
+
+    @Override
+    public boolean validar() {
+        try {
+            if (hora.getInstitucion() == null) {
+                Mensajes.advertencia("Institución es necesaria");
+                return true;
+            }
+            if (hora.getCodigo() == null || hora.getCodigo().isEmpty()) {
+                Mensajes.advertencia("Código es necesario");
+                return true;
+            }
+            if (hora.getNombre() == null || hora.getNombre().isEmpty()) {
+                Mensajes.advertencia("Nombre es necesario");
+                return true;
+            }
+            if (hora.getHorainicio() == null) {
+                Mensajes.advertencia("Hora de inicio es necesaria");
+                return true;
+            }
+            if (hora.getHorafin() == null) {
+                Mensajes.advertencia("Hora de fin es necesaria");
+                return true;
+            }
+            String where = " o.institucion=:institucion and  o.codigo=:codigo";
+            Map parameters = new HashMap();
+            parameters.put("codigo", hora.getInstitucion());
+            parameters.put("codigo", hora.getCodigo());
+            if (hora.getId() != null) {
+                where += " and o.id!=:id";
+                parameters.put("id", hora.getId());
+            }
+            if (ejbHoras.contar(where, parameters) > 0) {
+                Mensajes.advertencia("No se permiten horas con código duplicado");
+                return true;
+            }
+
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
+    @Override
+    public String insertar() {
+        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+            return null;
+        }
+        if (validar()) {
+            return null;
+        }
+        try {
+            hora.setCreado(new Date());
+            hora.setCreadopor(seguridadBean.getLogueado().getUserid());
+            hora.setActualizado(hora.getCreado());
+            hora.setActualizadopor(hora.getCreadopor());
+            ejbHoras.crear(hora, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeCreacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        formulario.cancelar();
+        buscar();
+        return null;
+    }
+
+    @Override
+    public String grabar() {
+        if (!IMantenimiento.validarPerfil(perfil, 'U')) {
+            return null;
+        }
+        if (validar()) {
+            return null;
+        }
+        try {
+            hora.setActualizado(new Date());
+            hora.setActualizadopor(seguridadBean.getLogueado().getUserid());
+            ejbHoras.actualizar(hora, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        formulario.cancelar();
+        buscar();
+
+        return null;
     }
 
     @Override
     public String remover() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!IMantenimiento.validarPerfil(perfil, 'D')) {
+            return null;
+        }
+        try {
+            ejbHoras.eliminar(hora, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeEliminacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        buscar();
+        formulario.cancelar();
+
+        return null;
+    }
+
+    public SelectItem[] getComboHoras() {
+        List<Horas> li = new LinkedList<>();
+        String where = "o.activo = true and o.institucion=:institucion";
+        Map parametros = new HashMap();
+        parametros.put("institucion", seguridadBean.getInstitucion());
+
+        try {
+            li = ejbHoras.buscar(where, parametros);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+        //return CombosBean.SelectItems(li, true);
+    }
+
+    public SelectItem[] getComboHorasPaquete() {
+        List<Horas> li = new LinkedList<>();
+        String where = "o.activo = true and o.centro=:centro and o.paquete = true";
+        Map parametros = new HashMap();
+        parametros.put("institucion", seguridadBean.getInstitucion());
+
+        try {
+            li = ejbHoras.buscar(where, parametros);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+        // return Combos.SelectItems(li, true);
+    }
+
+    @Override
+    public String cancelar() {
+        formulario.cancelar();
+        return null;
+    }
+
+    /**
+     * @return the seguridadBean
+     */
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
+    }
+
+    /**
+     * @return the formulario
+     */
+    public Formulario getFormulario() {
+        return formulario;
+    }
+
+    /**
+     * @param formulario the formulario to set
+     */
+    public void setFormulario(Formulario formulario) {
+        this.formulario = formulario;
+    }
+
+    /**
+     * @return the horas
+     */
+    public LazyDataModel<Horas> getHoras() {
+        return horas;
+    }
+
+    /**
+     * @param horas the horas to set
+     */
+    public void setHoras(LazyDataModel<Horas> horas) {
+        this.horas = horas;
+    }
+
+    /**
+     * @return the hora
+     */
+    public Horas getHora() {
+        return hora;
+    }
+
+    /**
+     * @param hora the hora to set
+     */
+    public void setHora(Horas hora) {
+        this.hora = hora;
+    }
+
+    /**
+     * @return the perfil
+     */
+    public Perfiles getPerfil() {
+        return perfil;
+    }
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void setPerfil(Perfiles perfil) {
+        this.perfil = perfil;
     }
 
 }

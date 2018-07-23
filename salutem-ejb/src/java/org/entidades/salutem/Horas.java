@@ -44,8 +44,27 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Horas.findByCreado", query = "SELECT h FROM Horas h WHERE h.creado = :creado")
     , @NamedQuery(name = "Horas.findByCreadopor", query = "SELECT h FROM Horas h WHERE h.creadopor = :creadopor")
     , @NamedQuery(name = "Horas.findByActualizado", query = "SELECT h FROM Horas h WHERE h.actualizado = :actualizado")
-    , @NamedQuery(name = "Horas.findByActualizadopor", query = "SELECT h FROM Horas h WHERE h.actualizadopor = :actualizadopor")})
+    , @NamedQuery(name = "Horas.findByActualizadopor", query = "SELECT h FROM Horas h WHERE h.actualizadopor = :actualizadopor")
+    , @NamedQuery(name = "Horas.findByCodigo", query = "SELECT h FROM Horas h WHERE h.codigo = :codigo")})
 public class Horas implements Serializable {
+
+    @Size(max = 2147483647)
+    @Column(name = "nombre")
+    private String nombre;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+    @Size(max = 2147483647)
+    @Column(name = "codigo")
+    private String codigo;
+    @OneToMany(mappedBy = "hora")
+    private List<Horarios> horariosList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -53,9 +72,6 @@ public class Horas implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 2147483647)
-    @Column(name = "nombre")
-    private String nombre;
     @Column(name = "horainicio")
     @Temporal(TemporalType.TIME)
     private Date horainicio;
@@ -64,26 +80,15 @@ public class Horas implements Serializable {
     private Date horafin;
     @Column(name = "activo")
     private Boolean activo;
-    @Size(max = 2147483647)
-    @Column(name = "descripcion")
-    private String descripcion;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
     @ManyToOne
     private Instituciones institucion;
-    @OneToMany(mappedBy = "hora")
-    private List<Horarios> horariosList;
 
     public Horas() {
     }
@@ -100,13 +105,6 @@ public class Horas implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
 
     public Date getHorainicio() {
         return horainicio;
@@ -132,13 +130,6 @@ public class Horas implements Serializable {
         this.activo = activo;
     }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 
     public Date getCreado() {
         return creado;
@@ -148,13 +139,6 @@ public class Horas implements Serializable {
         this.creado = creado;
     }
 
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
 
     public Date getActualizado() {
         return actualizado;
@@ -164,13 +148,6 @@ public class Horas implements Serializable {
         this.actualizado = actualizado;
     }
 
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
-    }
 
     public Instituciones getInstitucion() {
         return institucion;
@@ -178,15 +155,6 @@ public class Horas implements Serializable {
 
     public void setInstitucion(Instituciones institucion) {
         this.institucion = institucion;
-    }
-
-    @XmlTransient
-    public List<Horarios> getHorariosList() {
-        return horariosList;
-    }
-
-    public void setHorariosList(List<Horarios> horariosList) {
-        this.horariosList = horariosList;
     }
 
     @Override
@@ -212,6 +180,55 @@ public class Horas implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Horas[ id=" + id + " ]";
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    @XmlTransient
+    public List<Horarios> getHorariosList() {
+        return horariosList;
+    }
+
+    public void setHorariosList(List<Horarios> horariosList) {
+        this.horariosList = horariosList;
     }
     
 }

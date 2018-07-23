@@ -44,6 +44,16 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Profesionales.findByActualizadopor", query = "SELECT p FROM Profesionales p WHERE p.actualizadopor = :actualizadopor")})
 public class Profesionales implements Serializable {
 
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,21 +62,12 @@ public class Profesionales implements Serializable {
     private Integer id;
     @Column(name = "activo")
     private Boolean activo;
-    @Size(max = 2147483647)
-    @Column(name = "descripcion")
-    private String descripcion;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
     @OneToMany(mappedBy = "profesional")
     private List<Horarios> horariosList;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
@@ -102,13 +103,6 @@ public class Profesionales implements Serializable {
         this.activo = activo;
     }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 
     public Date getCreado() {
         return creado;
@@ -118,13 +112,6 @@ public class Profesionales implements Serializable {
         this.creado = creado;
     }
 
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
 
     public Date getActualizado() {
         return actualizado;
@@ -134,13 +121,6 @@ public class Profesionales implements Serializable {
         this.actualizado = actualizado;
     }
 
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
-    }
 
     @XmlTransient
     public List<Horarios> getHorariosList() {
@@ -198,6 +178,30 @@ public class Profesionales implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Profesionales[ id=" + id + " ]";
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
     }
     
 }

@@ -54,6 +54,8 @@ public class Instituciones implements Serializable {
     private String nombre;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "email")
     private String email;
@@ -234,6 +236,25 @@ public class Instituciones implements Serializable {
         return nombre;
     }
 
+
+    @XmlTransient
+    public List<Horas> getHorasList() {
+        return horasList;
+    }
+
+    public void setHorasList(List<Horas> horasList) {
+        this.horasList = horasList;
+    }
+
+    @XmlTransient
+    public List<Profesionales> getProfesionalesList() {
+        return profesionalesList;
+    }
+
+    public void setProfesionalesList(List<Profesionales> profesionalesList) {
+        this.profesionalesList = profesionalesList;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -280,24 +301,6 @@ public class Instituciones implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    @XmlTransient
-    public List<Horas> getHorasList() {
-        return horasList;
-    }
-
-    public void setHorasList(List<Horas> horasList) {
-        this.horasList = horasList;
-    }
-
-    @XmlTransient
-    public List<Profesionales> getProfesionalesList() {
-        return profesionalesList;
-    }
-
-    public void setProfesionalesList(List<Profesionales> profesionalesList) {
-        this.profesionalesList = profesionalesList;
     }
     
 }

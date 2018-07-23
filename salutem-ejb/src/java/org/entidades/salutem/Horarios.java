@@ -37,7 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Horarios.findByCreado", query = "SELECT h FROM Horarios h WHERE h.creado = :creado")
     , @NamedQuery(name = "Horarios.findByCreadopor", query = "SELECT h FROM Horarios h WHERE h.creadopor = :creadopor")
     , @NamedQuery(name = "Horarios.findByActualizado", query = "SELECT h FROM Horarios h WHERE h.actualizado = :actualizado")
-    , @NamedQuery(name = "Horarios.findByActualizadopor", query = "SELECT h FROM Horarios h WHERE h.actualizadopor = :actualizadopor")})
+    , @NamedQuery(name = "Horarios.findByActualizadopor", query = "SELECT h FROM Horarios h WHERE h.actualizadopor = :actualizadopor")
+    , @NamedQuery(name = "Horarios.findByActivo", query = "SELECT h FROM Horarios h WHERE h.activo = :activo")})
 public class Horarios implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -61,6 +62,8 @@ public class Horarios implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    @Column(name = "activo")
+    private Boolean activo;
     @JoinColumn(name = "hora", referencedColumnName = "id")
     @ManyToOne
     private Horas hora;
@@ -124,6 +127,14 @@ public class Horarios implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 
     public Horas getHora() {

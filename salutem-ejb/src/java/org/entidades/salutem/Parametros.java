@@ -262,6 +262,25 @@ public class Parametros implements Serializable {
         return nombre;
     }
 
+
+    @XmlTransient
+    public List<Horarios> getHorariosList() {
+        return horariosList;
+    }
+
+    public void setHorariosList(List<Horarios> horariosList) {
+        this.horariosList = horariosList;
+    }
+
+    @XmlTransient
+    public List<Profesionales> getProfesionalesList() {
+        return profesionalesList;
+    }
+
+    public void setProfesionalesList(List<Profesionales> profesionalesList) {
+        this.profesionalesList = profesionalesList;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -308,24 +327,6 @@ public class Parametros implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    @XmlTransient
-    public List<Horarios> getHorariosList() {
-        return horariosList;
-    }
-
-    public void setHorariosList(List<Horarios> horariosList) {
-        this.horariosList = horariosList;
-    }
-
-    @XmlTransient
-    public List<Profesionales> getProfesionalesList() {
-        return profesionalesList;
-    }
-
-    public void setProfesionalesList(List<Profesionales> profesionalesList) {
-        this.profesionalesList = profesionalesList;
     }
     
 }
