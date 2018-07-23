@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : Maestros
+    Fecha       : 22 de Julio de 2018, 23:07:58 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:icecore="http://www.icefaces.org/icefaces/core"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+
+    </h:head>
+    <h:body>
+
+        <ui:composition template="../plantillas/plantilla.xhtml">
+            <!-- Aqui va todo el codigo de la pagina -->
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="#{horarios.perfil.menu.texto}"
+                           closable="false"
+                           toggleable="true">
+                    <h:panelGrid columns="7">
+                        <h:outputLabel value="Especialidades: " />
+                        <h:selectOneMenu value="#{profesionales.especialidad}">
+                            <f:selectItems value="#{tablaDeCodigos.comboEspecialidades}"/>
+                            <ace:ajax execute="@all"/>
+                        </h:selectOneMenu>
+                        <h:outputLabel value="Profesional: " />
+                        <h:selectOneMenu value="#{horarios.profesional}">
+                            <f:selectItems value="#{profesionales.comboProfesionalesEspecialidad}"/>
+                        </h:selectOneMenu>
+                        <h:commandButton value="Imprimir" rendered="#{horarios.profesional!=null}">
+                            <ace:printer for="imprimir"/>
+                        </h:commandButton>
+
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{horarios.buscar()}"/>
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{horarios.crear()}"/>
+                        </ace:menuBar>
+                        <ace:messages/>
+                    </h:panelGrid>
+
+                </ace:panel>
+
+                <ace:panel 
+                    header="Resultado Búsqueda"
+                    closable="false"
+                    toggleable="true">
+                    <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                        <h:outputLabel  value="Exportar a:"/>
+                        <h:selectOneRadio  value="#{horarios.formulario.pantalla}" required="true">
+                            <f:ajax disabled="false"/>
+                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                            <f:selectItem itemValue="pdf" itemLabel="PDF"/>
+                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                        </h:selectOneRadio>
+                        <ace:dataExporter id="dataExporter" 
+                                          label="Exportar Archivo" 
+                                          type="#{horarios.formulario.pantalla}" 
+                                          target="tabla" fileName="datos"/>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <ace:dataTable id="tabla" 
+                                       paginatorAlwaysVisible="true"
+                                       value="#{horarios.listaHorarios}"
+                                       var="item"
+                                       paginator="true"
+                                       resizableColumns="true"
+                                       rowIndexVar="row"
+                                       paginatorPosition="both"
+                                       rowsPerPageTemplate="5,10,15,50,all"
+                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="5"
+                                       binding="#{horarios.formulario.fila}">
+
+                            <ace:row condition="group" groupBy="#{item.profesional.entidad.apellidos}" pos="before" styleClass="grupo" rendered="#{horarios.profesional==null}">
+                                <ace:column style="text-align: center" colspan="20">
+                                    <h:outputText value="#{item.profesional.toString()}" />
+                                </ace:column>
+                            </ace:row>
+
+                            <ace:column headerText="Acciones" style="text-align: left">
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{horarios.modificar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{horarios.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
+                            </ace:column> 
+                            <ace:column  headerText="Registro" style="text-align: left">
+                                <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column  headerText="Día" style="text-align: left">
+                                <h:outputText value="#{item.dia.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Hora" style="text-align: left">
+                                <h:outputText value="#{item.hora.nombre}"/>
+                            </ace:column>
+                            <ace:column  headerText="Hora Inicio" style="text-align: left">
+                                <h:outputText  value="#{item.hora.horainicio}">
+                                    <f:convertDateTime pattern="HH:mm"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Hora Fin" style="text-align: left">
+                                <h:outputText  value="#{item.hora.horafin}">
+                                    <f:convertDateTime pattern="HH:mm"/>
+                                </h:outputText>
+                            </ace:column>
+                        </ace:dataTable>
+                    </h:panelGrid>
+                </ace:panel>
+
+                <h:panelGrid width="100%" rendered="#{horarios.profesional!=null}" id="imprimir">
+                    <ace:dataTable                                      
+                        value="#{horas.listahoras}"
+                        resizableColumns="true"
+                        var="hora">
+                        <f:facet name="header">Horario de #{horarios.profesional.toString()}</f:facet>
+                        <ace:column  headerText="Horas" style="text-align: right">
+                            <h:outputText value="#{hora.toString()}"/>
+                        </ace:column>
+                        <c:forEach items="#{horarios.dias}" var="dia">
+                            <ace:column headerText="#{dia.toString()}">
+                                <hr style="border: 10px solid #{horarios.getColor(hora, dia)}; width: 1px; border-radius: 10px;"/>
+                            </ace:column>
+                        </c:forEach>
+                    </ace:dataTable>
+                </h:panelGrid>
+
+
+                <ace:dialog 
+                    header="#{horarios.perfil.menu.texto}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{horarios.formulario.mostrar}"
+                    visible="#{horarios.formulario.mostrar}">
+                    <h:panelGroup>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Día" />
+                            <h:selectOneMenu value="#{horarios.horario.dia}">
+                                <f:selectItems value="#{tablaDeCodigos.comboDiasSemana}"/>
+                                <ace:ajax execute="@all"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Hora" />
+                            <h:selectOneMenu value="#{horarios.horario.hora}">
+                                <f:selectItems value="#{horas.comboHoras}"/>
+                                <ace:ajax execute="@all"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                    </h:panelGroup>
+                    <h:panelGrid columns="1" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{horarios.formulario.nuevo}" 
+                                          action="#{horarios.insertar()}"/>
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                          action="#{horarios.grabar()}" 
+                                          rendered="#{horarios.formulario.modificar}" />
+                            <ace:menuItem action="#{horarios.borrar()}" 
+                                          icon="ui-icon ui-icon-trash" 
+                                          value="¿Está seguro de Borrar el registro?" 
+                                          rendered="#{horarios.formulario.borrar}"/>
+                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
+                                          action="#{horarios.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages />
+                    </h:panelGrid>
+                </ace:dialog>
+
+            </ui:define>
+            <!-- Fin -->
+        </ui:composition>
+
+    </h:body>
+
+</html>

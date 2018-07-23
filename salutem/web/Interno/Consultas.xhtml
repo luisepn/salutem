@@ -18,18 +18,18 @@
                            header="#{salutemPacientes.perfil.menu.nombre}"
                            closable="false"
                            toggleable="true"       >
-                    <h:panelGrid columns="7">
-                        <h:panelGrid columns="2" rendered="#{datosLogueo.usuario.grupo.codigo eq ('adm')}">
-                            <h:outputLabel value="Institución:"/>
-                            <h:selectOneMenu value="#{salutemPacientes.institucion}" disabled="#{!datosLogueo.usuario.grupo.codigo eq ('adm')}" >
-                                <f:selectItems value="#{combos.instituciones}" />
-                                <ace:ajax execute="@all"/>
-                            </h:selectOneMenu>
-                        </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Sólo activos:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
+                            <ace:ajax execute="@all"/>
+                        </h:selectBooleanCheckbox>                       
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemPacientes.buscarPacientes()}"/>
                             <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemPacientes.crearPaciente()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemPacientes.formulario.mostrar}"/>
                     </h:panelGrid>
                 </ace:panel>
 
@@ -64,7 +64,7 @@
                                        rowsPerPageTemplate="#{salutemPacientes.formulario.rowsPerPageTemplate}"
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="5">
+                                       rows="10">
                             <ace:tableConfigPanel dragHandle=".ui-tableconf-header"
                                                   columnNameConfigurable="true"
                                                   columnVisibilityConfigurable="true"
@@ -99,9 +99,16 @@
                                         filterBy="#{item.persona.email}" filterMatchMode="contains">
                                 <h:outputText  value="#{item.persona.email}"/>
                             </ace:column>
-                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.persona.fecha}" style="text-align: left">
+                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.persona.fecha}"
+                                         filterBy="#{item.persona.fecha}" 
+                                         filterDatePattern="dd/MM/yyyy"
+                                         filterValueMin="#{salutemPersonas.fechaInicio}"
+                                         filterValueMax="#{salutemPersonas.fechaFin}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left">
                                 <h:outputText  value="#{item.persona.fecha}">
-                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>
                                 </h:outputText>
                             </ace:column>
                             <ace:column headerText="Teléfono fijo" sortBy="#{item.persona.direccion.fijo}" style="text-align: left" 
@@ -191,7 +198,7 @@
 
                     </ace:tabSet>
 
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
                                           action="#{salutemPacientes.grabarPaciente()}"/>

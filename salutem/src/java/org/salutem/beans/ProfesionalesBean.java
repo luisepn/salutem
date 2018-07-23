@@ -154,6 +154,10 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         if (validar()) {
             return null;
         }
+        if (profesional.getInstitucion() == null) {
+            Mensajes.advertencia("Seleccione una institución");
+            return null;
+        }
         if (persona.getId() == null) {
             insertar();
         } else {

@@ -103,23 +103,27 @@ public class CombosBean implements Serializable {
     }
 
     public SelectItem[] getInstituciones() {
+        if (seguridadBean.getGrupo().getCodigo().equals("GSA")) {
+            return getSelectItems(traerInstituciones(Boolean.FALSE), "object", true);
+        }
         if (seguridadBean.getInstitucion() != null) {
             List<Instituciones> lista = new LinkedList<>();
             lista.add(seguridadBean.getInstitucion());
             return getSelectItems(lista, "object", false);
-        } else {
-            return getSelectItems(traerInstituciones(Boolean.FALSE), "object", true);
         }
+        return getSelectItems(traerInstituciones(Boolean.FALSE), "object", true);
     }
 
     public SelectItem[] getInstitucionesId() {
+        if (seguridadBean.getGrupo().getCodigo().equals("GSA")) {
+            return getSelectItems(traerInstituciones(Boolean.FALSE), "id", true);
+        }
         if (seguridadBean.getInstitucion() != null) {
             List<Instituciones> lista = new LinkedList<>();
             lista.add(seguridadBean.getInstitucion());
             return getSelectItems(lista, "id", false);
-        } else {
-            return getSelectItems(traerInstituciones(Boolean.FALSE), "id", true);
         }
+        return getSelectItems(traerInstituciones(Boolean.FALSE), "object", true);
 
     }
 

@@ -25,6 +25,13 @@ import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
+/**
+ *
+ * @author Luis Fernando Ordóñez Armijos
+ * @since 24 de Noviembre de 2017, 09:45:07 AM
+ *
+ *
+ */
 @ManagedBean(name = "salutemMateriales")
 @ViewScoped
 public class MaterialesBean implements Serializable, IMantenimiento {

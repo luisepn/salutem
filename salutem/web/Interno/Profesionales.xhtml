@@ -24,10 +24,6 @@
                             <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
                                 <ace:ajax execute="@all"/>
                             </h:selectBooleanCheckbox>
-                            <h:outputLabel value="Ver agrupado:" />
-                            <h:selectBooleanCheckbox value="#{salutemSeguridad.verAgrupado}">
-                                <ace:ajax execute="@all"/>
-                            </h:selectBooleanCheckbox>
                         </h:panelGrid>
                         <h:panelGrid columns="2">
                             <ace:menuBar autoSubmenuDisplay="true" >
@@ -70,7 +66,7 @@
                                        rowsPerPageTemplate="#{salutemProfesionales.formulario.rowsPerPageTemplate}"
                                        currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
                                        paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="5">
+                                       rows="10">
                             <ace:tableConfigPanel dragHandle=".ui-tableconf-header"
                                                   columnNameConfigurable="true"
                                                   columnVisibilityConfigurable="true"
@@ -103,9 +99,16 @@
                                         filterBy="#{item.persona.email}" filterMatchMode="contains">
                                 <h:outputText  value="#{item.persona.email}"/>
                             </ace:column>
-                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.persona.fecha}" style="text-align: left">
+                            <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.persona.fecha}"
+                                         filterBy="#{item.persona.fecha}" 
+                                         filterDatePattern="dd/MM/yyyy"
+                                         filterValueMin="#{salutemPersonas.fechaInicio}"
+                                         filterValueMax="#{salutemPersonas.fechaFin}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left">
                                 <h:outputText  value="#{item.persona.fecha}">
-                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>
                                 </h:outputText>
                             </ace:column>
                             <ace:column headerText="Teléfono fijo" sortBy="#{item.persona.direccion.fijo}" style="text-align: left" 
@@ -238,6 +241,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemProfesionales.cancelar()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" />
                     </h:panelGrid>
                 </ace:dialog>
             </ui:define>

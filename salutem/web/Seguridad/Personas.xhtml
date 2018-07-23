@@ -96,7 +96,7 @@
                                          filterBy="#{item.nombres}" filterMatchMode="contains">
                                 <h:outputText  value="#{item.nombres}"/>
                             </ace:column>
-                            <ace:column  headerText="email" sortBy="#{item.email}" style="text-align: left"
+                            <ace:column  headerText="E-mail" sortBy="#{item.email}" style="text-align: left"
                                          filterBy="#{item.email}" filterMatchMode="contains">
                                 <h:outputText  value="#{item.email}"/>
                             </ace:column>
@@ -113,7 +113,7 @@
                                          rangedFilter="true" 
                                          style="text-align: left">
                                 <h:outputText  value="#{item.fecha}">
-                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>
                                 </h:outputText>
                             </ace:column>
                             <ace:column  headerText="Creación" sortBy="#{item.creado}" 

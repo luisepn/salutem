@@ -91,11 +91,13 @@ public class PerfilesBean implements Serializable, IMantenimiento {
                 }
             }
 
-            if (modulo != 0) {
-                combosBean.setModulo(ejbParametros.buscar(modulo));
-            }
-            if (menu != 0) {
-                combosBean.setMenu(ejbMenus.buscar(menu));
+            if (!formulario.isMostrar()) {
+                if (modulo != 0) {
+                    combosBean.setModulo(ejbParametros.buscar(modulo));
+                }
+                if (menu != 0) {
+                    combosBean.setMenu(ejbMenus.buscar(menu));
+                }
             }
 
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {

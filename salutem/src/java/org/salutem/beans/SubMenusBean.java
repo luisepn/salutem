@@ -87,9 +87,10 @@ public class SubMenusBean implements Serializable, IMantenimiento {
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
             }
-
-            if (modulo != 0) {
-                combosBean.setModulo(ejbParametros.buscar(modulo));
+            if (!formulario.isMostrar()) {
+                if (modulo != 0) {
+                    combosBean.setModulo(ejbParametros.buscar(modulo));
+                }
             }
 
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {

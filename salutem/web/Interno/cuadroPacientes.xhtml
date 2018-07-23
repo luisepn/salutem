@@ -9,7 +9,11 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ace="http://www.icefaces.org/icefaces/components">
-    <h:panelGrid columns="2">
+    <h:panelGrid columns="4">
+        <h:outputLabel value="Institución:" styleClass="bold"/>
+        <h:selectOneMenu value="#{salutemPacientes.paciente.institucion}">
+            <f:selectItems value="#{salutemCombos.instituciones}" />
+        </h:selectOneMenu>
         <h:outputLabel value="C.I.:"/>
         <ace:textEntry value="#{salutemPacientes.persona.cedula}" title="Cédula" rendered="#{salutemPacientes.formulario.crear}" valueChangeListener="#{salutemPacientes.cambiaCedula}" disabled="#{salutemPacientes.formulario.eliminar}">
             <ace:ajax execute="@all"/>
@@ -40,6 +44,8 @@
         <h:selectOneMenu value="#{salutemPacientes.persona.genero}">
             <f:selectItems value="#{salutemCombos.genero}" />
         </h:selectOneMenu>
+        <h:outputLabel value="Descripción:"/>
+        <ace:textAreaEntry value="#{salutemPacientes.persona.descripcion}" cols="22" rows="2"/>
         <h:outputLabel value="Activo:" />
         <h:selectBooleanCheckbox value="#{salutemPacientes.persona.activo}"/>
     </h:panelGrid>
