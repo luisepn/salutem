@@ -32,7 +32,7 @@ public class ConvertidorMateriales implements Converter {
             CombosBean bean = (CombosBean) context.getELContext().getELResolver().
                     getValue(context.getELContext(), null, "salutemCombos");
             Integer id = Integer.parseInt(value);
-            codigo = bean.traerMateriales(id);
+            codigo = bean.traerMaterial(id);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ConvertidorMateriales.class.getName()).log(Level.SEVERE, null, ex);

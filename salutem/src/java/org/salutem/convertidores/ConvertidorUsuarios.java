@@ -32,7 +32,7 @@ public class ConvertidorUsuarios implements Converter {
             CombosBean bean = (CombosBean) context.getELContext().getELResolver().
                     getValue(context.getELContext(), null, "salutemCombos");
             Integer id = Integer.parseInt(value);
-            codigo = bean.traerUsuarios(id);
+            codigo = bean.traerUsuario(id);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ConvertidorUsuarios.class.getName()).log(Level.SEVERE, null, ex);

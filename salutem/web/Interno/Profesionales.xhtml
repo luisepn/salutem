@@ -51,7 +51,7 @@
                                           label="Exportar Archivo" 
                                           type="#{salutemProfesionales.formulario.tipo}" 
                                           target="tabla"  
-                                          fileName="Pacientes"
+                                          fileName="Profesionales"
                                           excludeColumns="1"/>
                     </h:panelGrid>
                     <h:panelGrid width="100%">
@@ -102,8 +102,8 @@
                             <ace:column  headerText="Fecha de Nacimiento" sortBy="#{item.persona.fecha}"
                                          filterBy="#{item.persona.fecha}" 
                                          filterDatePattern="dd/MM/yyyy"
-                                         filterValueMin="#{salutemPersonas.fechaInicio}"
-                                         filterValueMax="#{salutemPersonas.fechaFin}"
+                                         filterValueMin="#{salutemProfesionales.fechaInicio}"
+                                         filterValueMax="#{salutemProfesionales.fechaFin}"
                                          type="DATE"
                                          rangedFilter="true" 
                                          style="text-align: left">

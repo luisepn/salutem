@@ -192,7 +192,7 @@ public class HorasBean implements Serializable, IMantenimiento {
             }
             String where = " o.institucion=:institucion and  o.codigo=:codigo";
             Map parameters = new HashMap();
-            parameters.put("codigo", hora.getInstitucion());
+            parameters.put("institucion", hora.getInstitucion());
             parameters.put("codigo", hora.getCodigo());
             if (hora.getId() != null) {
                 where += " and o.id!=:id";
@@ -229,7 +229,6 @@ public class HorasBean implements Serializable, IMantenimiento {
             Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
         return null;
     }
 
@@ -250,8 +249,6 @@ public class HorasBean implements Serializable, IMantenimiento {
             Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        buscar();
-
         return null;
     }
 
@@ -270,38 +267,6 @@ public class HorasBean implements Serializable, IMantenimiento {
         formulario.cancelar();
 
         return null;
-    }
-
-    public SelectItem[] getComboHoras() {
-        List<Horas> li = new LinkedList<>();
-        String where = "o.activo = true and o.institucion=:institucion";
-        Map parametros = new HashMap();
-        parametros.put("institucion", seguridadBean.getInstitucion());
-
-        try {
-            li = ejbHoras.buscar(where, parametros);
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-        //return CombosBean.SelectItems(li, true);
-    }
-
-    public SelectItem[] getComboHorasPaquete() {
-        List<Horas> li = new LinkedList<>();
-        String where = "o.activo = true and o.centro=:centro and o.paquete = true";
-        Map parametros = new HashMap();
-        parametros.put("institucion", seguridadBean.getInstitucion());
-
-        try {
-            li = ejbHoras.buscar(where, parametros);
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-        // return Combos.SelectItems(li, true);
     }
 
     @Override

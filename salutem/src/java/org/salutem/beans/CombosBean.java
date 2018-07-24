@@ -10,12 +10,14 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import org.controladores.salutem.HorasFacade;
 import org.controladores.salutem.InstitucionesFacade;
 import org.controladores.salutem.MaestrosFacade;
 import org.controladores.salutem.MaterialesFacade;
 import org.controladores.salutem.MenusFacade;
 import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.UsuariosFacade;
+import org.entidades.salutem.Horas;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Maestros;
@@ -42,6 +44,7 @@ public class CombosBean implements Serializable {
     private Parametros modulo;
     private Parametros grupo;
     private Menus menu;
+    private Instituciones institucion;
 
     private Parametros foco;
     private Parametros tipo;
@@ -58,6 +61,8 @@ public class CombosBean implements Serializable {
     private ParametrosFacade ejbParametros;
     @EJB
     private UsuariosFacade ejbUsuarios;
+    @EJB
+    private HorasFacade ejbHoras;
 
     private SelectItem[] getSelectItems(List<?> entities, String clave, boolean selectOne) {
         if (entities == null) {
@@ -199,6 +204,14 @@ public class CombosBean implements Serializable {
         return getSelectItems(traerParametros(TIPO_DE_TRATAMIENTO), "object", true);
     }
 
+    public SelectItem[] getComboHoras() {
+        return getSelectItems(traerHoras(), "object", true);
+    }
+
+    public SelectItem[] getComboHorasId() {
+        return getSelectItems(traerHoras(), "id", true);
+    }
+
     private List<Instituciones> traerInstituciones(Boolean tipo) {
         try {
             return ejbInstituciones.traerInstituciones(tipo);
@@ -269,6 +282,16 @@ public class CombosBean implements Serializable {
         return null;
     }
 
+    private List<Horas> traerHoras() {
+        try {
+            return ejbHoras.traerHoras(institucion);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CombosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     public Instituciones traerInstitucion(Integer id) throws ExcepcionDeConsulta {
         return (Instituciones) ejbInstituciones.buscar(id);
     }
@@ -277,11 +300,11 @@ public class CombosBean implements Serializable {
         return (Maestros) ejbMaestros.buscar(id);
     }
 
-    public Materiales traerMateriales(Integer id) throws ExcepcionDeConsulta {
+    public Materiales traerMaterial(Integer id) throws ExcepcionDeConsulta {
         return (Materiales) ejbMateriales.buscar(id);
     }
 
-    public Menus traerMenus(Integer id) throws ExcepcionDeConsulta {
+    public Menus traerMenu(Integer id) throws ExcepcionDeConsulta {
         return (Menus) ejbMenus.buscar(id);
     }
 
@@ -289,8 +312,12 @@ public class CombosBean implements Serializable {
         return (Parametros) ejbParametros.buscar(id);
     }
 
-    public Usuarios traerUsuarios(Integer id) throws ExcepcionDeConsulta {
+    public Usuarios traerUsuario(Integer id) throws ExcepcionDeConsulta {
         return (Usuarios) ejbUsuarios.buscar(id);
+    }
+
+    public Horas traerHora(Integer id) throws ExcepcionDeConsulta {
+        return (Horas) ejbHoras.buscar(id);
     }
 
     /**

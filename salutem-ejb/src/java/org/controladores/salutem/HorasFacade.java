@@ -5,10 +5,15 @@
  */
 package org.controladores.salutem;
 
+import java.util.LinkedList;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.entidades.salutem.Horas;
+import org.entidades.salutem.Instituciones;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
  *
@@ -28,5 +33,10 @@ public class HorasFacade extends AbstractFacade<Horas> {
     public HorasFacade() {
         super(Horas.class);
     }
-    
+
+    public List<Horas> traerHoras(Instituciones institucion) throws ExcepcionDeConsulta {
+        Query q = getEntityManager().createQuery("Select object(o) from Horas as o where o.activo = true and o.institucion=:institucion");
+        q.setParameter("institucion", institucion);
+        return q.getResultList();
+    }
 }

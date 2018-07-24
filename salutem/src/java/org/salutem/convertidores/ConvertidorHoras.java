@@ -10,7 +10,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.entidades.salutem.Menus;
+import org.entidades.salutem.Horas;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.salutem.beans.CombosBean;
 import org.salutem.utilitarios.Mensajes;
@@ -19,12 +19,12 @@ import org.salutem.utilitarios.Mensajes;
  *
  * @author Luis Fernando Ordóñez Armijos
  */
-@FacesConverter(forClass = Menus.class)
-public class ConvertidorMenus implements Converter {
+@FacesConverter(forClass = Horas.class)
+public class ConvertidorHoras implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        Menus codigo = null;
+        Horas codigo = null;
         try {
             if (value == null) {
                 return null;
@@ -32,20 +32,20 @@ public class ConvertidorMenus implements Converter {
             CombosBean bean = (CombosBean) context.getELContext().getELResolver().
                     getValue(context.getELContext(), null, "salutemCombos");
             Integer id = Integer.parseInt(value);
-            codigo = bean.traerMenu(id);
+            codigo = bean.traerHora(id);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(ConvertidorMenus.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ConvertidorHoras.class.getName()).log(Level.SEVERE, null, ex);
         }
         return codigo;
     }
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        Menus codigo = (Menus) value;
+        Horas codigo = (Horas) value;
         if (codigo.getId() == null) {
             return "0";
         }
-        return ((Menus) value).getId().toString();
+        return ((Horas) value).getId().toString();
     }
 }

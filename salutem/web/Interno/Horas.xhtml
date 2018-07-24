@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!--
-    Documento   : Maestros
+    Documento   : Horas
     Fecha       : 22 de Julio de 2018, 23:06:02 AM
     Author      : Luis Fernando Ordóñez Armijos
 -->
@@ -15,24 +15,28 @@
 
     </h:head>
     <h:body>
-
-        <ui:composition template="../plantillas/plantilla.xhtml">
+        <ui:composition template="../plantillas/Plantilla.xhtml">
             <!-- Aqui va todo el codigo de la pagina -->
             <ui:define name="content">
                 <ace:panel id="panel"
-                           header="#{horas.perfil.menu.texto}"
+                           header="#{salutemHoras.perfil.menu.nombre}"
                            closable="false"
                            toggleable="true">
-                    <h:panelGrid columns="7">
-                        <ace:menuBar autoSubmenuDisplay="true" >
-
-                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{horas.buscar()}"/>
-                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{horas.crear()}"/>
-                        </ace:menuBar>
-                        <ace:messages/>
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Sólo activos:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
+                            <ace:ajax execute="@all"/>
+                        </h:selectBooleanCheckbox>
                     </h:panelGrid>
-
+                    <h:panelGrid columns="2">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemHoras.buscar()}"/>
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemHoras.crear()}"/>
+                        </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemHoras.formulario.mostrar}"/>
+                    </h:panelGrid>
                 </ace:panel>
+
                 <ace:panel 
                     header="Resultado Búsqueda"
                     closable="false"
@@ -40,7 +44,7 @@
                     >
                     <h:panelGrid columns="3" styleClass="centeredPanelGrid">
                         <h:outputLabel  value="Exportar a:"/>
-                        <h:selectOneRadio  value="#{horas.formulario.pantalla}" required="true">
+                        <h:selectOneRadio  value="#{salutemHoras.formulario.tipo}" required="true">
                             <f:ajax disabled="false"/>
                             <f:selectItem itemValue="csv" itemLabel="CSV"/>
                             <f:selectItem itemValue="pdf" itemLabel="PDF"/>
@@ -49,38 +53,45 @@
                         </h:selectOneRadio>
                         <ace:dataExporter id="dataExporter" 
                                           label="Exportar Archivo" 
-                                          type="#{horas.formulario.pantalla}" 
-                                          target="tabla" fileName="datos"/>
+                                          type="#{salutemHoras.formulario.tipo}" 
+                                          target="tabla"  
+                                          fileName="Profesionales"
+                                          excludeColumns="1"/>
                     </h:panelGrid>
-                    <!--                    <h:panelGrid styleClass="centeredPanelGrid">
-                                            
-                                        </h:panelGrid>-->
                     <h:panelGrid width="100%">
                         <ace:dataTable id="tabla" 
+                                       lazy="true"
                                        paginatorAlwaysVisible="true"
-                                       value="#{horas.listahoras}"
+                                       value="#{salutemHoras.horas}"
                                        var="item"
                                        paginator="true"
-                                       resizableColumns="true"
                                        rowIndexVar="row"
                                        paginatorPosition="both"
-                                       rowsPerPageTemplate="5,10,15,50,all"
-                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="50"
-                                       binding="#{horas.formulario.fila}">
-
-                            <ace:column headerText="Acciones" style="text-align: left">
-                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
-                                    <ace:menuItem action="#{horas.modificar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
-                                    <ace:menuItem action="#{horas.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
-                                </ace:menuButton>
-                            </ace:column> 
+                                       rowsPerPageTemplate="#{salutemHoras.formulario.rowsPerPageTemplate}"
+                                       currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="10">
+                            <ace:tableConfigPanel dragHandle=".ui-tableconf-header"
+                                                  columnNameConfigurable="true"
+                                                  columnVisibilityConfigurable="true"
+                                                  columnOrderingConfigurable="true"
+                                                  columnSortingConfigurable="true"
+                                                  modal="true"/>
                             <ace:column  headerText="Registro" style="text-align: right">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
-                            <ace:column  headerText="Nombre" style="text-align: left">
-                                <h:outputText  value="#{item.nombre}"/>
+                            <ace:column headerText="Operaciones" style="text-align: left" >
+                                <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{salutemHoras.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{salutemHoras.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuButton>
                             </ace:column>
+                            <ace:column  headerText="Código" sortBy="#{item.codigo}" filterBy="#{item.codigo}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.codigo}"/>
+                            </ace:column>
+                            <ace:column  headerText="Nombre" sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.nombre}"/>
+                            </ace:column>    
                             <ace:column  headerText="Hora Inicio" style="text-align: left">
                                 <h:outputText  value="#{item.horainicio}">
                                     <f:convertDateTime pattern="HH:mm"/>
@@ -91,52 +102,97 @@
                                     <f:convertDateTime pattern="HH:mm"/>
                                 </h:outputText>
                             </ace:column>
+                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
+                            </ace:column>
+
+                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                         filterBy="#{item.creado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                         filterValueMax="#{salutemSeguridad.finCreado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                         filterBy="#{item.actualizado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                         filterValueMax="#{salutemSeguridad.finActualizado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizadopor}"/>
+                            </ace:column>
+
                         </ace:dataTable>
                     </h:panelGrid>
                 </ace:panel>
 
                 <ace:dialog 
-                    header="#{horas.perfil.menu.texto}"
+                    header="#{salutemHoras.perfil.menu.nombre}"
                     closable="false"
                     modal="true"
                     draggable="false"
                     showEffect="clip"
                     hideEffect="fade"
-                    rendered="#{horas.formulario.mostrar}"
-                    visible="#{horas.formulario.mostrar}">
+                    rendered="#{salutemHoras.formulario.mostrar}"
+                    visible="#{salutemHoras.formulario.mostrar}">
                     <h:panelGroup>
                         <h:panelGrid columns="2">
-                            <h:outputLabel value="Nombre:" />
-                            <h:inputText value="#{horas.hora.nombre}" title="Nombre" />
+                            <h:outputLabel value="Institución:" styleClass="bold"/>
+                            <h:selectOneMenu value="#{salutemHoras.hora.institucion}">
+                                <f:selectItems value="#{salutemCombos.instituciones}" />
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Código:" for="codigo" />
+                            <ace:textEntry id="codigo" value="#{salutemHoras.hora.codigo}" title="Código"/>
+                            <h:outputLabel value="Nombre:" for="nombre" />
+                            <ace:textEntry id="nombre" value="#{salutemHoras.hora.nombre}" title="Nombre" />
                             <h:outputLabel value="Hora Inicio: " for="horainicio" />
-                            <ace:dateTimeEntry navigator="true" value="#{horas.hora.horainicio}" 
+                            <ace:dateTimeEntry navigator="true" value="#{salutemHoras.hora.horainicio}" 
                                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" timeOnly="true"
                                                pattern="HH:mm" label="HH:mm" labelPosition="infield">
                                 <f:convertDateTime pattern="HH:mm" />
                             </ace:dateTimeEntry>
                             <h:outputLabel value="Hora Fin: " for="horafin" />
-                            <ace:dateTimeEntry navigator="true" value="#{horas.hora.horafin}" 
+                            <ace:dateTimeEntry navigator="true" value="#{salutemHoras.hora.horafin}" 
                                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true"  timeOnly="true"
                                                pattern="HH:mm" label="HH:mm" labelPosition="infield">
                                 <f:convertDateTime pattern="HH:mm" />
                             </ace:dateTimeEntry>
+                            <h:outputLabel value="Descripción:" for="descripcion" />
+                            <ace:textAreaEntry id="descripcion" value="#{salutemHoras.hora.descripcion}" cols="22" rows="2"/>
+                            <h:outputLabel value="Activo:" />
+                            <h:selectBooleanCheckbox value="#{salutemHoras.hora.activo}" title="Activo"/>
                         </h:panelGrid>
                     </h:panelGroup>
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
-                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{horas.formulario.nuevo}" 
-                                          action="#{horas.insertar()}"/>
-                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                          action="#{horas.grabar()}" 
-                                          rendered="#{horas.formulario.modificar}" />
-                            <ace:menuItem action="#{horas.borrar()}" 
-                                          icon="ui-icon ui-icon-trash" 
-                                          value="¿Está seguro de Borrar el registro?" 
-                                          rendered="#{horas.formulario.borrar}"/>
-                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
-                                          action="#{horas.cancelar()}"/>
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
+                                          action="#{salutemHoras.insertar()}"
+                                          rendered="#{salutemHoras.formulario.crear}"/>
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemHoras.grabar()}" 
+                                          rendered="#{salutemHoras.formulario.editar}"/>
+                            <ace:menuItem value="Eliminar" icon="ui-icon ui-icon-trash"
+                                          action="#{salutemHoras.remover()}" 
+                                          rendered="#{salutemHoras.formulario.eliminar}"/>
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemHoras.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages />
+                        <ace:messages style="white-space: pre-wrap" />
                     </h:panelGrid>
                 </ace:dialog>
 
