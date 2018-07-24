@@ -14,6 +14,7 @@ import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.ProfesionalesFacade;
 import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Instituciones;
+import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Profesionales;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
@@ -30,6 +31,8 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
 
     private LazyDataModel<Profesionales> profesionales;
     private Profesionales profesional;
+
+    private int especialidad;
 
     @EJB
     private ProfesionalesFacade ejbProfesionales;
@@ -57,8 +60,16 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                if (clave.contains(".id")) {
+                    Integer id = Integer.parseInt(valor);
+                    if (id != 0) {
+                        where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
+                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    }
+                } else {
+                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
             }
             int total = ejbProfesionales.contar(where, parameters);
             formulario.setTotal(total);
@@ -109,6 +120,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
 
     private void existe() throws ExcepcionDeConsulta {
         Instituciones institucion = profesional.getInstitucion();
+        Parametros especialidad = profesional.getEspecialidad();
         String where = " o.persona=:persona and o.institucion=:institucion";
         Map parametros = new HashMap();
         parametros.put("persona", persona);
@@ -119,9 +131,10 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
             profesional = lista.get(0);
         } else {
             profesional = new Profesionales();
-            profesional.setActivo(Boolean.TRUE);
-            profesional.setInstitucion(institucion);
         }
+        profesional.setActivo(Boolean.TRUE);
+        profesional.setInstitucion(institucion);
+        profesional.setEspecialidad(especialidad);
     }
 
     public String editarProfesional() {
@@ -156,6 +169,10 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         }
         if (profesional.getInstitucion() == null) {
             Mensajes.advertencia("Seleccione una institución");
+            return null;
+        }
+        if (profesional.getEspecialidad() == null) {
+            Mensajes.advertencia("Seleccione una especialidad");
             return null;
         }
         if (persona.getId() == null) {
@@ -224,6 +241,20 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
      */
     public void setProfesional(Profesionales profesional) {
         this.profesional = profesional;
+    }
+
+    /**
+     * @return the especialidad
+     */
+    public int getEspecialidad() {
+        return especialidad;
+    }
+
+    /**
+     * @param especialidad the especialidad to set
+     */
+    public void setEspecialidad(int especialidad) {
+        this.especialidad = especialidad;
     }
 
 }

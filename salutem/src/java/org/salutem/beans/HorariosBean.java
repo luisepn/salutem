@@ -6,8 +6,6 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -26,7 +24,6 @@ import org.entidades.salutem.Horarios;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Perfiles;
-import org.entidades.salutem.Profesionales;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
@@ -48,17 +45,18 @@ import org.salutem.utilitarios.Mensajes;
 @ViewScoped
 public class HorariosBean implements Serializable, IMantenimiento {
 
-    private static final long serialVersionUID = 1L;
-
     @ManagedProperty(value = "#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
+    @ManagedProperty(value = "#{salutemCombos}")
+    private CombosBean combosBean;
+
     private Perfiles perfil;
 
     private Formulario formulario = new Formulario();
     private LazyDataModel<Horarios> horarios;
     private List<Parametros> dias;
     private Horarios horario;
-    private Profesionales profesional;
+    private int profesional;
 
     @EJB
     private HorariosFacade ejbHorarios;
@@ -79,8 +77,7 @@ public class HorariosBean implements Serializable, IMantenimiento {
     @Override
     public void activar() {
         perfil = seguridadBean.traerPerfil("Horarios");
-        llenarDias();
-
+        dias = combosBean.traerParametros(CombosBean.DIAS_SEMANA, "o.parametros");
     }
 
     private List<Horarios> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
@@ -122,14 +119,14 @@ public class HorariosBean implements Serializable, IMantenimiento {
             horarios.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.dia.parametros, o.hora.horainicio asc";
+                order = "o.profesional.id, o.dia.parametros, o.hora.horainicio asc";
             } else {
-                order = (seguridadBean.getVerAgrupado() ? "o.maestro.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+                order = (seguridadBean.getVerAgrupado() ? "o.profesional.id," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return ejbHorarios.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -172,6 +169,7 @@ public class HorariosBean implements Serializable, IMantenimiento {
         return null;
     }
 
+    @Override
     public String eliminar() {
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
@@ -197,7 +195,7 @@ public class HorariosBean implements Serializable, IMantenimiento {
             Map parameters = new HashMap();
             parameters.put("dia", horario.getDia());
             parameters.put("hora", horario.getHora());
-            parameters.put("profesional", profesional);
+            parameters.put("profesional", horario.getProfesional());
             if (horario.getId() != null) {
                 where += " and o.id!=:id";
                 parameters.put("id", horario.getId());
@@ -267,22 +265,6 @@ public class HorariosBean implements Serializable, IMantenimiento {
         return null;
     }
 
-    public SelectItem[] getComboHorarios() {
-        List<Horarios> li = new LinkedList<>();
-        String where = "o.activo = true and o.institucion=:centro";
-        Map parametros = new HashMap();
-        parametros.put("institucion", seguridadBean.getInstitucion());
-
-        try {
-            li = ejbHorarios.buscar(where, parametros);
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-        //return Combos.SelectItems(li, true);
-    }
-
     public SelectItem[] getComboHorariosPaquete() {
         List<Horarios> li = new LinkedList<>();
         String where = "o.activo = true and o.institucion=:institucion and o.paquete = true";
@@ -306,35 +288,38 @@ public class HorariosBean implements Serializable, IMantenimiento {
         return null;
     }
 
-    private void llenarDias() {
-//        try {
-//            dias = ejbHorarios.traerCodigos("DSM", null);
-//
-//            if (dias.size() > 0) {
-//                Collections.sort(dias, new Comparator<Parametros>() {
-//                    @Override
-//                    public int compare(Parametros t, Parametros t1) {
-//                        return t.getParametros().compareTo(t1.getParametros());
-//                    }
-//                });
-//            }
-//
-//        } catch (ExcepcionDeConsulta ex) {
-//            Mensajes.fatal(ex.getMessage());
-//            Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+    public String getProfesionales(Horas hora, Parametros dia) {
+        String retorno = "";
+        Map parametros = new HashMap();
+        String where = "o.hora=:hora and o.dia=:dia";
+        parametros.put("hora", hora);
+        parametros.put("dia", dia);
+        if (profesional != 0) {
+            where += " and o.profesional.id=:profesional";
+            parametros.put("profesional", profesional);
+        }
+
+        try {
+            List<Horarios> aux = ejbHorarios.buscar(where, parametros);
+            for (Horarios h : aux) {
+                retorno += " - " + h.getProfesional().toString() + "\n";
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retorno;
     }
 
     public String getColor(Horas hora, Parametros dia) {
         Map parametros = new HashMap();
-        String where = "o.hora=:hora and o.dia=:dia and o.profesional=:profesional";
+        String where = "o.hora=:hora and o.dia=:dia and o.profesional.id=:profesional";
         parametros.put("hora", hora);
         parametros.put("dia", dia);
         parametros.put("profesional", profesional);
 
         try {
-            List<Horarios> aux = ejbHorarios.buscar(where, parametros);
-            if (!aux.isEmpty()) {
+            if (ejbHorarios.contar(where, parametros) > 0) {
                 return "#195f88";
             }
         } catch (ExcepcionDeConsulta ex) {
@@ -342,7 +327,118 @@ public class HorariosBean implements Serializable, IMantenimiento {
             Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "#FFFFFF";
+    }
 
+    /**
+     * @return the seguridadBean
+     */
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
+    }
+
+    /**
+     * @return the perfil
+     */
+    public Perfiles getPerfil() {
+        return perfil;
+    }
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void setPerfil(Perfiles perfil) {
+        this.perfil = perfil;
+    }
+
+    /**
+     * @return the formulario
+     */
+    public Formulario getFormulario() {
+        return formulario;
+    }
+
+    /**
+     * @param formulario the formulario to set
+     */
+    public void setFormulario(Formulario formulario) {
+        this.formulario = formulario;
+    }
+
+    /**
+     * @return the horarios
+     */
+    public LazyDataModel<Horarios> getHorarios() {
+        return horarios;
+    }
+
+    /**
+     * @param horarios the horarios to set
+     */
+    public void setHorarios(LazyDataModel<Horarios> horarios) {
+        this.horarios = horarios;
+    }
+
+    /**
+     * @return the dias
+     */
+    public List<Parametros> getDias() {
+        return dias;
+    }
+
+    /**
+     * @param dias the dias to set
+     */
+    public void setDias(List<Parametros> dias) {
+        this.dias = dias;
+    }
+
+    /**
+     * @return the horario
+     */
+    public Horarios getHorario() {
+        return horario;
+    }
+
+    /**
+     * @param horario the horario to set
+     */
+    public void setHorario(Horarios horario) {
+        this.horario = horario;
+    }
+
+    /**
+     * @return the profesional
+     */
+    public int getProfesional() {
+        return profesional;
+    }
+
+    /**
+     * @param profesional the profesional to set
+     */
+    public void setProfesional(int profesional) {
+        this.profesional = profesional;
+    }
+
+    /**
+     * @return the combosBean
+     */
+    public CombosBean getCombosBean() {
+        return combosBean;
+    }
+
+    /**
+     * @param combosBean the combosBean to set
+     */
+    public void setCombosBean(CombosBean combosBean) {
+        this.combosBean = combosBean;
     }
 
 }

@@ -16,31 +16,27 @@
 
     </h:head>
     <h:body>
-
-        <ui:composition template="../plantillas/plantilla.xhtml">
+        <ui:composition template="../plantillas/Plantilla.xhtml">
             <!-- Aqui va todo el codigo de la pagina -->
             <ui:define name="content">
                 <ace:panel id="panel"
-                           header="#{horarios.perfil.menu.texto}"
+                           header="#{salutemHorarios.perfil.menu.nombre}"
                            closable="false"
                            toggleable="true">
-                    <h:panelGrid columns="7">
-                        <h:outputLabel value="Especialidades: " />
-                        <h:selectOneMenu value="#{profesionales.especialidad}">
-                            <f:selectItems value="#{tablaDeCodigos.comboEspecialidades}"/>
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Sólo activos:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
                             <ace:ajax execute="@all"/>
-                        </h:selectOneMenu>
-                        <h:outputLabel value="Profesional: " />
-                        <h:selectOneMenu value="#{horarios.profesional}">
-                            <f:selectItems value="#{profesionales.comboProfesionalesEspecialidad}"/>
-                        </h:selectOneMenu>
-                        <h:commandButton value="Imprimir" rendered="#{horarios.profesional!=null}">
-                            <ace:printer for="imprimir"/>
-                        </h:commandButton>
-
+                        </h:selectBooleanCheckbox>
+                        <h:outputLabel value="Ver agrupado:" />
+                        <h:selectBooleanCheckbox value="#{salutemSeguridad.verAgrupado}">
+                            <ace:ajax execute="@all"/>
+                        </h:selectBooleanCheckbox>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
                         <ace:menuBar autoSubmenuDisplay="true" >
-                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{horarios.buscar()}"/>
-                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{horarios.crear()}"/>
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemHorarios.buscar()}"/>
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemHorarios.crear()}"/>
                         </ace:menuBar>
                         <ace:messages/>
                     </h:panelGrid>
@@ -53,7 +49,7 @@
                     toggleable="true">
                     <h:panelGrid columns="3" styleClass="centeredPanelGrid">
                         <h:outputLabel  value="Exportar a:"/>
-                        <h:selectOneRadio  value="#{horarios.formulario.pantalla}" required="true">
+                        <h:selectOneRadio  value="#{salutemHorarios.formulario.tipo}" required="true">
                             <f:ajax disabled="false"/>
                             <f:selectItem itemValue="csv" itemLabel="CSV"/>
                             <f:selectItem itemValue="pdf" itemLabel="PDF"/>
@@ -62,117 +58,186 @@
                         </h:selectOneRadio>
                         <ace:dataExporter id="dataExporter" 
                                           label="Exportar Archivo" 
-                                          type="#{horarios.formulario.pantalla}" 
-                                          target="tabla" fileName="datos"/>
+                                          type="#{salutemHorarios.formulario.tipo}" 
+                                          target="tabla"  
+                                          fileName="Profesionales"
+                                          excludeColumns="1"/>
                     </h:panelGrid>
                     <h:panelGrid width="100%">
                         <ace:dataTable id="tabla" 
+                                       lazy="true"
                                        paginatorAlwaysVisible="true"
-                                       value="#{horarios.listaHorarios}"
+                                       value="#{salutemHorarios.horarios}"
                                        var="item"
                                        paginator="true"
-                                       resizableColumns="true"
                                        rowIndexVar="row"
                                        paginatorPosition="both"
-                                       rowsPerPageTemplate="5,10,15,50,all"
-                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="5"
-                                       binding="#{horarios.formulario.fila}">
+                                       rowsPerPageTemplate="#{salutemHorarios.formulario.rowsPerPageTemplate}"
+                                       currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="10">
+                            <ace:tableConfigPanel dragHandle=".ui-tableconf-header"
+                                                  columnNameConfigurable="true"
+                                                  columnVisibilityConfigurable="true"
+                                                  columnOrderingConfigurable="true"
+                                                  columnSortingConfigurable="true"
+                                                  modal="true"/>
 
-                            <ace:row condition="group" groupBy="#{item.profesional.entidad.apellidos}" pos="before" styleClass="grupo" rendered="#{horarios.profesional==null}">
-                                <ace:column style="text-align: center" colspan="20">
-                                    <h:outputText value="#{item.profesional.toString()}" />
+                            <ace:row condition="group" groupBy="#{item.profesional.toString()}" pos="before" styleClass="grupo" rendered="#{salutemSeguridad.verAgrupado}">
+                                <ace:column style="text-align: center" colspan="11">
+                                    <ace:excludeFromExport/>
+                                    <h:outputText value="#{item.profesional.toString()}"/>                                    
                                 </ace:column>
                             </ace:row>
-
                             <ace:column headerText="Acciones" style="text-align: left">
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
-                                    <ace:menuItem action="#{horarios.modificar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
-                                    <ace:menuItem action="#{horarios.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                    <ace:menuItem action="#{salutemHorarios.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{salutemHorarios.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
                                 </ace:menuButton>
                             </ace:column> 
                             <ace:column  headerText="Registro" style="text-align: left">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
-                            <ace:column  headerText="Día" style="text-align: left">
+                            <ace:column  headerText="Día" sortBy="#{item.dia.parametros}" filterBy="#{item.dia.nombre}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText value="#{item.dia.nombre}"/>
                             </ace:column>
-                            <ace:column  headerText="Hora" style="text-align: left">
+                            <ace:column  headerText="Hora" sortBy="#{item.hora.nombre}" filterBy="#{item.hora.nombre}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText value="#{item.hora.nombre}"/>
                             </ace:column>
-                            <ace:column  headerText="Hora Inicio" style="text-align: left">
+                            <ace:column  headerText="Hora Inicio" sortBy="#{item.hora.horainicio}" filterBy="#{item.hora.horainicio}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.hora.horainicio}">
                                     <f:convertDateTime pattern="HH:mm"/>
                                 </h:outputText>
                             </ace:column>
-                            <ace:column  headerText="Hora Fin" style="text-align: left">
+                            <ace:column  headerText="Hora Fin" sortBy="#{item.hora.horafin}" filterBy="#{item.hora.horafin}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.hora.horafin}">
                                     <f:convertDateTime pattern="HH:mm"/>
                                 </h:outputText>
                             </ace:column>
+                            <ace:column  headerText="Profesional"                                         
+                                         sortBy="#{item.profesional.persona.apellidos}" 
+                                         filterBy="#{item.profesional.id}"
+                                         filterOptions="#{salutemCombos.profesionalesId}"                                          
+                                         filterValue="#{salutemHorarios.profesional}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.profesional.toString()} "/>
+                                <!--<h:commandLink value="[Ver Horario]" action="#{salutemHorarios.setProfesional(item.profesional.id)}"/>-->
+                            </ace:column>
+                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                         filterBy="#{item.creado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                         filterValueMax="#{salutemSeguridad.finCreado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                         filterBy="#{item.actualizado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                         filterValueMax="#{salutemSeguridad.finActualizado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizadopor}"/>
+                            </ace:column>
+                        </ace:dataTable>
+                    </h:panelGrid>
+                    <h:panelGrid width="100%">
+                        <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+                            <h:outputLabel  value="Exportar a:"/>
+                            <h:selectOneRadio  value="#{salutemHorarios.formulario.tipo}" required="true">
+                                <f:ajax disabled="false"/>
+                                <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                                <f:selectItem itemValue="pdf" itemLabel="PDF"/>
+                                <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                                <f:selectItem itemValue="xml" itemLabel="XML"/>
+                            </h:selectOneRadio>
+                            <ace:dataExporter id="dataExporter01" 
+                                              label="Exportar Archivo" 
+                                              type="#{salutemHorarios.formulario.tipo}" 
+                                              target="tablaHorario"  
+                                              fileName="Horario"/>
+                        </h:panelGrid>
+                        <ace:dataTable  
+                            id="tablaHorario"
+                            value="#{salutemCombos.traerHoras()}"
+                            resizableColumns="true"
+                            var="hora">
+                            <f:facet name="header">Horario - #{salutemCombos.traerProfesional(salutemHorarios.profesional)} -</f:facet>
+                            <ace:column  headerText="Horas" style="text-align: right">
+                                <h:outputText value="#{hora.toString()}"/>
+                            </ace:column>
+                            <c:forEach items="#{salutemHorarios.dias}" var="dia">
+                                <ace:column headerText="#{dia.toString()}" style="text-align: left;">
+                                    <h:outputText value="#{salutemHorarios.getProfesionales(hora, dia)}" style="white-space: pre-wrap"/>
+                                    <!--<hr style="border: 10px solid #{salutemHorarios.getColor(hora, dia)}; width: 1px; border-radius: 10px;"/>-->
+                                </ace:column>
+                            </c:forEach>
                         </ace:dataTable>
                     </h:panelGrid>
                 </ace:panel>
 
-                <h:panelGrid width="100%" rendered="#{horarios.profesional!=null}" id="imprimir">
-                    <ace:dataTable                                      
-                        value="#{horas.listahoras}"
-                        resizableColumns="true"
-                        var="hora">
-                        <f:facet name="header">Horario de #{horarios.profesional.toString()}</f:facet>
-                        <ace:column  headerText="Horas" style="text-align: right">
-                            <h:outputText value="#{hora.toString()}"/>
-                        </ace:column>
-                        <c:forEach items="#{horarios.dias}" var="dia">
-                            <ace:column headerText="#{dia.toString()}">
-                                <hr style="border: 10px solid #{horarios.getColor(hora, dia)}; width: 1px; border-radius: 10px;"/>
-                            </ace:column>
-                        </c:forEach>
-                    </ace:dataTable>
-                </h:panelGrid>
-
-
                 <ace:dialog 
-                    header="#{horarios.perfil.menu.texto}"
+                    header="#{salutemHorarios.perfil.menu.nombre}"
                     closable="false"
                     modal="true"
                     draggable="false"
                     showEffect="clip"
                     hideEffect="fade"
-                    rendered="#{horarios.formulario.mostrar}"
-                    visible="#{horarios.formulario.mostrar}">
+                    rendered="#{salutemHorarios.formulario.mostrar}"
+                    visible="#{salutemHorarios.formulario.mostrar}">
                     <h:panelGroup>
                         <h:panelGrid columns="2">
-                            <h:outputLabel value="Día" />
-                            <h:selectOneMenu value="#{horarios.horario.dia}">
-                                <f:selectItems value="#{tablaDeCodigos.comboDiasSemana}"/>
+                            <h:outputLabel value="Especialidad:" />
+                            <h:selectOneMenu value="#{salutemCombos.especialidad}">
+                                <f:selectItems value="#{salutemCombos.especialidades}"/>
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
-                            <h:outputLabel value="Hora" />
-                            <h:selectOneMenu value="#{horarios.horario.hora}">
-                                <f:selectItems value="#{horas.comboHoras}"/>
-                                <ace:ajax execute="@all"/>
+                            <h:outputLabel value="Profesional:" />
+                            <h:selectOneMenu value="#{salutemHorarios.horario.profesional}">
+                                <f:selectItems value="#{salutemCombos.profesionales}"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Día:" />
+                            <h:selectOneMenu value="#{salutemHorarios.horario.dia}">
+                                <f:selectItems value="#{salutemCombos.dias}"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Hora:" />
+                            <h:selectOneMenu value="#{salutemHorarios.horario.hora}">
+                                <f:selectItems value="#{salutemCombos.horas}"/>
                             </h:selectOneMenu>
                         </h:panelGrid>
                     </h:panelGroup>
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
-                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" rendered="#{horarios.formulario.nuevo}" 
-                                          action="#{horarios.insertar()}"/>
-                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                          action="#{horarios.grabar()}" 
-                                          rendered="#{horarios.formulario.modificar}" />
-                            <ace:menuItem action="#{horarios.borrar()}" 
-                                          icon="ui-icon ui-icon-trash" 
-                                          value="¿Está seguro de Borrar el registro?" 
-                                          rendered="#{horarios.formulario.borrar}"/>
-                            <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
-                                          action="#{horarios.cancelar()}"/>
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
+                                          action="#{salutemHorarios.insertar()}"
+                                          rendered="#{salutemHorarios.formulario.crear}"/>
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemHorarios.grabar()}" 
+                                          rendered="#{salutemHorarios.formulario.editar}"/>
+                            <ace:menuItem value="Eliminar" icon="ui-icon ui-icon-trash"
+                                          action="#{salutemHorarios.remover()}" 
+                                          rendered="#{salutemHorarios.formulario.eliminar}"/>
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemHorarios.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages />
-                    </h:panelGrid>
+                        <ace:messages style="white-space: pre-wrap" />
+                    </h:panelGrid>                    
                 </ace:dialog>
-
             </ui:define>
             <!-- Fin -->
         </ui:composition>

@@ -27,7 +27,7 @@ public class IngresoSistemaBean implements Serializable {
     @ManagedProperty("#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
 
-    private Personas usuario;
+    private Personas persona;
 
     private String usr;
     private String pwd;
@@ -60,21 +60,21 @@ public class IngresoSistemaBean implements Serializable {
                 Mensajes.advertencia("Ingrese una clave válida");
                 return null;
             }
-            usuario = ejbPersonas.login(usr, Codificador.getEncoded(pwd, "MD5"));
-            if (usuario == null) {
+            persona = ejbPersonas.login(usr, Codificador.getEncoded(pwd, "MD5"));
+            if (persona == null) {
                 Mensajes.advertencia("Usuario no registrado, o clave inválida");
                 return null;
             }
-            if (!usuario.getActivo()) {
+            if (!persona.getActivo()) {
                 Mensajes.advertencia("Usuario no activo");
-                usuario = null;
+                persona = null;
                 return null;
             }
-            if (usuario.getClave().equals(Codificador.getEncoded(usuario.getCedula(), "MD5"))) {
+            if (persona.getClave().equals(Codificador.getEncoded(persona.getCedula(), "MD5"))) {
                 formulario.editar();
                 return null;
             }
-            return seguridadBean.setCredenciales(usuario);
+            return seguridadBean.setCredenciales(persona);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -104,7 +104,7 @@ public class IngresoSistemaBean implements Serializable {
             String cnCodificada = Codificador.getEncoded(claveNueva, "MD5");
             String caCodificada = Codificador.getEncoded(claveAnterior, "MD5");
             String cnrCodificada = Codificador.getEncoded(claveRetipeada, "MD5");
-            if (!caCodificada.equals(usuario.getClave())) {
+            if (!caCodificada.equals(persona.getClave())) {
                 Mensajes.advertencia("Ingrese una clave anterior válida");
                 return null;
             }
@@ -126,8 +126,8 @@ public class IngresoSistemaBean implements Serializable {
             } catch (ExcepcionDeConsulta ex) {
                 Logger.getLogger(IngresoSistemaBean.class.getName()).log(Level.SEVERE, null, ex);
             }
-            usuario.setClave(cnCodificada);
-            ejbPersonas.actualizar(usuario, null);
+            persona.setClave(cnCodificada);
+            ejbPersonas.actualizar(persona, null);
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -144,10 +144,10 @@ public class IngresoSistemaBean implements Serializable {
     }
 
     /**
-     * @return the usuario
+     * @return the persona
      */
-    public Personas getUsuario() {
-        return usuario;
+    public Personas getPersona() {
+        return persona;
     }
 
     /**
@@ -200,10 +200,10 @@ public class IngresoSistemaBean implements Serializable {
     }
 
     /**
-     * @param usuario the usuario to set
+     * @param persona the persona to set
      */
-    public void setUsuario(Personas usuario) {
-        this.usuario = usuario;
+    public void setPersona(Personas persona) {
+        this.persona = persona;
     }
 
     /**

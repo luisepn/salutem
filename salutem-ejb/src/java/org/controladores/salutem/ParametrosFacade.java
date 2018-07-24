@@ -47,9 +47,9 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
         return null;
     }
 
-    public List<Parametros> traerParametros(String maestro) throws ExcepcionDeConsulta {
+    public List<Parametros> traerParametros(String maestro, String orden) throws ExcepcionDeConsulta {
         try {
-            Query q = getEntityManager().createQuery("Select object(o) from Parametros as o where o.maestro.codigo=:maestro order by o.codigo");
+            Query q = getEntityManager().createQuery("Select object(o) from Parametros as o where o.maestro.codigo=:maestro order by " + orden);
             q.setParameter("maestro", maestro);
             return q.getResultList();
         } catch (Exception e) {

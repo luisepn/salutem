@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
@@ -16,6 +17,7 @@ import org.controladores.salutem.MaestrosFacade;
 import org.controladores.salutem.MaterialesFacade;
 import org.controladores.salutem.MenusFacade;
 import org.controladores.salutem.ParametrosFacade;
+import org.controladores.salutem.ProfesionalesFacade;
 import org.controladores.salutem.UsuariosFacade;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Instituciones;
@@ -23,6 +25,7 @@ import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Maestros;
 import org.entidades.salutem.Materiales;
 import org.entidades.salutem.Menus;
+import org.entidades.salutem.Profesionales;
 import org.entidades.salutem.Usuarios;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.salutem.utilitarios.Mensajes;
@@ -34,17 +37,21 @@ public class CombosBean implements Serializable {
     @ManagedProperty("#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
 
-    private final String TIPO_DE_MATERIAL = "TMT";
-    private final String TIPO_DE_FOCO = "TF";
-    private final String TIPO_DE_TRATAMIENTO = "TTR";
-    private final String MODULOS_DE_SISTEMA = "MDS";
-    private final String GENERO_HUMANO = "GHU";
-    private final String GRUPO_DE_USUARIO = "GRPUSR";
+    public static String PARAMETROS_GENERALES = "PG";
+    public static String TIPO_DE_MATERIAL = "TMT";
+    public static String TIPO_DE_FOCO = "TF";
+    public static String TIPO_DE_TRATAMIENTO = "TTR";
+    public static String MODULOS_DE_SISTEMA = "MDS";
+    public static String GENERO_HUMANO = "GHU";
+    public static String GRUPO_DE_USUARIO = "GRPUSR";
+    public static String DIAS_SEMANA = "DS";
+    public static String ESPECIALIDADES = "ESP";
 
     private Parametros modulo;
     private Parametros grupo;
     private Menus menu;
     private Instituciones institucion;
+    private Parametros especialidad;
 
     private Parametros foco;
     private Parametros tipo;
@@ -63,6 +70,16 @@ public class CombosBean implements Serializable {
     private UsuariosFacade ejbUsuarios;
     @EJB
     private HorasFacade ejbHoras;
+    @EJB
+    private ProfesionalesFacade ejbProfesionales;
+
+    public CombosBean() {
+    }
+
+    @PostConstruct
+    private void iniciar() {
+        institucion = seguridadBean.getInstitucion();
+    }
 
     private SelectItem[] getSelectItems(List<?> entities, String clave, boolean selectOne) {
         if (entities == null) {
@@ -83,9 +100,7 @@ public class CombosBean implements Serializable {
                 case "toString":
                     items[i++] = new SelectItem("", "--Seleccione uno--");
                     break;
-
             }
-
         }
 
         for (Object x : entities) {
@@ -100,9 +115,7 @@ public class CombosBean implements Serializable {
                 case "toString":
                     items[i++] = new SelectItem(x.toString(), x.toString());
                     break;
-
             }
-
         }
         return items;
     }
@@ -129,7 +142,6 @@ public class CombosBean implements Serializable {
             return getSelectItems(lista, "id", false);
         }
         return getSelectItems(traerInstituciones(Boolean.FALSE), "object", true);
-
     }
 
     public SelectItem[] getLaboratorios() {
@@ -165,51 +177,75 @@ public class CombosBean implements Serializable {
     }
 
     public SelectItem[] getGrupoUsuarios() {
-        return getSelectItems(traerParametros(GRUPO_DE_USUARIO), "object", true);
+        return getSelectItems(traerParametros(GRUPO_DE_USUARIO, "o.codigo"), "object", true);
     }
 
     public SelectItem[] getGrupoUsuariosId() {
-        return getSelectItems(traerParametros(GRUPO_DE_USUARIO), "id", true);
+        return getSelectItems(traerParametros(GRUPO_DE_USUARIO, "o.codigo"), "id", true);
     }
 
     public SelectItem[] getModulos() {
-        return getSelectItems(traerParametros(MODULOS_DE_SISTEMA), "object", true);
+        return getSelectItems(traerParametros(MODULOS_DE_SISTEMA, "o.codigo"), "object", true);
     }
 
     public SelectItem[] getModulosId() {
-        return getSelectItems(traerParametros(MODULOS_DE_SISTEMA), "id", true);
+        return getSelectItems(traerParametros(MODULOS_DE_SISTEMA, "o.codigo"), "id", true);
     }
 
     public SelectItem[] getGenero() {
-        return getSelectItems(traerParametros(GENERO_HUMANO), "object", true);
+        return getSelectItems(traerParametros(GENERO_HUMANO, "o.codigo"), "object", true);
     }
 
     public SelectItem[] getTipoMaterial() {
-        return getSelectItems(traerParametros(TIPO_DE_MATERIAL), "object", true);
+        return getSelectItems(traerParametros(TIPO_DE_MATERIAL, "o.codigo"), "object", true);
     }
 
     public SelectItem[] getTipoMaterialId() {
-        return getSelectItems(traerParametros(TIPO_DE_MATERIAL), "id", true);
+        return getSelectItems(traerParametros(TIPO_DE_MATERIAL, "o.codigo"), "id", true);
     }
 
     public SelectItem[] getFocos() {
-        return getSelectItems(traerParametros(TIPO_DE_FOCO), "object", true);
+        return getSelectItems(traerParametros(TIPO_DE_FOCO, "o.codigo"), "object", true);
     }
 
     public SelectItem[] getFocosId() {
-        return getSelectItems(traerParametros(TIPO_DE_FOCO), "id", true);
+        return getSelectItems(traerParametros(TIPO_DE_FOCO, "o.codigo"), "id", true);
     }
 
     public SelectItem[] getTratamientos() {
-        return getSelectItems(traerParametros(TIPO_DE_TRATAMIENTO), "object", true);
+        return getSelectItems(traerParametros(TIPO_DE_TRATAMIENTO, "o.codigo"), "object", true);
     }
 
-    public SelectItem[] getComboHoras() {
+    public SelectItem[] getDias() {
+        return getSelectItems(traerParametros(DIAS_SEMANA, "o.parametros"), "object", true);
+    }
+
+    public SelectItem[] getDiasId() {
+        return getSelectItems(traerParametros(DIAS_SEMANA, "o.parametros"), "id", true);
+    }
+
+    public SelectItem[] getEspecialidades() {
+        return getSelectItems(traerParametros(ESPECIALIDADES, "o.codigo"), "object", true);
+    }
+
+    public SelectItem[] getEspecialidadesId() {
+        return getSelectItems(traerParametros(ESPECIALIDADES, "o.codigo"), "id", true);
+    }
+
+    public SelectItem[] getHoras() {
         return getSelectItems(traerHoras(), "object", true);
     }
 
-    public SelectItem[] getComboHorasId() {
+    public SelectItem[] getHorasId() {
         return getSelectItems(traerHoras(), "id", true);
+    }
+
+    public SelectItem[] getProfesionales() {
+        return getSelectItems(traerProfesionales(), "object", true);
+    }
+
+    public SelectItem[] getProfesionalesId() {
+        return getSelectItems(traerProfesionales(), "id", true);
     }
 
     private List<Instituciones> traerInstituciones(Boolean tipo) {
@@ -272,9 +308,9 @@ public class CombosBean implements Serializable {
         return null;
     }
 
-    private List<Parametros> traerParametros(String maestro) {
+    public List<Parametros> traerParametros(String maestro, String orden) {
         try {
-            return ejbParametros.traerParametros(maestro);
+            return ejbParametros.traerParametros(maestro, orden);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CombosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -282,9 +318,19 @@ public class CombosBean implements Serializable {
         return null;
     }
 
-    private List<Horas> traerHoras() {
+    public List<Horas> traerHoras() {
         try {
             return ejbHoras.traerHoras(institucion);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CombosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    private List<Profesionales> traerProfesionales() {
+        try {
+            return ejbProfesionales.traerProfesionales(institucion, especialidad);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CombosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -318,6 +364,10 @@ public class CombosBean implements Serializable {
 
     public Horas traerHora(Integer id) throws ExcepcionDeConsulta {
         return (Horas) ejbHoras.buscar(id);
+    }
+
+    public Profesionales traerProfesional(Integer id) throws ExcepcionDeConsulta {
+        return (Profesionales) ejbProfesionales.buscar(id);
     }
 
     /**
@@ -402,6 +452,20 @@ public class CombosBean implements Serializable {
      */
     public void setSeguridadBean(SeguridadBean seguridadBean) {
         this.seguridadBean = seguridadBean;
+    }
+
+    /**
+     * @return the especialidad
+     */
+    public Parametros getEspecialidad() {
+        return especialidad;
+    }
+
+    /**
+     * @param especialidad the especialidad to set
+     */
+    public void setEspecialidad(Parametros especialidad) {
+        this.especialidad = especialidad;
     }
 
 }

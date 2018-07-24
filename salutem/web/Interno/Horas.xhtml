@@ -40,8 +40,7 @@
                 <ace:panel 
                     header="Resultado Búsqueda"
                     closable="false"
-                    toggleable="true"
-                    >
+                    toggleable="true">
                     <h:panelGrid columns="3" styleClass="centeredPanelGrid">
                         <h:outputLabel  value="Exportar a:"/>
                         <h:selectOneRadio  value="#{salutemHoras.formulario.tipo}" required="true">
@@ -92,12 +91,12 @@
                             <ace:column  headerText="Nombre" sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.nombre}"/>
                             </ace:column>    
-                            <ace:column  headerText="Hora Inicio" style="text-align: left">
+                            <ace:column  headerText="Hora Inicio" sortBy="#{item.horainicio}" filterBy="#{item.horainicio}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.horainicio}">
                                     <f:convertDateTime pattern="HH:mm"/>
                                 </h:outputText>
                             </ace:column>
-                            <ace:column  headerText="Hora Fin" style="text-align: left">
+                            <ace:column  headerText="Hora Fin" sortBy="#{item.horafin}" filterBy="#{item.horafin}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.horafin}">
                                     <f:convertDateTime pattern="HH:mm"/>
                                 </h:outputText>

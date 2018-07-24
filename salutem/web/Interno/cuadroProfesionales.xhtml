@@ -14,6 +14,11 @@
         <h:selectOneMenu value="#{salutemProfesionales.profesional.institucion}">
             <f:selectItems value="#{salutemCombos.instituciones}" />
         </h:selectOneMenu>
+        <h:outputLabel value="Especialidad: " />
+        <h:selectOneMenu value="#{salutemProfesionales.profesional.especialidad}">
+            <f:selectItems value="#{salutemCombos.especialidades}"/>
+            <ace:ajax execute="@all"/>
+        </h:selectOneMenu>
         <h:outputLabel value="C.I.:"/>
         <ace:textEntry value="#{salutemProfesionales.persona.cedula}" title="Cédula" rendered="#{salutemProfesionales.formulario.crear}" valueChangeListener="#{salutemProfesionales.cambiaCedula}" disabled="#{salutemProfesionales.formulario.eliminar}">
             <ace:ajax execute="@all"/>
@@ -26,7 +31,7 @@
         <ace:textEntry value="#{salutemProfesionales.persona.nombres}" title="Nombres" />
         <h:outputLabel value="Apellidos:"/>
         <ace:textEntry value="#{salutemProfesionales.persona.apellidos}" title="Apellidos" />
-        <h:outputLabel value="e-mail:"/>
+        <h:outputLabel value="E-mail:"/>
         <ace:textEntry value="#{salutemProfesionales.persona.email}" title="Email">
             <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
         </ace:textEntry>

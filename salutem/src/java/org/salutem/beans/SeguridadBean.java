@@ -54,7 +54,7 @@ public class SeguridadBean implements Serializable {
     private Parametros grupo;
     private Instituciones institucion;
     private String titulo;
-    private List<Usuarios> usuariosPorGrupo;
+    private List<Usuarios> usuarios;
 
     private String clave;
     private String claveNueva;
@@ -82,7 +82,6 @@ public class SeguridadBean implements Serializable {
     private MenusFacade ejbMenus;
     @EJB
     private ParametrosFacade ejbParametros;
-
     @EJB
     private InstitucionesFacade ejbInstituciones;
 
@@ -96,7 +95,7 @@ public class SeguridadBean implements Serializable {
             if (mensaje != null && !mensaje.isEmpty()) {
                 Mensajes.informacion(mensaje);
             }
-            List<Parametros> lista = ejbParametros.traerParametros("PG");
+            List<Parametros> lista = ejbParametros.traerParametros(CombosBean.PARAMETROS_GENERALES, "o.codigo");
             for (Parametros p : lista) {
                 switch (p.getCodigo()) {
                     case "INSP":
@@ -130,28 +129,31 @@ public class SeguridadBean implements Serializable {
     public String setCredenciales(Personas logueado) {
         try {
             if (logueado != null) {
+                this.logueado = logueado;
                 Map parameters = new HashMap();
                 parameters.put("persona", logueado);
-                usuariosPorGrupo = ejbUsuarios.buscar("o.persona=:persona", parameters);
-                if (!usuariosPorGrupo.isEmpty()) {
-                    seleccionarGrupo(usuariosPorGrupo.get(0));
+                usuarios = ejbUsuarios.buscar("o.persona=:persona", parameters);
+                if (!usuarios.isEmpty()) {
+                    seleccionarGrupo(usuarios.get(0));
+                    return usuario.getModulo().getParametros().trim() + ".jsf?faces-redirect=true";
+                } else {
+                    Mensajes.advertencia("Usuario no tiene perfil asignado");
                 }
-                this.logueado = logueado;
             }
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return usuario.getModulo().getParametros().trim() + ".jsf?faces-redirect=true";
+        return null;
     }
 
     public SelectItem[] getComboUsuariosPorGrupo() {
-        if (usuariosPorGrupo == null) {
+        if (usuarios == null) {
             return null;
         }
-        SelectItem[] items = new SelectItem[usuariosPorGrupo.size()];
+        SelectItem[] items = new SelectItem[usuarios.size()];
         int i = 0;
-        for (Usuarios x : usuariosPorGrupo) {
+        for (Usuarios x : usuarios) {
             items[i++] = new SelectItem(x, x.getModulo() != null ? x.getModulo().getNombre() + " - " + x.getGrupo().getNombre() : x.getId().toString());
         }
         return items;
@@ -227,7 +229,7 @@ public class SeguridadBean implements Serializable {
             Map params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
             String p = (String) params.get("p");
             if (p == null) {
-                ctx.redirect(ctxPath + "?m=Sin perfil v&aacute;lido");
+                ctx.redirect(ctxPath + "?m=Sin perfil valido");
                 return null;
             }
             Perfiles perfil = ejbPerfiles.buscar(Integer.parseInt(p));
@@ -240,7 +242,7 @@ public class SeguridadBean implements Serializable {
                 ctx.redirect(ctxPath + "?m=Perfil no v&aacute;do");
             }
             if (!perfil.getGrupo().equals(usuario.getGrupo())) {
-                ctx.redirect(ctxPath + "?m=Usuario logueado no est&aacute; en el grupo correcto");
+                ctx.redirect(ctxPath + "?m=Usuario logueado no esta en el grupo correcto");
             }
             titulo = perfil.getMenu().getNombre();
             verActivos = true;
@@ -361,10 +363,10 @@ public class SeguridadBean implements Serializable {
     }
 
     /**
-     * @return the usuariosPorGrupo
+     * @return the usuarios
      */
-    public List<Usuarios> getUsuariosPorGrupo() {
-        return usuariosPorGrupo;
+    public List<Usuarios> getUsuarios() {
+        return usuarios;
     }
 
     /**
@@ -438,10 +440,10 @@ public class SeguridadBean implements Serializable {
     }
 
     /**
-     * @param usuariosPorGrupo the usuariosPorGrupo to set
+     * @param usuarios the usuarios to set
      */
-    public void setUsuariosPorGrupo(List<Usuarios> usuariosPorGrupo) {
-        this.usuariosPorGrupo = usuariosPorGrupo;
+    public void setUsuarios(List<Usuarios> usuarios) {
+        this.usuarios = usuarios;
     }
 
     /**

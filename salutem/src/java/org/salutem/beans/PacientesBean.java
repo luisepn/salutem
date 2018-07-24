@@ -102,16 +102,24 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
             return null;
         }
         try {
-            Map parametros = new HashMap();
+            Map parameters = new HashMap();
             String where = " o.activo=true and o.institucion=:institucion";
-            parametros.put("institucion", institucion);
+            parameters.put("institucion", institucion);
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                parametros.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                if (clave.contains(".id")) {
+                    Integer id = Integer.parseInt(valor);
+                    if (id != 0) {
+                        where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
+                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    }
+                } else {
+                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
             }
-            int total = ejbPacientes.contar(where, parametros);
+            int total = ejbPacientes.contar(where, parameters);
             formulario.setTotal(total);
             int endIndex = i + pageSize;
             if (endIndex > total) {
@@ -124,7 +132,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
-            return ejbPacientes.buscar(where, parametros, order, i, endIndex);
+            return ejbPacientes.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);

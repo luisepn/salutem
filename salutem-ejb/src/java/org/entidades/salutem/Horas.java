@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -105,7 +106,6 @@ public class Horas implements Serializable {
         this.id = id;
     }
 
-
     public Date getHorainicio() {
         return horainicio;
     }
@@ -130,7 +130,6 @@ public class Horas implements Serializable {
         this.activo = activo;
     }
 
-
     public Date getCreado() {
         return creado;
     }
@@ -139,7 +138,6 @@ public class Horas implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -147,7 +145,6 @@ public class Horas implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     public Instituciones getInstitucion() {
         return institucion;
@@ -179,7 +176,8 @@ public class Horas implements Serializable {
 
     @Override
     public String toString() {
-        return "org.entidades.salutem.Horas[ id=" + id + " ]";
+        SimpleDateFormat sdfh = new SimpleDateFormat("hh:mm");
+        return nombre + " [" + sdfh.format(horainicio) + " - " + sdfh.format(horafin) + "]";
     }
 
     public String getNombre() {
@@ -230,5 +228,5 @@ public class Horas implements Serializable {
     public void setHorariosList(List<Horarios> horariosList) {
         this.horariosList = horariosList;
     }
-    
+
 }

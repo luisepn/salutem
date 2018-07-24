@@ -103,7 +103,6 @@ public class Profesionales implements Serializable {
         this.activo = activo;
     }
 
-
     public Date getCreado() {
         return creado;
     }
@@ -112,7 +111,6 @@ public class Profesionales implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -120,7 +118,6 @@ public class Profesionales implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     @XmlTransient
     public List<Horarios> getHorariosList() {
@@ -177,7 +174,7 @@ public class Profesionales implements Serializable {
 
     @Override
     public String toString() {
-        return "org.entidades.salutem.Profesionales[ id=" + id + " ]";
+        return persona != null ? persona.toString() : "[" + id + "]";
     }
 
     public String getDescripcion() {
@@ -203,5 +200,5 @@ public class Profesionales implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-    
+
 }

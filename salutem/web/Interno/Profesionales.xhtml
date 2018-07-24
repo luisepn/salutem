@@ -133,6 +133,15 @@
                             <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.descripcion}"/>
                             </ace:column>
+                            <ace:column  headerText="Especialidad"                                         
+                                         sortBy="#{item.especialidad.nombre}" 
+                                         filterBy="#{item.especialidad.id}"
+                                         filterOptions="#{salutemCombos.especialidadesId}"                                          
+                                         filterValue="#{salutemProfesionales.especialidad}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.especialidad.nombre}"/>
+                            </ace:column>
                             <ace:column  headerText="Creación" sortBy="#{item.creado}" 
                                          filterBy="#{item.creado}" 
                                          filterDatePattern="dd/MM/yyyy HH:mm"
