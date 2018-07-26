@@ -50,6 +50,9 @@ public class MenusBean implements Serializable, IMantenimiento {
         menus = new LazyDataModel<Menus>() {
             @Override
             public List<Menus> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return cargar(i, pageSize, scs, map);
             }
         };

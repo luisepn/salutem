@@ -50,6 +50,9 @@ public class ParametrosBean implements Serializable, IMantenimiento {
         parametros = new LazyDataModel<Parametros>() {
             @Override
             public List<Parametros> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return cargar(i, pageSize, scs, map);
             }
         };

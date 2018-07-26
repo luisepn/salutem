@@ -90,6 +90,9 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         pacientes = new LazyDataModel<Pacientes>() {
             @Override
             public List<Pacientes> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return carga(i, i1, scs, map);
             }
         };

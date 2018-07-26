@@ -56,6 +56,9 @@ public class SubMenusBean implements Serializable, IMantenimiento {
         menus = new LazyDataModel<Menus>() {
             @Override
             public List<Menus> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return cargar(i, i1, scs, map);
             }
         };

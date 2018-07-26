@@ -45,6 +45,9 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         usuarios = new LazyDataModel<Usuarios>() {
             @Override
             public List<Usuarios> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return cargar(i, i1, scs, map);
             }
         };

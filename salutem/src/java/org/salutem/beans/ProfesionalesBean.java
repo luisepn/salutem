@@ -47,6 +47,9 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         profesionales = new LazyDataModel<Profesionales>() {
             @Override
             public List<Profesionales> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return cargar(i, i1, scs, map);
             }
         };

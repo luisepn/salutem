@@ -50,6 +50,9 @@ public class MaestrosBean implements Serializable, IMantenimiento {
         maestros = new LazyDataModel<Maestros>() {
             @Override
             public List<Maestros> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return cargar(i, i1, scs, map);
             }
         };

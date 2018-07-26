@@ -53,6 +53,9 @@ public class MaterialesBean implements Serializable, IMantenimiento {
         materiales = new LazyDataModel<Materiales>() {
             @Override
             public List<Materiales> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return cargar(i, i1, scs, map);
             }
         };

@@ -19,6 +19,7 @@ import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
 @ManagedBean(name = "ordenes")
@@ -48,6 +49,9 @@ public class OrdenesBean implements Serializable {
     public OrdenesBean() {
         listaOrdenes = new LazyDataModel<Ordenes>() {
             public List<Ordenes> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                }
                 return carga(i, i1, scs, map);
             }
         };
