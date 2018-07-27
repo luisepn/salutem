@@ -53,6 +53,8 @@ public class Profesionales implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    @OneToMany(mappedBy = "profesional")
+    private List<Citas> citasList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -199,6 +201,15 @@ public class Profesionales implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
+    }
+
+    @XmlTransient
+    public List<Citas> getCitasList() {
+        return citasList;
+    }
+
+    public void setCitasList(List<Citas> citasList) {
+        this.citasList = citasList;
     }
 
 }

@@ -46,6 +46,7 @@ public class CombosBean implements Serializable {
     public static String GRUPO_DE_USUARIO = "GRPUSR";
     public static String DIAS_SEMANA = "DS";
     public static String ESPECIALIDADES = "ESP";
+    public static String CLAVES_DE_BUSQUEDA = "CBP";
 
     private Parametros modulo;
     private Parametros grupo;
@@ -100,6 +101,9 @@ public class CombosBean implements Serializable {
                 case "toString":
                     items[i++] = new SelectItem("", "--Seleccione uno--");
                     break;
+                case "parameters":
+                    items[i++] = new SelectItem("", "--Seleccione uno--");
+                    break;
             }
         }
 
@@ -114,6 +118,9 @@ public class CombosBean implements Serializable {
                     break;
                 case "toString":
                     items[i++] = new SelectItem(x.toString(), x.toString());
+                    break;
+                case "parameters":
+                    items[i++] = new SelectItem(((Parametros)x).getParametros(), x.toString());
                     break;
             }
         }
@@ -230,6 +237,10 @@ public class CombosBean implements Serializable {
 
     public SelectItem[] getEspecialidadesId() {
         return getSelectItems(traerParametros(ESPECIALIDADES, "o.codigo"), "id", true);
+    }
+
+    public SelectItem[] getClavesBusqueda() {
+        return getSelectItems(traerParametros(CLAVES_DE_BUSQUEDA, "o.codigo"), "parameters", true);
     }
 
     public SelectItem[] getHoras() {

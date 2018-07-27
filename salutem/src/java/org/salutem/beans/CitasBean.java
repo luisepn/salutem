@@ -21,12 +21,20 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import org.controladores.salutem.CitasFacade;
 import org.controladores.salutem.HorariosFacade;
+import org.entidades.salutem.Citas;
+import org.entidades.salutem.Horarios;
 import org.entidades.salutem.Horas;
+import org.entidades.salutem.Pacientes;
 import org.entidades.salutem.Perfiles;
 import org.entidades.salutem.Profesionales;
+import org.entidades.salutem.Usuarios;
+import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
+import org.salutem.utilitarios.Mensajes;
 
 /**
  *
@@ -35,16 +43,17 @@ import org.salutem.utilitarios.IMantenimiento;
  */
 @ManagedBean(name = "salutemCitas")
 @ViewScoped
-public class CitasBean implements Serializable, IMantenimiento {
+public class CitasBean implements Serializable {
 
     @ManagedProperty(value = "#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
     private Perfiles perfil;
 
     private Formulario formulario = new Formulario();
-    private List<Grupousuario> listaGrupoUsuarios;
+    private List<Usuarios> listaGrupoUsuarios;
 
     private Profesionales profesional;
+    private Pacientes paciente;
 
     private Horas hora;
     private List<Horas> listaHoras;
@@ -67,24 +76,22 @@ public class CitasBean implements Serializable, IMantenimiento {
     }
 
     @PostConstruct
-    @Override
     public void activar() {
         perfil = seguridadBean.traerPerfil("Citas");
 
     }
 
-    @Override
     public String buscar() {
         if (fecha == null) {
             fecha = new Date();
         }
+        String where = " o.fecha>=:fecha";
         Map parametros = new HashMap();
-        parametros.put(";where", " o.fecha>=:fecha");
         parametros.put("fecha", fecha);
         try {
-            listaCitas = ejbCitas.encontarParametros(parametros);
-        } catch (ConsultarException ex) {
-            MensajesErrores.error(ex.getMessage() + ":" + ex.getCause());
+            listaCitas = ejbCitas.buscar(where, parametros);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -102,15 +109,14 @@ public class CitasBean implements Serializable, IMantenimiento {
         f.set(Calendar.MINUTE, 1);
 
         if (f.getTime().before(t.getTime())) {
-            MensajesErrores.advertencia("Fecha menor a la de hoy");
+            Mensajes.advertencia("Fecha menor a la de hoy");
             return true;
         }
         return false;
     }
 
-    @Override
     public String eliminar() {
-//        cita = (Citas) listaCitas.get(formulario.getFila().getRowIndex());
+        cita = (Citas) listaCitas.get(formulario.getFila().getRowIndex());
         if (validarFecha(cita.getFecha())) {
             return null;
         }
@@ -118,43 +124,42 @@ public class CitasBean implements Serializable, IMantenimiento {
         return null;
     }
 
-    public String borrar() {
+    public String cancelar() {
         cita.setFecha(new Date());
         cita.setActivo(Boolean.FALSE);
-        cita.setUsuario(seguridadBean.getLogueado().getUserid());
-        cita.setObservaciones(cita.getObservaciones() + " [Cita cancelada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
+        cita.setActualizado(new Date());
+        cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
+        cita.setDescripcion(cita.getDescripcion() + " [Cita cancelada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
         try {
-            ejbCitas.edit(cita, seguridadBean.getLogueado().getUserid());
-        } catch (GrabarException ex) {
-            MensajesErrores.error(ex.getMessage() + ":" + ex.getCause());
+            ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeActualizacion ex) {
+            Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
         formulario.cancelar();
         cita = null;
         return null;
     }
 
     public String reactivar() {
-//        cita = (Citas) listaCitas.get(formulario.getFila().getRowIndex());
-
+        cita = (Citas) listaCitas.get(formulario.getFila().getRowIndex());
         if (validarFecha(cita.getFecha())) {
             return null;
         }
-
         formulario.editar();
-
         return null;
     }
 
     public String grabarReactivar() {
         cita.setFecha(new Date());
         cita.setActivo(Boolean.TRUE);
-        cita.setUsuario(seguridadBean.getLogueado().getUserid());
-        cita.setObservaciones(cita.getObservaciones() + " [Cita reactivada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
+        cita.setActualizado(new Date());
+        cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
+        cita.setDescripcion(cita.getDescripcion() + " [Cita reactivada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
         try {
-            ejbCitas.edit(cita, seguridadBean.getLogueado().getUserid());
-        } catch (GrabarException ex) {
-            MensajesErrores.error(ex.getMessage() + ":" + ex.getCause());
+            ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeActualizacion ex) {
+            Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
@@ -165,24 +170,23 @@ public class CitasBean implements Serializable, IMantenimiento {
     public SelectItem[] getHorasDisponibles() {
         try {
             listaHoras = new LinkedList<>();
+            String where = "o.profesional=:profesional and o.dia.descripcion=:dia";
             Map parametros = new HashMap();
-            parametros.put(";where", "o.profesional=:profesional and o.dia.descripcion=:dia");
             parametros.put("profesional", profesional);
             Calendar f = Calendar.getInstance();
             f.setTime(fecha);
             parametros.put("dia", "" + f.get(Calendar.DAY_OF_WEEK));
-            parametros.put(";orden", "o.dia.parametros, o.hora.horainicio asc");
-//            List<Horarios> aux = ejbHorarios.encontarParametros(parametros);
+            String order = "o.dia.parametros, o.hora.horainicio asc";
+            List<Horarios> aux = ejbHorarios.buscar(where, parametros, order);
 
-//            for (Horarios h : aux) {
-//                listaHoras.add(h.getHora());
-//            }
-
+            for (Horarios h : aux) {
+                listaHoras.add(h.getHora());
+            }
+            where = "o.profesional=:profesional and o.activo=true and o.fecha=:fecha";
             parametros = new HashMap();
-            parametros.put(";where", "o.profesional=:profesional and o.activo=true and o.fecha=:fecha");
             parametros.put("profesional", profesional);
             parametros.put("fecha", fecha);
-            List<Citas> auxcitas = ejbCitas.encontarParametros(parametros);
+            List<Citas> auxcitas = ejbCitas.buscar(where, parametros);
 
             for (Citas c : auxcitas) {
                 Calendar cd = Calendar.getInstance();
@@ -198,9 +202,9 @@ public class CitasBean implements Serializable, IMantenimiento {
 
             }
 
-            return Combos.SelectItems(listaHoras, true);
-        } catch (ConsultarException ex) {
-            MensajesErrores.error(ex.getMessage() + ":" + ex.getCause());
+            return CombosBean(listaHoras, true);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -209,12 +213,12 @@ public class CitasBean implements Serializable, IMantenimiento {
     @Override
     public boolean validar() {
 //        if (seguridadBean.getPaciente() == null) {
-//            MensajesErrores.advertencia("Seleccione un paciente");
+//            Mensajes.advertencia("Seleccione un paciente");
 //            return true;
 //        }
 
         if (fecha == null) {
-            MensajesErrores.advertencia("Seleccione una fecha");
+            Mensajes.advertencia("Seleccione una fecha");
             return true;
         }
 
@@ -223,11 +227,11 @@ public class CitasBean implements Serializable, IMantenimiento {
         }
 
         if (profesional == null) {
-            MensajesErrores.advertencia("Seleccione un profesional médico");
+            Mensajes.advertencia("Seleccione un profesional médico");
             return true;
         }
         if (hora == null) {
-            MensajesErrores.advertencia("Seleccione hora");
+            Mensajes.advertencia("Seleccione hora");
             return true;
         }
         return false;
@@ -241,7 +245,10 @@ public class CitasBean implements Serializable, IMantenimiento {
 
         cita = new Citas();
         cita.setActivo(Boolean.TRUE);
-        cita.setRegistro(new Date());
+        cita.setCreado(new Date());
+        cita.setCreadopor(seguridadBean.getLogueado().getUserid());
+        cita.setActualizado(cita.getCreado());
+        cita.setActualizadopor(cita.getCreadopor());
 
         Calendar h = Calendar.getInstance(); //Hora de la cita
         h.setTime(hora.getHorainicio());
@@ -253,14 +260,14 @@ public class CitasBean implements Serializable, IMantenimiento {
 
         cita.setFecha(c.getTime());
         cita.setHora(c.getTime());
-//        cita.setPaciente(seguridadBean.getPaciente());
+        cita.setPaciente(seguridadBean.getPaciente());
         cita.setProfesional(profesional);
         cita.setUsuario(seguridadBean.getLogueado().getUserid());
         cita.setObservaciones("[Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
         try {
             ejbCitas.create(cita, seguridadBean.getLogueado().getUserid());
         } catch (InsertarException ex) {
-            MensajesErrores.error(ex.getMessage() + ":" + ex.getCause());
+            Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -300,8 +307,8 @@ public class CitasBean implements Serializable, IMantenimiento {
 //            if (!aux.isEmpty()) {
 //                return "#195f88";
 //            }
-        } catch (ConsultarException ex) {
-            MensajesErrores.fatal(ex.getMessage() + "-" + ex.getCause());
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage() + "-" + ex.getCause());
             Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "#FFFFFF";
@@ -330,8 +337,8 @@ public class CitasBean implements Serializable, IMantenimiento {
 //                return auxcitas.get(0).getPaciente().toString();
             }
 
-        } catch (ConsultarException ex) {
-            MensajesErrores.error(ex.getMessage() + ":" + ex.getCause());
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -346,7 +353,7 @@ public class CitasBean implements Serializable, IMantenimiento {
         return "Agenda del " + f.format(inicio) + " al " + f.format(fin) + " - " + profesional.toString();
     }
 
-    public Citas traer(Integer id) throws ConsultarException {
+    public Citas traer(Integer id) throws ExcepcionDeConsulta {
         return ejbCitas.find(id);
     }
 
@@ -357,8 +364,8 @@ public class CitasBean implements Serializable, IMantenimiento {
 //        parametros.put("profesional", seguridadBean.getProfesional());
         try {
             return Combos.SelectItems(ejbCitas.encontarParametros(parametros), true);
-        } catch (ConsultarException ex) {
-            MensajesErrores.error(ex.getMessage() + ":" + ex.getCause());
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;

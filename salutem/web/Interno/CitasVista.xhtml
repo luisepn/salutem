@@ -23,8 +23,7 @@
                             
                             <h:outputLabel value="Paciente:" />
                             <h:selectOneMenu value="#{salutemPacientes.claveBusqueda}">
-                                <f:selectItem itemLabel="Código" itemValue="o.codigo"/>
-                                <f:selectItem itemLabel="Nombre" itemValue="o.texto"/>
+                                <f:selectItems value="#{salutemCombos.clavesBusqueda}"/>
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                             <ace:autoCompleteEntry 
