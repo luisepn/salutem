@@ -82,7 +82,7 @@ public class CombosBean implements Serializable {
         institucion = seguridadBean.getInstitucion();
     }
 
-    private SelectItem[] getSelectItems(List<?> entities, String clave, boolean selectOne) {
+    public static SelectItem[] getSelectItems(List<?> entities, String clave, boolean selectOne) {
         if (entities == null) {
             return null;
         }

@@ -33,7 +33,6 @@ import org.entidades.salutem.Usuarios;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.salutem.utilitarios.Formulario;
-import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
 /**
@@ -78,7 +77,6 @@ public class CitasBean implements Serializable {
     @PostConstruct
     public void activar() {
         perfil = seguridadBean.traerPerfil("Citas");
-
     }
 
     public String buscar() {
@@ -102,11 +100,15 @@ public class CitasBean implements Serializable {
         t.setTime(new Date());
         t.set(Calendar.HOUR_OF_DAY, 0);
         t.set(Calendar.MINUTE, 0);
+        t.set(Calendar.SECOND, 0);
+        t.set(Calendar.MILLISECOND, 0);
 
         Calendar f = Calendar.getInstance();
         f.setTime(fecha);
         f.set(Calendar.HOUR_OF_DAY, 0);
-        f.set(Calendar.MINUTE, 1);
+        f.set(Calendar.MINUTE, 0);
+        f.set(Calendar.SECOND, 0);
+        f.set(Calendar.MILLISECOND, 1);
 
         if (f.getTime().before(t.getTime())) {
             Mensajes.advertencia("Fecha menor a la de hoy");
@@ -175,7 +177,7 @@ public class CitasBean implements Serializable {
             parametros.put("profesional", profesional);
             Calendar f = Calendar.getInstance();
             f.setTime(fecha);
-            parametros.put("dia", "" + f.get(Calendar.DAY_OF_WEEK));
+            parametros.put("dia", f.get(Calendar.DAY_OF_WEEK) + "");
             String order = "o.dia.parametros, o.hora.horainicio asc";
             List<Horarios> aux = ejbHorarios.buscar(where, parametros, order);
 
@@ -190,7 +192,10 @@ public class CitasBean implements Serializable {
 
             for (Citas c : auxcitas) {
                 Calendar cd = Calendar.getInstance();
-                cd.setTime(c.getHora());
+                cd.setTime(c.getFecha());
+                cd.set(Calendar.YEAR, 0);
+                cd.set(Calendar.MONTH, 0);
+                cd.set(Calendar.DAY_OF_MONTH, 0);
                 for (Horas h : listaHoras) {
                     Calendar ch = Calendar.getInstance();
                     ch.setTime(h.getHorainicio());
@@ -202,7 +207,7 @@ public class CitasBean implements Serializable {
 
             }
 
-            return CombosBean(listaHoras, true);
+            return CombosBean.getSelectItems(listaHoras, "object", true);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -210,7 +215,6 @@ public class CitasBean implements Serializable {
         return null;
     }
 
-    @Override
     public boolean validar() {
 //        if (seguridadBean.getPaciente() == null) {
 //            Mensajes.advertencia("Seleccione un paciente");
@@ -377,30 +381,4 @@ public class CitasBean implements Serializable {
         lista.addAll(Arrays.asList(aux));
         return lista;
     }
-
-    @Override
-    public String crear() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String editar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String insertar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String remover() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String cancelar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
 }
