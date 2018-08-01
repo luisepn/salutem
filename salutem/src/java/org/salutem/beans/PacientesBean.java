@@ -19,7 +19,6 @@ import org.controladores.salutem.ConsultasFacade;
 import org.controladores.salutem.FormulasFacade;
 import org.controladores.salutem.OrdenesFacade;
 import org.controladores.salutem.PacientesFacade;
-import org.controladores.salutem.ParametrosFacade;
 import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Consultas;
 import org.entidades.salutem.Formulas;
@@ -27,9 +26,11 @@ import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Materiales;
 import org.entidades.salutem.Ordenes;
 import org.entidades.salutem.Pacientes;
+import org.entidades.salutem.Personas;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.icefaces.ace.event.TextChangeEvent;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
@@ -45,6 +46,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     private CombosBean combosBean;
 
     private LazyDataModel<Pacientes> pacientes;
+    private List<Pacientes> listaPacientes;
     private Instituciones institucion;
     private Consultas consulta;
     private Formulas formula;
@@ -62,8 +64,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
 
     @EJB
     private PacientesFacade ejbPacientes;
-    @EJB
-    private ParametrosFacade ejbParametros;
     @EJB
     private ConsultasFacade ejbConsultas;
     @EJB
@@ -87,6 +87,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     public PacientesBean() {
+        parametroBusqueda = "o.persona.apellidos";
         pacientes = new LazyDataModel<Pacientes>() {
             @Override
             public List<Pacientes> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -398,6 +399,37 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         String m = formula.getMaterial() != null ? formula.getMaterial().getFoco().getNombre() + " - " + formula.getMaterial().getTipo().getNombre() + " - " + formula.getMaterial().getNombre() : "";
         String t = formula.getTratamiento() != null ? formula.getTratamiento().getNombre() : "";
         return m + " " + t + "\n" + consulta.getIndicaciones();
+    }
+
+    public void pacientesChangeEventHandler(TextChangeEvent event) {
+        paciente = null;
+        listaPacientes = null;
+        String claveBuqueda = event.getNewValue() != null ? (String) event.getNewValue() : "";
+        if ((claveBuqueda == null) || (claveBuqueda.isEmpty())) {
+            return;
+        }
+        String where = "upper(" + parametroBusqueda + ") like :parametro and o.activo=true";
+        Map parametros = new HashMap();
+        parametros.put("parametro", claveBuqueda.toUpperCase() + "%");
+        try {
+            listaPacientes = ejbPacientes.buscar(where, parametros, 0, 10);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
+            Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void cambiaPacientes(ValueChangeEvent event) {
+        if (listaPacientes == null) {
+            return;
+        }
+        String newWord = (String) event.getNewValue();
+        for (Pacientes p : listaPacientes) {
+            String aComparar = p.toString();
+            if (aComparar.compareToIgnoreCase(newWord) == 0) {
+                paciente = p;
+            }
+        }
     }
 
     /**

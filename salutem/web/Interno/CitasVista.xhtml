@@ -22,14 +22,14 @@
                         <h:panelGrid columns="4">
                             
                             <h:outputLabel value="Paciente:" />
-                            <h:selectOneMenu value="#{salutemPacientes.claveBusqueda}">
-                                <f:selectItems value="#{salutemCombos.clavesBusqueda}"/>
+                            <h:selectOneMenu value="#{salutemPacientes.parametroBusqueda}">
+                                <f:selectItems value="#{salutemCombos.parametrosBusquedaPersonas}"/>
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                             <ace:autoCompleteEntry 
-                                value="#{cie10Auditam.claveBuscar}"
+                                value="#{salutemPacientes.claveBusqueda}"
                                 width="400"
-                                listVar="itemCie10"
+                                listVar="itemPaciente"
                                 filterBy="#{cie10Auditam.tipoBuscar eq 'o.codigo' ? itemCie10.codigo : itemCie10.texto}"
                                 filterMatchMode="none"
                                 listValue="#{cie10Auditam.listaItems}"

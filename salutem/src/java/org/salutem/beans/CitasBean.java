@@ -27,11 +27,13 @@ import org.entidades.salutem.Citas;
 import org.entidades.salutem.Horarios;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Pacientes;
+import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Perfiles;
 import org.entidades.salutem.Profesionales;
 import org.entidades.salutem.Usuarios;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
+import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
 
@@ -241,7 +243,6 @@ public class CitasBean implements Serializable {
         return false;
     }
 
-    @Override
     public String grabar() {
         if (validar()) {
             return null;
@@ -263,14 +264,16 @@ public class CitasBean implements Serializable {
         c.set(Calendar.MINUTE, h.get(Calendar.MINUTE));//Minuto de la cita a la fecha
 
         cita.setFecha(c.getTime());
-        cita.setHora(c.getTime());
-        cita.setPaciente(seguridadBean.getPaciente());
+//        cita.setPaciente(seguridadBean.getPaciente());
         cita.setProfesional(profesional);
-        cita.setUsuario(seguridadBean.getLogueado().getUserid());
-        cita.setObservaciones("[Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
+        cita.setCreado(new Date());
+        cita.setCreadopor(seguridadBean.getLogueado().getUserid());
+        cita.setActualizado(cita.getCreado());
+        cita.setActualizadopor(cita.getCreadopor());
+        cita.setDescripcion("[Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
         try {
-            ejbCitas.create(cita, seguridadBean.getLogueado().getUserid());
-        } catch (InsertarException ex) {
+            ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -299,30 +302,30 @@ public class CitasBean implements Serializable {
         return null;
     }
 
-    public String getColor(Horas hora, Codigos dia) {
+    public String getColor(Horas hora, Parametros dia) {
         Map parametros = new HashMap();
-        parametros.put(";where", "o.hora=:hora and o.dia=:dia and o.profesional=:profesional");
+        String where = "o.hora=:hora and o.dia=:dia and o.profesional=:profesional";
         parametros.put("hora", hora);
         parametros.put("dia", dia);
         parametros.put("profesional", profesional);
 
         try {
-//            List<Horarios> aux = ejbHorarios.encontarParametros(parametros);
-//            if (!aux.isEmpty()) {
-//                return "#195f88";
-//            }
+            List<Horarios> aux = ejbHorarios.buscar(where, parametros);
+            if (!aux.isEmpty()) {
+                return "#195f88";
+            }
         } catch (ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage() + "-" + ex.getCause());
+            Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "#FFFFFF";
 
     }
 
-    public String getColorReserva(Horas hora, Codigos dia) {
+    public String getColorReserva(Horas hora, Parametros dia) {
         try {
             Map parametros = new HashMap();
-            parametros.put(";where", "o.profesional=:profesional and o.activo=true and o.fecha=:fecha and o.hora=:hora");
+            String where = "o.profesional=:profesional and o.activo=true and o.fecha=:fecha and o.hora=:hora";
             parametros.put("profesional", profesional);
 
             Calendar h = Calendar.getInstance(); //Hora de la cita
@@ -336,11 +339,10 @@ public class CitasBean implements Serializable {
 
             parametros.put("fecha", c.getTime());
             parametros.put("hora", hora.getHorainicio());
-            List<Citas> auxcitas = ejbCitas.encontarParametros(parametros);
+            List<Citas> auxcitas = ejbCitas.buscar(where, parametros);
             if (!auxcitas.isEmpty()) {
-//                return auxcitas.get(0).getPaciente().toString();
+                return auxcitas.get(0).getPaciente().toString();
             }
-
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -357,17 +359,13 @@ public class CitasBean implements Serializable {
         return "Agenda del " + f.format(inicio) + " al " + f.format(fin) + " - " + profesional.toString();
     }
 
-    public Citas traer(Integer id) throws ExcepcionDeConsulta {
-        return ejbCitas.find(id);
-    }
-
     public SelectItem[] getComboCitas() {
         Map parametros = new HashMap();
-        parametros.put(";where", "o.fecha=:fecha and o.activo=true and o.profesional=:profesional");
+        String where = "o.fecha=:fecha and o.activo=true and o.profesional=:profesional";
         parametros.put("fecha", new Date());
 //        parametros.put("profesional", seguridadBean.getProfesional());
         try {
-            return Combos.SelectItems(ejbCitas.encontarParametros(parametros), true);
+            return CombosBean.getSelectItems(ejbCitas.buscar(where, parametros), "object", true);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);

@@ -47,6 +47,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
     protected Perfiles perfil;
 
     protected List<Personas> listaPersonas;
+    protected String parametroBusqueda = "o.apellidos";
     protected String claveBusqueda;
 
     protected Date fechaInicio;
@@ -497,6 +498,20 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
      */
     public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
+    }
+
+    /**
+     * @return the parametroBusqueda
+     */
+    public String getParametroBusqueda() {
+        return parametroBusqueda;
+    }
+
+    /**
+     * @param parametroBusqueda the parametroBusqueda to set
+     */
+    public void setParametroBusqueda(String parametroBusqueda) {
+        this.parametroBusqueda = parametroBusqueda;
     }
 
 }
