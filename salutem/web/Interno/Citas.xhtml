@@ -20,7 +20,7 @@
                                closable="false"
                                toggleable="true">
                         <h:panelGrid columns="4">
-                            
+
                             <h:outputLabel value="Paciente:" />
                             <h:selectOneMenu value="#{salutemPacientes.parametroBusqueda}">
                                 <f:selectItems value="#{salutemCombos.parametrosBusquedaPersonas}"/>
@@ -60,7 +60,7 @@
                             <h:outputLabel value="Especialidad: " styleClass="bold"/>
                             <h:selectOneMenu value="#{salutemCombos.especialidad}">
                                 <f:selectItems value="#{salutemCombos.especialidades}"/>
-                                <f:ajax event="change" render="output"/>
+                                <!--<f:ajax event="change" render="output"/>-->
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                             <h:outputLabel value="Profesional: " styleClass="bold"/>
@@ -69,7 +69,7 @@
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                             <h:outputLabel value="Hora: " styleClass="bold"/>
-                            <h:selectOneMenu value="#{salutemCitas.hora}" id="combohoras">
+                            <h:selectOneMenu value="#{salutemCitas.horario}" id="combohoras">
                                 <f:selectItems value="#{salutemCitas.horasDisponibles}"/>
                             </h:selectOneMenu>
                         </h:panelGrid>
@@ -146,6 +146,39 @@
                                 </ace:column>
                             </ace:dataTable>
                         </h:panelGrid>
+                        <h:panelGrid columns="3" rendered="#{salutemCitas.ver}">
+                            <h:outputLabel  value="Exportar a:"/>
+                            <h:selectOneRadio  value="#{salutemCitas.formulario.tipo}" required="true">
+                                <f:ajax disabled="false"/>
+                                <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                                <f:selectItem itemValue="pdf" itemLabel="PDF"/>
+                                <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                                <f:selectItem itemValue="xml" itemLabel="XML"/>
+                            </h:selectOneRadio>
+                            <ace:dataExporter id="dataExporter1" 
+                                              label="Exportar Archivo" 
+                                              type="#{salutemCitas.formulario.tipo}" 
+                                              target="agenda" fileName="#{salutemCitas.header()}"/>
+                        </h:panelGrid>
+                        <h:panelGrid width="100%" rendered="#{salutemCitas.ver}">
+                            <ace:dataTable  id="agenda"                                   
+                                            value="#{salutemCombos.listaHoras}"
+                                            resizableColumns="true"
+                                            var="hora">
+                                <f:facet name="header">#{salutemCitas.header()}</f:facet>
+                                <ace:column  headerText="Horas" style="text-align: right">
+                                    <h:outputText value="#{hora.toString()}"/>
+                                </ace:column>
+                                <c:forEach items="#{salutemCombos.listaDias}" var="dia">
+                                    <ace:column headerText="#{dia.toString()}">
+                                        <!--<span style="background-color: #{salutemCitas.getColor(hora, dia)}; padding:  2px;">-->
+                                        <h:outputText value="#{salutemCitas.getReservado(hora, dia)}" style="color: #195f88 !important"/>
+                                        <!--</span>-->
+                                        <hr style="border: 1px solid #{salutemCitas.getColor(hora, dia)};"/>
+                                    </ace:column>
+                                </c:forEach>
+                            </ace:dataTable>
+                        </h:panelGrid>
                     </ace:panel>
 
                     <ace:dialog 
@@ -166,7 +199,7 @@
                                 <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
                                               action="#{salutemCitas.grabarReactivar()}" 
                                               rendered="#{salutemCitas.formulario.editar}"/>
-                                <ace:menuItem action="#{salutemCitas.eliminar()}" 
+                                <ace:menuItem action="#{salutemCitas.cancelar()}" 
                                               value="¿Está seguro de Cancelar Cita?" 
                                               icon="ui-icon ui-icon-trash" 
                                               rendered="#{salutemCitas.formulario.eliminar}"/>
@@ -176,28 +209,6 @@
                             <ace:messages />
                         </h:panelGrid>
                     </ace:dialog>
-                    <h:panelGrid width="100%" rendered="#{salutemCitas.ver}" id="imprimir">
-                        <ace:dataTable                                      
-                            value="#{horas.listahoras}"
-                            resizableColumns="true"
-                            var="hora">
-                            <f:facet name="header">#{salutemCitas.header()}</f:facet>
-                            <ace:column  headerText="Horas" style="text-align: right">
-                                <h:outputText value="#{hora.toString()}"/>
-                            </ace:column>
-                            <c:forEach items="#{horarios.dias}" var="dia">
-                                <ace:column headerText="#{dia.toString()}">
-                                    <!--<span style="background-color: #{salutemCitas.getColor(hora, dia)}; padding:  2px;">-->
-                                    <h:outputText value="#{salutemCitas.getColorReserva(hora, dia)}" style="color: #195f88"/>
-                                    <!--</span>-->
-                                    <hr style="border: 1px solid #{salutemCitas.getColor(hora, dia)};"/>
-                                </ace:column>
-                            </c:forEach>
-                        </ace:dataTable>
-                    </h:panelGrid>
-
-
-
                 </ui:define>
                 <!-- Fin -->
             </ui:composition>

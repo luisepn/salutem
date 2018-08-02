@@ -11,6 +11,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import org.controladores.salutem.HorariosFacade;
 import org.controladores.salutem.HorasFacade;
 import org.controladores.salutem.InstitucionesFacade;
 import org.controladores.salutem.MaestrosFacade;
@@ -19,6 +20,7 @@ import org.controladores.salutem.MenusFacade;
 import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.ProfesionalesFacade;
 import org.controladores.salutem.UsuariosFacade;
+import org.entidades.salutem.Horarios;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Parametros;
@@ -72,6 +74,8 @@ public class CombosBean implements Serializable {
     @EJB
     private HorasFacade ejbHoras;
     @EJB
+    private HorariosFacade ejbhHorarios;
+    @EJB
     private ProfesionalesFacade ejbProfesionales;
 
     public CombosBean() {
@@ -120,7 +124,7 @@ public class CombosBean implements Serializable {
                     items[i++] = new SelectItem(x.toString(), x.toString());
                     break;
                 case "parameters":
-                    items[i++] = new SelectItem(((Parametros)x).getParametros(), x.toString());
+                    items[i++] = new SelectItem(((Parametros) x).getParametros(), x.toString());
                     break;
             }
         }
@@ -244,11 +248,11 @@ public class CombosBean implements Serializable {
     }
 
     public SelectItem[] getHoras() {
-        return getSelectItems(traerHoras(), "object", true);
+        return getSelectItems(getListaHoras(), "object", true);
     }
 
     public SelectItem[] getHorasId() {
-        return getSelectItems(traerHoras(), "id", true);
+        return getSelectItems(getListaHoras(), "id", true);
     }
 
     public SelectItem[] getProfesionales() {
@@ -319,7 +323,7 @@ public class CombosBean implements Serializable {
         return null;
     }
 
-    public List<Parametros> traerParametros(String maestro, String orden) {
+    private List<Parametros> traerParametros(String maestro, String orden) {
         try {
             return ejbParametros.traerParametros(maestro, orden);
         } catch (ExcepcionDeConsulta ex) {
@@ -329,7 +333,11 @@ public class CombosBean implements Serializable {
         return null;
     }
 
-    public List<Horas> traerHoras() {
+    public List<Parametros> getListaDias() {
+        return traerParametros(CombosBean.DIAS_SEMANA, "o.parametros");
+    }
+
+    public List<Horas> getListaHoras() {
         try {
             return ejbHoras.traerHoras(institucion);
         } catch (ExcepcionDeConsulta ex) {
@@ -375,6 +383,10 @@ public class CombosBean implements Serializable {
 
     public Horas traerHora(Integer id) throws ExcepcionDeConsulta {
         return (Horas) ejbHoras.buscar(id);
+    }
+
+    public Horarios traerHorario(Integer id) throws ExcepcionDeConsulta {
+        return (Horarios) ejbhHorarios.buscar(id);
     }
 
     public Profesionales traerProfesional(Integer id) throws ExcepcionDeConsulta {

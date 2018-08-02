@@ -26,7 +26,6 @@ import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Materiales;
 import org.entidades.salutem.Ordenes;
 import org.entidades.salutem.Pacientes;
-import org.entidades.salutem.Personas;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeCreacion;

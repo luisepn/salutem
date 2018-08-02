@@ -54,7 +54,6 @@ public class HorariosBean implements Serializable, IMantenimiento {
 
     private Formulario formulario = new Formulario();
     private LazyDataModel<Horarios> horarios;
-    private List<Parametros> dias;
     private Horarios horario;
     private int profesional;
 
@@ -77,7 +76,6 @@ public class HorariosBean implements Serializable, IMantenimiento {
     @Override
     public void activar() {
         perfil = seguridadBean.traerPerfil("Horarios");
-        dias = combosBean.traerParametros(CombosBean.DIAS_SEMANA, "o.parametros");
     }
 
     private List<Horarios> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
@@ -383,20 +381,6 @@ public class HorariosBean implements Serializable, IMantenimiento {
      */
     public void setHorarios(LazyDataModel<Horarios> horarios) {
         this.horarios = horarios;
-    }
-
-    /**
-     * @return the dias
-     */
-    public List<Parametros> getDias() {
-        return dias;
-    }
-
-    /**
-     * @param dias the dias to set
-     */
-    public void setDias(List<Parametros> dias) {
-        this.dias = dias;
     }
 
     /**

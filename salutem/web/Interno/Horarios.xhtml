@@ -174,14 +174,14 @@
                         </h:panelGrid>
                         <ace:dataTable  
                             id="tablaHorario"
-                            value="#{salutemCombos.traerHoras()}"
+                            value="#{salutemCombos.listaHoras}"
                             resizableColumns="true"
                             var="hora">
                             <f:facet name="header">Horario - #{salutemCombos.traerProfesional(salutemHorarios.profesional)} -</f:facet>
                             <ace:column  headerText="Horas" style="text-align: right">
                                 <h:outputText value="#{hora.toString()}"/>
                             </ace:column>
-                            <c:forEach items="#{salutemHorarios.dias}" var="dia">
+                            <c:forEach items="#{salutemCombos.listaDias}" var="dia">
                                 <ace:column headerText="#{dia.toString()}" style="text-align: left;">
                                     <h:outputText value="#{salutemHorarios.getProfesionales(hora, dia)}" style="white-space: pre-wrap"/>
                                     <!--<hr style="border: 10px solid #{salutemHorarios.getColor(hora, dia)}; width: 1px; border-radius: 10px;"/>-->

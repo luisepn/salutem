@@ -48,6 +48,8 @@ public class CitasBean implements Serializable {
 
     @ManagedProperty(value = "#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
+    @ManagedProperty(value = "#{salutemPacientes}")
+    private PacientesBean pacientesBean;
     private Perfiles perfil;
 
     private Formulario formulario = new Formulario();
@@ -56,8 +58,8 @@ public class CitasBean implements Serializable {
     private Profesionales profesional;
     private Pacientes paciente;
 
-    private Horas hora;
-    private List<Horas> listaHoras;
+    private Horarios horario;
+    private List<Horarios> listaHorarios;
     private Date fecha = new Date();
     private Citas cita;
 
@@ -173,43 +175,58 @@ public class CitasBean implements Serializable {
 
     public SelectItem[] getHorasDisponibles() {
         try {
-            listaHoras = new LinkedList<>();
-            String where = "o.profesional=:profesional and o.dia.descripcion=:dia";
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(fecha);
+
+            String where = "o.profesional=:profesional and o.dia.parametros=:dia and o.activo=true";
             Map parametros = new HashMap();
             parametros.put("profesional", profesional);
-            Calendar f = Calendar.getInstance();
-            f.setTime(fecha);
-            parametros.put("dia", f.get(Calendar.DAY_OF_WEEK) + "");
+            /**
+             * De la fecha seleccionada se extrae el numero del día de la semana
+             * Entoces se busca el horario del profesional médico seleccionado
+             */
+            parametros.put("dia", calendar.get(Calendar.DAY_OF_WEEK) - 1 + "");
             String order = "o.dia.parametros, o.hora.horainicio asc";
-            List<Horarios> aux = ejbHorarios.buscar(where, parametros, order);
+            listaHorarios = ejbHorarios.buscar(where, parametros, order);
 
-            for (Horarios h : aux) {
-                listaHoras.add(h.getHora());
-            }
-            where = "o.profesional=:profesional and o.activo=true and o.fecha=:fecha";
+            where = "o.profesional=:profesional and o.activo=true and o.fecha between :inicio and :fin";
             parametros = new HashMap();
             parametros.put("profesional", profesional);
-            parametros.put("fecha", fecha);
+
+            calendar.setTime(fecha);
+            calendar.set(Calendar.HOUR, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            parametros.put("inicio", calendar.getTime());
+
+            calendar.setTime(fecha);
+            calendar.set(Calendar.HOUR, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND, 999);
+            parametros.put("fin", calendar.getTime());
+
             List<Citas> auxcitas = ejbCitas.buscar(where, parametros);
 
             for (Citas c : auxcitas) {
-                Calendar cd = Calendar.getInstance();
-                cd.setTime(c.getFecha());
-                cd.set(Calendar.YEAR, 0);
-                cd.set(Calendar.MONTH, 0);
-                cd.set(Calendar.DAY_OF_MONTH, 0);
-                for (Horas h : listaHoras) {
-                    Calendar ch = Calendar.getInstance();
-                    ch.setTime(h.getHorainicio());
-                    if (ch.get(Calendar.HOUR_OF_DAY) == cd.get(Calendar.HOUR_OF_DAY)) {
-                        listaHoras.remove(h);
+                Calendar horasOcupadas = Calendar.getInstance();
+                horasOcupadas.setTime(c.getFecha());
+                horasOcupadas.set(Calendar.YEAR, 0);
+                horasOcupadas.set(Calendar.MONTH, 0);
+                horasOcupadas.set(Calendar.DAY_OF_MONTH, 0);
+                for (Horarios h : listaHorarios) {
+                    Calendar horaSeleccionada = Calendar.getInstance();
+                    horaSeleccionada.setTime(h.getHora().getHorainicio());
+                    if (horaSeleccionada.get(Calendar.HOUR_OF_DAY) == horasOcupadas.get(Calendar.HOUR_OF_DAY)) {
+                        listaHorarios.remove(h);
                         break;
                     }
                 }
 
             }
 
-            return CombosBean.getSelectItems(listaHoras, "object", true);
+            return CombosBean.getSelectItems(listaHorarios, "object", true);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -218,10 +235,10 @@ public class CitasBean implements Serializable {
     }
 
     public boolean validar() {
-//        if (seguridadBean.getPaciente() == null) {
-//            Mensajes.advertencia("Seleccione un paciente");
-//            return true;
-//        }
+        if (pacientesBean.getPaciente() == null) {
+            Mensajes.advertencia("Seleccione un paciente");
+            return true;
+        }
 
         if (fecha == null) {
             Mensajes.advertencia("Seleccione una fecha");
@@ -236,8 +253,8 @@ public class CitasBean implements Serializable {
             Mensajes.advertencia("Seleccione un profesional médico");
             return true;
         }
-        if (hora == null) {
-            Mensajes.advertencia("Seleccione hora");
+        if (horario == null) {
+            Mensajes.advertencia("Seleccione hora de atención");
             return true;
         }
         return false;
@@ -256,7 +273,7 @@ public class CitasBean implements Serializable {
         cita.setActualizadopor(cita.getCreadopor());
 
         Calendar h = Calendar.getInstance(); //Hora de la cita
-        h.setTime(hora.getHorainicio());
+        h.setTime(horario.getHora().getHorainicio());
 
         Calendar c = Calendar.getInstance(); //Fecha de la cita
         c.setTime(fecha);
@@ -264,7 +281,7 @@ public class CitasBean implements Serializable {
         c.set(Calendar.MINUTE, h.get(Calendar.MINUTE));//Minuto de la cita a la fecha
 
         cita.setFecha(c.getTime());
-//        cita.setPaciente(seguridadBean.getPaciente());
+        cita.setPaciente(pacientesBean.getPaciente());
         cita.setProfesional(profesional);
         cita.setCreado(new Date());
         cita.setCreadopor(seguridadBean.getLogueado().getUserid());
@@ -322,26 +339,46 @@ public class CitasBean implements Serializable {
 
     }
 
-    public String getColorReserva(Horas hora, Parametros dia) {
+    public String getReservado(Horas hora, Parametros dia) {
         try {
+            String where = "o.profesional=:profesional and o.activo=true and o.fecha between :inicio and :fin";
             Map parametros = new HashMap();
-            String where = "o.profesional=:profesional and o.activo=true and o.fecha=:fecha and o.hora=:hora";
             parametros.put("profesional", profesional);
 
-            Calendar h = Calendar.getInstance(); //Hora de la cita
-            h.setTime(hora.getHorainicio());
+            Calendar calendar = Calendar.getInstance();
+            Calendar calendarHora = Calendar.getInstance();
+            int diaActual = calendar.get(Calendar.DAY_OF_WEEK); //Día de la fecha actual
+            int diaReferencia = Integer.parseInt(dia.getParametros()) + 1; //Día del que se quiere averiguar si tuvo citas
 
-            Calendar c = Calendar.getInstance(); //Fecha de la cita
-            c.setTime(fecha);
-            c.set(Calendar.DAY_OF_WEEK, Integer.parseInt(dia.getDescripcion()));
-            c.set(Calendar.HOUR_OF_DAY, h.get(Calendar.HOUR_OF_DAY)); //Hora de la cita a la fecha
-            c.set(Calendar.MINUTE, h.get(Calendar.MINUTE));//Minuto de la cita a la fecha
+            calendarHora.setTime(hora.getHorainicio());
+            calendar.add(Calendar.DAY_OF_YEAR, (diaActual - diaReferencia) * -1);
+            calendar.set(Calendar.HOUR_OF_DAY, calendarHora.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendarHora.get(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, calendarHora.get(Calendar.SECOND));
+            calendar.set(Calendar.MILLISECOND, calendarHora.get(Calendar.MILLISECOND));
+            parametros.put("inicio", calendar.getTime());
 
-            parametros.put("fecha", c.getTime());
-            parametros.put("hora", hora.getHorainicio());
+            calendarHora.setTime(hora.getHorafin());
+            calendar.add(Calendar.DAY_OF_YEAR, (diaActual - diaReferencia) * -1);
+            calendar.set(Calendar.HOUR_OF_DAY, calendarHora.get(Calendar.HOUR_OF_DAY));
+            calendar.set(Calendar.MINUTE, calendarHora.get(Calendar.MINUTE));
+            calendar.set(Calendar.SECOND, calendarHora.get(Calendar.SECOND));
+            calendar.set(Calendar.MILLISECOND, calendarHora.get(Calendar.MILLISECOND));
+            parametros.put("fin", calendar.getTime());
+
             List<Citas> auxcitas = ejbCitas.buscar(where, parametros);
             if (!auxcitas.isEmpty()) {
                 return auxcitas.get(0).getPaciente().toString();
+            } else {
+                parametros = new HashMap();
+                where = " o.activo = true and o.hora=:hora and o.dia=:dia and o.profesional=:profesional";
+                parametros.put("hora", hora);
+                parametros.put("dia", dia);
+                parametros.put("profesional", profesional);
+
+                if (ejbHorarios.contar(where, parametros) > 0) {
+                    return "-";
+                }
             }
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
@@ -465,31 +502,31 @@ public class CitasBean implements Serializable {
     }
 
     /**
-     * @return the hora
+     * @return the horario
      */
-    public Horas getHora() {
-        return hora;
+    public Horarios getHorario() {
+        return horario;
     }
 
     /**
-     * @param hora the hora to set
+     * @param horario the horario to set
      */
-    public void setHora(Horas hora) {
-        this.hora = hora;
+    public void setHorario(Horarios horario) {
+        this.horario = horario;
     }
 
     /**
-     * @return the listaHoras
+     * @return the listaHorarios
      */
-    public List<Horas> getListaHoras() {
-        return listaHoras;
+    public List<Horarios> getListaHorarios() {
+        return listaHorarios;
     }
 
     /**
-     * @param listaHoras the listaHoras to set
+     * @param listaHorarios the listaHorarios to set
      */
-    public void setListaHoras(List<Horas> listaHoras) {
-        this.listaHoras = listaHoras;
+    public void setListaHorarios(List<Horarios> listaHorarios) {
+        this.listaHorarios = listaHorarios;
     }
 
     /**
@@ -574,5 +611,19 @@ public class CitasBean implements Serializable {
      */
     public void setListaCitas(List<Citas> listaCitas) {
         this.listaCitas = listaCitas;
+    }
+
+    /**
+     * @return the pacientesBean
+     */
+    public PacientesBean getPacientesBean() {
+        return pacientesBean;
+    }
+
+    /**
+     * @param pacientesBean the pacientesBean to set
+     */
+    public void setPacientesBean(PacientesBean pacientesBean) {
+        this.pacientesBean = pacientesBean;
     }
 }

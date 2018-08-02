@@ -183,7 +183,7 @@ public class Horarios implements Serializable {
 
     @Override
     public String toString() {
-        return "org.entidades.salutem.Horarios[ id=" + id + " ]";
+        return hora.toString();
     }
-    
+
 }

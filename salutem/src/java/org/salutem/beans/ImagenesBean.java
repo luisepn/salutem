@@ -72,11 +72,17 @@ public class ImagenesBean implements Serializable {
     public void grabarImagen(String userid, String clasificador, Integer identificador) {
         try {
             if (archivo.getId() == null) {
+                archivo.setCreado(new Date());
+                archivo.setCreadopor(userid);
+                archivo.setActualizado(archivo.getCreado());
+                archivo.setActualizadopor(archivo.getActualizadopor());
                 ejbArchivos.crear(archivo, userid);
             }
             archivo.setIdentificador(identificador);
             archivo.setClasificador(clasificador);
             archivo.setRuta(crearFichero(archivo.getId(), archivo.getArchivo(), clasificador));
+            archivo.setActualizado(new Date());
+            archivo.setActualizadopor(userid);
             ejbArchivos.actualizar(archivo, userid);
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());

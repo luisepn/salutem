@@ -251,7 +251,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
 
             imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), "Fotografias", null);
             persona.setFotografia(imagenesBean.getArchivo());
-
+            persona.setActualizado(new Date());
+            persona.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
