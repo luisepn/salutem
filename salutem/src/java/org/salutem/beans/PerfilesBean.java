@@ -60,7 +60,7 @@ public class PerfilesBean implements Serializable, IMantenimiento {
         perfiles = new LazyDataModel<Perfiles>() {
             @Override
             public List<Perfiles> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                if (!IMantenimiento.validarPerfil(perfilSistema, 'R')) {
                     return null;
                 }
                 return cargar(i, i1, scs, map);

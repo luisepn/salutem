@@ -238,8 +238,8 @@ public class SeguridadBean implements Serializable {
                 return null;
             }
 
-            if (!perfil.getMenu().getFormulario().contains(formulario)) {
-                ctx.redirect(ctxPath + "?m=Perfil no v&aacute;do");
+            if (!formulario.contains(perfil.getMenu().getFormulario())) {
+                ctx.redirect(ctxPath + "?m=Perfil no valido");
             }
             if (!perfil.getGrupo().equals(usuario.getGrupo())) {
                 ctx.redirect(ctxPath + "?m=Usuario logueado no esta en el grupo correcto");

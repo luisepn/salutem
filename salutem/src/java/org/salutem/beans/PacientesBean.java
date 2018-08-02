@@ -74,7 +74,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     @PostConstruct
     @Override
     public void activar() {
-        perfil = seguridadBean.traerPerfil("Consultas");
+        perfil = seguridadBean.traerPerfil("CitasConsultasPacientes");
         institucion = getSeguridadBean().getInstitucion();
     }
 
@@ -612,6 +612,20 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
      */
     public void setOrdenPdf(Reportesds ordenPdf) {
         this.ordenPdf = ordenPdf;
+    }
+
+    /**
+     * @return the listaPacientes
+     */
+    public List<Pacientes> getListaPacientes() {
+        return listaPacientes;
+    }
+
+    /**
+     * @param listaPacientes the listaPacientes to set
+     */
+    public void setListaPacientes(List<Pacientes> listaPacientes) {
+        this.listaPacientes = listaPacientes;
     }
 
 }

@@ -78,7 +78,7 @@ public class CitasBean implements Serializable {
 
     @PostConstruct
     public void activar() {
-        perfil = seguridadBean.traerPerfil("Citas");
+        perfil = seguridadBean.traerPerfil("CitasConsultasPacientes");
     }
 
     public String buscar() {
@@ -378,5 +378,201 @@ public class CitasBean implements Serializable {
         String[] aux = texto.split("\\]");
         lista.addAll(Arrays.asList(aux));
         return lista;
+    }
+
+    /**
+     * @return the seguridadBean
+     */
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
+    }
+
+    /**
+     * @return the perfil
+     */
+    public Perfiles getPerfil() {
+        return perfil;
+    }
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void setPerfil(Perfiles perfil) {
+        this.perfil = perfil;
+    }
+
+    /**
+     * @return the formulario
+     */
+    public Formulario getFormulario() {
+        return formulario;
+    }
+
+    /**
+     * @param formulario the formulario to set
+     */
+    public void setFormulario(Formulario formulario) {
+        this.formulario = formulario;
+    }
+
+    /**
+     * @return the listaGrupoUsuarios
+     */
+    public List<Usuarios> getListaGrupoUsuarios() {
+        return listaGrupoUsuarios;
+    }
+
+    /**
+     * @param listaGrupoUsuarios the listaGrupoUsuarios to set
+     */
+    public void setListaGrupoUsuarios(List<Usuarios> listaGrupoUsuarios) {
+        this.listaGrupoUsuarios = listaGrupoUsuarios;
+    }
+
+    /**
+     * @return the profesional
+     */
+    public Profesionales getProfesional() {
+        return profesional;
+    }
+
+    /**
+     * @param profesional the profesional to set
+     */
+    public void setProfesional(Profesionales profesional) {
+        this.profesional = profesional;
+    }
+
+    /**
+     * @return the paciente
+     */
+    public Pacientes getPaciente() {
+        return paciente;
+    }
+
+    /**
+     * @param paciente the paciente to set
+     */
+    public void setPaciente(Pacientes paciente) {
+        this.paciente = paciente;
+    }
+
+    /**
+     * @return the hora
+     */
+    public Horas getHora() {
+        return hora;
+    }
+
+    /**
+     * @param hora the hora to set
+     */
+    public void setHora(Horas hora) {
+        this.hora = hora;
+    }
+
+    /**
+     * @return the listaHoras
+     */
+    public List<Horas> getListaHoras() {
+        return listaHoras;
+    }
+
+    /**
+     * @param listaHoras the listaHoras to set
+     */
+    public void setListaHoras(List<Horas> listaHoras) {
+        this.listaHoras = listaHoras;
+    }
+
+    /**
+     * @return the fecha
+     */
+    public Date getFecha() {
+        return fecha;
+    }
+
+    /**
+     * @param fecha the fecha to set
+     */
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    /**
+     * @return the cita
+     */
+    public Citas getCita() {
+        return cita;
+    }
+
+    /**
+     * @param cita the cita to set
+     */
+    public void setCita(Citas cita) {
+        this.cita = cita;
+    }
+
+    /**
+     * @return the ver
+     */
+    public boolean isVer() {
+        return ver;
+    }
+
+    /**
+     * @param ver the ver to set
+     */
+    public void setVer(boolean ver) {
+        this.ver = ver;
+    }
+
+    /**
+     * @return the inicio
+     */
+    public Date getInicio() {
+        return inicio;
+    }
+
+    /**
+     * @param inicio the inicio to set
+     */
+    public void setInicio(Date inicio) {
+        this.inicio = inicio;
+    }
+
+    /**
+     * @return the fin
+     */
+    public Date getFin() {
+        return fin;
+    }
+
+    /**
+     * @param fin the fin to set
+     */
+    public void setFin(Date fin) {
+        this.fin = fin;
+    }
+
+    /**
+     * @return the listaCitas
+     */
+    public List<Citas> getListaCitas() {
+        return listaCitas;
+    }
+
+    /**
+     * @param listaCitas the listaCitas to set
+     */
+    public void setListaCitas(List<Citas> listaCitas) {
+        this.listaCitas = listaCitas;
     }
 }

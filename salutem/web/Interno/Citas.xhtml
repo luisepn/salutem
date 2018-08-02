@@ -16,7 +16,7 @@
             <ui:composition template="../plantillas/Plantilla.xhtml">
                 <ui:define name="content">
                     <ace:panel id="panel"
-                               header="#{citas.perfil.menu.texto}"
+                               header="#{salutemCitas.perfil.menu.nombre}"
                                closable="false"
                                toggleable="true">
                         <h:panelGrid columns="4">
@@ -30,16 +30,20 @@
                                 value="#{salutemPacientes.claveBusqueda}"
                                 width="400"
                                 listVar="itemPaciente"
-                                filterBy="#{cie10Auditam.tipoBuscar eq 'o.codigo' ? itemCie10.codigo : itemCie10.texto}"
+                                filterBy="#{salutemPacientes.parametroBusqueda 
+                                            eq 'o.persona.apellidos' ? itemPaciente.persona.apellidos :
+                                            salutemPacientes.parametroBusqueda eq 'o.persona.nombres' ?
+                                            itemPaciente.persona.nombres : itemPaciente.persona.cedula}"
                                 filterMatchMode="none"
-                                listValue="#{cie10Auditam.listaItems}"
-                                valueChangeListener="#{expedientesAuditam.cambiaDiagnostico}"
-                                textChangeListener="#{cie10Auditam.diagnosticosChangeEventHandler}"
+                                listValue="#{salutemPacientes.listaPacientes}"
+                                valueChangeListener="#{salutemPacientes.cambiaPacientes}"
+                                textChangeListener="#{salutemPacientes.pacientesChangeEventHandler}"
                                 labelPosition="left">
                                 <f:facet name="row">
                                     <h:panelGrid columns="3" width="100%" columnClasses="tipo">
-                                        <h:outputText value="#{itemCie10.codigo}"/>
-                                        <h:outputText value="#{itemCie10.texto}"/>
+                                        <h:outputText value="#{itemPaciente.persona.apellidos}"/>
+                                        <h:outputText value="#{itemPaciente.persona.nombres}"/>
+                                        <h:outputText value="#{itemPaciente.persona.cedula}"/>
                                     </h:panelGrid>
                                 </f:facet>
                                 <ace:ajax execute="@all"/>
@@ -47,35 +51,35 @@
                         </h:panelGrid>
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Fecha:" styleClass="bold"/>
-                            <ace:dateTimeEntry navigator="true" value="#{citas.fecha}" 
+                            <ace:dateTimeEntry navigator="true" value="#{salutemCitas.fecha}" 
                                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                                pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"  >
                                 <f:convertDateTime pattern="dd/MM/yyyy" />
                                 <ace:ajax event="dateSelect" render="combohoras"/>
                             </ace:dateTimeEntry>
                             <h:outputLabel value="Especialidad: " styleClass="bold"/>
-                            <h:selectOneMenu value="#{profesionales.especialidad}">
-                                <f:selectItems value="#{salutemCombos.especialidad}"/>
+                            <h:selectOneMenu value="#{salutemCombos.especialidad}">
+                                <f:selectItems value="#{salutemCombos.especialidades}"/>
                                 <f:ajax event="change" render="output"/>
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
-                            <h:outputLabel value="Profesional: " styleClass="bold" rendered="#{seguridadMedical.profesional==null}" />
-                            <h:selectOneMenu value="#{citas.profesional}" rendered="#{seguridadMedical.profesional==null}">
-                                <f:selectItems value="#{profesionales.comboProfesionales}"/>
+                            <h:outputLabel value="Profesional: " styleClass="bold"/>
+                            <h:selectOneMenu value="#{salutemCitas.profesional}">
+                                <f:selectItems value="#{salutemCombos.profesionales}"/>
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                             <h:outputLabel value="Hora: " styleClass="bold"/>
-                            <h:selectOneMenu value="#{citas.hora}" id="combohoras">
-                                <f:selectItems value="#{citas.horasDisponibles}"/>
+                            <h:selectOneMenu value="#{salutemCitas.hora}" id="combohoras">
+                                <f:selectItems value="#{salutemCitas.horasDisponibles}"/>
                             </h:selectOneMenu>
                         </h:panelGrid>
 
-                        <h:panelGrid columns="2" rendered="#{!citas.formulario.mostrar}" >
+                        <h:panelGrid columns="2" rendered="#{!salutemCitas.formulario.mostrar}" >
                             <ace:menuBar autoSubmenuDisplay="true" >
-                                <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"  action="#{citas.grabar()}"/>
-                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{citas.buscar()}"/>
-                                <ace:menuItem value="Ver Agenda" icon="ui-icon ui-icon-calendar"  action="#{citas.verAgenda()}" rendered="#{citas.profesional!=null and !citas.ver}"/>
-                                <ace:menuItem value="Ocultar Agenda" icon="ui-icon ui-icon-calendar"  action="#{citas.ocultarAgenda()}" rendered="#{citas.profesional!=null and citas.ver}"/>
+                                <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"  action="#{salutemCitas.grabar()}"/>
+                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemCitas.buscar()}"/>
+                                <ace:menuItem value="Ver Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.verAgenda()}" rendered="#{salutemCitas.profesional!=null and !salutemCitas.ver}"/>
+                                <ace:menuItem value="Ocultar Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.ocultarAgenda()}" rendered="#{salutemCitas.profesional!=null and salutemCitas.ver}"/>
                             </ace:menuBar>
                             <ace:messages/>
                         </h:panelGrid>
@@ -88,7 +92,7 @@
                         toggleable="true"              >
                         <h:panelGrid columns="3">
                             <h:outputLabel  value="Exportar a:"/>
-                            <h:selectOneRadio  value="#{citas.formulario.pantalla}" required="true">
+                            <h:selectOneRadio  value="#{salutemCitas.formulario.tipo}" required="true">
                                 <f:ajax disabled="false"/>
                                 <f:selectItem itemValue="csv" itemLabel="CSV"/>
                                 <f:selectItem itemValue="pdf" itemLabel="PDF"/>
@@ -97,19 +101,19 @@
                             </h:selectOneRadio>
                             <ace:dataExporter id="dataExporter" 
                                               label="Exportar Archivo" 
-                                              type="#{citas.formulario.pantalla}" 
+                                              type="#{salutemCitas.formulario.tipo}" 
                                               target="tabla" fileName="datos"/>
                         </h:panelGrid>
                         <h:panelGrid width="100%">
                             <ace:dataTable id="tabla" 
-                                           value="#{citas.listaCitas}"
+                                           value="#{salutemCitas.listaCitas}"
                                            var="item"
                                            rowIndexVar="row"
-                                           binding="#{citas.formulario.fila}">
+                                           binding="#{salutemCitas.formulario.fila}">
                                 <ace:column headerText="Acciones" style="text-align: left">
                                     <ace:menuButton  effect="slide" effectDuration="200" value="..." >
-                                        <ace:menuItem action="#{citas.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash" rendered="#{item.activo}"/>
-                                        <ace:menuItem action="#{citas.reactivar()}" value="Reactivar" icon="ui-icon ui-icon-arrowreturn-1-w" rendered="#{!item.activo}"/>
+                                        <ace:menuItem action="#{salutemCitas.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash" rendered="#{item.activo}"/>
+                                        <ace:menuItem action="#{salutemCitas.reactivar()}" value="Reactivar" icon="ui-icon ui-icon-arrowreturn-1-w" rendered="#{!item.activo}"/>
                                     </ace:menuButton>
                                 </ace:column> 
                                 <ace:column  headerText="Registro" style="text-align: right">
@@ -121,7 +125,7 @@
                                     </h:outputText>
                                 </ace:column>
                                 <ace:column  headerText="Hora" style="text-align: left">
-                                    <h:outputText  value="#{item.hora}">
+                                    <h:outputText  value="#{item.fecha}">
                                         <f:convertDateTime  pattern="HH:mm"/>
                                     </h:outputText>
                                 </ace:column>
@@ -135,7 +139,7 @@
                                     <h:outputText  value="#{item.activo?'ACTIVO':'CANCELADO'}"/>
                                 </ace:column>
                                 <ace:column  headerText="Historial" style="text-align: left">
-                                    <ui:repeat value="#{citas.separar(item.observaciones)}" var="h">
+                                    <ui:repeat value="#{salutemCitas.separar(item.descripcion)}" var="h">
                                         <h:outputText  value="- #{h}]"/><br/><br/>
                                     </ui:repeat>
 
@@ -145,48 +149,48 @@
                     </ace:panel>
 
                     <ace:dialog 
-                        header="#{citas.perfil.menu.texto}"
+                        header="#{salutemCitas.perfil.menu.nombre}"
                         closable="false"
                         modal="true"
                         draggable="false"
                         showEffect="clip"
                         hideEffect="fade"
-                        rendered="#{citas.formulario.mostrar}"
-                        visible="#{citas.formulario.mostrar}">
+                        rendered="#{salutemCitas.formulario.mostrar}"
+                        visible="#{salutemCitas.formulario.mostrar}">
                         <h:panelGrid columns="2">
                             <h:outputText value="Razón:" styleClass="bold"/>
-                            <h:inputTextarea cols="19" rows="2" value="#{citas.cita.razon}"/>
+                            <h:inputTextarea cols="19" rows="2" value="#{salutemCitas.cita.descripcion}"/>
                         </h:panelGrid>
                         <h:panelGrid columns="1" width="100%">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                              action="#{citas.grabarReactivar()}" 
-                                              rendered="#{citas.formulario.modificar}"/>
-                                <ace:menuItem action="#{citas.borrar()}" 
+                                              action="#{salutemCitas.grabarReactivar()}" 
+                                              rendered="#{salutemCitas.formulario.editar}"/>
+                                <ace:menuItem action="#{salutemCitas.eliminar()}" 
                                               value="¿Está seguro de Cancelar Cita?" 
                                               icon="ui-icon ui-icon-trash" 
-                                              rendered="#{citas.formulario.borrar}"/>
+                                              rendered="#{salutemCitas.formulario.eliminar}"/>
                                 <ace:menuItem value="Salir" icon="ui-icon ui-icon-close" 
-                                              action="#{citas.formulario.cancelar()}"/>
+                                              action="#{salutemCitas.formulario.cancelar()}"/>
                             </ace:menuBar>
                             <ace:messages />
                         </h:panelGrid>
                     </ace:dialog>
-                    <h:panelGrid width="100%" rendered="#{citas.ver}" id="imprimir">
+                    <h:panelGrid width="100%" rendered="#{salutemCitas.ver}" id="imprimir">
                         <ace:dataTable                                      
                             value="#{horas.listahoras}"
                             resizableColumns="true"
                             var="hora">
-                            <f:facet name="header">#{citas.header()}</f:facet>
+                            <f:facet name="header">#{salutemCitas.header()}</f:facet>
                             <ace:column  headerText="Horas" style="text-align: right">
                                 <h:outputText value="#{hora.toString()}"/>
                             </ace:column>
                             <c:forEach items="#{horarios.dias}" var="dia">
                                 <ace:column headerText="#{dia.toString()}">
-                                    <!--<span style="background-color: #{citas.getColor(hora, dia)}; padding:  2px;">-->
-                                    <h:outputText value="#{citas.getColorReserva(hora, dia)}" style="color: #195f88"/>
+                                    <!--<span style="background-color: #{salutemCitas.getColor(hora, dia)}; padding:  2px;">-->
+                                    <h:outputText value="#{salutemCitas.getColorReserva(hora, dia)}" style="color: #195f88"/>
                                     <!--</span>-->
-                                    <hr style="border: 1px solid #{citas.getColor(hora, dia)};"/>
+                                    <hr style="border: 1px solid #{salutemCitas.getColor(hora, dia)};"/>
                                 </ace:column>
                             </c:forEach>
                         </ace:dataTable>
