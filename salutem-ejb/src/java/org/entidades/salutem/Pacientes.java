@@ -102,7 +102,6 @@ public class Pacientes implements Serializable {
         this.activo = activo;
     }
 
-
     public Date getCreado() {
         return creado;
     }
@@ -111,7 +110,6 @@ public class Pacientes implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -119,7 +117,6 @@ public class Pacientes implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     @XmlTransient
     public List<Consultas> getConsultasList() {
@@ -169,6 +166,18 @@ public class Pacientes implements Serializable {
     @Override
     public String toString() {
         return persona != null ? persona.toString() : "[" + id + "]";
+    }
+
+    public String toStringApellidos() {
+        return persona != null ? persona.getApellidos() + " " + persona.getNombres() + " " + persona.getCedula() : "";
+    }
+
+    public String toStringNombres() {
+        return persona != null ? persona.getNombres() + " " + persona.getApellidos() + " " + persona.getCedula() : "";
+    }
+
+    public String toStringCedula() {
+        return persona != null ? persona.getCedula() + " " + persona.getNombres() + " " + persona.getApellidos() : "";
     }
 
     public String getDescripcion() {

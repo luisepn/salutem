@@ -30,11 +30,14 @@ import org.entidades.salutem.Pacientes;
 import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Perfiles;
 import org.entidades.salutem.Profesionales;
-import org.entidades.salutem.Usuarios;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.excepciones.salutem.ExcepcionDeEliminacion;
+import org.icefaces.ace.model.table.LazyDataModel;
+import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
+import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
 /**
@@ -44,16 +47,17 @@ import org.salutem.utilitarios.Mensajes;
  */
 @ManagedBean(name = "salutemCitas")
 @ViewScoped
-public class CitasBean implements Serializable {
+public class CitasBean implements Serializable, IMantenimiento {
 
     @ManagedProperty(value = "#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
     @ManagedProperty(value = "#{salutemPacientes}")
     private PacientesBean pacientesBean;
+
     private Perfiles perfil;
 
     private Formulario formulario = new Formulario();
-    private List<Usuarios> listaGrupoUsuarios;
+    private LazyDataModel<Citas> citas;
 
     private Profesionales profesional;
     private Pacientes paciente;
@@ -67,7 +71,6 @@ public class CitasBean implements Serializable {
     private Date inicio;
     private Date fin;
 
-    private List<Citas> listaCitas;
     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     @EJB
@@ -76,23 +79,182 @@ public class CitasBean implements Serializable {
     private CitasFacade ejbCitas;
 
     public CitasBean() {
+        citas = new LazyDataModel<Citas>() {
+            @Override
+            public List<Citas> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+                    return null;
+                } else {
+                    return cargar(i, i1, scs, map);
+                }
+            }
+        };
     }
 
     @PostConstruct
+    @Override
     public void activar() {
         perfil = seguridadBean.traerPerfil("CitasConsultasPacientes");
     }
 
+    private List<Citas> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+        try {
+            Map parameters = new HashMap();
+            String where = " o.activo=:activo and o.fecha>=:fecha";
+            parameters.put("activo", seguridadBean.getVerActivos());
+            parameters.put("fecha", fecha);
+            for (Map.Entry e : map.entrySet()) {
+                String clave = (String) e.getKey();
+                String valor = (String) e.getValue();
+                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+            }
+
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
+            }
+
+            int total = ejbCitas.contar(where, parameters);
+            formulario.setTotal(total);
+            int endIndex = i + pageSize;
+            if (endIndex > total) {
+                endIndex = total;
+            }
+            citas.setRowCount(total);
+            String order;
+            if (scs.length == 0) {
+                order = "o.fecha";
+            } else {
+                order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+            }
+            return ejbCitas.buscar(where, parameters, order, i, endIndex);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    @Override
     public String buscar() {
+        if (!IMantenimiento.validarPerfil(perfil, 'R')) {
+            return null;
+        }
         if (fecha == null) {
             fecha = new Date();
         }
-        String where = " o.fecha>=:fecha";
-        Map parametros = new HashMap();
-        parametros.put("fecha", fecha);
+        citas = new LazyDataModel<Citas>() {
+            @Override
+            public List<Citas> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                return cargar(i, i1, scs, map);
+            }
+        };
+        return null;
+    }
+
+    @Override
+    public String crear() {
+        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+            return null;
+        }
+        return null;
+    }
+
+    @Override
+    public String editar() {
+        if (!IMantenimiento.validarPerfil(perfil, 'U')) {
+            return null;
+        }
+        cita = (Citas) citas.getRowData();
+        if (validarFecha(cita.getFecha())) {
+            Mensajes.advertencia("No se puede editar citas con fechas menores a la de hoy");
+            return null;
+        }
+        formulario.editar();
+        return null;
+    }
+
+    @Override
+    public String eliminar() {
+        if (!IMantenimiento.validarPerfil(perfil, 'D')) {
+            return null;
+        }
+        cita = (Citas) citas.getRowData();
+        if (validarFecha(cita.getFecha())) {
+            Mensajes.advertencia("No se puede eliminar citas con fechas menores a la de hoy");
+            return null;
+        }
+        formulario.eliminar();
+        return null;
+    }
+
+    @Override
+    public boolean validar() {
+        if (pacientesBean.getPaciente() == null) {
+            Mensajes.advertencia("Seleccione un paciente");
+            return true;
+        }
+        if (fecha == null) {
+            Mensajes.advertencia("Seleccione una fecha");
+            return true;
+        }
+        if (validarFecha(fecha)) {
+            Mensajes.advertencia("No se puede realizar citas con fechas menores a la de hoy");
+            return true;
+        }
+        if (profesional == null) {
+            Mensajes.advertencia("Seleccione un profesional médico");
+            return true;
+        }
+        if (horario == null) {
+            Mensajes.advertencia("Seleccione hora de atención");
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String insertar() {
+        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+            return null;
+        }
+        if (validar()) {
+            return null;
+        }
+
+        cita = new Citas();
+        cita.setActivo(Boolean.TRUE);
+        cita.setCreado(new Date());
+        cita.setCreadopor(seguridadBean.getLogueado().getUserid());
+        cita.setActualizado(cita.getCreado());
+        cita.setActualizadopor(cita.getCreadopor());
+
+        Calendar h = Calendar.getInstance(); //Hora de la cita
+        h.setTime(horario.getHora().getHorainicio());
+
+        Calendar c = Calendar.getInstance(); //Fecha de la cita
+        c.setTime(fecha);
+        c.set(Calendar.HOUR_OF_DAY, h.get(Calendar.HOUR_OF_DAY)); //Hora de la cita a la fecha
+        c.set(Calendar.MINUTE, h.get(Calendar.MINUTE));//Minuto de la cita a la fecha
+
+        cita.setFecha(c.getTime());
+        cita.setPaciente(pacientesBean.getPaciente());
+        cita.setProfesional(profesional);
+        cita.setCreado(new Date());
+        cita.setCreadopor(seguridadBean.getLogueado().getUserid());
+        cita.setActualizado(cita.getCreado());
+        cita.setActualizadopor(cita.getCreadopor());
+        cita.setDescripcion("[Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
         try {
-            listaCitas = ejbCitas.buscar(where, parametros);
-        } catch (ExcepcionDeConsulta ex) {
+            ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -115,23 +277,27 @@ public class CitasBean implements Serializable {
         f.set(Calendar.MILLISECOND, 1);
 
         if (f.getTime().before(t.getTime())) {
-            Mensajes.advertencia("Fecha menor a la de hoy");
             return true;
         }
         return false;
     }
 
-    public String eliminar() {
-        cita = (Citas) listaCitas.get(formulario.getFila().getRowIndex());
-        if (validarFecha(cita.getFecha())) {
+    @Override
+    public String grabar() {
+        if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        formulario.eliminar();
         return null;
     }
 
-    public String cancelar() {
-        cita.setFecha(new Date());
+    public String cancelarCita() {
+        if (!IMantenimiento.validarPerfil(perfil, 'D')) {
+            return null;
+        }
+        if (validarFecha(cita.getFecha())) {
+            Mensajes.advertencia("No se puede modificar citas con fechas menores a la de hoy");
+            return null;
+        }
         cita.setActivo(Boolean.FALSE);
         cita.setActualizado(new Date());
         cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
@@ -143,21 +309,17 @@ public class CitasBean implements Serializable {
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        cita = null;
         return null;
     }
 
-    public String reactivar() {
-        cita = (Citas) listaCitas.get(formulario.getFila().getRowIndex());
-        if (validarFecha(cita.getFecha())) {
+    public String reactivarCita() {
+        if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
         }
-        formulario.editar();
-        return null;
-    }
-
-    public String grabarReactivar() {
-        cita.setFecha(new Date());
+        if (validarFecha(cita.getFecha())) {
+            Mensajes.advertencia("No se puede modificar citas con fechas menores a la de hoy");
+            return null;
+        }
         cita.setActivo(Boolean.TRUE);
         cita.setActualizado(new Date());
         cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
@@ -169,7 +331,27 @@ public class CitasBean implements Serializable {
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.cancelar();
-        cita = null;
+        return null;
+    }
+
+    @Override
+    public String remover() {
+        if (!IMantenimiento.validarPerfil(perfil, 'D')) {
+            return null;
+        }
+        try {
+            ejbCitas.eliminar(cita, seguridadBean.getLogueado().getUserid());
+        } catch (ExcepcionDeEliminacion ex) {
+            Mensajes.error(ex.getMessage());
+            Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        formulario.cancelar();
+        return null;
+    }
+
+    @Override
+    public String cancelar() {
+        formulario.cancelar();
         return null;
     }
 
@@ -234,80 +416,17 @@ public class CitasBean implements Serializable {
         return null;
     }
 
-    public boolean validar() {
-        if (pacientesBean.getPaciente() == null) {
-            Mensajes.advertencia("Seleccione un paciente");
-            return true;
-        }
-
-        if (fecha == null) {
-            Mensajes.advertencia("Seleccione una fecha");
-            return true;
-        }
-
-        if (validarFecha(fecha)) {
-            return true;
-        }
-
-        if (profesional == null) {
-            Mensajes.advertencia("Seleccione un profesional médico");
-            return true;
-        }
-        if (horario == null) {
-            Mensajes.advertencia("Seleccione hora de atención");
-            return true;
-        }
-        return false;
-    }
-
-    public String grabar() {
-        if (validar()) {
-            return null;
-        }
-
-        cita = new Citas();
-        cita.setActivo(Boolean.TRUE);
-        cita.setCreado(new Date());
-        cita.setCreadopor(seguridadBean.getLogueado().getUserid());
-        cita.setActualizado(cita.getCreado());
-        cita.setActualizadopor(cita.getCreadopor());
-
-        Calendar h = Calendar.getInstance(); //Hora de la cita
-        h.setTime(horario.getHora().getHorainicio());
-
-        Calendar c = Calendar.getInstance(); //Fecha de la cita
-        c.setTime(fecha);
-        c.set(Calendar.HOUR_OF_DAY, h.get(Calendar.HOUR_OF_DAY)); //Hora de la cita a la fecha
-        c.set(Calendar.MINUTE, h.get(Calendar.MINUTE));//Minuto de la cita a la fecha
-
-        cita.setFecha(c.getTime());
-        cita.setPaciente(pacientesBean.getPaciente());
-        cita.setProfesional(profesional);
-        cita.setCreado(new Date());
-        cita.setCreadopor(seguridadBean.getLogueado().getUserid());
-        cita.setActualizado(cita.getCreado());
-        cita.setActualizadopor(cita.getCreadopor());
-        cita.setDescripcion("[Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
-        try {
-            ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid());
-        } catch (ExcepcionDeCreacion ex) {
-            Mensajes.error(ex.getMessage());
-            Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
     public String verAgenda() {
         ver = Boolean.TRUE;
 
         Calendar c = Calendar.getInstance(); //Fecha de la cita
         c.setTime(fecha);
-        c.set(Calendar.DAY_OF_WEEK, 2);
+        c.set(Calendar.DAY_OF_WEEK, 2);//Dia Lunes
 
         inicio = c.getTime();
 
         c.setTime(fecha);
-        c.set(Calendar.DAY_OF_WEEK, 1);
+        c.set(Calendar.DAY_OF_WEEK, 1);//Día Domingo
 
         fin = c.getTime();
 
@@ -432,6 +551,20 @@ public class CitasBean implements Serializable {
     }
 
     /**
+     * @return the pacientesBean
+     */
+    public PacientesBean getPacientesBean() {
+        return pacientesBean;
+    }
+
+    /**
+     * @param pacientesBean the pacientesBean to set
+     */
+    public void setPacientesBean(PacientesBean pacientesBean) {
+        this.pacientesBean = pacientesBean;
+    }
+
+    /**
      * @return the perfil
      */
     public Perfiles getPerfil() {
@@ -460,17 +593,17 @@ public class CitasBean implements Serializable {
     }
 
     /**
-     * @return the listaGrupoUsuarios
+     * @return the citas
      */
-    public List<Usuarios> getListaGrupoUsuarios() {
-        return listaGrupoUsuarios;
+    public LazyDataModel<Citas> getCitas() {
+        return citas;
     }
 
     /**
-     * @param listaGrupoUsuarios the listaGrupoUsuarios to set
+     * @param citas the citas to set
      */
-    public void setListaGrupoUsuarios(List<Usuarios> listaGrupoUsuarios) {
-        this.listaGrupoUsuarios = listaGrupoUsuarios;
+    public void setCitas(LazyDataModel<Citas> citas) {
+        this.citas = citas;
     }
 
     /**
@@ -599,31 +732,4 @@ public class CitasBean implements Serializable {
         this.fin = fin;
     }
 
-    /**
-     * @return the listaCitas
-     */
-    public List<Citas> getListaCitas() {
-        return listaCitas;
-    }
-
-    /**
-     * @param listaCitas the listaCitas to set
-     */
-    public void setListaCitas(List<Citas> listaCitas) {
-        this.listaCitas = listaCitas;
-    }
-
-    /**
-     * @return the pacientesBean
-     */
-    public PacientesBean getPacientesBean() {
-        return pacientesBean;
-    }
-
-    /**
-     * @param pacientesBean the pacientesBean to set
-     */
-    public void setPacientesBean(PacientesBean pacientesBean) {
-        this.pacientesBean = pacientesBean;
-    }
 }

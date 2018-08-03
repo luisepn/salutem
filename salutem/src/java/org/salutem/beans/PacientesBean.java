@@ -411,7 +411,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         Map parametros = new HashMap();
         parametros.put("parametro", claveBuqueda.toUpperCase() + "%");
         try {
-            listaPacientes = ejbPacientes.buscar(where, parametros, 0, 10);
+            listaPacientes = ejbPacientes.buscar(where, parametros, parametroBusqueda, 0, 10);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -424,7 +424,22 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         }
         String newWord = (String) event.getNewValue();
         for (Pacientes p : listaPacientes) {
-            String aComparar = p.toString();
+            String aComparar;
+            switch (parametroBusqueda) {
+                case "o.persona.apellidos":
+                    aComparar = p.toStringApellidos();
+                    break;
+                case "o.persona.nombres":
+                    aComparar = p.toStringNombres();
+                    break;
+                case "o.persona.cedula":
+                    aComparar = p.toStringCedula();
+                    break;
+                default:
+                    aComparar = p.toString();
+                    break;
+            }
+
             if (aComparar.compareToIgnoreCase(newWord) == 0) {
                 paciente = p;
             }
