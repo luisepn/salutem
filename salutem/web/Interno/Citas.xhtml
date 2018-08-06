@@ -19,87 +19,126 @@
                                header="#{salutemCitas.perfil.menu.nombre}"
                                closable="false"
                                toggleable="true">
-                        <h:panelGrid columns="2">
-                            <h:outputLabel value="Sólo activos:" />
-                            <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
-                                <ace:ajax execute="@all"/>
-                            </h:selectBooleanCheckbox>
-                        </h:panelGrid>
-                        <h:panelGrid columns="3">
-                            <h:outputLabel value="Paciente:" />
-                            <h:selectOneMenu value="#{salutemPacientes.parametroBusqueda}">
-                                <f:selectItems value="#{salutemCombos.parametrosBusquedaPersonas}"/>
-                                <ace:ajax execute="@all"/>
-                            </h:selectOneMenu>
-                            <ace:autoCompleteEntry 
-                                value="#{salutemPacientes.claveBusqueda}"
-                                width="300"
-                                listVar="itemPaciente"
-                                filterBy="#{salutemPacientes.parametroBusqueda 
-                                            eq 'o.persona.apellidos' ? itemPaciente.toStringApellidos() :
-                                            salutemPacientes.parametroBusqueda eq 'o.persona.nombres' ?
-                                            itemPaciente.toStringNombres() : itemPaciente.toStringCedula()}"
-                                filterMatchMode="none"
-                                listValue="#{salutemPacientes.listaPacientes}"
-                                valueChangeListener="#{salutemPacientes.cambiaPacientes}"
-                                textChangeListener="#{salutemPacientes.pacientesChangeEventHandler}"
-                                labelPosition="left">
-                                <f:facet name="row">
-                                    <h:panelGrid columns="3" width="100%" columnClasses="tipo">
-                                        <h:outputText value="#{itemPaciente.persona.apellidos}"/>
-                                        <h:outputText value="#{itemPaciente.persona.nombres}"/>
-                                        <h:outputText value="#{itemPaciente.persona.cedula}"/>
-                                    </h:panelGrid>
-                                </f:facet>
-                                <ace:ajax execute="@all"/>
-                            </ace:autoCompleteEntry>
-                            <h:outputLabel/>
-                            <h:outputLabel rendered="#{salutemPacientes.paciente ne null}"/>
-                            <ace:panel rendered="#{salutemPacientes.paciente ne null}">
-                                <h:panelGrid columns="4" >
-                                    <h:outputLabel value="Nombres:" for="nombreidca" styleClass="bold" />
-                                    <h:outputLabel id="nombreidca" value="#{salutemPacientes.paciente.persona.nombres}" />
-                                    <h:outputLabel value="Apellidos:" for="apellidosidca" styleClass="bold" />
-                                    <h:outputLabel id="apellidosidca" value="#{salutemPacientes.paciente.persona.apellidos}"  />
-                                    <h:outputLabel value="CI:" for="ciidca" styleClass="bold"  />
-                                    <h:outputLabel id="ciidca" value="#{salutemPacientes.paciente.persona.cedula}"/>
-                                    <h:outputLabel value="Email:" for="emailidca" styleClass="bold"  />
-                                    <h:outputLabel id="emailidca" value="#{salutemPacientes.paciente.persona.email}"/>
+                        <h:panelGrid columns="2">    
+                            <h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Sólo activos:" />
+                                    <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectBooleanCheckbox>
                                 </h:panelGrid>
-                            </ace:panel>
-                        </h:panelGrid>
-                        <h:panelGrid columns="2">
-                            <h:outputLabel value="Fecha:" styleClass="bold"/>
-                            <ace:dateTimeEntry navigator="true" value="#{salutemCitas.fecha}" 
-                                               popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
-                                               pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"  >
-                                <f:convertDateTime pattern="dd/MM/yyyy" />
-                                <ace:ajax event="dateSelect" render="combohoras"/>
-                            </ace:dateTimeEntry>
-                            <h:outputLabel value="Especialidad: " styleClass="bold"/>
-                            <h:selectOneMenu value="#{salutemCombos.especialidad}">
-                                <f:selectItems value="#{salutemCombos.especialidades}"/>
-                                <ace:ajax execute="@all"/>
-                            </h:selectOneMenu>
-                            <h:outputLabel value="Profesional: " styleClass="bold"/>
-                            <h:selectOneMenu value="#{salutemCitas.profesional}">
-                                <f:selectItems value="#{salutemCombos.profesionales}"/>
-                                <ace:ajax execute="@all"/>
-                            </h:selectOneMenu>
-                            <h:outputLabel value="Hora: " styleClass="bold"/>
-                            <h:selectOneMenu value="#{salutemCitas.horario}" id="combohoras">
-                                <f:selectItems value="#{salutemCitas.horasDisponibles}"/>
-                            </h:selectOneMenu>
-                        </h:panelGrid>
+                                <h:panelGrid columns="3">
+                                    <h:outputLabel value="Paciente:" />
+                                    <h:selectOneMenu value="#{salutemPacientes.parametroBusqueda}">
+                                        <f:selectItems value="#{salutemCombos.parametrosBusquedaPersonas}"/>
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectOneMenu>
+                                    <ace:autoCompleteEntry 
+                                        value="#{salutemPacientes.claveBusqueda}"
+                                        width="400"
+                                        listVar="itemPaciente"
+                                        filterBy="#{salutemPacientes.parametroBusqueda 
+                                                    eq 'o.persona.apellidos' ? itemPaciente.toStringApellidos() :
+                                                    salutemPacientes.parametroBusqueda eq 'o.persona.nombres' ?
+                                                    itemPaciente.toStringNombres() : itemPaciente.toStringCedula()}"
+                                        filterMatchMode="none"
+                                        listValue="#{salutemPacientes.listaPacientes}"
+                                        valueChangeListener="#{salutemPacientes.cambiaPacientes}"
+                                        textChangeListener="#{salutemPacientes.pacientesChangeEventHandler}"
+                                        labelPosition="left">
+                                        <f:facet name="row">
+                                            <h:panelGrid columns="3" width="100%" columnClasses="tipo">
+                                                <h:outputText value="#{itemPaciente.persona.apellidos}"/>
+                                                <h:outputText value="#{itemPaciente.persona.nombres}"/>
+                                                <h:outputText value="#{itemPaciente.persona.cedula}"/>
+                                            </h:panelGrid>
+                                        </f:facet>
+                                        <ace:ajax execute="@all"/>
+                                    </ace:autoCompleteEntry>
+                                    <h:outputLabel/>
+                                    <h:outputLabel rendered="#{salutemPacientes.paciente ne null}"/>
+                                    <ace:panel rendered="#{salutemPacientes.paciente ne null}">
+                                        <h:panelGrid columns="4" width="300">
+                                            <h:outputLabel value="Nombres:" for="nombreidca" styleClass="bold" />
+                                            <h:outputLabel id="nombreidca" value="#{salutemPacientes.paciente.persona.nombres}" />
+                                            <h:outputLabel value="Apellidos:" for="apellidosidca" styleClass="bold" />
+                                            <h:outputLabel id="apellidosidca" value="#{salutemPacientes.paciente.persona.apellidos}"  />
+                                            <h:outputLabel value="CI:" for="ciidca" styleClass="bold"  />
+                                            <h:outputLabel id="ciidca" value="#{salutemPacientes.paciente.persona.cedula}"/>
+                                            <h:outputLabel value="Email:" for="emailidca" styleClass="bold"  />
+                                            <h:outputLabel id="emailidca" value="#{salutemPacientes.paciente.persona.email}"/>
+                                        </h:panelGrid>
+                                    </ace:panel>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Fecha:" styleClass="bold"/>
+                                    <ace:dateTimeEntry navigator="true" value="#{salutemCitas.fecha}" 
+                                                       popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                       pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"  >
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                        <ace:ajax event="dateSelect" render="combohoras"/>
+                                    </ace:dateTimeEntry>
+                                    <h:outputLabel value="Especialidad: " styleClass="bold"/>
+                                    <h:selectOneMenu value="#{salutemCombos.especialidad}">
+                                        <f:selectItems value="#{salutemCombos.especialidades}"/>
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel value="Profesional: " styleClass="bold"/>
+                                    <h:selectOneMenu value="#{salutemCitas.profesional}">
+                                        <f:selectItems value="#{salutemCombos.profesionales}"/>
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectOneMenu>
+                                    <h:outputLabel value="Hora: " styleClass="bold"/>
+                                    <h:selectOneMenu value="#{salutemCitas.horario}" id="combohoras">
+                                        <f:selectItems value="#{salutemCitas.horasDisponibles}"/>
+                                    </h:selectOneMenu>
+                                </h:panelGrid>
 
-                        <h:panelGrid columns="2" rendered="#{!salutemCitas.formulario.mostrar}" >
-                            <ace:menuBar autoSubmenuDisplay="true" >
-                                <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"  action="#{salutemCitas.insertar()}"/>
-                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemCitas.buscar()}"/>
-                                <ace:menuItem value="Ver Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.verAgenda()}" rendered="#{salutemCitas.profesional ne null and !salutemCitas.ver}"/>
-                                <ace:menuItem value="Ocultar Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.ocultarAgenda()}" rendered="#{salutemCitas.profesional ne null and salutemCitas.ver}"/>
-                            </ace:menuBar>
-                            <ace:messages style="white-space: pre-wrap" rendered="#{!salutemCitas.formulario.mostrar}"/>
+                                <h:panelGrid columns="2" rendered="#{!salutemCitas.formulario.mostrar}" >
+                                    <ace:menuBar autoSubmenuDisplay="true" >
+                                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"  action="#{salutemCitas.insertar()}"/>
+                                        <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemCitas.buscar()}"/>
+                                        <ace:menuItem value="Ver Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.verAgenda()}" rendered="#{salutemCitas.profesional ne null and !salutemCitas.ver}"/>
+                                        <ace:menuItem value="Ocultar Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.ocultarAgenda()}" rendered="#{salutemCitas.profesional ne null and salutemCitas.ver}"/>
+                                    </ace:menuBar>
+                                    <ace:messages style="white-space: pre-wrap" rendered="#{!salutemCitas.formulario.mostrar}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <h:panelGrid width="100%">
+                                <h:panelGrid columns="3" rendered="#{salutemCitas.ver}">
+                                    <h:outputLabel  value="Exportar a:"/>
+                                    <h:selectOneRadio  value="#{salutemCitas.formulario.tipo}" required="true">
+                                        <f:ajax disabled="false"/>
+                                        <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                                        <f:selectItem itemValue="pdf" itemLabel="PDF"/>
+                                        <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                                        <f:selectItem itemValue="xml" itemLabel="XML"/>
+                                    </h:selectOneRadio>
+                                    <ace:dataExporter id="dataExporter1" 
+                                                      label="Exportar Archivo" 
+                                                      type="#{salutemCitas.formulario.tipo}" 
+                                                      target="agenda" fileName="#{salutemCitas.header()}"/>
+                                </h:panelGrid>
+                                <h:panelGrid width="100%" rendered="#{salutemCitas.ver}">
+                                    <ace:dataTable  id="agenda"                                   
+                                                    value="#{salutemCombos.listaHoras}"
+                                                    resizableColumns="true"
+                                                    var="hora">
+                                        <f:facet name="header">#{salutemCitas.header()}</f:facet>
+                                        <ace:column  headerText="Horas" style="text-align: right">
+                                            <h:outputText value="#{hora.toString()}"/>
+                                        </ace:column>
+                                        <c:forEach items="#{salutemCombos.listaDias}" var="dia">
+                                            <ace:column headerText="#{dia.toString()}">
+                                                <!--<span style="background-color: #{salutemCitas.getColor(hora, dia)}; padding:  2px;">-->
+                                                <h:outputText value="#{salutemCitas.getReservado(hora, dia)}" style="color: #195f88 !important"/>
+                                                <!--</span>-->
+                                                <hr style="border: 1px solid #{salutemCitas.getColor(hora, dia)};"/>
+                                            </ace:column>
+                                        </c:forEach>
+                                    </ace:dataTable>
+                                </h:panelGrid> 
+                            </h:panelGrid>
                         </h:panelGrid>
 
 
@@ -152,14 +191,16 @@
                                         <ace:menuItem action="#{salutemCitas.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
                                     </ace:menuButton>
                                 </ace:column> 
-                                <ace:column  headerText="Fecha" style="text-align: left">
+                                <ace:column  headerText="Fecha" sortBy="#{item.fecha}" 
+                                             filterBy="#{item.fecha}" 
+                                             filterDatePattern="dd/MM/yyyy HH:mm"
+                                             filterValueMin="#{salutemCitas.fechaInicio}"
+                                             filterValueMax="#{salutemCitas.fechaFin}"
+                                             type="DATE"
+                                             rangedFilter="true" 
+                                             style="text-align: left">
                                     <h:outputText  value="#{item.fecha}">
-                                        <f:convertDateTime  pattern="dd/MM/yyyy"/>
-                                    </h:outputText>
-                                </ace:column>
-                                <ace:column  headerText="Hora" style="text-align: left">
-                                    <h:outputText  value="#{item.fecha}">
-                                        <f:convertDateTime  pattern="HH:mm"/>
+                                        <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                     </h:outputText>
                                 </ace:column>
                                 <ace:column  headerText="Paciente" style="text-align: left">
@@ -208,40 +249,7 @@
                                     <h:outputText  value="#{item.actualizadopor}"/>
                                 </ace:column>
                             </ace:dataTable>
-                        </h:panelGrid>
-                        <h:panelGrid columns="3" rendered="#{salutemCitas.ver}">
-                            <h:outputLabel  value="Exportar a:"/>
-                            <h:selectOneRadio  value="#{salutemCitas.formulario.tipo}" required="true">
-                                <f:ajax disabled="false"/>
-                                <f:selectItem itemValue="csv" itemLabel="CSV"/>
-                                <f:selectItem itemValue="pdf" itemLabel="PDF"/>
-                                <f:selectItem itemValue="xls" itemLabel="XLS"/>
-                                <f:selectItem itemValue="xml" itemLabel="XML"/>
-                            </h:selectOneRadio>
-                            <ace:dataExporter id="dataExporter1" 
-                                              label="Exportar Archivo" 
-                                              type="#{salutemCitas.formulario.tipo}" 
-                                              target="agenda" fileName="#{salutemCitas.header()}"/>
-                        </h:panelGrid>
-                        <h:panelGrid width="100%" rendered="#{salutemCitas.ver}">
-                            <ace:dataTable  id="agenda"                                   
-                                            value="#{salutemCombos.listaHoras}"
-                                            resizableColumns="true"
-                                            var="hora">
-                                <f:facet name="header">#{salutemCitas.header()}</f:facet>
-                                <ace:column  headerText="Horas" style="text-align: right">
-                                    <h:outputText value="#{hora.toString()}"/>
-                                </ace:column>
-                                <c:forEach items="#{salutemCombos.listaDias}" var="dia">
-                                    <ace:column headerText="#{dia.toString()}">
-                                        <!--<span style="background-color: #{salutemCitas.getColor(hora, dia)}; padding:  2px;">-->
-                                        <h:outputText value="#{salutemCitas.getReservado(hora, dia)}" style="color: #195f88 !important"/>
-                                        <!--</span>-->
-                                        <hr style="border: 1px solid #{salutemCitas.getColor(hora, dia)};"/>
-                                    </ace:column>
-                                </c:forEach>
-                            </ace:dataTable>
-                        </h:panelGrid>
+                        </h:panelGrid>                        
                     </ace:panel>
 
                     <ace:dialog 

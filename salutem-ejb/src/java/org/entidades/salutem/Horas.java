@@ -176,8 +176,12 @@ public class Horas implements Serializable {
 
     @Override
     public String toString() {
-        SimpleDateFormat sdfh = new SimpleDateFormat("hh:mm");
+        SimpleDateFormat sdfh = new SimpleDateFormat("kk:mm");
         return nombre + " [" + sdfh.format(horainicio) + " - " + sdfh.format(horafin) + "]";
+    }
+    public String traerHoras() {
+        SimpleDateFormat sdfh = new SimpleDateFormat("kk:mm");
+        return "[" + sdfh.format(horainicio) + " - " + sdfh.format(horafin) + "]";
     }
 
     public String getNombre() {

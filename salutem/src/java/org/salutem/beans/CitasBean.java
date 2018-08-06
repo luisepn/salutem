@@ -71,6 +71,9 @@ public class CitasBean implements Serializable, IMantenimiento {
     private Date inicio;
     private Date fin;
 
+    private Date fechaInicio;
+    private Date fechaFin;
+
     SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     @EJB
@@ -79,6 +82,7 @@ public class CitasBean implements Serializable, IMantenimiento {
     private CitasFacade ejbCitas;
 
     public CitasBean() {
+        fecha = new Date();
         citas = new LazyDataModel<Citas>() {
             @Override
             public List<Citas> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -99,10 +103,20 @@ public class CitasBean implements Serializable, IMantenimiento {
 
     private List<Citas> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
+            if (fecha == null) {
+                fecha = new Date();
+            }
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(fecha);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
             Map parameters = new HashMap();
             String where = " o.activo=:activo and o.fecha>=:fecha";
             parameters.put("activo", seguridadBean.getVerActivos());
-            parameters.put("fecha", fecha);
+            parameters.put("fecha", calendar.getTime());
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
@@ -357,17 +371,40 @@ public class CitasBean implements Serializable, IMantenimiento {
 
     public SelectItem[] getHorasDisponibles() {
         try {
+
             Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            if (fecha.before(calendar.getTime())) {
+                return null;
+            }
+
             calendar.setTime(fecha);
 
-            String where = "o.profesional=:profesional and o.dia.parametros=:dia and o.activo=true";
+            String where = "o.profesional=:profesional and o.dia.parametros=:dia and o.hora.horainicio>=:hora and o.activo=true";
             Map parametros = new HashMap();
             parametros.put("profesional", profesional);
             /**
              * De la fecha seleccionada se extrae el numero del día de la semana
              * Entoces se busca el horario del profesional médico seleccionado
              */
-            parametros.put("dia", calendar.get(Calendar.DAY_OF_WEEK) - 1 + "");
+            parametros.put("dia", calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "7" : (calendar.get(Calendar.DAY_OF_WEEK) - 1) + "");
+            
+            calendar = Calendar.getInstance();
+            if (fecha.after(calendar.getTime())) {
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+            }
+
+            calendar.set(Calendar.YEAR, 1970);
+            calendar.set(Calendar.MONTH, Calendar.JANUARY);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            parametros.put("hora", calendar.getTime());
             String order = "o.dia.parametros, o.hora.horainicio asc";
             listaHorarios = ejbHorarios.buscar(where, parametros, order);
 
@@ -376,14 +413,14 @@ public class CitasBean implements Serializable, IMantenimiento {
             parametros.put("profesional", profesional);
 
             calendar.setTime(fecha);
-            calendar.set(Calendar.HOUR, 0);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
             calendar.set(Calendar.MILLISECOND, 0);
             parametros.put("inicio", calendar.getTime());
 
             calendar.setTime(fecha);
-            calendar.set(Calendar.HOUR, 23);
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
             calendar.set(Calendar.MINUTE, 59);
             calendar.set(Calendar.SECOND, 59);
             calendar.set(Calendar.MILLISECOND, 999);
@@ -440,7 +477,7 @@ public class CitasBean implements Serializable, IMantenimiento {
 
     public String getColor(Horas hora, Parametros dia) {
         Map parametros = new HashMap();
-        String where = "o.hora=:hora and o.dia=:dia and o.profesional=:profesional";
+        String where = "o.hora=:hora and o.dia=:dia and o.activo=true and o.profesional=:profesional";
         parametros.put("hora", hora);
         parametros.put("dia", dia);
         parametros.put("profesional", profesional);
@@ -460,7 +497,7 @@ public class CitasBean implements Serializable, IMantenimiento {
 
     public String getReservado(Horas hora, Parametros dia) {
         try {
-            String where = "o.profesional=:profesional and o.activo=true and o.fecha between :inicio and :fin";
+            String where = "o.profesional=:profesional and o.activo=true and o.fecha>=:inicio and o.fecha<:fin";
             Map parametros = new HashMap();
             parametros.put("profesional", profesional);
 
@@ -469,6 +506,7 @@ public class CitasBean implements Serializable, IMantenimiento {
             int diaActual = calendar.get(Calendar.DAY_OF_WEEK); //Día de la fecha actual
             int diaReferencia = Integer.parseInt(dia.getParametros()) + 1; //Día del que se quiere averiguar si tuvo citas
 
+            calendar = Calendar.getInstance();
             calendarHora.setTime(hora.getHorainicio());
             calendar.add(Calendar.DAY_OF_YEAR, (diaActual - diaReferencia) * -1);
             calendar.set(Calendar.HOUR_OF_DAY, calendarHora.get(Calendar.HOUR_OF_DAY));
@@ -477,6 +515,7 @@ public class CitasBean implements Serializable, IMantenimiento {
             calendar.set(Calendar.MILLISECOND, calendarHora.get(Calendar.MILLISECOND));
             parametros.put("inicio", calendar.getTime());
 
+            calendar = Calendar.getInstance();
             calendarHora.setTime(hora.getHorafin());
             calendar.add(Calendar.DAY_OF_YEAR, (diaActual - diaReferencia) * -1);
             calendar.set(Calendar.HOUR_OF_DAY, calendarHora.get(Calendar.HOUR_OF_DAY));
@@ -730,6 +769,34 @@ public class CitasBean implements Serializable, IMantenimiento {
      */
     public void setFin(Date fin) {
         this.fin = fin;
+    }
+
+    /**
+     * @return the fechaInicio
+     */
+    public Date getFechaInicio() {
+        return fechaInicio;
+    }
+
+    /**
+     * @param fechaInicio the fechaInicio to set
+     */
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    /**
+     * @return the fechaFin
+     */
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    /**
+     * @param fechaFin the fechaFin to set
+     */
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
 }
