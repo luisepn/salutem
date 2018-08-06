@@ -22,6 +22,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.hibernate.annotations.Type;
+import org.jsonb.salutem.Jsonb;
 
 /**
  *
@@ -42,6 +44,19 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Citas.findByActualizadopor", query = "SELECT c FROM Citas c WHERE c.actualizadopor = :actualizadopor")})
 public class Citas implements Serializable {
 
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+    @Type(type = "jsonb")
+    @Column(columnDefinition = "historial")
+    private Jsonb historial;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,21 +68,12 @@ public class Citas implements Serializable {
     private Date fecha;
     @Column(name = "activo")
     private Boolean activo;
-    @Size(max = 2147483647)
-    @Column(name = "descripcion")
-    private String descripcion;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
     @JoinColumn(name = "paciente", referencedColumnName = "id")
     @ManyToOne
     private Pacientes paciente;
@@ -106,14 +112,6 @@ public class Citas implements Serializable {
         this.activo = activo;
     }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
     public Date getCreado() {
         return creado;
     }
@@ -122,28 +120,12 @@ public class Citas implements Serializable {
         this.creado = creado;
     }
 
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
-
     public Date getActualizado() {
         return actualizado;
     }
 
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
-    }
-
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
     }
 
     public Pacientes getPaciente() {
@@ -186,5 +168,37 @@ public class Citas implements Serializable {
     public String toString() {
         return "org.entidades.salutem.Citas[ id=" + id + " ]";
     }
-    
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
+    public Jsonb getHistorial() {
+        return historial;
+    }
+
+    public void setHistorial(Jsonb historial) {
+        this.historial = historial;
+    }
+
 }

@@ -203,19 +203,15 @@
                                         <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                     </h:outputText>
                                 </ace:column>
-                                <ace:column  headerText="Paciente" style="text-align: left">
+                                <ace:column  headerText="Paciente" sortBy="#{item.paciente.persona.apellidos}" style="text-align: left" 
+                                             filterBy="#{item.paciente.persona.apellidos}" filterMatchMode="contains">
                                     <h:outputText  value="#{item.paciente.toString()}"/>
                                 </ace:column>
-                                <ace:column  headerText="Profesional" style="text-align: left">
+                                <ace:column  headerText="Profesional" sortBy="#{item.profesional.persona.apellidos}" style="text-align: left" 
+                                             filterBy="#{item.profesional.persona.apellidos}" filterMatchMode="contains">
                                     <h:outputText  value="#{item.profesional.toString()}"/>
                                 </ace:column>
-                                <ace:column  headerText="Historial" style="text-align: left">
-                                    <ui:repeat value="#{salutemCitas.separar(item.descripcion)}" var="h">
-                                        <h:outputText  value="- #{h}]"/><br/><br/>
-                                    </ui:repeat>
-                                </ace:column>
-
-                                <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <ace:column  headerText="Observaciones" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
                                     <h:outputText  value="#{item.descripcion}"/>
                                 </ace:column>
                                 <ace:column  headerText="Creación" sortBy="#{item.creado}" 

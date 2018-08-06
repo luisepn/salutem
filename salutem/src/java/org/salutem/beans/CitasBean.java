@@ -36,6 +36,7 @@ import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.jsonb.salutem.Jsonb;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
@@ -266,6 +267,9 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setActualizado(cita.getCreado());
         cita.setActualizadopor(cita.getCreadopor());
         cita.setDescripcion("[Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
+        Jsonb hist = new Jsonb();
+        hist.setJsonString("Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()));
+        cita.setHistorial(hist);
         try {
             ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
@@ -391,7 +395,7 @@ public class CitasBean implements Serializable, IMantenimiento {
              * Entoces se busca el horario del profesional médico seleccionado
              */
             parametros.put("dia", calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "7" : (calendar.get(Calendar.DAY_OF_WEEK) - 1) + "");
-            
+
             calendar = Calendar.getInstance();
             if (fecha.after(calendar.getTime())) {
                 calendar.set(Calendar.HOUR_OF_DAY, 0);

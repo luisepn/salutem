@@ -180,6 +180,16 @@ public class Pacientes implements Serializable {
         return persona != null ? persona.getCedula() + " " + persona.getNombres() + " " + persona.getApellidos() : "";
     }
 
+
+    @XmlTransient
+    public List<Citas> getCitasList() {
+        return citasList;
+    }
+
+    public void setCitasList(List<Citas> citasList) {
+        this.citasList = citasList;
+    }
+
     public String getDescripcion() {
         return descripcion;
     }
@@ -202,15 +212,6 @@ public class Pacientes implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    @XmlTransient
-    public List<Citas> getCitasList() {
-        return citasList;
-    }
-
-    public void setCitasList(List<Citas> citasList) {
-        this.citasList = citasList;
     }
 
 }

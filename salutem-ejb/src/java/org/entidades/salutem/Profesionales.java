@@ -179,6 +179,16 @@ public class Profesionales implements Serializable {
         return persona != null ? persona.toString() : "[" + id + "]";
     }
 
+
+    @XmlTransient
+    public List<Citas> getCitasList() {
+        return citasList;
+    }
+
+    public void setCitasList(List<Citas> citasList) {
+        this.citasList = citasList;
+    }
+
     public String getDescripcion() {
         return descripcion;
     }
@@ -201,15 +211,6 @@ public class Profesionales implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    @XmlTransient
-    public List<Citas> getCitasList() {
-        return citasList;
-    }
-
-    public void setCitasList(List<Citas> citasList) {
-        this.citasList = citasList;
     }
 
 }
