@@ -267,9 +267,17 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setActualizado(cita.getCreado());
         cita.setActualizadopor(cita.getCreadopor());
         cita.setDescripcion("[Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
-        Jsonb hist = new Jsonb();
-        hist.setJsonString("Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()));
-        cita.setHistorial(hist);
+
+        Jsonb array[] = new Jsonb[1];
+        Jsonb historial = new Jsonb();
+        historial.setFecha(format.format(new Date()));
+        historial.setCita(format.format(cita.getFecha()));
+        historial.setPaciente(cita.getPaciente().toString());
+        historial.setProfesional(cita.getProfesional().toString());
+        historial.setUsuario(cita.getCreadopor());
+        historial.setObservaciones("Cita agendada.");
+        array[0] = historial;
+        cita.setHistorial(historial);
         try {
             ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
