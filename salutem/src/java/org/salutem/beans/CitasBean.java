@@ -4,6 +4,9 @@
  */
 package org.salutem.beans;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -22,8 +25,10 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 import org.controladores.salutem.CitasFacade;
+import org.controladores.salutem.HistorialFacade;
 import org.controladores.salutem.HorariosFacade;
 import org.entidades.salutem.Citas;
+import org.entidades.salutem.Historial;
 import org.entidades.salutem.Horarios;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Pacientes;
@@ -36,7 +41,6 @@ import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
-import org.jsonb.salutem.Jsonb;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
@@ -81,6 +85,8 @@ public class CitasBean implements Serializable, IMantenimiento {
     private HorariosFacade ejbHorarios;
     @EJB
     private CitasFacade ejbCitas;
+    @EJB
+    private HistorialFacade ejbHistorial;
 
     public CitasBean() {
         fecha = new Date();
@@ -268,18 +274,20 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setActualizadopor(cita.getCreadopor());
         cita.setDescripcion("[Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
 
-        Jsonb array[] = new Jsonb[1];
-        Jsonb historial = new Jsonb();
-        historial.setFecha(format.format(new Date()));
-        historial.setCita(format.format(cita.getFecha()));
-        historial.setPaciente(cita.getPaciente().toString());
-        historial.setProfesional(cita.getProfesional().toString());
-        historial.setUsuario(cita.getCreadopor());
-        historial.setObservaciones("Cita agendada.");
-        array[0] = historial;
-        cita.setHistorial(historial);
         try {
             ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid());
+
+            Historial historial = new Historial();
+            historial.setFecha(new Date());
+            historial.setTabla(Citas.class.getSimpleName());
+            Gson gson = new Gson();
+            String jsonString = gson.toJson(cita);
+            JsonParser parser = new JsonParser();
+            JsonObject o = parser.parse(jsonString).getAsJsonObject();
+            historial.setObjeto(o);
+            historial.setOperacion('C');
+            historial.setUserid(cita.getCreadopor());
+            ejbHistorial.crear(historial, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);

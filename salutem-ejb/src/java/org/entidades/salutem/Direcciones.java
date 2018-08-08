@@ -274,5 +274,5 @@ public class Direcciones implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-
+    
 }

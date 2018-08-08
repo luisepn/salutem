@@ -5,6 +5,8 @@
  */
 package org.entidades.salutem;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -22,8 +24,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.hibernate.annotations.Type;
-import org.jsonb.salutem.Jsonb;
 
 /**
  *
@@ -53,9 +53,6 @@ public class Citas implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "historial")
-    private Jsonb historial;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -193,12 +190,16 @@ public class Citas implements Serializable {
         this.actualizadopor = actualizadopor;
     }
 
-    public Jsonb getHistorial() {
-        return historial;
+    public JsonObject citaJson() {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", id);
+        json.addProperty("descripcion ", descripcion);
+        json.addProperty("creadopor ", creadopor);
+        json.addProperty("actualizadopor ", actualizadopor);
+        json.addProperty("id ", id);
+        json.addProperty("activo ", activo);
+        json.addProperty("paciente ", paciente != null ? paciente.toString() : "");
+        json.addProperty("profesional ", profesional != null ? profesional.toString() : "");
+        return json;
     }
-
-    public void setHistorial(Jsonb historial) {
-        this.historial = historial;
-    }
-
 }
