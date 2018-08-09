@@ -119,7 +119,6 @@ public class Archivos implements Serializable {
         this.fecha = fecha;
     }
 
-
     public Integer getIdentificador() {
         return identificador;
     }
@@ -127,7 +126,6 @@ public class Archivos implements Serializable {
     public void setIdentificador(Integer identificador) {
         this.identificador = identificador;
     }
-
 
     public Date getCreado() {
         return creado;
@@ -137,7 +135,6 @@ public class Archivos implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -145,7 +142,6 @@ public class Archivos implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     public Boolean getActivo() {
         return activo;

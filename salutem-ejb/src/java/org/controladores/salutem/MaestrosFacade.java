@@ -5,6 +5,7 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonObject;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -35,5 +36,12 @@ public class MaestrosFacade extends AbstractFacade<Maestros> {
     public List<Maestros> traerMaestros() throws ExcepcionDeConsulta {
         Query q = getEntityManager().createQuery("Select object(o) from Maestros as o where o.activo = true");
         return q.getResultList();
+    }
+
+    @Override
+    protected String getJson(Maestros objeto) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", objeto.getId());
+        return json.getAsString();
     }
 }

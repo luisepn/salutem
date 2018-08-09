@@ -53,7 +53,7 @@ public class Historial implements Serializable {
     private String tabla;
     @Type(type = "jsonb")
     @Column(columnDefinition = "objeto")
-    private JsonObject objeto;
+    private String objeto;
     @Column(name = "operacion")
     private Character operacion;
     @Size(max = 2147483647)
@@ -91,11 +91,11 @@ public class Historial implements Serializable {
         this.tabla = tabla;
     }
 
-    public JsonObject getObjeto() {
+    public String getObjeto() {
         return objeto;
     }
 
-    public void setObjeto(JsonObject objeto) {
+    public void setObjeto(String objeto) {
         this.objeto = objeto;
     }
 

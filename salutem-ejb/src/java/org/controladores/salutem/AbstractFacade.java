@@ -13,6 +13,8 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonObject;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import org.entidades.salutem.Citas;
+import org.entidades.salutem.Historial;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
@@ -40,6 +44,19 @@ public abstract class AbstractFacade<T> {
 
     protected abstract EntityManager getEntityManager();
 
+    protected abstract String getJson(T objeto);
+
+    private void log(T entity, char operacion, String userid) {
+        Historial historial = new Historial();
+        historial.setFecha(new Date());
+        historial.setTabla(Citas.class.getSimpleName());
+        historial.setObjeto(getJson(entity));
+        historial.setOperacion(operacion);
+        historial.setUserid(userid);
+        getEntityManager().persist(historial);
+        getEntityManager().flush();
+    }
+
     /**
      *
      * @param entity Entidad a ser creada
@@ -53,6 +70,7 @@ public abstract class AbstractFacade<T> {
         } catch (Exception e) {
             throw new ExcepcionDeCreacion(entity.toString(), e);
         } finally {
+            log(entity, 'C', usuario);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Creada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }
@@ -70,6 +88,7 @@ public abstract class AbstractFacade<T> {
         } catch (Exception e) {
             throw new ExcepcionDeActualizacion(entity.toString(), e);
         } finally {
+            log(entity, 'U', usuario);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Actualizada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }
@@ -88,6 +107,7 @@ public abstract class AbstractFacade<T> {
         } catch (Exception e) {
             throw new ExcepcionDeEliminacion(entity.toString(), e);
         } finally {
+            log(entity, 'D', usuario);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Eliminada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }

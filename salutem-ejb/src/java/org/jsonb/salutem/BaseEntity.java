@@ -11,6 +11,7 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import com.vladmihalcea.hibernate.type.json.JsonNodeBinaryType;
 import com.vladmihalcea.hibernate.type.json.JsonNodeStringType;
 import com.vladmihalcea.hibernate.type.json.JsonStringType;
+import java.text.SimpleDateFormat;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
@@ -36,6 +37,8 @@ public class BaseEntity {
     private Long id;
     @Version
     private Integer version;
+    
+    public static SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     /**
      * @return the id

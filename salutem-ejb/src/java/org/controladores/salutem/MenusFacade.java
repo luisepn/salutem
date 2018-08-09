@@ -5,6 +5,7 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonObject;
 import java.util.LinkedList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -73,5 +74,12 @@ public class MenusFacade extends AbstractFacade<Menus> {
         }
         return retorno;
 
+    }
+
+    @Override
+    protected String getJson(Menus objeto) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", objeto.getId());
+        return json.getAsString();
     }
 }

@@ -276,18 +276,6 @@ public class CitasBean implements Serializable, IMantenimiento {
 
         try {
             ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid());
-
-            Historial historial = new Historial();
-            historial.setFecha(new Date());
-            historial.setTabla(Citas.class.getSimpleName());
-            Gson gson = new Gson();
-            String jsonString = gson.toJson(cita);
-            JsonParser parser = new JsonParser();
-            JsonObject o = parser.parse(jsonString).getAsJsonObject();
-            historial.setObjeto(o);
-            historial.setOperacion('C');
-            historial.setUserid(cita.getCreadopor());
-            ejbHistorial.crear(historial, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);

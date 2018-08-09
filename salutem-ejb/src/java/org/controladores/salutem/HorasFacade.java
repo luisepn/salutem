@@ -5,6 +5,7 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonObject;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -37,5 +38,12 @@ public class HorasFacade extends AbstractFacade<Horas> {
         Query q = getEntityManager().createQuery("Select object(o) from Horas as o where o.activo = true and o.institucion=:institucion");
         q.setParameter("institucion", institucion);
         return q.getResultList();
+    }
+
+    @Override
+    protected String getJson(Horas objeto) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", objeto.getId());
+        return json.getAsString();
     }
 }

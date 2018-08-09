@@ -5,6 +5,7 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +59,13 @@ public class MaterialesFacade extends AbstractFacade<Materiales> {
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(MaterialesFacade.class.getName(), e);
         }
+    }
+
+    @Override
+    protected String getJson(Materiales objeto) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", objeto.getId());
+        return json.getAsString();
     }
 
 }

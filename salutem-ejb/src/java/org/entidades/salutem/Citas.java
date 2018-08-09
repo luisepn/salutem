@@ -5,8 +5,6 @@
  */
 package org.entidades.salutem;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -189,17 +187,5 @@ public class Citas implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-
-    public JsonObject citaJson() {
-        JsonObject json = new JsonObject();
-        json.addProperty("id", id);
-        json.addProperty("descripcion ", descripcion);
-        json.addProperty("creadopor ", creadopor);
-        json.addProperty("actualizadopor ", actualizadopor);
-        json.addProperty("id ", id);
-        json.addProperty("activo ", activo);
-        json.addProperty("paciente ", paciente != null ? paciente.toString() : "");
-        json.addProperty("profesional ", profesional != null ? profesional.toString() : "");
-        return json;
-    }
+   
 }

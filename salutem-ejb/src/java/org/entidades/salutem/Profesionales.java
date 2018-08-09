@@ -213,4 +213,13 @@ public class Profesionales implements Serializable {
         this.actualizadopor = actualizadopor;
     }
 
+    public Profesionales(String descripcion, Integer id, Boolean activo, Instituciones institucion, Parametros especialidad, Personas persona) {
+        this.descripcion = descripcion;
+        this.id = id;
+        this.activo = activo;
+        this.institucion = institucion;
+        this.especialidad = especialidad;
+        this.persona = persona;
+    }
+
 }

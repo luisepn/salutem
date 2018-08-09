@@ -5,6 +5,7 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonObject;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -40,6 +41,13 @@ public class InstitucionesFacade extends AbstractFacade<Instituciones> {
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(InstitucionesFacade.class.getName(), e);
         }
+    }
+
+    @Override
+    protected String getJson(Instituciones objeto) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", objeto.getId());
+        return json.getAsString();
     }
 
 }

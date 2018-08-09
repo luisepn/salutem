@@ -5,6 +5,7 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonObject;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,5 +29,12 @@ public class FormulasFacade extends AbstractFacade<Formulas> {
     public FormulasFacade() {
         super(Formulas.class);
     }
-    
+
+    @Override
+    protected String getJson(Formulas objeto) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", objeto.getId());
+        return json.getAsString();
+    }
+
 }

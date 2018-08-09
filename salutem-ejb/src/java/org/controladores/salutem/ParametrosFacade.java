@@ -5,6 +5,7 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonObject;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -55,5 +56,12 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(ParametrosFacade.class.getName(), e);
         }
+    }
+
+    @Override
+    protected String getJson(Parametros objeto) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", objeto.getId());
+        return json.getAsString();
     }
 }

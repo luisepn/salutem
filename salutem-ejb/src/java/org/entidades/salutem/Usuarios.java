@@ -196,5 +196,5 @@ public class Usuarios implements Serializable {
     public String toString() {
         return persona != null ? persona.toString() : "[" + id + "]";
     }
-    
+
 }

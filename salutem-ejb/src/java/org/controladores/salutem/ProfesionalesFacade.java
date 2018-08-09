@@ -5,6 +5,7 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonObject;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -41,6 +42,18 @@ public class ProfesionalesFacade extends AbstractFacade<Profesionales> {
             q.setParameter("especialidad", especialidad);
         }
         return q.getResultList();
+    }
+
+    @Override
+    protected String getJson(Profesionales objeto) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", objeto.getId());
+        json.addProperty("descripcion", objeto.getDescripcion());
+        json.addProperty("institucion", objeto.getInstitucion() != null ? objeto.getInstitucion().toString() : "");
+        json.addProperty("especialidad", objeto.getEspecialidad() != null ? objeto.getEspecialidad().toString() : "");
+        json.addProperty("persona", objeto.getPersona() != null ? objeto.getPersona().toString() : "");
+        json.addProperty("activo", objeto.getActivo() ? "s" : "n");
+        return json.getAsString();
     }
 
 }
