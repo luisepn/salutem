@@ -34,6 +34,15 @@ public class PerfilesFacade extends AbstractFacade<Perfiles> {
     protected String getJson(Perfiles objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        return json.getAsString();
+        json.addProperty("menu", objeto.getMenu() != null ? objeto.getMenu().toString() : "");
+        json.addProperty("grupo", objeto.getGrupo() != null ? objeto.getGrupo().toString() : "");
+        json.addProperty("consulta", objeto.getConsulta() ? 'S' : 'N');
+        json.addProperty("modificacion", objeto.getModificacion() ? 'S' : 'N');
+        json.addProperty("borrado", objeto.getBorrado() ? 'S' : 'N');
+        json.addProperty("nuevo", objeto.getNuevo() ? 'S' : 'N');
+        json.addProperty("auditoria", objeto.getAuditoria() ? 'S' : 'N');
+        json.addProperty("descripcion", objeto.getDescripcion());
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 }

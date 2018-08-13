@@ -46,6 +46,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Ordenes.findByActualizadopor", query = "SELECT o FROM Ordenes o WHERE o.actualizadopor = :actualizadopor")})
 public class Ordenes implements Serializable {
 
+    @Column(name = "activo")
+    private Boolean activo;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -223,6 +226,14 @@ public class Ordenes implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Ordenes[ id=" + id + " ]";
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
     
 }

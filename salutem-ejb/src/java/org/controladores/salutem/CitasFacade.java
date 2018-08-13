@@ -10,7 +10,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.entidades.salutem.Citas;
-import org.jsonb.salutem.BaseEntity;
 
 /**
  *
@@ -35,12 +34,11 @@ public class CitasFacade extends AbstractFacade<Citas> {
     protected String getJson(Citas objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        json.addProperty("fecha", BaseEntity.format.format(objeto.getFecha()));
+        json.addProperty("fecha", formatoFecha.format(objeto.getFecha()));
         json.addProperty("profesional", objeto.getProfesional() != null ? objeto.getProfesional().toString() : "");
         json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : "");
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("activo", objeto.getActivo() ? "s" : "n");
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json.toString();
     }
-
 }

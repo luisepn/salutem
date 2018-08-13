@@ -34,7 +34,8 @@ public class OrdenesFacade extends AbstractFacade<Ordenes> {
     protected String getJson(Ordenes objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        return json.getAsString();
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 
 }

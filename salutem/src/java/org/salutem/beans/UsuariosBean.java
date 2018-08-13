@@ -14,8 +14,8 @@ import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.UsuariosFacade;
 import org.entidades.salutem.Usuarios;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
-import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
@@ -265,6 +265,10 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         formulario.cancelar();
         buscar();
         return null;
+    }
+
+    public String getNombreTabla() {
+        return Usuarios.class.getSimpleName();
     }
 
     /**

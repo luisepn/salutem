@@ -45,6 +45,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Perfiles.findByActualizadopor", query = "SELECT p FROM Perfiles p WHERE p.actualizadopor = :actualizadopor")})
 public class Perfiles implements Serializable {
 
+    @Column(name = "auditoria")
+    private Boolean auditoria;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -218,5 +221,13 @@ public class Perfiles implements Serializable {
     public String toString() {
         return "org.entidades.salutem.Perfiles[ id=" + id + " ]";
     }
-    
+
+    public Boolean getAuditoria() {
+        return auditoria;
+    }
+
+    public void setAuditoria(Boolean auditoria) {
+        this.auditoria = auditoria;
+    }
+
 }

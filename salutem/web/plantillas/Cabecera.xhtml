@@ -4,48 +4,83 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:ace="http://www.icefaces.org/icefaces/components">
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
     <h:body>
         <ui:composition>
-            <ace:panel>
-                <h:panelGrid style="width: 100%;" columns="3" columnClasses="columna1, columna2, columna3">
-                    <h:panelGrid>
-                    </h:panelGrid>
-                    <h:panelGrid>
-                        <ace:graphicImage 
-                            value="#{salutemImagenes.traerImagen(salutemSeguridad.institucion.logotipo.ruta)}" 
-                            name="#{salutemSeguridad.institucion.id}_#{salutemSeguridad.institucion.nombre}" 
-                            rendered="#{salutemSeguridad.institucion ne null and salutemSeguridad.institucion.logotipo ne null and salutemSeguridad.institucion.logotipo.ruta ne null}"
-                            alt="logo" height="100px" />
-                    </h:panelGrid>
-                    <h:panelGrid>
-                        <ace:tabSet>
-                            <ace:tabPane label="Datos de Usuario">
-                                <h:panelGrid columns="2">
-                                    <h:outputText value="Módulo:" styleClass="etiquetas"/>
-                                    <h:selectOneMenu value="#{salutemSeguridad.usuario}" valueChangeListener="#{salutemSeguridad.cambiarUsuarioPorGrupo}">
-                                        <f:selectItems value="#{salutemSeguridad.comboUsuariosPorGrupo}"/>
-                                        <ace:ajax execute="@all"/>
-                                    </h:selectOneMenu>
-                                    <h:outputText value="Grupo:" styleClass="etiquetas"/>
-                                    <h:outputText value="#{salutemSeguridad.usuario.grupo.nombre}"/>
-                                    <h:outputText value="Institución:" styleClass="etiquetas"/>
-                                    <h:outputText value="#{salutemSeguridad.usuario.institucion.nombre}"/>
-                                    <h:outputText value="Usuario:" styleClass="etiquetas"/>
-                                    <h:outputText value="#{salutemSeguridad.logueado.toString()}"/>
-                                    <h:outputText value="Versión:" styleClass="etiquetas"/>
-                                    <h:outputText value="Jueves 11 de Enero de 2018 [21:47]"/>
+            <h:panelGrid columns="3" width="100%" style="text-align: left;">
+                <h:panelGrid width="99%" style="text-align: right">
+                    <ace:graphicImage 
+                        value="#{salutemImagenes.traerImagen(salutemSeguridad.institucion.logotipo.ruta)}" 
+                        name="#{salutemSeguridad.institucion.id}_#{salutemSeguridad.institucion.nombre}" 
+                        rendered="#{salutemSeguridad.institucion ne null 
+                                    and salutemSeguridad.institucion.logotipo ne null 
+                                    and salutemSeguridad.institucion.logotipo.ruta ne null}"
+                        alt="logo" height="45px" />
+                </h:panelGrid>
+                <h:panelGrid width="100%" style="text-align: left">
+                    <ace:menuBar model="#{salutemSeguridad.menu}" rendered="#{salutemSeguridad.menu ne null}" style="width: 99%">
+                        <ace:submenu  icon="ui-icon ui-icon-home" label="Institución"    rendered="#{datosLogueo.listainstituciones.size() gt 1}">
+                            <c:forEach items="#{salutemSeguridad.usuarios}" var="usuario">
+                                <ace:menuItem value="#{usuario.toString()}" style=" color:#000000" />
+                            </c:forEach>
+                        </ace:submenu>
+                    </ace:menuBar>
+                </h:panelGrid>
+                <h:panelGrid width="100%" style="text-align: left">
+                    <h:selectOneMenu value="#{salutemSeguridad.usuario}" valueChangeListener="#{salutemSeguridad.cambiarUsuarioPorGrupo}">
+                        <f:selectItems value="#{salutemSeguridad.comboUsuariosPorGrupo}"/>
+                        <ace:ajax execute="@all"/>
+                    </h:selectOneMenu>
+                    <ace:menuButton id="menuButton100" effect="slide" value="Sistema" style="width: 100%">                        
+                        <ace:menuItem value="#{salutemSeguridad.usuario.institucion.nombre}" icon="ui-icon ui-icon-home" rendered="#{salutemSeguridad.institucion ne null}"/>
+                        <ace:menuItem value="#{salutemSeguridad.usuario.grupo.nombre}" icon="ui-icon ui-icon-comment"/>
+                        <ace:menuItem value="#{salutemSeguridad.logueado.userid}" icon="ui-icon ui-icon-person"/>
+                        <!--<ace:menuItem value="Jueves 11 de Enero de 2018 [21:47]" icon="ui-icon ui-icon-info"/>-->
+                        <ace:menuItem value="12AG2018 22:32" icon="ui-icon ui-icon-info"/>
+                        <ace:menuItem value="Cambiar de clave" icon="ui-icon ui-icon-key" action="#{salutemSeguridad.cambiarClave()}"/>
+                        <ace:menuItem value="Salir del Sistema" icon="ui-icon ui-icon-close" action="#{salutemSeguridad.logout()}" />
+                    </ace:menuButton>
+                </h:panelGrid>
+            </h:panelGrid>
+            <!--            <ace:panel>
+                            <h:panelGrid style="width: 100%;" columns="3" columnClasses="columna1, columna2, columna3">
+                                <h:panelGrid>
                                 </h:panelGrid>
-                            </ace:tabPane>
-                            <ace:tabPane label="Errores">
-                                <ace:messages redisplay="false"/>
-                            </ace:tabPane>
-
-                        </ace:tabSet>
-                    </h:panelGrid>
-
-                </h:panelGrid> 
-            </ace:panel>
+                                <h:panelGrid>
+                                    <ace:graphicImage 
+                                        value="#{salutemImagenes.traerImagen(salutemSeguridad.institucion.logotipo.ruta)}" 
+                                        name="#{salutemSeguridad.institucion.id}_#{salutemSeguridad.institucion.nombre}" 
+                                        rendered="#{salutemSeguridad.institucion ne null and salutemSeguridad.institucion.logotipo ne null and salutemSeguridad.institucion.logotipo.ruta ne null}"
+                                        alt="logo" height="100px" />
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <ace:tabSet>
+                                        <ace:tabPane label="Datos de Usuario">
+                                            <h:panelGrid columns="2">
+                                                <h:outputText value="Módulo:" styleClass="etiquetas"/>
+                                                <h:selectOneMenu value="#{salutemSeguridad.usuario}" valueChangeListener="#{salutemSeguridad.cambiarUsuarioPorGrupo}">
+                                                    <f:selectItems value="#{salutemSeguridad.comboUsuariosPorGrupo}"/>
+                                                    <ace:ajax execute="@all"/>
+                                                </h:selectOneMenu>
+                                                <h:outputText value="Grupo:" styleClass="etiquetas"/>
+                                                <h:outputText value="#{salutemSeguridad.usuario.grupo.nombre}"/>
+                                                <h:outputText value="Institución:" styleClass="etiquetas"/>
+                                                <h:outputText value="#{salutemSeguridad.usuario.institucion.nombre}"/>
+                                                <h:outputText value="Usuario:" styleClass="etiquetas"/>
+                                                <h:outputText value="#{salutemSeguridad.logueado.toString()}"/>
+                                                <h:outputText value="Versión:" styleClass="etiquetas"/>
+                                                <h:outputText value="Jueves 11 de Enero de 2018 [21:47]"/>
+                                            </h:panelGrid>
+                                        </ace:tabPane>
+                                        <ace:tabPane label="Errores">
+                                            <ace:messages redisplay="false"/>
+                                        </ace:tabPane>
+                                    </ace:tabSet>
+                                </h:panelGrid>
+            
+                            </h:panelGrid> 
+                        </ace:panel>-->
             <ace:growlMessages 
                 hideEffectDuration="slow"
                 maxVisibleMessages="5"

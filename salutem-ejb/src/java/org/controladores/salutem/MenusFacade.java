@@ -80,6 +80,13 @@ public class MenusFacade extends AbstractFacade<Menus> {
     protected String getJson(Menus objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        return json.getAsString();
+        json.addProperty("codigo", objeto.getCodigo());
+        json.addProperty("nombre", objeto.getNombre());
+        json.addProperty("formulario", objeto.getFormulario());
+        json.addProperty("descripcion", objeto.getDescripcion());
+        json.addProperty("menupadre", objeto.getMenupadre() != null ? objeto.getMenupadre().toString() : "");
+        json.addProperty("modulo", objeto.getModulo() != null ? objeto.getModulo().toString() : "");
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 }

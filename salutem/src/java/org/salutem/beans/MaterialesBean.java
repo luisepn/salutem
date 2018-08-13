@@ -15,8 +15,8 @@ import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.MaterialesFacade;
 import org.entidades.salutem.Materiales;
 import org.entidades.salutem.Perfiles;
-import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
@@ -253,6 +253,10 @@ public class MaterialesBean implements Serializable, IMantenimiento {
     public String cancelar() {
         formulario.cancelar();
         return null;
+    }
+
+    public String getNombreTabla() {
+        return Materiales.class.getSimpleName();
     }
 
     /**

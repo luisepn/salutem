@@ -7,6 +7,7 @@ package org.entidades.salutem;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,11 +18,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -42,6 +45,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Materiales.findByActualizadopor", query = "SELECT m FROM Materiales m WHERE m.actualizadopor = :actualizadopor")
     , @NamedQuery(name = "Materiales.findByCodigo", query = "SELECT m FROM Materiales m WHERE m.codigo = :codigo")})
 public class Materiales implements Serializable {
+
+    @OneToMany(mappedBy = "material")
+    private List<Formulas> formulasList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -197,6 +203,15 @@ public class Materiales implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Materiales[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    public List<Formulas> getFormulasList() {
+        return formulasList;
+    }
+
+    public void setFormulasList(List<Formulas> formulasList) {
+        this.formulasList = formulasList;
     }
     
 }

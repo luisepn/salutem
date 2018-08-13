@@ -80,6 +80,7 @@
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemProfesionales.editarProfesional()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
                                     <ace:menuItem action="#{salutemProfesionales.borrarProfesional()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                    <ace:menuItem action="#{salutemHistorial.buscar(salutemProfesionales.nombreTabla, item.id)}" value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column>
                             <ace:column headerText="Fotografía" >
@@ -253,6 +254,7 @@
                         <ace:messages style="white-space: pre-wrap" />
                     </h:panelGrid>
                 </ace:dialog>
+                <ui:include src="../cuadroHistorial.xhtml"/>
             </ui:define>
         </ui:composition>
 

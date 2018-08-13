@@ -187,5 +187,5 @@ public class Citas implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-   
+  
 }

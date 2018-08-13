@@ -34,7 +34,16 @@ public class ConsultasFacade extends AbstractFacade<Consultas> {
     protected String getJson(Consultas objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        return json.getAsString();
+        json.addProperty("fecha", formatoFecha.format(objeto.getFecha()));
+        json.addProperty("motivo", objeto.getMotivo());
+        json.addProperty("observaciones", objeto.getObservaciones());
+        json.addProperty("indicaciones", objeto.getIndicaciones());
+        json.addProperty("usuario", objeto.getUsuario());
+        json.addProperty("formula", objeto.getFormula() != null ? objeto.getFormula().getId() : 0);
+        json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : "");
+        json.addProperty("especialidad", objeto.getEspecialidad() != null ? objeto.getEspecialidad().toString() : "");
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 
 }

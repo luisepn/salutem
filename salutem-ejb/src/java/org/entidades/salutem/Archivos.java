@@ -89,9 +89,9 @@ public class Archivos implements Serializable {
     @Column(name = "activo")
     private Boolean activo;
     @OneToOne(mappedBy = "logotipo")
-    private Instituciones instituciones;
+    private Instituciones institucion;
     @OneToOne(mappedBy = "fotografia")
-    private Personas personas;
+    private Personas persona;
 
     @Transient
     private byte[] archivo;
@@ -151,20 +151,20 @@ public class Archivos implements Serializable {
         this.activo = activo;
     }
 
-    public Instituciones getInstituciones() {
-        return instituciones;
+    public Instituciones getInstitucion() {
+        return institucion;
     }
 
-    public void setInstituciones(Instituciones instituciones) {
-        this.instituciones = instituciones;
+    public void setInstitucion(Instituciones institucion) {
+        this.institucion = institucion;
     }
 
-    public Personas getPersonas() {
-        return personas;
+    public Personas getPersona() {
+        return persona;
     }
 
-    public void setPersonas(Personas personas) {
-        this.personas = personas;
+    public void setPersona(Personas persona) {
+        this.persona = persona;
     }
 
     /**

@@ -17,8 +17,8 @@ import org.controladores.salutem.ParametrosFacade;
 import org.entidades.salutem.Menus;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
-import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
@@ -261,6 +261,10 @@ public class SubMenusBean implements Serializable, IMantenimiento {
         formulario.cancelar();
         buscar();
         return null;
+    }
+
+    public String getNombreTabla() {
+        return Menus.class.getSimpleName();
     }
 
     /**

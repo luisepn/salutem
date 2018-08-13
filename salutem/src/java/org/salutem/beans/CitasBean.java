@@ -4,9 +4,6 @@
  */
 package org.salutem.beans;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -25,10 +22,8 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 import org.controladores.salutem.CitasFacade;
-import org.controladores.salutem.HistorialFacade;
 import org.controladores.salutem.HorariosFacade;
 import org.entidades.salutem.Citas;
-import org.entidades.salutem.Historial;
 import org.entidades.salutem.Horarios;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Pacientes;
@@ -71,6 +66,7 @@ public class CitasBean implements Serializable, IMantenimiento {
     private List<Horarios> listaHorarios;
     private Date fecha = new Date();
     private Citas cita;
+    private String observaciones;
 
     private boolean ver = false;
     private Date inicio;
@@ -85,8 +81,6 @@ public class CitasBean implements Serializable, IMantenimiento {
     private HorariosFacade ejbHorarios;
     @EJB
     private CitasFacade ejbCitas;
-    @EJB
-    private HistorialFacade ejbHistorial;
 
     public CitasBean() {
         fecha = new Date();
@@ -141,7 +135,11 @@ public class CitasBean implements Serializable, IMantenimiento {
                 parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
                 parameters.put("finactualizado", seguridadBean.getFinActualizado());
             }
-
+            if (fechaInicio != null && fechaFin != null) {
+                where += " and o.fecha between :fechainicio and :fechafin";
+                parameters.put("fechainicio", fechaInicio);
+                parameters.put("fechafin", fechaFin);
+            }
             int total = ejbCitas.contar(where, parameters);
             formulario.setTotal(total);
             int endIndex = i + pageSize;
@@ -272,7 +270,7 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setCreadopor(seguridadBean.getLogueado().getUserid());
         cita.setActualizado(cita.getCreado());
         cita.setActualizadopor(cita.getCreadopor());
-        cita.setDescripcion("[Cita agendada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
+        cita.setDescripcion("Cita agendada. " + (observaciones != null ? observaciones.trim() : ""));
 
         try {
             ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid());
@@ -323,7 +321,7 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setActivo(Boolean.FALSE);
         cita.setActualizado(new Date());
         cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
-        cita.setDescripcion(cita.getDescripcion() + " [Cita cancelada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
+        cita.setDescripcion("Cita cancelada. " + cita.getDescripcion());
         try {
             ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeActualizacion ex) {
@@ -345,7 +343,7 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setActivo(Boolean.TRUE);
         cita.setActualizado(new Date());
         cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
-        cita.setDescripcion(cita.getDescripcion() + " [Cita reactivada por: " + seguridadBean.getLogueado().getUserid() + " - " + format.format(new Date()) + "]");
+        cita.setDescripcion("Cita reagendada. " + cita.getDescripcion());
         try {
             ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid());
         } catch (ExcepcionDeActualizacion ex) {
@@ -583,6 +581,10 @@ public class CitasBean implements Serializable, IMantenimiento {
         return lista;
     }
 
+    public String getNombreTabla() {
+        return Citas.class.getSimpleName();
+    }
+
     /**
      * @return the seguridadBean
      */
@@ -805,6 +807,20 @@ public class CitasBean implements Serializable, IMantenimiento {
      */
     public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
+    }
+
+    /**
+     * @return the observaciones
+     */
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    /**
+     * @param observaciones the observaciones to set
+     */
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
     }
 
 }

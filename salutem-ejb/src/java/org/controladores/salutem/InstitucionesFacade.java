@@ -47,7 +47,16 @@ public class InstitucionesFacade extends AbstractFacade<Instituciones> {
     protected String getJson(Instituciones objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        return json.getAsString();
+        json.addProperty("nombre", objeto.getNombre());
+        json.addProperty("email", objeto.getEmail());
+        json.addProperty("web", objeto.getWeb());
+        json.addProperty("descripcion", objeto.getDescripcion());
+        json.addProperty("fecha", formatoFecha.format(objeto.getFecha()));
+        json.addProperty("laboratorio", objeto.getLaboratorio() ? 'S' : 'N');
+        json.addProperty("fotografia", objeto.getLogotipo() != null ? objeto.getLogotipo().getRuta() : "");
+        json.addProperty("direccion", objeto.getDireccion() != null ? objeto.getDireccion().toString() : "");
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 
 }

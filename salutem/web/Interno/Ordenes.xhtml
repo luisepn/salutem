@@ -17,26 +17,26 @@
             <!-- Aqui va todo el codigo de la pagina -->
             <ui:define name="content">
                 <ace:panel id="panel"
-                           header="#{ordenes.perfil.menu.nombre}"
+                           header="#{salutemOrdenes.perfil.menu.nombre}"
                            closable="false"
                            toggleable="true"       >
                     <h:panelGrid>
-                        <h:panelGrid columns="2" rendered="#{datosLogueo.usuario.grupo.codigo eq ('adm')}">
+                        <h:panelGrid columns="2">
                             <h:outputLabel value="Institución:"/>
-                            <h:selectOneMenu value="#{ordenes.institucion}" valueChangeListener="#{ordenes.cambiaInstitucion}" disabled="#{!datosLogueo.usuario.grupo.codigo eq ('adm')}" >
+                            <h:selectOneMenu value="#{salutemOrdenes.institucion}" valueChangeListener="#{salutemOrdenes.cambiaInstitucion}" disabled="#{!datosLogueo.usuario.grupo.codigo eq ('adm')}" >
                                 <f:selectItems value="#{instituciones.comboInstituciones}" />
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                         </h:panelGrid>
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Laboratorio:"/>
-                            <h:selectOneMenu value="#{ordenes.laboratorio}">
+                            <h:selectOneMenu value="#{salutemOrdenes.laboratorio}">
                                 <f:selectItems value="#{instituciones.comboLaboratorios}" />
                             </h:selectOneMenu>
                         </h:panelGrid>
                         <h:panelGrid>
                             <ace:menuBar autoSubmenuDisplay="true" >
-                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{ordenes.buscarOrdenes()}"/>
+                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemOrdenes.buscar()}"/>
                             </ace:menuBar>
                         </h:panelGrid>
                     </h:panelGrid>
@@ -49,7 +49,7 @@
                     toggleable="true"              >
                     <h:panelGrid columns="3" styleClass="centeredPanelGrid">
                         <h:outputLabel  value="Exportar a:"/>
-                        <h:selectOneRadio  value="#{ordenes.formulario.pantalla}" required="true">
+                        <h:selectOneRadio  value="#{salutemOrdenes.formulario.tipo}" required="true">
                             <f:ajax disabled="false"/>
                             <f:selectItem itemValue="csv" itemLabel="CSV"/>
                             <f:selectItem itemValue="pdf" itemLabel="PDF"/>
@@ -58,13 +58,13 @@
                         </h:selectOneRadio>
                         <ace:dataExporter id="dataExporter" 
                                           label="Exportar Archivo" 
-                                          type="#{ordenes.formulario.pantalla}" 
+                                          type="#{salutemOrdenes.formulario.tipo}" 
                                           target="tabla" fileName="datos"/>
                     </h:panelGrid>
                     <h:panelGrid width="100%">
                         <ace:dataTable id="tabla" 
                                        paginatorAlwaysVisible="true"
-                                       value="#{ordenes.listaOrdenes}"
+                                       value="#{salutemOrdenes.listaOrdenes}"
                                        var="item"
                                        paginator="true"
                                        lazy="true"
@@ -74,11 +74,6 @@
                                        rowsPerPageTemplate="5,10,15,30,50,100"
                                        paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                        rows="30" >
-                            <ace:row condition="group" groupBy="#{item.consulta.paciente.institucion.nombre}" pos="before" styleClass="grupo">
-                                <ace:column style="text-align: center" colspan="20">
-                                    <h:outputText value="#{item.consulta.paciente.institucion.nombre}" />
-                                </ace:column>
-                            </ace:row>
                             <ace:column  headerText="Registro" style="text-align: right">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
@@ -184,10 +179,7 @@
                                     </h:panelGrid>
                 
                                 </ace:dialog>-->
-
-
-
-
+                <ui:include src="../cuadroHistorial.xhtml"/>
             </ui:define>
             <!-- Fin -->
         </ui:composition>

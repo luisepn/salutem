@@ -91,6 +91,7 @@
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemParametros.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
                                     <ace:menuItem action="#{salutemParametros.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
+                                    <ace:menuItem action="#{salutemHistorial.buscar(salutemParametros.nombreTabla, item.id)}" value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column> 
                             <ace:column  headerText="Código" sortBy="#{item.codigo}" filterBy="#{item.codigo}" filterMatchMode="contains" style="text-align: left">
@@ -191,7 +192,7 @@
                         <ace:messages style="white-space: pre-wrap" />
                     </h:panelGrid>
                 </ace:dialog>
-
+                <ui:include src="../cuadroHistorial.xhtml"/>
             </ui:define>
             <!-- Fin -->
         </ui:composition>

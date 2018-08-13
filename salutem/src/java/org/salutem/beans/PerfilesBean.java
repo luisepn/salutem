@@ -17,8 +17,8 @@ import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.PerfilesFacade;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
-import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
@@ -275,6 +275,10 @@ public class PerfilesBean implements Serializable, IMantenimiento {
     public String cancelar() {
         formulario.cancelar();
         return null;
+    }
+
+    public String getNombreTabla() {
+        return Perfiles.class.getSimpleName();
     }
 
     /**

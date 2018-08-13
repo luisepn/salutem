@@ -42,6 +42,10 @@ public class MaestrosFacade extends AbstractFacade<Maestros> {
     protected String getJson(Maestros objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        return json.getAsString();
+        json.addProperty("codigo", objeto.getCodigo());
+        json.addProperty("nombre", objeto.getNombre());
+        json.addProperty("descripcion", objeto.getDescripcion());
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 }

@@ -69,6 +69,10 @@ public class Formulario {
             return "10,50," + total.toString();
         } else if (total > 10) {
             return "10," + total.toString();
+        } else if (total > 5) {
+            return "5," + total.toString();
+        } else if (total > 2) {
+            return "2," + total.toString();
         } else {
             return total.toString();
         }

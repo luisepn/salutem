@@ -19,8 +19,8 @@ import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Direcciones;
 import org.entidades.salutem.Perfiles;
 import org.entidades.salutem.Personas;
-import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.event.TextChangeEvent;
@@ -141,6 +141,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         persona = new Personas();
         persona.setActivo(Boolean.TRUE);
         direccion = new Direcciones();
+        direccion.setActivo(Boolean.TRUE);
         imagenesBean.setArchivo(new Archivos());
         formulario.insertar();
         return null;

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import org.entidades.salutem.Personas;
 
 /**
  *
@@ -17,7 +18,10 @@ public class PersonasBean extends PersonasAbstractoBean implements Serializable 
     @PostConstruct
     @Override
     public void activar() {
-       perfil = seguridadBean.traerPerfil("Personas");
+        perfil = seguridadBean.traerPerfil("Personas");
     }
 
+    public String getNombreTabla() {
+        return Personas.class.getSimpleName();
+    }
 }

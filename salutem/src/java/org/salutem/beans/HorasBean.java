@@ -273,6 +273,10 @@ public class HorasBean implements Serializable, IMantenimiento {
         return null;
     }
 
+    public String getNombreTabla() {
+        return Horas.class.getSimpleName();
+    }
+
     /**
      * @return the seguridadBean
      */

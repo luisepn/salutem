@@ -72,6 +72,7 @@ public class ImagenesBean implements Serializable {
     public void grabarImagen(String userid, String clasificador, Integer identificador) {
         try {
             if (archivo.getId() == null) {
+                archivo.setActivo(Boolean.TRUE);
                 archivo.setCreado(new Date());
                 archivo.setCreadopor(userid);
                 archivo.setActualizado(archivo.getCreado());

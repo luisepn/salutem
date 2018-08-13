@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -46,6 +47,9 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Menus.findByActivo", query = "SELECT m FROM Menus m WHERE m.activo = :activo")
     , @NamedQuery(name = "Menus.findByCodigo", query = "SELECT m FROM Menus m WHERE m.codigo = :codigo")})
 public class Menus implements Serializable {
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "menu")
+    private List<Perfiles> perfilesList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -224,5 +228,14 @@ public class Menus implements Serializable {
     public String toString() {
         return nombre;
     }
-    
+
+    @XmlTransient
+    public List<Perfiles> getPerfilesList() {
+        return perfilesList;
+    }
+
+    public void setPerfilesList(List<Perfiles> perfilesList) {
+        this.perfilesList = perfilesList;
+    }
+
 }

@@ -96,9 +96,9 @@ public class Direcciones implements Serializable {
     @Column(name = "activo")
     private Boolean activo;
     @OneToOne(mappedBy = "direccion")
-    private Instituciones instituciones;
+    private Instituciones institucion;
     @OneToOne(mappedBy = "direccion")
-    private Personas personas;
+    private Personas persona;
 
     public Direcciones() {
     }
@@ -142,20 +142,20 @@ public class Direcciones implements Serializable {
         this.activo = activo;
     }
 
-    public Instituciones getInstituciones() {
-        return instituciones;
+    public Instituciones getInstitucion() {
+        return institucion;
     }
 
-    public void setInstituciones(Instituciones instituciones) {
-        this.instituciones = instituciones;
+    public void setInstitucion(Instituciones institucion) {
+        this.institucion = institucion;
     }
 
-    public Personas getPersonas() {
-        return personas;
+    public Personas getPersona() {
+        return persona;
     }
 
-    public void setPersonas(Personas personas) {
-        this.personas = personas;
+    public void setPersona(Personas persona) {
+        this.persona = persona;
     }
 
     @Override
@@ -273,6 +273,20 @@ public class Direcciones implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
+    }
+
+    public Direcciones(String primaria, String numero, String secundaria, String piso, String referencia, String fijo, String movil, String ciudad, String descripcion, String creadopor, String actualizadopor, Integer id, Date creado, Date actualizado, Boolean activo, Instituciones instituciones, Personas personas) {
+        this.primaria = primaria;
+        this.numero = numero;
+        this.secundaria = secundaria;
+        this.piso = piso;
+        this.referencia = referencia;
+        this.fijo = fijo;
+        this.movil = movil;
+        this.ciudad = ciudad;
+        this.descripcion = descripcion;
+        this.institucion = instituciones;
+        this.persona = personas;
     }
     
 }

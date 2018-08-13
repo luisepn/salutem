@@ -62,6 +62,12 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
     protected String getJson(Parametros objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        return json.getAsString();
+        json.addProperty("codigo", objeto.getCodigo());
+        json.addProperty("nombre", objeto.getNombre());
+        json.addProperty("descripcion", objeto.getDescripcion());
+        json.addProperty("parametros", objeto.getParametros());
+        json.addProperty("maestro", objeto.getMaestro() != null ? objeto.getMaestro().toString() : "");
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 }

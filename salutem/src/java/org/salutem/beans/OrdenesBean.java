@@ -19,12 +19,13 @@ import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
-@ManagedBean(name = "ordenes")
+@ManagedBean(name = "salutemOrdenes")
 @ViewScoped
-public class OrdenesBean implements Serializable {
+public class OrdenesBean implements Serializable, IMantenimiento {
 
     @ManagedProperty("#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
@@ -33,13 +34,15 @@ public class OrdenesBean implements Serializable {
     private Instituciones institucion;
     private Instituciones laboratorio;
     private Perfiles perfil;
+    private Formulario formulario = new Formulario();
 
     @EJB
     private OrdenesFacade ejbOrdenes;
 
     @PostConstruct
-    private void activar() {
-       perfil = seguridadBean.traerPerfil("Ordenes");
+    @Override
+    public void activar() {
+        perfil = seguridadBean.traerPerfil("Ordenes");
     }
 
     public void cambiaInstitucion(ValueChangeEvent event) {
@@ -96,7 +99,8 @@ public class OrdenesBean implements Serializable {
         return null;
     }
 
-    public String buscarOrdenes() {
+    @Override
+    public String buscar() {
         if (!perfil.getConsulta()) {
             Mensajes.advertencia("No tiene autorización para consultar");
             return null;
@@ -108,6 +112,10 @@ public class OrdenesBean implements Serializable {
             }
         };
         return null;
+    }
+
+    public String getNombreTabla() {
+        return Ordenes.class.getSimpleName();
     }
 
     /**
@@ -178,5 +186,59 @@ public class OrdenesBean implements Serializable {
      */
     public void setPerfil(Perfiles perfil) {
         this.perfil = perfil;
+    }
+
+    @Override
+    public String crear() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String editar() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String eliminar() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean validar() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String insertar() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String grabar() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String remover() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String cancelar() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * @return the formulario
+     */
+    public Formulario getFormulario() {
+        return formulario;
+    }
+
+    /**
+     * @param formulario the formulario to set
+     */
+    public void setFormulario(Formulario formulario) {
+        this.formulario = formulario;
     }
 }

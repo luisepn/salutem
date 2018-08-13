@@ -7,3 +7,6 @@
 /dist/
 /salutem/dist/
 /salutem/build/
+/salutemlogs-ejb/nbproject/private/
+/salutemlogs-ejb/build/
+/salutemlogs-ejb/dist/

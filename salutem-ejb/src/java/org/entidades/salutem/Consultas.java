@@ -41,6 +41,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Consultas.findByUsuario", query = "SELECT c FROM Consultas c WHERE c.usuario = :usuario")})
 public class Consultas implements Serializable {
 
+    @Column(name = "activo")
+    private Boolean activo;
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,7 +66,7 @@ public class Consultas implements Serializable {
     @Column(name = "usuario")
     private String usuario;
     @OneToOne(mappedBy = "consulta")
-    private Formulas formulas;
+    private Formulas formula;
     @JoinColumn(name = "paciente", referencedColumnName = "id")
     @ManyToOne
     private Pacientes paciente;
@@ -126,12 +129,12 @@ public class Consultas implements Serializable {
         this.usuario = usuario;
     }
 
-    public Formulas getFormulas() {
-        return formulas;
+    public Formulas getFormula() {
+        return formula;
     }
 
-    public void setFormulas(Formulas formulas) {
-        this.formulas = formulas;
+    public void setFormula(Formulas formula) {
+        this.formula = formula;
     }
 
     public Pacientes getPaciente() {
@@ -173,6 +176,14 @@ public class Consultas implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Consultas[ id=" + id + " ]";
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
     
 }

@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.entidades.salutem;
+package org.entidades.salutemlogs;
 
-import com.google.gson.JsonObject;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -25,7 +24,7 @@ import org.hibernate.annotations.Type;
 
 /**
  *
- * @author usuario
+ * @author fernando
  */
 @Entity
 @Table(name = "historial")
@@ -51,8 +50,7 @@ public class Historial implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "tabla")
     private String tabla;
-    @Type(type = "jsonb")
-    @Column(columnDefinition = "objeto")
+    @Column(name = "objeto")
     private String objeto;
     @Column(name = "operacion")
     private Character operacion;
@@ -137,7 +135,7 @@ public class Historial implements Serializable {
 
     @Override
     public String toString() {
-        return "org.entidades.salutem.Historial[ id=" + id + " ]";
+        return "org.entidades.salutemlogs.Historial[ id=" + id + " ]";
     }
-
+    
 }

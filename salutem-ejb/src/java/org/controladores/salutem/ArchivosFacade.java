@@ -10,7 +10,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.entidades.salutem.Archivos;
-import org.jsonb.salutem.BaseEntity;
 
 /**
  *
@@ -35,15 +34,15 @@ public class ArchivosFacade extends AbstractFacade<Archivos> {
     protected String getJson(Archivos objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        json.addProperty("fecha", BaseEntity.format.format(objeto.getFecha()));
+        json.addProperty("fecha", formatoFecha.format(objeto.getFecha()));
         json.addProperty("clasificador", objeto.getClasificador());
         json.addProperty("identificador", objeto.getIdentificador());
         json.addProperty("nombre", objeto.getNombre());
         json.addProperty("tipo", objeto.getTipo());
         json.addProperty("ruta", objeto.getRuta());
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("activo", objeto.getActivo() ? "s" : "n");
-        return json.getAsString();
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 
 }

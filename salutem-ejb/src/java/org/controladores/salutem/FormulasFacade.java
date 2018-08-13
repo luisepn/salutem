@@ -34,7 +34,32 @@ public class FormulasFacade extends AbstractFacade<Formulas> {
     protected String getJson(Formulas objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        return json.getAsString();
+        json.addProperty("lod", objeto.getLod());
+        json.addProperty("loi", objeto.getLoi());
+        json.addProperty("avscod", objeto.getAvscod());
+        json.addProperty("avscoi", objeto.getAvscoi());
+        json.addProperty("avccod", objeto.getAvccod());
+        json.addProperty("avccoi", objeto.getAvccoi());
+        json.addProperty("esferaod", objeto.getEsferaod());
+        json.addProperty("esferaoi", objeto.getEsferaoi());
+        json.addProperty("cilindrood", objeto.getCilindrood());
+        json.addProperty("cilindrooi", objeto.getCilindrooi());
+        json.addProperty("ejeod", objeto.getEjeod());
+        json.addProperty("ejeoi", objeto.getEjeoi());
+        json.addProperty("addod", objeto.getAddod());
+        json.addProperty("addoi", objeto.getAddoi());
+        json.addProperty("dpod", objeto.getDpod());
+        json.addProperty("dpoi", objeto.getDpoi());
+        json.addProperty("avod", objeto.getAvod());
+        json.addProperty("avoi", objeto.getAvoi());
+        json.addProperty("altura", objeto.getAltura());
+        json.addProperty("descripcion", objeto.getDescripcion());
+        json.addProperty("consulta", objeto.getConsulta() != null ? objeto.getConsulta().getId() : 0);
+        json.addProperty("material", objeto.getMaterial() != null ? objeto.getMaterial().toString() : "");
+        json.addProperty("tratamiento", objeto.getTratamiento() != null ? objeto.getTratamiento().toString() : "");
+        json.addProperty("orden", objeto.getOrdenes() != null ? objeto.getOrdenes().getId() : 0);
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 
 }

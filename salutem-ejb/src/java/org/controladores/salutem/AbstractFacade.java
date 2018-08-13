@@ -13,48 +13,44 @@
  */
 package org.controladores.salutem;
 
-import com.google.gson.JsonObject;
-import java.util.Date;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import org.entidades.salutem.Citas;
-import org.entidades.salutem.Historial;
-import org.excepciones.salutem.ExcepcionDeEliminacion;
-import org.excepciones.salutem.ExcepcionDeConsulta;
+import org.controladores.salutemlogs.AsincronoLogFacade;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.excepciones.salutem.ExcepcionDeEliminacion;
+
 
 /**
  *
  * @author fernando
  * @param <T>
  */
-public abstract class AbstractFacade<T> {
+public abstract class AbstractFacade<T> implements Serializable {
+
+    @EJB
+    private AsincronoLogFacade ejbLogs;
+
+    protected SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    protected SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
 
     private final Class<T> entityClass;
-
-    public AbstractFacade(Class<T> entityClass) {
-        this.entityClass = entityClass;
-    }
 
     protected abstract EntityManager getEntityManager();
 
     protected abstract String getJson(T objeto);
 
-    private void log(T entity, char operacion, String userid) {
-        Historial historial = new Historial();
-        historial.setFecha(new Date());
-        historial.setTabla(Citas.class.getSimpleName());
-        historial.setObjeto(getJson(entity));
-        historial.setOperacion(operacion);
-        historial.setUserid(userid);
-        getEntityManager().persist(historial);
-        getEntityManager().flush();
+    public AbstractFacade(Class<T> entityClass) {
+        this.entityClass = entityClass;
     }
 
     /**
@@ -70,7 +66,7 @@ public abstract class AbstractFacade<T> {
         } catch (Exception e) {
             throw new ExcepcionDeCreacion(entity.toString(), e);
         } finally {
-            log(entity, 'C', usuario);
+            ejbLogs.log(getJson(entity), entity.getClass().getSimpleName(), 'C', usuario);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Creada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }
@@ -88,7 +84,7 @@ public abstract class AbstractFacade<T> {
         } catch (Exception e) {
             throw new ExcepcionDeActualizacion(entity.toString(), e);
         } finally {
-            log(entity, 'U', usuario);
+            ejbLogs.log(getJson(entity), entity.getClass().getSimpleName(), 'U', usuario);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Actualizada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }
@@ -107,7 +103,7 @@ public abstract class AbstractFacade<T> {
         } catch (Exception e) {
             throw new ExcepcionDeEliminacion(entity.toString(), e);
         } finally {
-            log(entity, 'D', usuario);
+            ejbLogs.log(getJson(entity), entity.getClass().getSimpleName(), 'D', usuario);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Eliminada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }

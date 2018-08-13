@@ -9,6 +9,9 @@
                 <library dirs="100">
                     <file>${reference.salutem-ejb.dist}</file>
                 </library>
+                <library dirs="100">
+                    <file>${reference.salutemlogs-ejb.dist}</file>
+                </library>
                 <library dirs="200">
                     <file>${libs.IceFaces_4.2.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
@@ -37,6 +40,14 @@
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
             <reference>
                 <foreign-project>salutem-ejb</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>dist</target>
+                <clean-target>clean</clean-target>
+                <id>dist</id>
+            </reference>
+            <reference>
+                <foreign-project>salutemlogs-ejb</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>dist</target>

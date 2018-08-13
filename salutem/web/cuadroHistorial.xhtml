@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : cuadroHistorial
+    Fecha       : 10 de Agosto de 2018, 23:10:03 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <ace:dialog 
+        header="#{salutemHistorial.titulo}"
+        closable="false"
+        modal="true"
+        draggable="false"
+        showEffect="clip"
+        hideEffect="fade"
+        rendered="#{salutemHistorial.formulario.mostrar}"
+        visible="#{salutemHistorial.formulario.mostrar}">
+        <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+            <h:outputLabel  value="Exportar a:"/>
+            <h:selectOneRadio  value="#{salutemHistorial.formulario.tipo}" required="true">
+                <f:ajax disabled="false"/>
+                <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                <f:selectItem itemValue="xml" itemLabel="XML"/>
+            </h:selectOneRadio>
+            <ace:dataExporter id="dataExporterHistorial" 
+                              label="Exportar Archivo" 
+                              type="#{salutemHistorial.formulario.tipo}" 
+                              target="tablaHistorial" 
+                              fileName="#{salutemSeguridad.titulo}"/>
+        </h:panelGrid>
+        <h:panelGrid width="100%">
+            <ace:dataTable id="tablaHistorial" 
+                           lazy="true"
+                           emptyMessage="No existen registros"
+                           paginatorAlwaysVisible="true"
+                           value="#{salutemHistorial.lista}"
+                           var="item"
+                           paginator="true"
+                           rowIndexVar="row"
+                           paginatorPosition="both"
+                           rowsPerPageTemplate="#{salutemHistorial.formulario.rowsPerPageTemplate}"
+                           currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                           paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                           rows="2">
+                <ace:column headerText="Registro" style="text-align: right; width: 50px;">
+                    <h:outputText value="#{row+1}"/>
+                </ace:column>
+                <ace:column  headerText="Fecha" sortBy="#{item.fecha}" 
+                             filterBy="#{item.fecha}" 
+                             filterDatePattern="dd/MM/yyyy HH:mm"
+                             filterValueMin="#{salutemHistorial.fechaInicio}"
+                             filterValueMax="#{salutemHistorial.fechaFin}"
+                             type="DATE"
+                             rangedFilter="true" 
+                             style="text-align: left">
+                    <h:outputText  value="#{item.fecha}">
+                        <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                    </h:outputText>
+                </ace:column>
+                <ace:column  headerText="Usuario" sortBy="#{item.userid}" filterBy="#{item.userid}" filterMatchMode="contains" style="text-align: left">
+                    <h:outputText  value="#{item.userid}"/>
+                </ace:column>
+                <ace:column  headerText="Objeto" filterMatchMode="contains" style="text-align: left">
+                    <h:outputText  value="#{item.objeto}" style="white-space: pre-wrap"/>
+                </ace:column>
+            </ace:dataTable>
+            <h:panelGrid>
+                <ace:menuBar autoSubmenuDisplay="true" >
+                    <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                  action="#{salutemHistorial.formulario.cancelar()}"/>
+                </ace:menuBar>
+                <ace:messages style="white-space: pre-wrap"/>
+            </h:panelGrid>
+        </h:panelGrid>
+    </ace:dialog>
+</html>

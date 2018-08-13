@@ -16,8 +16,8 @@ import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Profesionales;
-import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
@@ -216,6 +216,10 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         }
         formulario.cancelar();
         return null;
+    }
+
+    public String getNombreTabla() {
+        return Profesionales.class.getSimpleName();
     }
 
     /**

@@ -26,8 +26,8 @@ import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Materiales;
 import org.entidades.salutem.Ordenes;
 import org.entidades.salutem.Pacientes;
-import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.icefaces.ace.event.TextChangeEvent;
 import org.icefaces.ace.model.table.LazyDataModel;
@@ -341,7 +341,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
 
     public String modificarConsulta() {
         consulta = ((Consultas) listaConsultas.get(formularioConsulta.getFila().getRowIndex()));
-        formula = consulta.getFormulas();
+        formula = consulta.getFormula();
         orden = formula.getOrdenes();
         if (formula.getMaterial() != null) {
             combosBean.setFoco(formula.getMaterial().getFoco());
@@ -444,6 +444,10 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
                 paciente = p;
             }
         }
+    }
+
+    public String getNombreTabla() {
+        return Pacientes.class.getSimpleName();
     }
 
     /**

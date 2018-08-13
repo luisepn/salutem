@@ -34,12 +34,12 @@ public class UsuariosFacade extends AbstractFacade<Usuarios> {
     protected String getJson(Usuarios objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("institucion", objeto.getInstitucion() != null ? objeto.getInstitucion().toString() : "");
-        json.addProperty("grupo", objeto.getGrupo() != null ? objeto.getGrupo().toString() : "");
         json.addProperty("modulo", objeto.getModulo() != null ? objeto.getModulo().toString() : "");
+        json.addProperty("grupo", objeto.getGrupo() != null ? objeto.getGrupo().toString() : "");
+        json.addProperty("institucion", objeto.getInstitucion() != null ? objeto.getInstitucion().toString() : "");
         json.addProperty("persona", objeto.getPersona() != null ? objeto.getPersona().toString() : "");
-        json.addProperty("activo", objeto.getActivo() ? "s" : "n");
-        return json.getAsString();
+        json.addProperty("descripcion", objeto.getDescripcion());
+        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        return json.toString();
     }
 }
