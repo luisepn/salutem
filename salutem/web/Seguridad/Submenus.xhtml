@@ -128,6 +128,9 @@
                                          style="text-align: left">
                                 <h:outputText  value="#{item.menupadre.nombre}"/>
                             </ace:column>
+                            <ace:column  headerText="Icono" sortBy="#{item.icono}" filterBy="#{item.icono}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.icono}"/>
+                            </ace:column>
                             <ace:column  headerText="Creación" sortBy="#{item.creado}" 
                                          filterBy="#{item.creado}" 
                                          filterDatePattern="dd/MM/yyyy HH:mm"
@@ -191,6 +194,16 @@
                             <ace:textAreaEntry id="descripcion" value="#{salutemSubmenus.menu.descripcion}" cols="22" rows="2"/>
                             <h:outputLabel value="Activo:" />
                             <h:selectBooleanCheckbox value="#{salutemSubmenus.menu.activo}" title="Activo"/>
+                            <h:outputLabel value="Icono:" />
+                            <h:selectOneMenu value="#{salutemMenus.menu.icono}">
+                                <f:selectItems value="#{salutemCombos.iconos}"/>
+                                <ace:ajax execute="@all"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid rendered="#{salutemMenus.menu.icono ne null}">
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="#{salutemMenus.menu.icono}" icon="#{salutemMenus.menu.icono}"/>
+                            </ace:menuBar>
                         </h:panelGrid>
                     </h:panelGroup>
                     <h:panelGrid columns="1" width="100%">

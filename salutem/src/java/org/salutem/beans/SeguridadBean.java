@@ -9,10 +9,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.faces.event.MethodExpressionActionListener;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -171,6 +175,18 @@ public class SeguridadBean implements Serializable {
         }
     }
 
+    public void cambiarUsuarioPorGrupo(ActionEvent event) {
+        try {
+            seleccionarGrupo(ejbUsuarios.buscar(Integer.parseInt(event.getComponent().getId().replaceAll("_", ""))));
+            ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
+            String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
+            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".jsf?faces-redirect=true");
+        } catch (ExcepcionDeConsulta | IOException ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     private void seleccionarGrupo(Usuarios usuario) throws ExcepcionDeConsulta {
         this.usuario = usuario;
         this.titulo = usuario.getModulo().getNombre();
@@ -184,10 +200,28 @@ public class SeguridadBean implements Serializable {
         List<Menus> ml = ejbMenus.buscar(where, parameters, order);
 
         menu = new DefaultMenuModel();
+
+        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+        ExpressionFactory expressionFactory = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
+        Submenu submenu = new Submenu();
+        submenu.setId("sm_0000");
+        submenu.setLabel("Módulo");
+        submenu.setIcon("ui-icon ui-icon-home");
+        for (Usuarios u : usuarios) {
+            MenuItem item = new MenuItem();
+            item.setId("_" + u.getId());
+            item.setValue(u.getModulo().getNombre() + " - " + u.getGrupo().getNombre());
+            item.addActionListener(new MethodExpressionActionListener(expressionFactory.createMethodExpression(elContext,
+                    "#{salutemSeguridad.cambiarUsuarioPorGrupo}", null, new Class[]{ActionEvent.class})));
+            submenu.getChildren().add(item);
+        }
+        menu.addSubmenu(submenu);
+
         for (Menus menusistema : ml) {
-            Submenu nuevoSubmenu = new Submenu();
-            nuevoSubmenu.setId("sm_" + menusistema.getId());
-            nuevoSubmenu.setLabel(menusistema.getNombre());
+            submenu = new Submenu();
+            submenu.setId("sm_" + menusistema.getId());
+            submenu.setLabel(menusistema.getNombre());
+            submenu.setIcon(menusistema.getIcono());
 
             where = " o.menu.menupadre=:menu and o.grupo=:grupo";
             order = " o.menu.nombre";
@@ -196,14 +230,16 @@ public class SeguridadBean implements Serializable {
             parameters.put("grupo", grupo);
             List<Perfiles> pl = ejbPerfiles.buscar(where, parameters, order);
             for (Perfiles p : pl) {
-                MenuItem nuevo = new MenuItem();
-                nuevo.setId(nuevoSubmenu.getId() + "_mmi_" + p.getId());
-                nuevo.setValue(p.getMenu().getNombre());
-                nuevo.setUrl(p.getMenu().getFormulario().trim() + ".jsf?faces-redirect=true&p=" + p.getId());
-                nuevoSubmenu.getChildren().add(nuevo);
+                MenuItem item = new MenuItem();
+                item.setId(submenu.getId() + "_mmi_" + p.getId());
+                item.setValue(p.getMenu().getNombre());
+                item.setUrl(p.getMenu().getFormulario().trim() + ".jsf?faces-redirect=true&p=" + p.getId());
+                item.setIcon(p.getMenu().getIcono());
+                submenu.getChildren().add(item);
             }
-            menu.addSubmenu(nuevoSubmenu);
+            menu.addSubmenu(submenu);
         }
+
     }
 
     public void logout() {

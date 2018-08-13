@@ -48,15 +48,6 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Menus.findByCodigo", query = "SELECT m FROM Menus m WHERE m.codigo = :codigo")})
 public class Menus implements Serializable {
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "menu")
-    private List<Perfiles> perfilesList;
-
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
@@ -66,23 +57,36 @@ public class Menus implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "descripcion")
     private String descripcion;
-    @Column(name = "creado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creado;
     @Size(max = 2147483647)
     @Column(name = "creadopor")
     private String creadopor;
-    @Column(name = "actualizado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date actualizado;
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
-    @Column(name = "activo")
-    private Boolean activo;
     @Size(max = 2147483647)
     @Column(name = "codigo")
     private String codigo;
+    @Size(max = 2147483647)
+    @Column(name = "icono")
+    private String icono;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "menu")
+    private List<Perfiles> perfilesList;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Column(name = "activo")
+    private Boolean activo;
     @OneToMany(mappedBy = "menupadre")
     private List<Menus> menusList;
     @JoinColumn(name = "menupadre", referencedColumnName = "id")
@@ -107,29 +111,6 @@ public class Menus implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getFormulario() {
-        return formulario;
-    }
-
-    public void setFormulario(String formulario) {
-        this.formulario = formulario;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 
     public Date getCreado() {
         return creado;
@@ -139,13 +120,6 @@ public class Menus implements Serializable {
         this.creado = creado;
     }
 
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
 
     public Date getActualizado() {
         return actualizado;
@@ -155,13 +129,6 @@ public class Menus implements Serializable {
         this.actualizado = actualizado;
     }
 
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
-    }
 
     public Boolean getActivo() {
         return activo;
@@ -171,13 +138,6 @@ public class Menus implements Serializable {
         this.activo = activo;
     }
 
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
 
     @XmlTransient
     public List<Menus> getMenusList() {
@@ -236,6 +196,62 @@ public class Menus implements Serializable {
 
     public void setPerfilesList(List<Perfiles> perfilesList) {
         this.perfilesList = perfilesList;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getFormulario() {
+        return formulario;
+    }
+
+    public void setFormulario(String formulario) {
+        this.formulario = formulario;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getIcono() {
+        return icono;
+    }
+
+    public void setIcono(String icono) {
+        this.icono = icono;
     }
 
 }

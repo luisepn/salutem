@@ -28,10 +28,6 @@
                     </ace:menuBar>
                 </h:panelGrid>
                 <h:panelGrid width="100%" style="text-align: left">
-                    <h:selectOneMenu value="#{salutemSeguridad.usuario}" valueChangeListener="#{salutemSeguridad.cambiarUsuarioPorGrupo}">
-                        <f:selectItems value="#{salutemSeguridad.comboUsuariosPorGrupo}"/>
-                        <ace:ajax execute="@all"/>
-                    </h:selectOneMenu>
                     <ace:menuButton id="menuButton100" effect="slide" value="Sistema" style="width: 100%">                        
                         <ace:menuItem value="#{salutemSeguridad.usuario.institucion.nombre}" icon="ui-icon ui-icon-home" rendered="#{salutemSeguridad.institucion ne null}"/>
                         <ace:menuItem value="#{salutemSeguridad.usuario.grupo.nombre}" icon="ui-icon ui-icon-comment"/>

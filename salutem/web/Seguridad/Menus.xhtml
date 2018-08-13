@@ -102,6 +102,9 @@
                             <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.descripcion}"/>
                             </ace:column>
+                            <ace:column  headerText="Icono" sortBy="#{item.icono}" filterBy="#{item.icono}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.icono}"/>
+                            </ace:column>
                             <ace:column  headerText="Módulo"                                         
                                          sortBy="#{item.modulo.nombre}" 
                                          filterBy="#{item.modulo.id}"
@@ -164,9 +167,19 @@
                             <h:outputLabel value="Nombre:" for="nombre" />
                             <ace:textEntry id="nombre" value="#{salutemMenus.menu.nombre}" title="Nombre" />
                             <h:outputLabel value="Descripción:" for="descripcion" />
-                            <ace:textAreaEntry id="descripcion" value="#{salutemMenus.menu.descripcion}" cols="22" rows="2"/>
+                            <ace:textAreaEntry id="descripcion" value="#{salutemMenus.menu.descripcion}" cols="22" rows="2"/>                            
                             <h:outputLabel value="Activo:" />
                             <h:selectBooleanCheckbox value="#{salutemMenus.menu.activo}" title="Activo"/>
+                            <h:outputLabel value="Icono:" />
+                            <h:selectOneMenu value="#{salutemMenus.menu.icono}">
+                                <f:selectItems value="#{salutemCombos.iconos}"/>
+                                <ace:ajax execute="@all"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid rendered="#{salutemMenus.menu.icono ne null}">
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="#{salutemMenus.menu.icono}" icon="#{salutemMenus.menu.icono}"/>
+                            </ace:menuBar>
                         </h:panelGrid>
                     </h:panelGroup>
                     <h:panelGrid>
