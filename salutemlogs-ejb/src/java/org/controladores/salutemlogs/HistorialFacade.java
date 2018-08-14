@@ -40,7 +40,7 @@ public class HistorialFacade extends AbstractFacade<Historial> {
         try {
             String sql
                     = (contar ? "Select count(o.id) from Historial o"
-                            : "Select o.id, o.fecha, o.tabla, jsonb_pretty(o.objeto) as objeto, o.operacion, o.userid from Historial o");
+                            : "Select o.id, o.fecha, o.tabla, jsonb_pretty(o.objeto) as objeto, o.operacion, o.userid, o.ip from Historial o");
             if (where != null) {
                 sql += " where " + where;
             }

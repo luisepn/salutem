@@ -30,7 +30,9 @@
                                 <h:panelGrid columns="3">
                                     <h:outputLabel value="Paciente:" />
                                     <h:selectOneMenu value="#{salutemPacientes.parametroBusqueda}">
-                                        <f:selectItems value="#{salutemCombos.parametrosBusquedaPersonas}"/>
+                                        <f:selectItem itemLabel="Nombres" itemValue="o.persona.nombres"/>
+                                        <f:selectItem itemLabel="Apellidos" itemValue="o.persona.apellidos"/>
+                                        <f:selectItem itemLabel="Cédula" itemValue="o.persona.cedula"/>
                                         <ace:ajax execute="@all"/>
                                     </h:selectOneMenu>
                                     <ace:autoCompleteEntry 

@@ -278,6 +278,7 @@ public class CitasBean implements Serializable, IMantenimiento {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+        observaciones = null;
         return null;
     }
 

@@ -45,8 +45,8 @@
             <f:selectItems value="#{salutemCombos.genero}" />
         </h:selectOneMenu>
         <h:outputLabel value="Descripción:"/>
-        <ace:textAreaEntry value="#{salutemPacientes.persona.descripcion}" cols="22" rows="2"/>
+        <ace:textAreaEntry value="#{salutemPacientes.paciente.descripcion}" cols="22" rows="2"/>
         <h:outputLabel value="Activo:" />
-        <h:selectBooleanCheckbox value="#{salutemPacientes.persona.activo}"/>
+        <h:selectBooleanCheckbox value="#{salutemPacientes.paciente.activo}"/>
     </h:panelGrid>
 </html>

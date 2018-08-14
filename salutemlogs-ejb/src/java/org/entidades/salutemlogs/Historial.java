@@ -56,6 +56,9 @@ public class Historial implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "userid")
     private String userid;
+    @Size(max = 2147483647)
+    @Column(name = "ip")
+    private String ip;
 
     public Historial() {
     }
@@ -112,6 +115,14 @@ public class Historial implements Serializable {
         this.userid = userid;
     }
 
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -136,5 +147,5 @@ public class Historial implements Serializable {
     public String toString() {
         return "org.entidades.salutemlogs.Historial[ id=" + id + " ]";
     }
-    
+
 }
