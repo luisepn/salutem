@@ -85,16 +85,16 @@
                                 <h:outputText  value="#{item.laboratorio.nombre}"/>
                             </ace:column>
                             <ace:column  headerText="Orden" style="text-align: left">
-                                <h:outputText  value="#{item.consulta.id}"/>
+                                <h:outputText  value="#{item.id}"/>
                             </ace:column>
                             <ace:column  headerText="Factura" style="text-align: left">
                                 <h:outputText  value="#{item.factura}"/>
                             </ace:column>
                             <ace:column  headerText="Paciente" style="text-align: left">
-                                <h:outputText  value="#{item.consulta.paciente.toString()}"/>
+                                <h:outputText  value="#{item.formula.consulta.paciente.toString()}"/>
                             </ace:column>
                             <ace:column  headerText="Fecha" style="text-align: left">
-                                <h:outputText  value="#{item.fecha}">
+                                <h:outputText  value="#{item.registro}">
                                     <f:convertDateTime  parent="dd/MM/yyyy"/>
                                 </h:outputText>
                             </ace:column>

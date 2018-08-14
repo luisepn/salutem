@@ -103,7 +103,12 @@
                                 <h:outputText  value="#{item.descripcion}"/>
                             </ace:column>
                             <ace:column  headerText="Icono" sortBy="#{item.icono}" filterBy="#{item.icono}" filterMatchMode="contains" style="text-align: left">
-                                <h:outputText  value="#{item.icono}"/>
+                                <h:panelGrid columns="2" style="text-align: left">
+                                    <ace:menuBar autoSubmenuDisplay="true" >
+                                        <ace:menuItem icon="#{item.icono}"/>
+                                    </ace:menuBar> 
+                                    <h:outputText  value="#{item.icono}"/>
+                                </h:panelGrid>
                             </ace:column>
                             <ace:column  headerText="Módulo"                                         
                                          sortBy="#{item.modulo.nombre}" 

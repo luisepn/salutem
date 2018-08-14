@@ -194,28 +194,14 @@ public class SeguridadBean implements Serializable {
         this.institucion = usuario.getInstitucion();
 
         String where = " o.modulo=:modulo";
-        String order = " o.nombre";
+        String order = " o.codigo";
         Map parameters = new HashMap();
         parameters.put("modulo", usuario.getModulo());
         List<Menus> ml = ejbMenus.buscar(where, parameters, order);
 
         menu = new DefaultMenuModel();
 
-        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
-        ExpressionFactory expressionFactory = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
-        Submenu submenu = new Submenu();
-        submenu.setId("sm_0000");
-        submenu.setLabel("Módulo");
-        submenu.setIcon("ui-icon ui-icon-home");
-        for (Usuarios u : usuarios) {
-            MenuItem item = new MenuItem();
-            item.setId("_" + u.getId());
-            item.setValue(u.getModulo().getNombre() + " - " + u.getGrupo().getNombre());
-            item.addActionListener(new MethodExpressionActionListener(expressionFactory.createMethodExpression(elContext,
-                    "#{salutemSeguridad.cambiarUsuarioPorGrupo}", null, new Class[]{ActionEvent.class})));
-            submenu.getChildren().add(item);
-        }
-        menu.addSubmenu(submenu);
+        Submenu submenu;
 
         for (Menus menusistema : ml) {
             submenu = new Submenu();
@@ -224,7 +210,7 @@ public class SeguridadBean implements Serializable {
             submenu.setIcon(menusistema.getIcono());
 
             where = " o.menu.menupadre=:menu and o.grupo=:grupo";
-            order = " o.menu.nombre";
+            order = " o.menu.codigo";
             parameters = new HashMap();
             parameters.put("menu", menusistema);
             parameters.put("grupo", grupo);
@@ -239,6 +225,23 @@ public class SeguridadBean implements Serializable {
             }
             menu.addSubmenu(submenu);
         }
+
+        ELContext elContext = FacesContext.getCurrentInstance().getELContext();
+        ExpressionFactory expressionFactory = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
+        submenu = new Submenu();
+        submenu.setId("sm_0000");
+        submenu.setLabel("Módulo");
+        submenu.setIcon("ui-icon ui-icon-home");
+        for (Usuarios u : usuarios) {
+            MenuItem item = new MenuItem();
+            item.setId("_" + u.getId());
+            item.setValue(u.getModulo().getNombre() + " - " + u.getGrupo().getNombre());
+            item.setIcon("ui-icon ui-icon-comment");
+            item.addActionListener(new MethodExpressionActionListener(expressionFactory.createMethodExpression(elContext,
+                    "#{salutemSeguridad.cambiarUsuarioPorGrupo}", null, new Class[]{ActionEvent.class})));
+            submenu.getChildren().add(item);
+        }
+        menu.addSubmenu(submenu);
 
     }
 

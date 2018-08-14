@@ -64,6 +64,9 @@
                 <ace:column  headerText="Usuario" sortBy="#{item.userid}" filterBy="#{item.userid}" filterMatchMode="contains" style="text-align: left">
                     <h:outputText  value="#{item.userid}"/>
                 </ace:column>
+                <ace:column  headerText="Operación" sortBy="#{item.operacion}" filterBy="#{item.operacion}" filterMatchMode="contains" style="text-align: left">
+                    <h:outputText  value="#{item.operacion eq 'C' ? '[C] Crear': item.operacion eq 'R' ? '[R] Leer' : item.operacion eq 'U' ? '[U] Actualizar' : item.operacion eq 'D' ? '[D] Borrar':''}"/>
+                </ace:column>
                 <ace:column  headerText="Objeto" filterMatchMode="contains" style="text-align: left">
                     <h:outputText  value="#{item.objeto}" style="white-space: pre-wrap"/>
                 </ace:column>

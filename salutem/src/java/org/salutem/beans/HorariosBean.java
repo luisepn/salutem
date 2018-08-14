@@ -56,6 +56,7 @@ public class HorariosBean implements Serializable, IMantenimiento {
     private LazyDataModel<Horarios> horarios;
     private Horarios horario;
     private int profesional;
+    private int dia;
 
     @EJB
     private HorariosFacade ejbHorarios;
@@ -427,6 +428,20 @@ public class HorariosBean implements Serializable, IMantenimiento {
      */
     public void setCombosBean(CombosBean combosBean) {
         this.combosBean = combosBean;
+    }
+
+    /**
+     * @return the dia
+     */
+    public int getDia() {
+        return dia;
+    }
+
+    /**
+     * @param dia the dia to set
+     */
+    public void setDia(int dia) {
+        this.dia = dia;
     }
 
 }
