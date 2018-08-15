@@ -5,7 +5,11 @@
  */
 package org.controladores.salutemlogs;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
@@ -25,24 +29,19 @@ public class AsincronoLogFacade {
  
     @Asynchronous
     public void log(String json, String tabla, char operacion, String userid) {
-        String query = "INSERT INTO "
-                + "Historial(fecha, tabla, objeto, operacion, userid, ip) "
-                + "VALUES (:fecha, :tabla, '" + json + "', :operacion, :userid, :ip);";
-        em.createNativeQuery(query)
-                .setParameter("fecha", new Date())
-                .setParameter("tabla", tabla)
-                .setParameter("operacion", operacion)
-                .setParameter("userid", userid)
-                .setParameter("ip", getCurrentClientIpAddress())
-                .executeUpdate();
-    }
-
-    private String getCurrentClientIpAddress() {
-        String currentThreadName = Thread.currentThread().getName();
-        System.out.println("Threadname: " + currentThreadName);
-        int begin = currentThreadName.indexOf('[') + 1;
-        int end = currentThreadName.indexOf(']') - 1;
-        String remoteClient = currentThreadName.substring(begin, end);
-        return remoteClient;
+        try {
+            String query = "INSERT INTO "
+                    + "Historial(fecha, tabla, objeto, operacion, userid, ip) "
+                    + "VALUES (:fecha, :tabla, '" + json + "', :operacion, :userid, :ip);";
+            em.createNativeQuery(query)
+                    .setParameter("fecha", new Date())
+                    .setParameter("tabla", tabla)
+                    .setParameter("operacion", operacion)
+                    .setParameter("userid", userid)
+                    .setParameter("ip", InetAddress.getLocalHost().getHostAddress())
+                    .executeUpdate();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(AsincronoLogFacade.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

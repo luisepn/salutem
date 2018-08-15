@@ -79,7 +79,7 @@ public class HistorialBean implements Serializable {
                     getLista().setRowCount(total);
                     String order;
                     if (scs.length == 0) {
-                        order = "o.fecha";
+                        order = "o.fecha desc";
                     } else {
                         order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
                     }
