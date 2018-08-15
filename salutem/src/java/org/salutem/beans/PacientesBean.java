@@ -131,7 +131,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
             pacientes.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = " o.institucion.nombre, o.persona.apellidos";
+                order = " o.institucion.nombre, o.persona.apellidos, o.persona.nombres";
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
@@ -184,11 +184,9 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         try {
             List<Pacientes> lista = ejbPacientes.buscar(where, parametros);
             if (!lista.isEmpty()) {
-                paciente = lista.get(0);
+                paciente.setId(lista.get(0).getId());
             } else {
-                paciente = new Pacientes();
-                paciente.setActivo(Boolean.TRUE);
-                paciente.setInstitucion(institucion);
+                paciente.setId(null);
             }
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
@@ -237,9 +235,9 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         try {
             paciente.setPersona(persona);
             if (paciente.getId() == null) {
-                ejbPacientes.crear(paciente, getSeguridadBean().getLogueado().getUserid());
+                ejbPacientes.crear(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             } else {
-                ejbPacientes.actualizar(paciente, getSeguridadBean().getLogueado().getUserid());
+                ejbPacientes.actualizar(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -254,7 +252,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         }
         paciente.setActivo(Boolean.FALSE);
         try {
-            ejbPacientes.actualizar(paciente, getSeguridadBean().getLogueado().getUserid());
+            ejbPacientes.actualizar(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -283,11 +281,11 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     public String insertarConsulta() {
         try {
             consulta.setFecha(new Date());
-            ejbConsultas.crear(consulta, getSeguridadBean().getLogueado().getUserid());
+            ejbConsultas.crear(consulta, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             formula.setConsulta(consulta);
-            ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid());
+            ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             orden.setFormula(formula);
-            ejbOrdenes.crear(orden, seguridadBean.getLogueado().getUserid());
+            ejbOrdenes.crear(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
 
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -354,9 +352,9 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
 
     public String grabarConsulta() {
         try {
-            ejbConsultas.actualizar(consulta, getSeguridadBean().getLogueado().getUserid());
-            ejbFormulas.actualizar(formula, seguridadBean.getLogueado().getUserid());
-            ejbOrdenes.actualizar(orden, seguridadBean.getLogueado().getUserid());
+            ejbConsultas.actualizar(consulta, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            ejbFormulas.actualizar(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            ejbOrdenes.actualizar(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -382,9 +380,9 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         orden.setUsuario(getSeguridadBean().getLogueado().toString());
         try {
             if (orden.getId() == null) {
-                ejbOrdenes.crear(orden, getSeguridadBean().getLogueado().getUserid());
+                ejbOrdenes.crear(orden, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             } else {
-                ejbOrdenes.actualizar(orden, getSeguridadBean().getLogueado().getUserid());
+                ejbOrdenes.actualizar(orden, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());

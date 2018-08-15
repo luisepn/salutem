@@ -83,7 +83,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
             profesionales.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = " o.institucion.nombre, o.persona.apellidos";
+                order = " o.institucion.nombre, o.persona.apellidos, o.persona.nombres";
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
@@ -131,13 +131,10 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
 
         List<Profesionales> lista = ejbProfesionales.buscar(where, parametros);
         if (!lista.isEmpty()) {
-            profesional = lista.get(0);
+            profesional.setId(lista.get(0).getId());
         } else {
-            profesional = new Profesionales();
+            profesional.setId(null);
         }
-        profesional.setActivo(Boolean.TRUE);
-        profesional.setInstitucion(institucion);
-        profesional.setEspecialidad(especialidad);
     }
 
     public String editarProfesional() {
@@ -191,11 +188,11 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
                 profesional.setCreadopor(seguridadBean.getLogueado().getUserid());
                 profesional.setActualizado(profesional.getCreado());
                 profesional.setActualizadopor(profesional.getCreadopor());
-                ejbProfesionales.crear(profesional, seguridadBean.getLogueado().getUserid());
+                ejbProfesionales.crear(profesional, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             } else {
                 profesional.setActualizado(new Date());
                 profesional.setActualizadopor(seguridadBean.getLogueado().getUserid());
-                ejbProfesionales.actualizar(profesional, seguridadBean.getLogueado().getUserid());
+                ejbProfesionales.actualizar(profesional, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
@@ -209,7 +206,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
             return null;
         }
         try {
-            ejbProfesionales.eliminar(profesional, seguridadBean.getLogueado().getUserid());
+            ejbProfesionales.eliminar(profesional, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ProfesionalesBean.class.getName()).log(Level.SEVERE, null, ex);

@@ -30,10 +30,16 @@ public class HistorialBean implements Serializable {
 
     private Formulario formulario = new Formulario();
     private LazyDataModel<Historial> lista;
-    private String titulo;
     private Perfiles perfil;
+    private String titulo;
+
     private Date fechaInicio;
     private Date fechaFin;
+    private String usuario;
+    private Character operacion;
+    private String tabla;
+    private String campo;
+    private String busqueda;
 
     @EJB
     private HistorialFacade ejbHistorial;
@@ -47,47 +53,72 @@ public class HistorialBean implements Serializable {
         };
     }
 
+    public List<Historial> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+        try {
+            Map parameters = new HashMap();
+            String where = " o.id is not null";
+
+            for (Map.Entry e : map.entrySet()) {
+                String clave = (String) e.getKey();
+                String valor = (String) e.getValue();
+
+                if (clave.contains("operacion") && valor.equals("")) {
+                    where += " and o.operacion is not null";
+                } else {
+                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
+            }
+
+            if (tabla != null) {
+                where += " and o.tabla=:tabla";
+                parameters.put("tabla", tabla);
+
+            }
+
+            if (campo != null && busqueda != null) {
+                where += " and o.objeto->>'" + campo + "'='" + busqueda + "'";
+            }
+
+            if (fechaInicio != null && fechaFin != null) {
+                where += " and o.fecha between :fechainicio and :fechafin";
+                parameters.put("fechainicio", fechaInicio);
+                parameters.put("fechafin", fechaFin);
+            }
+
+            int total = (int) ejbHistorial.ejecutarQuery(where, parameters, null, null, null, true);
+            getFormulario().setTotal(total);
+            int endIndex = i + pageSize;
+            if (endIndex > total) {
+                endIndex = total;
+            }
+            getLista().setRowCount(total);
+            String order;
+            if (scs.length == 0) {
+                order = "o.fecha desc";
+            } else {
+                order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+            }
+            return (List<Historial>) ejbHistorial.ejecutarQuery(where, parameters, order, i, endIndex, false);
+        } catch (ExcepcionDeConsulta ex) {
+            Logger.getLogger(HistorialBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public String bucar() {
+        return null;
+    }
+
     public String buscar(String tabla, int id) {
         titulo = "Tabla = " + tabla + "; ID = " + id;
+        this.tabla = tabla;
+        this.campo = "id";
+        this.busqueda = id + "";
         lista = new LazyDataModel<Historial>() {
             @Override
             public List<Historial> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
-                try {
-                    Map parameters = new HashMap();
-                    String where = " o.tabla=:tabla and o.objeto->>'id'=:id";
-                    parameters.put("tabla", tabla);
-                    parameters.put("id", id + "");
-                    for (Map.Entry e : map.entrySet()) {
-                        String clave = (String) e.getKey();
-                        String valor = (String) e.getValue();
-                        where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                        parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
-                    }
-
-                    if (fechaInicio != null && fechaFin != null) {
-                        where += " and o.fecha between :fechainicio and :fechafin";
-                        parameters.put("fechainicio", fechaInicio);
-                        parameters.put("fechafin", fechaFin);
-                    }
-
-                    int total = (int) ejbHistorial.ejecutarQuery(where, parameters, null, null, null, true);
-                    getFormulario().setTotal(total);
-                    int endIndex = i + pageSize;
-                    if (endIndex > total) {
-                        endIndex = total;
-                    }
-                    getLista().setRowCount(total);
-                    String order;
-                    if (scs.length == 0) {
-                        order = "o.fecha desc";
-                    } else {
-                        order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
-                    }
-                    return (List<Historial>) ejbHistorial.ejecutarQuery(where, parameters, order, i, endIndex, false);
-                } catch (ExcepcionDeConsulta ex) {
-                    Logger.getLogger(HistorialBean.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                return null;
+                return cargar(i, pageSize, scs, map);
             }
         };
         formulario.insertar();
@@ -176,6 +207,76 @@ public class HistorialBean implements Serializable {
      */
     public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
+    }
+
+    /**
+     * @return the usuario
+     */
+    public String getUsuario() {
+        return usuario;
+    }
+
+    /**
+     * @param usuario the usuario to set
+     */
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
+    }
+
+    /**
+     * @return the operacion
+     */
+    public Character getOperacion() {
+        return operacion;
+    }
+
+    /**
+     * @param operacion the operacion to set
+     */
+    public void setOperacion(Character operacion) {
+        this.operacion = operacion;
+    }
+
+    /**
+     * @return the tabla
+     */
+    public String getTabla() {
+        return tabla;
+    }
+
+    /**
+     * @param tabla the tabla to set
+     */
+    public void setTabla(String tabla) {
+        this.tabla = tabla;
+    }
+
+    /**
+     * @return the campo
+     */
+    public String getCampo() {
+        return campo;
+    }
+
+    /**
+     * @param campo the campo to set
+     */
+    public void setCampo(String campo) {
+        this.campo = campo;
+    }
+
+    /**
+     * @return the busqueda
+     */
+    public String getBusqueda() {
+        return busqueda;
+    }
+
+    /**
+     * @param busqueda the busqueda to set
+     */
+    public void setBusqueda(String busqueda) {
+        this.busqueda = busqueda;
     }
 
 }

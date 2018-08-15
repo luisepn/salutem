@@ -196,7 +196,7 @@ public class MaestrosBean implements Serializable, IMantenimiento {
             maestro.setCreadopor(seguridadBean.getLogueado().getUserid());
             maestro.setActualizado(maestro.getCreado());
             maestro.setActualizadopor(maestro.getCreadopor());
-            ejbMaestros.crear(maestro, seguridadBean.getLogueado().getUserid());
+            ejbMaestros.crear(maestro, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -216,7 +216,7 @@ public class MaestrosBean implements Serializable, IMantenimiento {
         try {
             maestro.setActualizado(new Date());
             maestro.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbMaestros.actualizar(maestro, seguridadBean.getLogueado().getUserid());
+            ejbMaestros.actualizar(maestro, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -231,7 +231,7 @@ public class MaestrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbMaestros.eliminar(maestro, seguridadBean.getLogueado().getUserid());
+            ejbMaestros.eliminar(maestro, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);

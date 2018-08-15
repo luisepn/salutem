@@ -227,7 +227,7 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             perfil.setCreadopor(seguridadBean.getLogueado().getUserid());
             perfil.setActualizado(perfil.getCreado());
             perfil.setActualizadopor(perfil.getCreadopor());
-            ejbPerfiles.crear(perfil, seguridadBean.getLogueado().getUserid());
+            ejbPerfiles.crear(perfil, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -247,7 +247,7 @@ public class PerfilesBean implements Serializable, IMantenimiento {
         try {
             perfil.setActualizado(new Date());
             perfil.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbPerfiles.actualizar(perfil, seguridadBean.getLogueado().getUserid());
+            ejbPerfiles.actualizar(perfil, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -262,7 +262,7 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbPerfiles.eliminar(perfil, seguridadBean.getLogueado().getUserid());
+            ejbPerfiles.eliminar(perfil, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);

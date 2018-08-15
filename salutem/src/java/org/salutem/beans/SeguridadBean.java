@@ -20,6 +20,7 @@ import javax.faces.event.MethodExpressionActionListener;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import org.controladores.salutem.InstitucionesFacade;
 import org.controladores.salutem.UsuariosFacade;
 import org.controladores.salutem.MenusFacade;
@@ -338,7 +339,7 @@ public class SeguridadBean implements Serializable {
         logueado.setClave(claveCodificada);
 
         try {
-            ejbPersonas.actualizar(logueado, null);
+            ejbPersonas.actualizar(logueado, logueado.getUserid(), getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -350,6 +351,15 @@ public class SeguridadBean implements Serializable {
         claveNueva = null;
         claveNuevaRetipeada = null;
         return null;
+    }
+
+    public String getCurrentClientIpAddress() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String ipAddress = request.getHeader("X-FORWARDED-FOR");
+        if (ipAddress == null) {
+            ipAddress = request.getRemoteAddr();
+        }
+        return ipAddress;
     }
 
     /**

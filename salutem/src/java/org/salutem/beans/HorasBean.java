@@ -221,7 +221,7 @@ public class HorasBean implements Serializable, IMantenimiento {
             hora.setCreadopor(seguridadBean.getLogueado().getUserid());
             hora.setActualizado(hora.getCreado());
             hora.setActualizadopor(hora.getCreadopor());
-            ejbHoras.crear(hora, seguridadBean.getLogueado().getUserid());
+            ejbHoras.crear(hora, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -241,7 +241,7 @@ public class HorasBean implements Serializable, IMantenimiento {
         try {
             hora.setActualizado(new Date());
             hora.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbHoras.actualizar(hora, seguridadBean.getLogueado().getUserid());
+            ejbHoras.actualizar(hora, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -256,7 +256,7 @@ public class HorasBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbHoras.eliminar(hora, seguridadBean.getLogueado().getUserid());
+            ejbHoras.eliminar(hora, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);

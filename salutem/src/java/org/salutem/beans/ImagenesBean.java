@@ -69,7 +69,7 @@ public class ImagenesBean implements Serializable {
         return null;
     }
 
-    public void grabarImagen(String userid, String clasificador, Integer identificador) {
+    public void grabarImagen(String userid, String ip, String clasificador, Integer identificador) {
         try {
             if (archivo.getId() == null) {
                 archivo.setActivo(Boolean.TRUE);
@@ -77,14 +77,14 @@ public class ImagenesBean implements Serializable {
                 archivo.setCreadopor(userid);
                 archivo.setActualizado(archivo.getCreado());
                 archivo.setActualizadopor(archivo.getActualizadopor());
-                ejbArchivos.crear(archivo, userid);
+                ejbArchivos.crear(archivo, userid, ip);
             }
             archivo.setIdentificador(identificador);
             archivo.setClasificador(clasificador);
             archivo.setRuta(crearFichero(archivo.getId(), archivo.getArchivo(), clasificador));
             archivo.setActualizado(new Date());
             archivo.setActualizadopor(userid);
-            ejbArchivos.actualizar(archivo, userid);
+            ejbArchivos.actualizar(archivo, userid, ip);
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ImagenesBean.class.getName()).log(Level.SEVERE, null, ex);

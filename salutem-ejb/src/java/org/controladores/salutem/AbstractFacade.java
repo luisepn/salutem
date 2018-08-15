@@ -29,7 +29,6 @@ import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
 
-
 /**
  *
  * @author fernando
@@ -57,16 +56,17 @@ public abstract class AbstractFacade<T> implements Serializable {
      *
      * @param entity Entidad a ser creada
      * @param usuario Usuario que ejecuta la creación de la entidad
+     * @param id Dirección IP del cliente de la aplicación
      * @throws org.excepciones.salutem.ExcepcionDeCreacion
      */
-    public void crear(T entity, String usuario) throws ExcepcionDeCreacion {
+    public void crear(T entity, String usuario, String id) throws ExcepcionDeCreacion {
         try {
             getEntityManager().persist(entity);
             getEntityManager().flush();
         } catch (Exception e) {
             throw new ExcepcionDeCreacion(entity.toString(), e);
         } finally {
-            ejbLogs.log(getJson(entity), entity.getClass().getSimpleName(), 'C', usuario);
+            ejbLogs.log(getJson(entity), entity.getClass().getSimpleName(), 'C', usuario, id);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Creada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }
@@ -75,16 +75,17 @@ public abstract class AbstractFacade<T> implements Serializable {
      *
      * @param entity Entidad a ser actualizada
      * @param usuario Usuario que ejecuta la actualización de la entidad
+     * @param id Dirección IP del cliente de la aplicación
      * @throws org.excepciones.salutem.ExcepcionDeActualizacion
      */
-    public void actualizar(T entity, String usuario) throws ExcepcionDeActualizacion {
+    public void actualizar(T entity, String usuario, String id) throws ExcepcionDeActualizacion {
         try {
             getEntityManager().merge(entity);
             getEntityManager().flush();
         } catch (Exception e) {
             throw new ExcepcionDeActualizacion(entity.toString(), e);
         } finally {
-            ejbLogs.log(getJson(entity), entity.getClass().getSimpleName(), 'U', usuario);
+            ejbLogs.log(getJson(entity), entity.getClass().getSimpleName(), 'U', usuario, id);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Actualizada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }
@@ -93,9 +94,10 @@ public abstract class AbstractFacade<T> implements Serializable {
      *
      * @param entity Entidad a ser eliminada
      * @param usuario Usuario que ejecuta la eliminación de la entidad
+     * @param id Dirección IP del cliente de la aplicación
      * @throws org.excepciones.salutem.ExcepcionDeEliminacion
      */
-    public void eliminar(T entity, String usuario) throws ExcepcionDeEliminacion {
+    public void eliminar(T entity, String usuario, String id) throws ExcepcionDeEliminacion {
         try {
             entity = getEntityManager().merge(entity);
             getEntityManager().remove(entity);
@@ -103,7 +105,7 @@ public abstract class AbstractFacade<T> implements Serializable {
         } catch (Exception e) {
             throw new ExcepcionDeEliminacion(entity.toString(), e);
         } finally {
-            ejbLogs.log(getJson(entity), entity.getClass().getSimpleName(), 'D', usuario);
+            ejbLogs.log(getJson(entity), entity.getClass().getSimpleName(), 'D', usuario, id);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Eliminada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }

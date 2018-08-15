@@ -127,7 +127,7 @@ public class IngresoSistemaBean implements Serializable {
                 Logger.getLogger(IngresoSistemaBean.class.getName()).log(Level.SEVERE, null, ex);
             }
             persona.setClave(cnCodificada);
-            ejbPersonas.actualizar(persona, null);
+            ejbPersonas.actualizar(persona, persona.getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);

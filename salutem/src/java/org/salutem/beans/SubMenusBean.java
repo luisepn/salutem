@@ -209,7 +209,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             menu.setCreadopor(seguridadBean.getLogueado().getUserid());
             menu.setActualizado(menu.getCreado());
             menu.setActualizadopor(menu.getCreadopor());
-            ejbMenus.crear(menu, seguridadBean.getLogueado().getUserid());
+            ejbMenus.crear(menu, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SubMenusBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -230,7 +230,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
         try {
             menu.setActualizado(new Date());
             menu.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbMenus.actualizar(menu, seguridadBean.getLogueado().getUserid());
+            ejbMenus.actualizar(menu, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SubMenusBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -246,7 +246,7 @@ public class SubMenusBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbMenus.eliminar(menu, seguridadBean.getLogueado().getUserid());
+            ejbMenus.eliminar(menu, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SubMenusBean.class.getName()).log(Level.SEVERE, null, ex);

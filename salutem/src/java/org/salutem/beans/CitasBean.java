@@ -273,7 +273,7 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setDescripcion("Cita agendada. " + (observaciones != null ? observaciones.trim() : ""));
 
         try {
-            ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid());
+            ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -324,7 +324,7 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
         cita.setDescripcion("Cita cancelada. " + cita.getDescripcion());
         try {
-            ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid());
+            ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -346,7 +346,7 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
         cita.setDescripcion("Cita reagendada. " + cita.getDescripcion());
         try {
-            ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid());
+            ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -361,7 +361,7 @@ public class CitasBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbCitas.eliminar(cita, seguridadBean.getLogueado().getUserid());
+            ejbCitas.eliminar(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);

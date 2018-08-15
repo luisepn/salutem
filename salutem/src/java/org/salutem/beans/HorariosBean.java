@@ -224,7 +224,7 @@ public class HorariosBean implements Serializable, IMantenimiento {
             horario.setCreadopor(seguridadBean.getLogueado().getUserid());
             horario.setActualizado(horario.getCreado());
             horario.setActualizadopor(horario.getCreadopor());
-            ejbHorarios.crear(horario, seguridadBean.getLogueado().getUserid());
+            ejbHorarios.crear(horario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -241,7 +241,7 @@ public class HorariosBean implements Serializable, IMantenimiento {
         try {
             horario.setActualizado(new Date());
             horario.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbHorarios.actualizar(horario, seguridadBean.getLogueado().getUserid());
+            ejbHorarios.actualizar(horario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -253,7 +253,7 @@ public class HorariosBean implements Serializable, IMantenimiento {
     @Override
     public String remover() {
         try {
-            ejbHorarios.eliminar(horario, seguridadBean.getLogueado().getUserid());
+            ejbHorarios.eliminar(horario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);

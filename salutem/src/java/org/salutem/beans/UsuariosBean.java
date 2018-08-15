@@ -212,7 +212,7 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             usuario.setCreadopor(seguridadBean.getLogueado().getUserid());
             usuario.setActualizado(usuario.getCreado());
             usuario.setActualizadopor(usuario.getCreadopor());
-            ejbUsuarios.crear(usuario, seguridadBean.getLogueado().getUserid());
+            ejbUsuarios.crear(usuario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -234,7 +234,7 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             usuario.setPersona(persona);
             usuario.setActualizado(new Date());
             usuario.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbUsuarios.actualizar(usuario, seguridadBean.getLogueado().getUserid());
+            ejbUsuarios.actualizar(usuario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -250,7 +250,7 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             return null;
         }
         try {
-            ejbUsuarios.eliminar(usuario, seguridadBean.getLogueado().getUserid());
+            ejbUsuarios.eliminar(usuario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);

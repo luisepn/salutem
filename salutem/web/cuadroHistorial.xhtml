@@ -67,11 +67,17 @@
                 <ace:column  headerText="IP" sortBy="#{item.ip}" filterBy="#{item.ip}" filterMatchMode="contains" style="text-align: left">
                     <h:outputText  value="#{item.ip}"/>
                 </ace:column>
-                <ace:column  headerText="Operación" sortBy="#{item.operacion}" filterBy="#{item.operacion}" filterMatchMode="contains" style="text-align: left">
+                <ace:column  headerText="Operación"                                         
+                             sortBy="#{item.operacion}" 
+                             filterBy="#{item.operacion}"
+                             filterOptions="#{salutemCombos.operacion}"                                          
+                             filterValue="#{salutemHistorial.operacion}"
+                             filterMatchMode="exact" 
+                             style="text-align: left">
                     <h:outputText  value="#{item.operacion eq 'C' ? '[C] Crear': item.operacion eq 'R' ? '[R] Leer' : item.operacion eq 'U' ? '[U] Actualizar' : item.operacion eq 'D' ? '[D] Borrar':''}"/>
                 </ace:column>
                 <ace:column  headerText="Objeto" filterMatchMode="contains" style="text-align: left">
-                    <h:outputText  value="#{item.objeto}" style="white-space: pre-wrap"/>
+                    <h:outputText  value="#{item.objetoSinFormato}" style="white-space: pre-wrap"/>
                 </ace:column>
             </ace:dataTable>
             <h:panelGrid>

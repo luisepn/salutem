@@ -202,7 +202,7 @@ public class MaterialesBean implements Serializable, IMantenimiento {
             material.setCreadopor(seguridadBean.getLogueado().getUserid());
             material.setActualizado(material.getCreado());
             material.setActualizadopor(material.getCreadopor());
-            ejbMateriales.crear(material, seguridadBean.getLogueado().getUserid());
+            ejbMateriales.crear(material, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -222,7 +222,7 @@ public class MaterialesBean implements Serializable, IMantenimiento {
         try {
             material.setActualizado(new Date());
             material.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbMateriales.actualizar(material, seguridadBean.getLogueado().getUserid());
+            ejbMateriales.actualizar(material, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -240,7 +240,7 @@ public class MaterialesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbMateriales.eliminar(material, seguridadBean.getLogueado().getUserid());
+            ejbMateriales.eliminar(material, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);

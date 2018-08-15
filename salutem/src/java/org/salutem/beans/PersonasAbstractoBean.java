@@ -212,10 +212,10 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return null;
         }
         try {
-            ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid());
+            ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             persona.setDireccion(direccion);
 
-            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), "Fotografias", null);
+            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress(), "Fotografias", null);
             persona.setFotografia(imagenesBean.getArchivo());
 
             persona.setUserid(persona.getCedula());
@@ -224,7 +224,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             persona.setCreadopor(seguridadBean.getLogueado().getUserid());
             persona.setActualizado(persona.getCreado());
             persona.setActualizadopor(persona.getActualizadopor());
-            ejbPersonas.crear(persona, seguridadBean.getLogueado().getUserid());
+            ejbPersonas.crear(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -244,17 +244,17 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         }
         try {
             if (direccion.getId() == null) {
-                ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid());
+                ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             } else {
-                ejbDirecciones.actualizar(direccion, seguridadBean.getLogueado().getUserid());
+                ejbDirecciones.actualizar(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
             persona.setDireccion(direccion);
 
-            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), "Fotografias", null);
+            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress(), "Fotografias", null);
             persona.setFotografia(imagenesBean.getArchivo());
             persona.setActualizado(new Date());
             persona.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid());
+            ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -270,7 +270,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return null;
         }
         try {
-            ejbPersonas.eliminar(persona, seguridadBean.getLogueado().getUserid());
+            ejbPersonas.eliminar(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);

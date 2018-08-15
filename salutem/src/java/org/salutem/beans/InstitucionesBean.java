@@ -191,11 +191,11 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid());
-            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), "Logotipos", null);
+            ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress(), "Logotipos", null);
             institucion.setLogotipo(imagenesBean.getArchivo());
             institucion.setDireccion(direccion);
-            ejbInstituciones.crear(institucion, seguridadBean.getLogueado().getUserid());
+            ejbInstituciones.crear(institucion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -214,10 +214,10 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbDirecciones.actualizar(direccion, seguridadBean.getLogueado().getUserid());
-            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), "Logotipos", null);
+            ejbDirecciones.actualizar(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress(), "Logotipos", null);
             institucion.setLogotipo(imagenesBean.getArchivo());
-            ejbInstituciones.actualizar(institucion, seguridadBean.getLogueado().getUserid());
+            ejbInstituciones.actualizar(institucion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -233,7 +233,7 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbInstituciones.eliminar(institucion, seguridadBean.getLogueado().getUserid());
+            ejbInstituciones.eliminar(institucion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
