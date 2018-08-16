@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : Historial
+    Fecha       : 16 de Agosto de 2018, 09:43:59 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+
+    <h:body >
+
+        <ui:composition template="../plantillas/Plantilla.xhtml">
+            <!-- Aqui va todo el codigo de la pagina -->
+            <ui:define name="content">
+                <ace:panel id="panel"
+                           header="Historial de Cambios"
+                           closable="false"
+                           toggleable="true" >
+                    <h:panelGrid columns="2">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemHistorial.buscar()}"/>
+                        </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemHistorial.formulario.mostrar}"/>
+                    </h:panelGrid>
+
+                </ace:panel>
+                <ace:panel 
+                    header="Resultado Búsqueda"
+                    closable="false"
+                    toggleable="true" >
+                    <ui:include src="../tablaHistorial.xhtml"/>
+                </ace:panel>
+            </ui:define>
+            <!-- Fin -->
+        </ui:composition>
+
+    </h:body>
+
+</html>

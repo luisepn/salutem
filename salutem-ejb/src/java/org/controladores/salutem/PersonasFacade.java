@@ -70,7 +70,7 @@ public class PersonasFacade extends AbstractFacade<Personas> {
         json.addProperty("apellidos", objeto.getApellidos());
         json.addProperty("email", objeto.getEmail());
         json.addProperty("userid", objeto.getUserid());
-        json.addProperty("clave", objeto.getClave());
+//        json.addProperty("clave", objeto.getClave());
         json.addProperty("cedula", objeto.getCedula());
         json.addProperty("rol", objeto.getRol());
         json.addProperty("ocupacion", objeto.getOcupacion());

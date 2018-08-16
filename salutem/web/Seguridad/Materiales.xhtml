@@ -81,7 +81,8 @@
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemMateriales.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
                                     <ace:menuItem action="#{salutemMateriales.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
-                                    <ace:menuItem action="#{salutemHistorial.buscar(salutemMateriales.nombreTabla, item.id)}" value="Historial" icon="ui-icon ui-icon-script"/>
+                                    <ace:menuItem action="#{salutemHistorial.buscar(salutemMateriales.nombreTabla, item.id)}" rendered="#{salutemMateriales.perfil.auditoria}"
+                                                  value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column> 
                             <ace:column  headerText="Tipo de foco"                                         

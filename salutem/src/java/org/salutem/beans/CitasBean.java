@@ -308,6 +308,15 @@ public class CitasBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
+        cita.setActualizado(new Date());
+        cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
+        try {
+            ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+        } catch (ExcepcionDeActualizacion ex) {
+            Mensajes.error(ex.getMessage());
+            Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        formulario.cancelar();
         return null;
     }
 

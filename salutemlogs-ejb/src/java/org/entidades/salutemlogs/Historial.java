@@ -96,7 +96,7 @@ public class Historial implements Serializable {
     }
 
     public String getObjetoSinFormato() {
-        return objeto.replace("\"", "");
+        return objeto.replace("\":", "' =").replace("\"", "'");
     }
 
     public void setObjeto(String objeto) {

@@ -157,6 +157,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             persona = (Personas) personas.getRowData();
         }
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
+        direccion.setActivo(Boolean.TRUE);
         imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.editar();
         return null;

@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : tablaHistorial
+    Fecha       : 10 de Agosto de 2018, 23:15:18 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <h:panelGroup>
+        <h:panelGrid columns="3" styleClass="centeredPanelGrid">
+            <h:outputLabel  value="Exportar a:"/>
+            <h:selectOneRadio  value="#{salutemHistorial.formulario.tipo}" required="true">
+                <f:ajax disabled="false"/>
+                <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                <f:selectItem itemValue="xml" itemLabel="XML"/>
+            </h:selectOneRadio>
+            <ace:dataExporter id="dataExporterHistorial" 
+                              label="Exportar Archivo" 
+                              type="#{salutemHistorial.formulario.tipo}" 
+                              target="tablaHistorial" 
+                              fileName="#{salutemSeguridad.titulo}"/>
+        </h:panelGrid>
+        <h:panelGrid width="100%">
+            <ace:dataTable id="tablaHistorial" 
+                           lazy="true"
+                           emptyMessage="No existen registros"
+                           paginatorAlwaysVisible="true"
+                           value="#{salutemHistorial.lista}"
+                           var="item"
+                           paginator="true"
+                           rowIndexVar="row"
+                           paginatorPosition="both"
+                           rowsPerPageTemplate="#{salutemHistorial.formulario.rowsPerPageTemplate}"
+                           currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                           paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                           rows="5">
+                <ace:column headerText="Registro" style="text-align: right; width: 50px;">
+                    <h:outputText value="#{row+1}"/>
+                </ace:column>
+                <ace:column  headerText="Fecha" sortBy="#{item.fecha}" 
+                             filterBy="#{item.fecha}" 
+                             filterDatePattern="dd/MM/yyyy HH:mm"
+                             filterValueMin="#{salutemHistorial.fechaInicio}"
+                             filterValueMax="#{salutemHistorial.fechaFin}"
+                             type="DATE"
+                             rangedFilter="true" 
+                             style="text-align: left">
+                    <h:outputText  value="#{item.fecha}">
+                        <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                    </h:outputText>
+                </ace:column>               
+                <ace:column  headerText="Usuario" sortBy="#{item.userid}" filterBy="#{item.userid}" filterMatchMode="contains" style="text-align: left">
+                    <h:outputText  value="#{item.userid}"/>
+                </ace:column>
+                <ace:column  headerText="IP" sortBy="#{item.ip}" filterBy="#{item.ip}" filterMatchMode="contains" style="text-align: left">
+                    <h:outputText  value="#{item.ip}"/>
+                </ace:column>
+                <ace:column headerText="Operación"                                         
+                            sortBy="#{item.operacion}" 
+                            filterBy="#{item.operacion}"
+                            filterOptions="#{salutemCombos.operacion}"                                          
+                            filterValue="#{salutemHistorial.operacion}"
+                            filterMatchMode="exact" 
+                            style="text-align: left">
+                    <h:outputText value="#{item.operacion eq 'C' ? '[C] Crear': 
+                                           item.operacion eq 'R' ? '[R] Leer': 
+                                           item.operacion eq 'U' ? '[U] Actualizar': 
+                                           item.operacion eq 'D' ? '[D] Borrar': 
+                                           item.operacion eq 'I' ? '[I] Ingreso': 
+                                           item.operacion eq 'O' ? '[O] Salida': 
+                                           ''}"/>
+                </ace:column>
+                <ace:column headerText="Tabla"                                         
+                            sortBy="#{item.tabla}" 
+                            filterBy="#{item.tabla}"
+                            filterOptions="#{salutemCombos.tabla}"                                          
+                            filterValue="#{salutemHistorial.tabla}"
+                            filterMatchMode="exact"
+                            rendered="#{salutemHistorial.verColumnaTabla}"
+                            style="text-align: left">
+                    <h:outputText  value="#{item.tabla}"/>
+                </ace:column>
+                <ace:column  headerText="Campos" filterBy="#{item.objeto}" filterMatchMode="exact" style="text-align: left">
+                    <h:outputText  value="#{item.objetoSinFormato}" style="white-space: pre-wrap"/>
+                </ace:column>
+            </ace:dataTable>            
+        </h:panelGrid>
+    </h:panelGroup>
+</html>

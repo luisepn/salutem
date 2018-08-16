@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "Archivos.findAll", query = "SELECT a FROM Archivos a")
     , @NamedQuery(name = "Archivos.findById", query = "SELECT a FROM Archivos a WHERE a.id = :id")
-    , @NamedQuery(name = "Archivos.findByFecha", query = "SELECT a FROM Archivos a WHERE a.fecha = :fecha")
     , @NamedQuery(name = "Archivos.findByClasificador", query = "SELECT a FROM Archivos a WHERE a.clasificador = :clasificador")
     , @NamedQuery(name = "Archivos.findByIdentificador", query = "SELECT a FROM Archivos a WHERE a.identificador = :identificador")
     , @NamedQuery(name = "Archivos.findByNombre", query = "SELECT a FROM Archivos a WHERE a.nombre = :nombre")
@@ -75,9 +74,6 @@ public class Archivos implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "fecha")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fecha;
     @Column(name = "identificador")
     private Integer identificador;
     @Column(name = "creado")
@@ -109,14 +105,6 @@ public class Archivos implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
     }
 
     public Integer getIdentificador() {

@@ -573,12 +573,38 @@ public class CombosBean implements Serializable {
     }
 
     public SelectItem[] getOperacion() {
-        SelectItem[] items = new SelectItem[5];
+        SelectItem[] items = new SelectItem[7];
         items[0] = new SelectItem("A", "");
         items[1] = new SelectItem("C", "[C] Crear");
         items[2] = new SelectItem("R", "[R] Leer");
         items[3] = new SelectItem("U", "[U] Actualizar");
         items[4] = new SelectItem("D", "[D] Borrar");
+        items[5] = new SelectItem("I", "[I] LogIN");
+        items[6] = new SelectItem("O", "[O] LogOUT");
+        return items;
+    }
+    public SelectItem[] getTabla() {
+        SelectItem[] items = new SelectItem[19];
+        items[0] = new SelectItem("A", "");
+        items[1] = new SelectItem("Archivos", "Archivos");
+        items[2] = new SelectItem("Citas", "Citas");
+        items[3] = new SelectItem("Consultas", "Consultas");
+        items[4] = new SelectItem("Direcciones", "Direcciones");
+        items[5] = new SelectItem("Formulas", "Formulas");
+        items[6] = new SelectItem("Horarios", "Horarios");
+        items[7] = new SelectItem("Horas", "Horas");
+        items[8] = new SelectItem("Instituciones", "Instituciones");
+        items[9] = new SelectItem("Maestros", "Maestros");
+        items[10] = new SelectItem("Materiales", "Materiales");
+        items[11] = new SelectItem("Menus", "Menus");
+        items[12] = new SelectItem("Ordenes", "Ordenes");
+        items[13] = new SelectItem("Pacientes", "Pacientes");
+        items[14] = new SelectItem("Parametros", "Parametros");
+        items[15] = new SelectItem("Perfiles", "Perfiles");
+        items[16] = new SelectItem("Personas", "Personas");
+        items[17] = new SelectItem("Profesionales", "Profesionales");
+        items[18] = new SelectItem("Usuarios", "Usuarios");
+        items[18] = new SelectItem("Logs", "Logs");
         return items;
     }
 

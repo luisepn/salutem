@@ -135,6 +135,8 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
+        claveBusqueda = null;
+        persona = null;
         usuario = new Usuarios();
         usuario.setActivo(Boolean.TRUE);
         formulario.insertar();
@@ -167,7 +169,7 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
 
     @Override
     public boolean validar() {
-        if (persona == null) {
+        if (usuario.getPersona() == null) {
             Mensajes.advertencia("Seleccione un usuario");
             return true;
         }
@@ -203,11 +205,12 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
+        usuario.setPersona(persona);
         if (validar()) {
             return null;
         }
         try {
-            usuario.setPersona(persona);
+
             usuario.setCreado(new Date());
             usuario.setCreadopor(seguridadBean.getLogueado().getUserid());
             usuario.setActualizado(usuario.getCreado());
@@ -227,11 +230,11 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        if (validar()) {
-            return null;
-        }
         try {
             usuario.setPersona(persona);
+            if (validar()) {
+                return null;
+            }
             usuario.setActualizado(new Date());
             usuario.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbUsuarios.actualizar(usuario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());

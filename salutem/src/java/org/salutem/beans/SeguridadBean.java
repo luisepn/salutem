@@ -27,6 +27,7 @@ import org.controladores.salutem.MenusFacade;
 import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.PerfilesFacade;
 import org.controladores.salutem.PersonasFacade;
+import org.controladores.salutemlogs.AsincronoLogFacade;
 import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Menus;
@@ -89,6 +90,8 @@ public class SeguridadBean implements Serializable {
     private ParametrosFacade ejbParametros;
     @EJB
     private InstitucionesFacade ejbInstituciones;
+    @EJB
+    public AsincronoLogFacade ejbLogs;
 
     public SeguridadBean() {
     }
@@ -140,9 +143,12 @@ public class SeguridadBean implements Serializable {
                 usuarios = ejbUsuarios.buscar("o.persona=:persona", parameters);
                 if (!usuarios.isEmpty()) {
                     seleccionarGrupo(usuarios.get(0));
+                    ejbLogs.log("Ingreso exitoso", 'I', logueado.getUserid(), getCurrentClientIpAddress());
                     return usuario.getModulo().getParametros().trim() + ".jsf?faces-redirect=true";
                 } else {
-                    Mensajes.advertencia("Usuario no tiene perfil asignado");
+                    String mensajeLog = "Usuario no tiene perfil asignado";
+                    Mensajes.advertencia(mensajeLog);
+                    ejbLogs.log(mensajeLog, 'I', logueado.getUserid(), getCurrentClientIpAddress());
                 }
             }
         } catch (ExcepcionDeConsulta ex) {
@@ -248,6 +254,9 @@ public class SeguridadBean implements Serializable {
 
     public void logout() {
         try {
+            if (logueado != null) {
+                ejbLogs.log("Salida exitosa", 'O', logueado.getUserid(), getCurrentClientIpAddress());
+            }
             FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
@@ -277,14 +286,16 @@ public class SeguridadBean implements Serializable {
                 logout();
                 return null;
             }
+            if (!formulario.equals("Historial")) {
+                if (!formulario.contains(perfil.getMenu().getFormulario())) {
+                    ctx.redirect(ctxPath + "?m=Perfil no valido");
+                }
+                if (!perfil.getGrupo().equals(usuario.getGrupo())) {
+                    ctx.redirect(ctxPath + "?m=Usuario logueado no esta en el grupo correcto");
+                }
+                titulo = perfil.getMenu().getNombre();
+            }
 
-            if (!formulario.contains(perfil.getMenu().getFormulario())) {
-                ctx.redirect(ctxPath + "?m=Perfil no valido");
-            }
-            if (!perfil.getGrupo().equals(usuario.getGrupo())) {
-                ctx.redirect(ctxPath + "?m=Usuario logueado no esta en el grupo correcto");
-            }
-            titulo = perfil.getMenu().getNombre();
             verActivos = true;
             verAgrupado = true;
             inicioCreado = null;

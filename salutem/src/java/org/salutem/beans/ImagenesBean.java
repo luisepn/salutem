@@ -59,7 +59,6 @@ public class ImagenesBean implements Serializable {
                 File file = i.getFile();
                 archivo.setNombre(i.getFileName());
                 archivo.setTipo(i.getContentType());
-                archivo.setFecha(new Date());
                 archivo.setArchivo(Files.readAllBytes(file.toPath()));
             } catch (IOException ex) {
                 Mensajes.fatal(ex.getMessage());

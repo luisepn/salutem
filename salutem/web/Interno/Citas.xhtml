@@ -268,6 +268,9 @@
                         </h:panelGrid>
                         <h:panelGrid columns="1" width="100%">
                             <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"
+                                              action="#{salutemCitas.grabar()}"
+                                              rendered="#{salutemCitas.formulario.editar}"/>
                                 <ace:menuItem value="Cancelar Cita" icon="ui-icon ui-icon-arrowthickstop-1-s"
                                               action="#{salutemCitas.cancelarCita()}"
                                               rendered="#{salutemCitas.cita.activo and !salutemCitas.formulario.eliminar}"/>

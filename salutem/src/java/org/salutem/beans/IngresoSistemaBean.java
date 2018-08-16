@@ -12,6 +12,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.PersonasFacade;
+import org.controladores.salutemlogs.AsincronoLogFacade;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Personas;
 import org.excepciones.salutem.ExcepcionDeConsulta;
@@ -61,15 +62,21 @@ public class IngresoSistemaBean implements Serializable {
                 return null;
             }
             persona = ejbPersonas.login(usr, Codificador.getEncoded(pwd, "MD5"));
+
             if (persona == null) {
-                Mensajes.advertencia("Usuario no registrado, o clave inválida");
+                String mensajeLog = "Usuario no registrado, o clave inválida";
+                Mensajes.advertencia(mensajeLog);
+                seguridadBean.ejbLogs.log(mensajeLog, 'I', usr, seguridadBean.getCurrentClientIpAddress());
                 return null;
             }
             if (!persona.getActivo()) {
-                Mensajes.advertencia("Usuario no activo");
+                String mensajeLog = "Usuario no activo";
+                Mensajes.advertencia(mensajeLog);
+                seguridadBean.ejbLogs.log(mensajeLog, 'I', persona.getUserid(), seguridadBean.getCurrentClientIpAddress());
                 persona = null;
                 return null;
             }
+
             if (persona.getClave().equals(Codificador.getEncoded(persona.getCedula(), "MD5"))) {
                 formulario.editar();
                 return null;

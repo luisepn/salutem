@@ -24,7 +24,7 @@ public class AsincronoLogFacade {
     private EntityManager em;
 
     @Asynchronous
-    public void log(String json, String tabla, char operacion, String userid, String id) {
+    public void log(String json, String tabla, char operacion, String userid, String ip) {
         String query = "INSERT INTO "
                 + "Historial(fecha, tabla, objeto, operacion, userid, ip) "
                 + "VALUES (:fecha, :tabla, '" + json + "', :operacion, :userid, :ip);";
@@ -33,7 +33,20 @@ public class AsincronoLogFacade {
                 .setParameter("tabla", tabla)
                 .setParameter("operacion", operacion)
                 .setParameter("userid", userid)
-                .setParameter("ip", id)
+                .setParameter("ip", ip)
+                .executeUpdate();
+    }
+
+    @Asynchronous
+    public void log(String mensaje, char operacion, String userid, String ip) {
+        String query = "INSERT INTO "
+                + "Historial(fecha, tabla, objeto, operacion, userid, ip) "
+                + "VALUES (:fecha, 'Logs', '{\"mensaje\":\"" + mensaje + "\"}', :operacion, :userid, :ip);";
+        em.createNativeQuery(query)
+                .setParameter("fecha", new Date())
+                .setParameter("operacion", operacion)
+                .setParameter("userid", userid)
+                .setParameter("ip", ip)
                 .executeUpdate();
     }
 }

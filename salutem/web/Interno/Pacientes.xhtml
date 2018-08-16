@@ -77,7 +77,8 @@
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemPacientes.editarPaciente()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
                                     <ace:menuItem action="#{salutemPacientes.borrarPaciente()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
-                                    <ace:menuItem action="#{salutemHistorial.buscar(salutemPacientes.nombreTabla, item.id)}" value="Historial" icon="ui-icon ui-icon-script"/>
+                                    <ace:menuItem action="#{salutemHistorial.buscar(salutemPacientes.nombreTabla, item.id)}" rendered="#{salutemPacientes.perfil.auditoria}"
+                                                  value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column>
                             <ace:column headerText="Fotografía" >
@@ -158,10 +159,10 @@
                                 <ace:textEntry id="ciudad" value="#{salutemPacientes.direccion.ciudad}" title="Ciudad" />
                                 <h:outputLabel value="Calle Primaria:" for="primaria" />
                                 <ace:textEntry id="primaria" value="#{salutemPacientes.direccion.primaria}" title="Primaria" />
-                                <h:outputLabel value="Calle Secundaria:" for="secundaria" />
-                                <ace:textEntry id="secundaria" value="#{salutemPacientes.direccion.secundaria}" title="Secundaria" />
                                 <h:outputLabel value="Número:" for="numero" />
                                 <ace:textEntry id="numero" value="#{salutemPacientes.direccion.numero}" title="Numero" />
+                                <h:outputLabel value="Calle Secundaria:" for="secundaria" />
+                                <ace:textEntry id="secundaria" value="#{salutemPacientes.direccion.secundaria}" title="Secundaria" />
                                 <h:outputLabel value="Teléfono fijo:" />
                                 <ace:textEntry value="#{salutemPacientes.direccion.fijo}" title="Teléfono fijo" />
                                 <h:outputLabel value="Teléfono móvil:" />
@@ -199,7 +200,11 @@
                     <h:panelGrid>
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                          action="#{salutemPacientes.grabarPaciente()}"/>
+                                          action="#{salutemPacientes.grabarPaciente()}"
+                                          rendered="#{salutemPacientes.formulario.crear}"/>
+                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemPacientes.grabarPaciente()}"
+                                          rendered="#{salutemPacientes.formulario.editar}"/>
                             <ace:menuItem value="Eliminar" icon="ui-icon ui-icon-trash" 
                                           action="#{salutemPacientes.removerPaciente()}" 
                                           rendered="#{salutemPacientes.formulario.eliminar}" />

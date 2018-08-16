@@ -1,14 +1,17 @@
 package org.salutem.historial;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutemlogs.HistorialFacade;
 import org.entidades.salutemlogs.Historial;
@@ -16,6 +19,7 @@ import org.entidades.salutem.Perfiles;
 import org.excepciones.salutemlogs.ExcepcionDeConsulta;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.beans.SeguridadBean;
 import org.salutem.utilitarios.Formulario;
 
 /**
@@ -28,10 +32,14 @@ import org.salutem.utilitarios.Formulario;
 @ViewScoped
 public class HistorialBean implements Serializable {
 
+    @ManagedProperty("#{salutemSeguridad}")
+    private SeguridadBean seguridadBean;
+
     private Formulario formulario = new Formulario();
     private LazyDataModel<Historial> lista;
     private Perfiles perfil;
     private String titulo;
+    private Boolean verColumnaTabla = false;
 
     private Date fechaInicio;
     private Date fechaFin;
@@ -53,6 +61,11 @@ public class HistorialBean implements Serializable {
         };
     }
 
+    @PostConstruct
+    public void activar() {
+        perfil = seguridadBean.traerPerfil("Historial");
+    }
+
     public List<Historial> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
             Map parameters = new HashMap();
@@ -62,18 +75,26 @@ public class HistorialBean implements Serializable {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
 
-                if (clave.contains("operacion") && valor.equals("A")) {
-                    where += " and o.operacion is not null";
+                if (clave.contains("operacion")) {
+                    if (valor.equals("A")) {
+                        where += " and o.operacion is not null";
+                    } else {
+                        where += " and o.operacion=:operacion";
+                        parameters.put("operacion", valor);
+                    }
+                } else if (clave.contains("tabla")) {
+                    if (valor.equals("A")) {
+                        where += " and o.tabla is not null";
+                    } else {
+                        where += " and o.tabla=:tabla";
+                        parameters.put("tabla", valor);
+                    }
+                } else if (clave.contains("objeto")) {
+                    where += " and o.objeto->>" + valor;
                 } else {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
-            }
-
-            if (tabla != null) {
-                where += " and o.tabla=:tabla";
-                parameters.put("tabla", tabla);
-
             }
 
             if (campo != null && busqueda != null) {
@@ -106,7 +127,27 @@ public class HistorialBean implements Serializable {
         return null;
     }
 
-    public String bucar() {
+    public String buscar() {
+        if (fechaInicio == null || fechaFin == null) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            fechaInicio = calendar.getTime();
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND, 999);
+            fechaFin = calendar.getTime();
+        }
+        verColumnaTabla = true;
+        lista = new LazyDataModel<Historial>() {
+            @Override
+            public List<Historial> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                return cargar(i, i1, scs, map);
+            }
+        };
         return null;
     }
 
@@ -115,9 +156,13 @@ public class HistorialBean implements Serializable {
         this.tabla = tabla;
         this.campo = "id";
         this.busqueda = id + "";
+        verColumnaTabla = false;
         lista = new LazyDataModel<Historial>() {
             @Override
             public List<Historial> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+                if (map == null && map.isEmpty()) {
+                    map.put("o.tabla", tabla);
+                }
                 return cargar(i, pageSize, scs, map);
             }
         };
@@ -277,6 +322,34 @@ public class HistorialBean implements Serializable {
      */
     public void setBusqueda(String busqueda) {
         this.busqueda = busqueda;
+    }
+
+    /**
+     * @return the seguridadBean
+     */
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
+    }
+
+    /**
+     * @return the verColumnaTabla
+     */
+    public Boolean getVerColumnaTabla() {
+        return verColumnaTabla;
+    }
+
+    /**
+     * @param verColumnaTabla the verColumnaTabla to set
+     */
+    public void setVerColumnaTabla(Boolean verColumnaTabla) {
+        this.verColumnaTabla = verColumnaTabla;
     }
 
 }

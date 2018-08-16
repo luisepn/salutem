@@ -78,7 +78,8 @@
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemPerfiles.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
                                     <ace:menuItem action="#{salutemPerfiles.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
-                                    <ace:menuItem action="#{salutemHistorial.buscar(salutemPerfiles.nombreTabla, item.id)}" value="Historial" icon="ui-icon ui-icon-script"/>
+                                    <ace:menuItem action="#{salutemHistorial.buscar(salutemPerfiles.nombreTabla, item.id)}" rendered="#{salutemPerfiles.perfilSistema.auditoria}"
+                                                  value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column>   
 
@@ -124,6 +125,9 @@
                             </ace:column>
                             <ace:column  headerText="¿Consultar?" sortBy="#{item.consulta}">
                                 <h:outputText value="#{item.consulta ? 'SI' : 'NO'}" style="color: #{item.consulta ? 'green' : 'red'}"/>
+                            </ace:column>
+                            <ace:column  headerText="¿Ver Historial?" sortBy="#{item.auditoria}">
+                                <h:outputText value="#{item.auditoria ? 'SI' : 'NO'}" style="color: #{item.auditoria ? 'green' : 'red'}"/>
                             </ace:column>
                             <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.descripcion}"/>
@@ -201,6 +205,8 @@
                             <ace:checkboxButton value="#{salutemPerfiles.perfil.borrado}"/>
                             <h:outputLabel value="¿Consultar?: "/>
                             <ace:checkboxButton value="#{salutemPerfiles.perfil.consulta}"/>
+                            <h:outputLabel value="¿Ver Historial?: "/>
+                            <ace:checkboxButton value="#{salutemPerfiles.perfil.auditoria}"/>
                         </h:panelGrid>
                     </h:panelGroup>
                     <h:panelGrid columns="1" width="100%">

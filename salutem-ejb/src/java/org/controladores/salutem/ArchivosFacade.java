@@ -34,7 +34,6 @@ public class ArchivosFacade extends AbstractFacade<Archivos> {
     protected String getJson(Archivos objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        json.addProperty("fecha", formatoFecha.format(objeto.getFecha()));
         json.addProperty("clasificador", objeto.getClasificador());
         json.addProperty("identificador", objeto.getIdentificador());
         json.addProperty("nombre", objeto.getNombre());
