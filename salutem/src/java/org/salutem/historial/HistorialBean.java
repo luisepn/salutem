@@ -62,7 +62,7 @@ public class HistorialBean implements Serializable {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
 
-                if (clave.contains("operacion") && valor.equals("")) {
+                if (clave.contains("operacion") && valor.equals("A")) {
                     where += " and o.operacion is not null";
                 } else {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");

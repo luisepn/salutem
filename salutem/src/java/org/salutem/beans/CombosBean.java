@@ -574,7 +574,7 @@ public class CombosBean implements Serializable {
 
     public SelectItem[] getOperacion() {
         SelectItem[] items = new SelectItem[5];
-        items[0] = new SelectItem("", "");
+        items[0] = new SelectItem("A", "");
         items[1] = new SelectItem("C", "[C] Crear");
         items[2] = new SelectItem("R", "[R] Leer");
         items[3] = new SelectItem("U", "[U] Actualizar");
