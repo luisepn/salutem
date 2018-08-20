@@ -387,7 +387,6 @@ public class CitasBean implements Serializable, IMantenimiento {
 
     public SelectItem[] getHorasDisponibles() {
         try {
-
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, 0);
             calendar.set(Calendar.MINUTE, 0);
@@ -458,7 +457,6 @@ public class CitasBean implements Serializable, IMantenimiento {
                         break;
                     }
                 }
-
             }
 
             return CombosBean.getSelectItems(listaHorarios, "object", true);
@@ -472,7 +470,7 @@ public class CitasBean implements Serializable, IMantenimiento {
     public String verAgenda() {
         ver = Boolean.TRUE;
 
-        Calendar c = Calendar.getInstance(); //Fecha de la cita
+        Calendar c = Calendar.getInstance();//Fecha de la cita
         c.setTime(fecha);
         c.set(Calendar.DAY_OF_WEEK, 2);//Dia Lunes
 
