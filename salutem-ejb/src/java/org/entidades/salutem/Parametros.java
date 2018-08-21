@@ -65,6 +65,12 @@ public class Parametros implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    @OneToMany(mappedBy = "tipo")
+    private List<Datos> datosList;
+    @OneToMany(mappedBy = "tipo")
+    private List<Campos> camposList;
+    @OneToMany(mappedBy = "especialidad")
+    private List<Atenciones> atencionesList;
     @OneToMany(mappedBy = "dia")
     private List<Horarios> horariosList;
     @OneToMany(mappedBy = "especialidad")
@@ -97,8 +103,6 @@ public class Parametros implements Serializable {
     private Maestros maestro;
     @OneToMany(mappedBy = "genero")
     private List<Personas> personasList;
-    @OneToMany(mappedBy = "especialidad")
-    private List<Consultas> consultasList;
     @OneToMany(mappedBy = "foco")
     private List<Materiales> materialesList;
     @OneToMany(mappedBy = "tipo")
@@ -121,7 +125,6 @@ public class Parametros implements Serializable {
         this.id = id;
     }
 
-
     public Boolean getActivo() {
         return activo;
     }
@@ -138,7 +141,6 @@ public class Parametros implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -146,7 +148,6 @@ public class Parametros implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     @XmlTransient
     public List<Formulas> getFormulasList() {
@@ -202,15 +203,6 @@ public class Parametros implements Serializable {
     }
 
     @XmlTransient
-    public List<Consultas> getConsultasList() {
-        return consultasList;
-    }
-
-    public void setConsultasList(List<Consultas> consultasList) {
-        this.consultasList = consultasList;
-    }
-
-    @XmlTransient
     public List<Materiales> getMaterialesList() {
         return materialesList;
     }
@@ -262,7 +254,6 @@ public class Parametros implements Serializable {
         return nombre;
     }
 
-
     @XmlTransient
     public List<Horarios> getHorariosList() {
         return horariosList;
@@ -279,6 +270,32 @@ public class Parametros implements Serializable {
 
     public void setProfesionalesList(List<Profesionales> profesionalesList) {
         this.profesionalesList = profesionalesList;
+    }
+    @XmlTransient
+    public List<Atenciones> getAtencionesList() {
+        return atencionesList;
+    }
+    public void setAtencionesList(List<Atenciones> atencionesList) {
+        this.atencionesList = atencionesList;
+    }
+
+
+    @XmlTransient
+    public List<Datos> getDatosList() {
+        return datosList;
+    }
+
+    public void setDatosList(List<Datos> datosList) {
+        this.datosList = datosList;
+    }
+
+    @XmlTransient
+    public List<Campos> getCamposList() {
+        return camposList;
+    }
+
+    public void setCamposList(List<Campos> camposList) {
+        this.camposList = camposList;
     }
 
     public String getNombre() {
@@ -328,5 +345,5 @@ public class Parametros implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-      
+
 }

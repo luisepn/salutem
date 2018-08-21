@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author fernando
+ * @author usuario
  */
 @Entity
 @Table(name = "ordenes")
@@ -43,11 +43,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Ordenes.findByCreado", query = "SELECT o FROM Ordenes o WHERE o.creado = :creado")
     , @NamedQuery(name = "Ordenes.findByCreadopor", query = "SELECT o FROM Ordenes o WHERE o.creadopor = :creadopor")
     , @NamedQuery(name = "Ordenes.findByActualizado", query = "SELECT o FROM Ordenes o WHERE o.actualizado = :actualizado")
-    , @NamedQuery(name = "Ordenes.findByActualizadopor", query = "SELECT o FROM Ordenes o WHERE o.actualizadopor = :actualizadopor")})
+    , @NamedQuery(name = "Ordenes.findByActualizadopor", query = "SELECT o FROM Ordenes o WHERE o.actualizadopor = :actualizadopor")
+    , @NamedQuery(name = "Ordenes.findByActivo", query = "SELECT o FROM Ordenes o WHERE o.activo = :activo")})
 public class Ordenes implements Serializable {
-
-    @Column(name = "activo")
-    private Boolean activo;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -85,6 +83,8 @@ public class Ordenes implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    @Column(name = "activo")
+    private Boolean activo;
     @JoinColumn(name = "formula", referencedColumnName = "id")
     @OneToOne
     private Formulas formula;
@@ -187,6 +187,14 @@ public class Ordenes implements Serializable {
         this.actualizadopor = actualizadopor;
     }
 
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
     public Formulas getFormula() {
         return formula;
     }
@@ -226,14 +234,6 @@ public class Ordenes implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Ordenes[ id=" + id + " ]";
-    }
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
     }
     
 }

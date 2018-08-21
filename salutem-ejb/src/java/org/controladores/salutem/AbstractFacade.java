@@ -39,7 +39,8 @@ public abstract class AbstractFacade<T> implements Serializable {
     @EJB
     private AsincronoLogFacade ejbLogs;
 
-    protected SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    protected SimpleDateFormat formatoFechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    protected SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
     protected SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
 
     private final Class<T> entityClass;

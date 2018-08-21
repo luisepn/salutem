@@ -54,10 +54,10 @@ public class FormulasFacade extends AbstractFacade<Formulas> {
         json.addProperty("avoi", objeto.getAvoi());
         json.addProperty("altura", objeto.getAltura());
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("consulta", objeto.getConsulta() != null ? objeto.getConsulta().getId() : 0);
+        json.addProperty("consulta", objeto.getAtencion()!= null ? objeto.getAtencion().getId() : 0);
         json.addProperty("material", objeto.getMaterial() != null ? objeto.getMaterial().toString() : "");
         json.addProperty("tratamiento", objeto.getTratamiento() != null ? objeto.getTratamiento().toString() : "");
-        json.addProperty("orden", objeto.getOrdenes() != null ? objeto.getOrdenes().getId() : 0);
+        json.addProperty("orden", objeto.getOrden()!= null ? objeto.getOrden().getId() : 0);
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json.toString();
     }

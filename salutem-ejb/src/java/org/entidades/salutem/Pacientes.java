@@ -54,6 +54,8 @@ public class Pacientes implements Serializable {
     @Column(name = "actualizadopor")
     private String actualizadopor;
     @OneToMany(mappedBy = "paciente")
+    private List<Atenciones> atencionesList;
+    @OneToMany(mappedBy = "paciente")
     private List<Citas> citasList;
 
     private static final long serialVersionUID = 1L;
@@ -70,8 +72,6 @@ public class Pacientes implements Serializable {
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
-    @OneToMany(mappedBy = "paciente")
-    private List<Consultas> consultasList;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
     @ManyToOne
     private Instituciones institucion;
@@ -116,15 +116,6 @@ public class Pacientes implements Serializable {
 
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
-    }
-
-    @XmlTransient
-    public List<Consultas> getConsultasList() {
-        return consultasList;
-    }
-
-    public void setConsultasList(List<Consultas> consultasList) {
-        this.consultasList = consultasList;
     }
 
     public Instituciones getInstitucion() {
@@ -180,7 +171,6 @@ public class Pacientes implements Serializable {
         return persona != null ? persona.getCedula() + " " + persona.getNombres() + " " + persona.getApellidos() : "";
     }
 
-
     @XmlTransient
     public List<Citas> getCitasList() {
         return citasList;
@@ -188,6 +178,16 @@ public class Pacientes implements Serializable {
 
     public void setCitasList(List<Citas> citasList) {
         this.citasList = citasList;
+    }
+
+
+    @XmlTransient
+    public List<Atenciones> getAtencionesList() {
+        return atencionesList;
+    }
+
+    public void setAtencionesList(List<Atenciones> atencionesList) {
+        this.atencionesList = atencionesList;
     }
 
     public String getDescripcion() {

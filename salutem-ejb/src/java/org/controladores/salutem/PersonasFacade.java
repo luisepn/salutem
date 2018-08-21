@@ -48,18 +48,17 @@ public class PersonasFacade extends AbstractFacade<Personas> {
     }
 
     public Personas login(String usuario, String clave) throws ExcepcionDeConsulta {
+        if (usuario == null || clave == null) {
+            return null;
+        }
         try {
             Query q = em.createQuery("SELECT OBJECT(o) from Personas as o WHERE o.userid=:usuario and o.clave=:clave");
             q.setParameter("usuario", usuario);
             q.setParameter("clave", clave);
-            List<Personas> lista = q.getResultList();
-            if (!lista.isEmpty()) {
-                return lista.get(0);
-            }
+            return (Personas) q.getSingleResult();
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(PersonasFacade.class.getName(), e);
         }
-        return null;
     }
 
     @Override
@@ -75,7 +74,7 @@ public class PersonasFacade extends AbstractFacade<Personas> {
         json.addProperty("rol", objeto.getRol());
         json.addProperty("ocupacion", objeto.getOcupacion());
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("fecha", formatoFecha.format(objeto.getFecha()));
+        json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
         json.addProperty("fotografia", objeto.getFotografia() != null ? objeto.getFotografia().getRuta() : "");
         json.addProperty("direccion", objeto.getDireccion() != null ? objeto.getDireccion().toString() : "");
         json.addProperty("genero", objeto.getGenero() != null ? objeto.getGenero().toString() : "");

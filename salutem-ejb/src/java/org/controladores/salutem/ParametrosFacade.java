@@ -38,14 +38,11 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
             Query q = getEntityManager().createQuery("Select object(o) from Parametros as o where o.maestro.codigo=:maestro and o.codigo=:codigo");
             q.setParameter("maestro", maestro);
             q.setParameter("codigo", parametro);
-            List<Parametros> codigos = q.getResultList();
-            if (!codigos.isEmpty()) {
-                return codigos.get(0);
-            }
+            return (Parametros) q.getSingleResult();
+            
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(ParametrosFacade.class.getName(), e);
         }
-        return null;
     }
 
     public List<Parametros> traerParametros(String maestro, String orden) throws ExcepcionDeConsulta {

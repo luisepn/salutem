@@ -6,10 +6,13 @@
 package org.controladores.salutem;
 
 import com.google.gson.JsonObject;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.entidades.salutem.Archivos;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
  *
@@ -28,6 +31,20 @@ public class ArchivosFacade extends AbstractFacade<Archivos> {
 
     public ArchivosFacade() {
         super(Archivos.class);
+    }
+
+    public Archivos traerArchivo(String clasificador, Integer identificador) throws ExcepcionDeConsulta {
+        if (clasificador == null || identificador == null) {
+            return null;
+        }
+        try {
+            Query q = getEntityManager().createQuery("Select object(o) from Archivos as o where o.clasificador=:clasificador and o.identificador=:identificador");
+            q.setParameter("clasificador", clasificador);
+            q.setParameter("identificador", identificador);
+            return (Archivos) q.getSingleResult();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(ArchivosFacade.class.getName(), e);
+        }
     }
 
     @Override

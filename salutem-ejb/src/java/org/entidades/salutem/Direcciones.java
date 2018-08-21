@@ -186,6 +186,19 @@ public class Direcciones implements Serializable {
                 + (numero != null ? numero : "")
                 + (secundaria != null ? secundaria : "");
     }
+    public Direcciones(String primaria, String numero, String secundaria, String piso, String referencia, String fijo, String movil, String ciudad, String descripcion, String creadopor, String actualizadopor, Integer id, Date creado, Date actualizado, Boolean activo, Instituciones instituciones, Personas personas) {
+        this.primaria = primaria;
+        this.numero = numero;
+        this.secundaria = secundaria;
+        this.piso = piso;
+        this.referencia = referencia;
+        this.fijo = fijo;
+        this.movil = movil;
+        this.ciudad = ciudad;
+        this.descripcion = descripcion;
+        this.institucion = instituciones;
+        this.persona = personas;
+    }
 
     public String getPrimaria() {
         return primaria;
@@ -273,20 +286,6 @@ public class Direcciones implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    public Direcciones(String primaria, String numero, String secundaria, String piso, String referencia, String fijo, String movil, String ciudad, String descripcion, String creadopor, String actualizadopor, Integer id, Date creado, Date actualizado, Boolean activo, Instituciones instituciones, Personas personas) {
-        this.primaria = primaria;
-        this.numero = numero;
-        this.secundaria = secundaria;
-        this.piso = piso;
-        this.referencia = referencia;
-        this.fijo = fijo;
-        this.movil = movil;
-        this.ciudad = ciudad;
-        this.descripcion = descripcion;
-        this.institucion = instituciones;
-        this.persona = personas;
     }
     
 }

@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -51,6 +52,8 @@ public class Citas implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    @OneToOne(mappedBy = "cita")
+    private Atenciones atenciones;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -162,6 +165,15 @@ public class Citas implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Citas[ id=" + id + " ]";
+    }
+
+
+    public Atenciones getAtenciones() {
+        return atenciones;
+    }
+
+    public void setAtenciones(Atenciones atenciones) {
+        this.atenciones = atenciones;
     }
 
     public String getDescripcion() {

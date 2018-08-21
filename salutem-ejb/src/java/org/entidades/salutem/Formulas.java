@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author fernando
+ * @author usuario
  */
 @Entity
 @Table(name = "formulas")
@@ -61,12 +61,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Formulas.findByActivo", query = "SELECT f FROM Formulas f WHERE f.activo = :activo")})
 public class Formulas implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "lod")
     private String lod;
@@ -127,31 +121,37 @@ public class Formulas implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "descripcion")
     private String descripcion;
-    @Column(name = "creado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creado;
     @Size(max = 2147483647)
     @Column(name = "creadopor")
     private String creadopor;
-    @Column(name = "actualizado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date actualizado;
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    @OneToOne(mappedBy = "formula")
+    private Ordenes orden;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
     @Column(name = "activo")
     private Boolean activo;
-    @JoinColumn(name = "consulta", referencedColumnName = "id")
+    @JoinColumn(name = "atencion", referencedColumnName = "id")
     @OneToOne
-    private Consultas consulta;
+    private Atenciones atencion;
     @JoinColumn(name = "material", referencedColumnName = "id")
     @ManyToOne
     private Materiales material;
     @JoinColumn(name = "tratamiento", referencedColumnName = "id")
     @ManyToOne
     private Parametros tratamiento;
-    @OneToOne(mappedBy = "formula")
-    private Ordenes ordenes;
 
     public Formulas() {
     }
@@ -166,6 +166,82 @@ public class Formulas implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Atenciones getAtencion() {
+        return atencion;
+    }
+
+    public void setAtencion(Atenciones atencion) {
+        this.atencion = atencion;
+    }
+
+    public Materiales getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(Materiales material) {
+        this.material = material;
+    }
+
+    public Parametros getTratamiento() {
+        return tratamiento;
+    }
+
+    public void setTratamiento(Parametros tratamiento) {
+        this.tratamiento = tratamiento;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Formulas)) {
+            return false;
+        }
+        Formulas other = (Formulas) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "org.entidades.salutem.Formulas[ id=" + id + " ]";
     }
 
     public String getLod() {
@@ -328,28 +404,12 @@ public class Formulas implements Serializable {
         this.descripcion = descripcion;
     }
 
-    public Date getCreado() {
-        return creado;
-    }
-
-    public void setCreado(Date creado) {
-        this.creado = creado;
-    }
-
     public String getCreadopor() {
         return creadopor;
     }
 
     public void setCreadopor(String creadopor) {
         this.creadopor = creadopor;
-    }
-
-    public Date getActualizado() {
-        return actualizado;
-    }
-
-    public void setActualizado(Date actualizado) {
-        this.actualizado = actualizado;
     }
 
     public String getActualizadopor() {
@@ -360,69 +420,12 @@ public class Formulas implements Serializable {
         this.actualizadopor = actualizadopor;
     }
 
-    public Boolean getActivo() {
-        return activo;
+    public Ordenes getOrden() {
+        return orden;
     }
 
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
-
-    public Consultas getConsulta() {
-        return consulta;
-    }
-
-    public void setConsulta(Consultas consulta) {
-        this.consulta = consulta;
-    }
-
-    public Materiales getMaterial() {
-        return material;
-    }
-
-    public void setMaterial(Materiales material) {
-        this.material = material;
-    }
-
-    public Parametros getTratamiento() {
-        return tratamiento;
-    }
-
-    public void setTratamiento(Parametros tratamiento) {
-        this.tratamiento = tratamiento;
-    }
-
-    public Ordenes getOrdenes() {
-        return ordenes;
-    }
-
-    public void setOrdenes(Ordenes ordenes) {
-        this.ordenes = ordenes;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Formulas)) {
-            return false;
-        }
-        Formulas other = (Formulas) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "org.entidades.salutem.Formulas[ id=" + id + " ]";
+    public void setOrden(Ordenes orden) {
+        this.orden = orden;
     }
     
 }

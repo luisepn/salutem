@@ -9,14 +9,14 @@ import com.google.gson.JsonObject;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.entidades.salutem.Consultas;
+import org.entidades.salutem.Atenciones;
 
 /**
  *
  * @author fernando
  */
 @Stateless
-public class ConsultasFacade extends AbstractFacade<Consultas> {
+public class AtencionesFacade extends AbstractFacade<Atenciones> {
 
     @PersistenceContext(unitName = "salutem-ejbPU")
     private EntityManager em;
@@ -26,19 +26,19 @@ public class ConsultasFacade extends AbstractFacade<Consultas> {
         return em;
     }
 
-    public ConsultasFacade() {
-        super(Consultas.class);
+    public AtencionesFacade() {
+        super(Atenciones.class);
     }
 
     @Override
-    protected String getJson(Consultas objeto) {
+    protected String getJson(Atenciones objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        json.addProperty("fecha", formatoFecha.format(objeto.getFecha()));
+        json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
+        json.addProperty("cita", objeto.getCita() != null ? objeto.getCita().getId().toString() : "");
         json.addProperty("motivo", objeto.getMotivo());
         json.addProperty("observaciones", objeto.getObservaciones());
         json.addProperty("indicaciones", objeto.getIndicaciones());
-        json.addProperty("usuario", objeto.getUsuario());
         json.addProperty("formula", objeto.getFormula() != null ? objeto.getFormula().getId() : 0);
         json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : "");
         json.addProperty("especialidad", objeto.getEspecialidad() != null ? objeto.getEspecialidad().toString() : "");

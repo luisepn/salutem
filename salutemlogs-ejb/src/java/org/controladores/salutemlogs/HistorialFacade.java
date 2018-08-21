@@ -35,7 +35,7 @@ public class HistorialFacade extends AbstractFacade<Historial> {
         super(Historial.class);
     }
 
-    public Object ejecutarQuery(String where, Map parameters, String order, Integer firstResult, Integer maxResults, Boolean contar) throws ExcepcionDeConsulta {
+    public Object buscar(String where, Map parameters, String order, Integer firstResult, Integer maxResults, Boolean contar) throws ExcepcionDeConsulta {
         try {
             String sql
                     = (contar ? "Select count(o.id) from Historial o"

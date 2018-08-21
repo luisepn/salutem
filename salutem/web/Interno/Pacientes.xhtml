@@ -220,8 +220,8 @@
                                     modal="true"
                                     draggable="true"
                                     resizable="false"
-                                    rendered="#{salutemPacientes.formularioConsulta.mostrar}"
-                                    visible="#{salutemPacientes.formularioConsulta.mostrar}"
+                                    rendered="#{salutemPacientes.formularioAtencion.mostrar}"
+                                    visible="#{salutemPacientes.formularioAtencion.mostrar}"
                                     zindex="3000">
                 
                 
@@ -354,11 +354,11 @@
                 
                                                     <h:panelGrid>
                                                         <h:outputText value="Observaciones:"/>
-                                                        <ace:textAreaEntry cols="60" rows="4" value="#{salutemPacientes.consulta.observaciones}" style="width: 100%" />      
+                                                        <ace:textAreaEntry cols="60" rows="4" value="#{salutemPacientes.atencion.observaciones}" style="width: 100%" />      
                                                     </h:panelGrid>
                                                     <h:panelGrid>
                                                         <h:outputText value="Indicaciones:"/>
-                                                        <ace:textAreaEntry cols="60" rows="4" value="#{salutemPacientes.consulta.indicaciones}" style="width: 100%"/>            
+                                                        <ace:textAreaEntry cols="60" rows="4" value="#{salutemPacientes.atencion.indicaciones}" style="width: 100%"/>            
                                                     </h:panelGrid>
                 
                                                 </h:panelGrid>
@@ -368,20 +368,20 @@
                                                 <ace:menuBar autoSubmenuDisplay="true" >
                                                     <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
                                                                   action="#{salutemPacientes.insertarConsulta()}"
-                                                                  rendered="#{salutemPacientes.formularioConsulta.crear}"/>
+                                                                  rendered="#{salutemPacientes.formularioAtencion.crear}"/>
                                                     <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
                                                                   action="#{salutemPacientes.grabarConsulta()}"
-                                                                  rendered="#{salutemPacientes.formularioConsulta.editar}"/>
+                                                                  rendered="#{salutemPacientes.formularioAtencion.editar}"/>
                                                     <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                                                   rendered="#{salutemPacientes.nuevo}" 
-                                                                  action="#{salutemPacientes.formularioConsulta.cancelar()}"/>
+                                                                  action="#{salutemPacientes.formularioAtencion.cancelar()}"/>
                                                     <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
-                                                                  rendered="#{salutemPacientes.formularioConsulta.editar and !salutemPacientes.nuevo}"
+                                                                  rendered="#{salutemPacientes.formularioAtencion.editar and !salutemPacientes.nuevo}"
                                                                   action="#{salutemPacientes.cancelarConsulta()}"/>                
                                                 </ace:menuBar>
                                             </h:panelGrid>
                                         </ace:tabPane>
-                                        <ace:tabPane label="Orden de Laboratorio" rendered="#{salutemPacientes.consulta.id!=null}" >
+                                        <ace:tabPane label="Orden de Laboratorio" rendered="#{salutemPacientes.atencion.id!=null}" >
                                             <ace:panel style="border: 0px">
                                                 <ace:dynamicResource 
                                                     fileName="#{salutemPacientes.paciente.toString()}"                                            
@@ -440,7 +440,7 @@
                                     <ace:panel header="Parámetros de Búsqueda" style="width: 100%">
                                         <h:panelGrid columns="2">
                                             <h:outputText value="Número de Consulta:"/>
-                                            <ace:textEntry value="#{salutemPacientes.nroConsulta}" title="Número de Consulta"/>                                
+                                            <ace:textEntry value="#{salutemPacientes.nroAtencion}" title="Número de Consulta"/>                                
                                         </h:panelGrid> 
                                         <h:panelGrid>
                                             <ace:menuBar autoSubmenuDisplay="true" >
@@ -464,7 +464,7 @@
                                         rowsPerPageTemplate="5,10,15,30,50,100"
                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                         rows="5" 
-                                        binding="#{salutemPacientes.formularioConsulta.fila}">
+                                        binding="#{salutemPacientes.formularioAtencion.fila}">
                                         <ace:column style="text-align: left" >
                                             <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                                 <ace:menuItem action="#{salutemPacientes.modificarConsulta()}" value="Editar" icon="ui-icon ui-icon-pencil"/>

@@ -9,14 +9,14 @@ import com.google.gson.JsonObject;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import org.entidades.salutem.Citas;
+import org.entidades.salutem.Prescripciones;
 
 /**
  *
  * @author usuario
  */
 @Stateless
-public class CitasFacade extends AbstractFacade<Citas> {
+public class PrescripcionesFacade extends AbstractFacade<Prescripciones> {
 
     @PersistenceContext(unitName = "salutem-ejbPU")
     private EntityManager em;
@@ -26,19 +26,21 @@ public class CitasFacade extends AbstractFacade<Citas> {
         return em;
     }
 
-    public CitasFacade() {
-        super(Citas.class);
+    public PrescripcionesFacade() {
+        super(Prescripciones.class);
     }
 
     @Override
-    protected String getJson(Citas objeto) {
+    protected String getJson(Prescripciones objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
-        json.addProperty("profesional", objeto.getProfesional() != null ? objeto.getProfesional().toString() : "");
-        json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : "");
-        json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
+        json.addProperty("atencion", objeto.getAtencion() != null ? objeto.getAtencion().getId().toString() : "");
+        json.addProperty("medicamento", objeto.getMedicamento());
+        json.addProperty("dosis", objeto.getDosis());
+        json.addProperty("frecuencia", objeto.getFrecuencia());
+        json.addProperty("duracion", objeto.getDuracion());
+        json.addProperty("advertencias", objeto.getAdvertencias());
         return json.toString();
     }
+
 }

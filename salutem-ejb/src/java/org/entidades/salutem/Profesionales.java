@@ -188,6 +188,14 @@ public class Profesionales implements Serializable {
     public void setCitasList(List<Citas> citasList) {
         this.citasList = citasList;
     }
+    public Profesionales(String descripcion, Integer id, Boolean activo, Instituciones institucion, Parametros especialidad, Personas persona) {
+        this.descripcion = descripcion;
+        this.id = id;
+        this.activo = activo;
+        this.institucion = institucion;
+        this.especialidad = especialidad;
+        this.persona = persona;
+    }
 
     public String getDescripcion() {
         return descripcion;
@@ -211,15 +219,6 @@ public class Profesionales implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    public Profesionales(String descripcion, Integer id, Boolean activo, Instituciones institucion, Parametros especialidad, Personas persona) {
-        this.descripcion = descripcion;
-        this.id = id;
-        this.activo = activo;
-        this.institucion = institucion;
-        this.especialidad = especialidad;
-        this.persona = persona;
     }
 
 }

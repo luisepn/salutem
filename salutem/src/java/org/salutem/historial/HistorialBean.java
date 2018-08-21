@@ -107,7 +107,7 @@ public class HistorialBean implements Serializable {
                 parameters.put("fechafin", fechaFin);
             }
 
-            int total = (int) ejbHistorial.ejecutarQuery(where, parameters, null, null, null, true);
+            int total = (int) ejbHistorial.buscar(where, parameters, null, null, null, true);
             getFormulario().setTotal(total);
             int endIndex = i + pageSize;
             if (endIndex > total) {
@@ -120,7 +120,7 @@ public class HistorialBean implements Serializable {
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
-            return (List<Historial>) ejbHistorial.ejecutarQuery(where, parameters, order, i, endIndex, false);
+            return (List<Historial>) ejbHistorial.buscar(where, parameters, order, i, endIndex, false);
         } catch (ExcepcionDeConsulta ex) {
             Logger.getLogger(HistorialBean.class.getName()).log(Level.SEVERE, null, ex);
         }

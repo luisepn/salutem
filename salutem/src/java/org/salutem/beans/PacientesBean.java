@@ -15,12 +15,12 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
-import org.controladores.salutem.ConsultasFacade;
+import org.controladores.salutem.AtencionesFacade;
 import org.controladores.salutem.FormulasFacade;
 import org.controladores.salutem.OrdenesFacade;
 import org.controladores.salutem.PacientesFacade;
 import org.entidades.salutem.Archivos;
-import org.entidades.salutem.Consultas;
+import org.entidades.salutem.Atenciones;
 import org.entidades.salutem.Formulas;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Materiales;
@@ -47,14 +47,14 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     private LazyDataModel<Pacientes> pacientes;
     private List<Pacientes> listaPacientes;
     private Instituciones institucion;
-    private Consultas consulta;
+    private Atenciones atencion;
     private Formulas formula;
     private Pacientes paciente;
-    private Integer nroConsulta;
+    private Integer nroAtencion;
     private Ordenes orden;
-    private Formulario formularioConsulta = new Formulario();
-    private Formulario formularioConsultas = new Formulario();
-    private List<Consultas> listaConsultas;
+    private Formulario formularioAtencion = new Formulario();
+    private Formulario formularioAtenciones = new Formulario();
+    private List<Atenciones> listaAtenciones;
     private Reportesds recursoPdf;
     private Reportesds ordenPdf;
 
@@ -64,7 +64,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     @EJB
     private PacientesFacade ejbPacientes;
     @EJB
-    private ConsultasFacade ejbConsultas;
+    private AtencionesFacade ejbAtenciones;
     @EJB
     private FormulasFacade ejbFormulas;
     @EJB
@@ -73,7 +73,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     @PostConstruct
     @Override
     public void activar() {
-        perfil = seguridadBean.traerPerfil("CitasConsultasPacientes");
+        perfil = seguridadBean.traerPerfil("CitasAtencionesPacientes");
         institucion = getSeguridadBean().getInstitucion();
     }
 
@@ -262,27 +262,27 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     public String cancelarConsulta() {
-        formularioConsulta.cancelar();
-        formularioConsultas.insertar();
+        formularioAtencion.cancelar();
+        formularioAtenciones.insertar();
         buscarPacientes();
         return null;
     }
 
     public String nuevaConsulta() {
         paciente = ((Pacientes) pacientes.getRowData());
-        consulta = new Consultas();
+        atencion = new Atenciones();
         formula = new Formulas();
-        consulta.setPaciente(paciente);
+        atencion.setPaciente(paciente);
         orden = new Ordenes();
-        formularioConsulta.insertar();
+        formularioAtencion.insertar();
         return null;
     }
 
     public String insertarConsulta() {
         try {
-            consulta.setFecha(new Date());
-            ejbConsultas.crear(consulta, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            formula.setConsulta(consulta);
+            atencion.setFecha(new Date());
+            ejbAtenciones.crear(atencion, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formula.setAtencion(atencion);
             ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             orden.setFormula(formula);
             ejbOrdenes.crear(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
@@ -292,9 +292,9 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         //generarConsulta();
-        formularioConsulta.cancelar();
-        formularioConsulta.setMostrar(true);
-        formularioConsulta.editar();
+        formularioAtencion.cancelar();
+        formularioAtencion.setMostrar(true);
+        formularioAtencion.editar();
         return null;
     }
 
@@ -315,7 +315,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
 
         buscarConsulta();
 
-        formularioConsultas.insertar();
+        formularioAtenciones.insertar();
         return null;
     }
 
@@ -324,12 +324,12 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         String order = " o.id desc";
         Map parametros = new HashMap();
         parametros.put("paciente", paciente);
-        if (nroConsulta != null) {
+        if (nroAtencion != null) {
             where += " and o.id=:nroConsulta";
-            parametros.put("nroConsulta", nroConsulta);
+            parametros.put("nroConsulta", nroAtencion);
         }
         try {
-            listaConsultas = ejbConsultas.buscar(where, parametros, order);
+            listaAtenciones = ejbAtenciones.buscar(where, parametros, order);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -338,21 +338,21 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     public String modificarConsulta() {
-        consulta = ((Consultas) listaConsultas.get(formularioConsulta.getFila().getRowIndex()));
-        formula = consulta.getFormula();
-        orden = formula.getOrdenes();
+        atencion = ((Atenciones) listaAtenciones.get(formularioAtencion.getFila().getRowIndex()));
+        formula = atencion.getFormula();
+        orden = formula.getOrden();
         if (formula.getMaterial() != null) {
             combosBean.setFoco(formula.getMaterial().getFoco());
             combosBean.setTipo(formula.getMaterial().getTipo());
         }
-        formularioConsulta.editar();
-        formularioConsultas.cancelar();
+        formularioAtencion.editar();
+        formularioAtenciones.cancelar();
         return null;
     }
 
     public String grabarConsulta() {
         try {
-            ejbConsultas.actualizar(consulta, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            ejbAtenciones.actualizar(atencion, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             ejbFormulas.actualizar(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             ejbOrdenes.actualizar(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
@@ -395,7 +395,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     public String traerIndicaciones() {
         String m = formula.getMaterial() != null ? formula.getMaterial().getFoco().getNombre() + " - " + formula.getMaterial().getTipo().getNombre() + " - " + formula.getMaterial().getNombre() : "";
         String t = formula.getTratamiento() != null ? formula.getTratamiento().getNombre() : "";
-        return m + " " + t + "\n" + consulta.getIndicaciones();
+        return m + " " + t + "\n" + atencion.getIndicaciones();
     }
 
     public void pacientesChangeEventHandler(TextChangeEvent event) {
@@ -470,10 +470,10 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     /**
-     * @return the consulta
+     * @return the atencion
      */
-    public Consultas getConsulta() {
-        return consulta;
+    public Atenciones getAtencion() {
+        return atencion;
     }
 
     /**
@@ -491,10 +491,10 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     /**
-     * @return the nroConsulta
+     * @return the nroAtencion
      */
-    public Integer getNroConsulta() {
-        return nroConsulta;
+    public Integer getNroAtencion() {
+        return nroAtencion;
     }
 
     /**
@@ -505,24 +505,24 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     /**
-     * @return the formularioConsulta
+     * @return the formularioAtencion
      */
-    public Formulario getFormularioConsulta() {
-        return formularioConsulta;
+    public Formulario getFormularioAtencion() {
+        return formularioAtencion;
     }
 
     /**
-     * @return the formularioConsultas
+     * @return the formularioAtenciones
      */
-    public Formulario getFormularioConsultas() {
-        return formularioConsultas;
+    public Formulario getFormularioAtenciones() {
+        return formularioAtenciones;
     }
 
     /**
-     * @return the listaConsultas
+     * @return the listaAtenciones
      */
-    public List<Consultas> getListaConsultas() {
-        return listaConsultas;
+    public List<Atenciones> getListaAtenciones() {
+        return listaAtenciones;
     }
 
     /**
@@ -561,10 +561,10 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     /**
-     * @param consulta the consulta to set
+     * @param atencion the atencion to set
      */
-    public void setConsulta(Consultas consulta) {
-        this.consulta = consulta;
+    public void setAtencion(Atenciones atencion) {
+        this.atencion = atencion;
     }
 
     /**
@@ -582,10 +582,10 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     /**
-     * @param nroConsulta the nroConsulta to set
+     * @param nroAtencion the nroAtencion to set
      */
-    public void setNroConsulta(Integer nroConsulta) {
-        this.nroConsulta = nroConsulta;
+    public void setNroAtencion(Integer nroAtencion) {
+        this.nroAtencion = nroAtencion;
     }
 
     /**
@@ -596,24 +596,24 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     }
 
     /**
-     * @param formularioConsulta the formularioConsulta to set
+     * @param formularioAtencion the formularioAtencion to set
      */
-    public void setFormularioConsulta(Formulario formularioConsulta) {
-        this.formularioConsulta = formularioConsulta;
+    public void setFormularioAtencion(Formulario formularioAtencion) {
+        this.formularioAtencion = formularioAtencion;
     }
 
     /**
-     * @param formularioConsultas the formularioConsultas to set
+     * @param formularioAtenciones the formularioAtenciones to set
      */
-    public void setFormularioConsultas(Formulario formularioConsultas) {
-        this.formularioConsultas = formularioConsultas;
+    public void setFormularioAtenciones(Formulario formularioAtenciones) {
+        this.formularioAtenciones = formularioAtenciones;
     }
 
     /**
-     * @param listaConsultas the listaConsultas to set
+     * @param listaAtenciones the listaAtenciones to set
      */
-    public void setListaConsultas(List<Consultas> listaConsultas) {
-        this.listaConsultas = listaConsultas;
+    public void setListaAtenciones(List<Atenciones> listaAtenciones) {
+        this.listaAtenciones = listaAtenciones;
     }
 
     /**
