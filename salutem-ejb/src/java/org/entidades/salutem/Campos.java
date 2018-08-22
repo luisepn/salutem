@@ -9,6 +9,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -214,6 +216,20 @@ public class Campos implements Serializable {
     public JsonObject getOpcionesJson() {
         JsonParser parser = new JsonParser();
         return parser.parse(this.opciones).getAsJsonObject();
+    }
+    public List<String> getOpcionesList() {
+        JsonObject json = getOpcionesJson();
+        if(!json.isJsonNull()){
+            
+             Iterator it = json.entrySet().iterator();
+                while (it.hasNext()) {
+                    JsonObject e = (JsonObject) it.next();
+                    String clave = (String) e.get;
+                    String valor = (String) e.getKey();
+                }
+            
+            return json.entrySet().toArray(<String>);
+        }
     }
 
 }

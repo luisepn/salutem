@@ -73,7 +73,8 @@ public class DatosFacade extends AbstractFacade<Datos> {
                 case "DATETIME":
                     json.addProperty("valor", objeto.getFecha() != null ? formatoFechaHora.format(objeto.getFecha()) : "");
                     break;
-                case "JSONB":
+                case "ONE":
+                case "MANY":
                     if (objeto.getSeleccion() != null && !objeto.getSeleccion().isEmpty()) {
                         json.add("valor", objeto.getSeleccionJson());
                     }
