@@ -10,7 +10,9 @@ import com.google.gson.JsonParser;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,6 +20,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -26,6 +29,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.utilitarios.salutem.Items;
 
 /**
  *
@@ -46,6 +50,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Campos.findByActualizadopor", query = "SELECT c FROM Campos c WHERE c.actualizadopor = :actualizadopor")
     , @NamedQuery(name = "Campos.findByActivo", query = "SELECT c FROM Campos c WHERE c.activo = :activo")})
 public class Campos implements Serializable {
+
+    @JoinColumn(name = "institucion", referencedColumnName = "id")
+    @ManyToOne
+    private Instituciones institucion;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -188,6 +196,14 @@ public class Campos implements Serializable {
         this.tipo = tipo;
     }
 
+    public Instituciones getInstitucion() {
+        return institucion;
+    }
+
+    public void setInstitucion(Instituciones institucion) {
+        this.institucion = institucion;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -217,19 +233,24 @@ public class Campos implements Serializable {
         JsonParser parser = new JsonParser();
         return parser.parse(this.opciones).getAsJsonObject();
     }
-    public List<String> getOpcionesList() {
-        JsonObject json = getOpcionesJson();
-        if(!json.isJsonNull()){
-            
-             Iterator it = json.entrySet().iterator();
-                while (it.hasNext()) {
-                    JsonObject e = (JsonObject) it.next();
-                    String clave = (String) e.get;
-                    String valor = (String) e.getKey();
-                }
-            
-            return json.entrySet().toArray(<String>);
+
+    public JsonObject getOpcionesJsonFromList(List<Items> opciones) {
+        JsonObject json = new JsonObject();
+        for (Items item : opciones) {
+            json.addProperty(item.getClave() + "", item.getValor());
         }
+        return json;
+    }
+
+    public List<Items> getOpcionesList() {
+        List<Items> retorno = new LinkedList<>();
+        JsonObject json = getOpcionesJson();
+        if (!json.isJsonNull()) {
+            for (String key : json.keySet()) {
+                retorno.add(new Items(Integer.parseInt(key), json.get(key).toString()));
+            }
+        }
+        return retorno;
     }
 
 }

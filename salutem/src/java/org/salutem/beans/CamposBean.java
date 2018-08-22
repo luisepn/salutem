@@ -3,6 +3,7 @@ package org.salutem.beans;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -24,6 +25,7 @@ import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
+import org.utilitarios.salutem.Items;
 
 /**
  *
@@ -40,7 +42,9 @@ public class CamposBean implements Serializable, IMantenimiento {
     private Formulario formulario = new Formulario();
     private LazyDataModel<Campos> parametros;
     private Campos campo;
-    private int maestro;
+    private List<Items> opciones;
+    private int grupo;
+    private int tipo;
     private Perfiles perfil;
 
     @EJB
@@ -103,9 +107,9 @@ public class CamposBean implements Serializable, IMantenimiento {
             parametros.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.grupo.codigo, o.orden";
+                order = "o.clasificador, o.grupo.codigo, o.orden";
             } else {
-                order = (seguridadBean.getVerAgrupado() ? "o.grupo.orden," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+                order = (seguridadBean.getVerAgrupado() ? "o.clasificador, o.grupo.codigo," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return ejbCampos.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
@@ -136,6 +140,7 @@ public class CamposBean implements Serializable, IMantenimiento {
         }
         campo = new Campos();
         campo.setActivo(Boolean.TRUE);
+        opciones = new LinkedList<>();
         formulario.insertar();
         return null;
     }
@@ -146,6 +151,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             return null;
         }
         campo = (Campos) parametros.getRowData();
+        opciones = campo.getOpcionesList();
         formulario.editar();
         return null;
     }
@@ -166,7 +172,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             if (campo.getClasificador() == null) {
                 return true;
             }
-            if (campo.getGrupo()== null) {
+            if (campo.getGrupo() == null) {
                 Mensajes.advertencia("Es necesario grupo");
                 return true;
             }
@@ -178,24 +184,23 @@ public class CamposBean implements Serializable, IMantenimiento {
                 Mensajes.advertencia("Es necesario nombre");
                 return true;
             }
-            if ((campo.getOpciones()== null) || (campo.getOpciones().isEmpty())) {
+            if ((campo.getOpciones() == null) || (campo.getOpciones().isEmpty())) {
                 Mensajes.advertencia("Es necesario descripción");
                 return true;
             }
 
-            String where = " o.maestro=:maestro and o.codigo=:codigo";
+            String where = " o.maestro=:maestro and o.orden=:orden";
             Map parameters = new HashMap();
-//            parameters.put("maestro", campo.getMaestro());
-//            parameters.put("codigo", campo.getCodigo());
+            parameters.put("grupo", campo.getGrupo());
+            parameters.put("orden", campo.getOrden());
             if (campo.getId() != null) {
                 where += " and o.id!=:id";
                 parameters.put("id", campo.getId());
             }
             if (ejbCampos.contar(where, parameters) > 0) {
-                Mensajes.advertencia("No se permiten maestros con código duplicado");
+                Mensajes.advertencia("No se campos con orden duplicado");
                 return true;
             }
-
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -216,7 +221,9 @@ public class CamposBean implements Serializable, IMantenimiento {
             campo.setCreadopor(seguridadBean.getLogueado().getUserid());
             campo.setActualizado(campo.getCreado());
             campo.setActualizadopor(campo.getCreadopor());
+            campo.setOpciones(campo.getOpcionesJsonFromList(opciones) != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
             ejbCampos.crear(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            ejbCampos.insertarOpciones(campo.getOpciones(), campo.getId());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -236,7 +243,9 @@ public class CamposBean implements Serializable, IMantenimiento {
         try {
             campo.setActualizado(new Date());
             campo.setActualizadopor(seguridadBean.getLogueado().getUserid());
+            campo.setOpciones(campo.getOpcionesJsonFromList(opciones) != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
             ejbCampos.actualizar(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            ejbCampos.insertarOpciones(campo.getOpciones(), campo.getId());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -263,6 +272,24 @@ public class CamposBean implements Serializable, IMantenimiento {
     @Override
     public String cancelar() {
         formulario.cancelar();
+        return null;
+    }
+
+    public String nuevaOpcion() {
+        int i = 0;
+        for (Items item : opciones) {
+            item.setClave(i);
+        }
+        opciones.add(new Items(opciones.size(), null));
+        return null;
+    }
+
+    public String borrarOpcion(int index) {
+        opciones.remove(index);
+        int i = 0;
+        for (Items item : opciones) {
+            item.setClave(i);
+        }
         return null;
     }
 
@@ -299,10 +326,10 @@ public class CamposBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @return the maestro
+     * @return the grupo
      */
-    public int getMaestro() {
-        return maestro;
+    public int getGrupo() {
+        return grupo;
     }
 
     /**
@@ -341,10 +368,10 @@ public class CamposBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @param maestro the maestro to set
+     * @param grupo the grupo to set
      */
-    public void setMaestro(int maestro) {
-        this.maestro = maestro;
+    public void setGrupo(int grupo) {
+        this.grupo = grupo;
     }
 
     /**
@@ -352,6 +379,34 @@ public class CamposBean implements Serializable, IMantenimiento {
      */
     public void setPerfil(Perfiles perfil) {
         this.perfil = perfil;
+    }
+
+    /**
+     * @return the tipo
+     */
+    public int getTipo() {
+        return tipo;
+    }
+
+    /**
+     * @param tipo the tipo to set
+     */
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
+    }
+
+    /**
+     * @return the opciones
+     */
+    public List<Items> getOpciones() {
+        return opciones;
+    }
+
+    /**
+     * @param opciones the opciones to set
+     */
+    public void setOpciones(List<Items> opciones) {
+        this.opciones = opciones;
     }
 
 }

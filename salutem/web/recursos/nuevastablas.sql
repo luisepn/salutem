@@ -125,6 +125,7 @@ drop table campos;
 CREATE TABLE public.campos
 (
     id serial PRIMARY KEY,
+	institucion integer,
     clasificador text,
 	grupo integer,
 	orden integer,
@@ -139,7 +140,9 @@ CREATE TABLE public.campos
 	CONSTRAINT campos_grupo_fkey FOREIGN KEY (grupo)
         REFERENCES public.parametros (id) MATCH SIMPLE,
 	CONSTRAINT campos_tipo_fkey FOREIGN KEY (tipo)
-        REFERENCES public.parametros (id) MATCH SIMPLE
+        REFERENCES public.parametros (id) MATCH SIMPLE,
+	CONSTRAINT campos_institucion_fkey FOREIGN KEY (institucion)
+        REFERENCES public.instituciones (id) MATCH SIMPLE
 );drop table datos;
 CREATE TABLE public.datos
 (

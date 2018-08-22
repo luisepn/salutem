@@ -50,4 +50,16 @@ public class CamposFacade extends AbstractFacade<Campos> {
         return json.toString();
     }
 
+    public void insertarOpciones(String opciones, Integer id) {
+        if (opciones == null) {
+            em.createNativeQuery("UPDATE Campos SET opciones = null WHERE id=:id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } else {
+            em.createNativeQuery("UPDATE Campos SET opciones = '" + opciones + "' WHERE id=:id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        }
+    }
+
 }

@@ -49,6 +49,9 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Instituciones.findByActualizadopor", query = "SELECT i FROM Instituciones i WHERE i.actualizadopor = :actualizadopor")})
 public class Instituciones implements Serializable {
 
+    @OneToMany(mappedBy = "institucion")
+    private List<Campos> camposList;
+
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
@@ -299,6 +302,15 @@ public class Instituciones implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
+    }
+
+    @XmlTransient
+    public List<Campos> getCamposList() {
+        return camposList;
+    }
+
+    public void setCamposList(List<Campos> camposList) {
+        this.camposList = camposList;
     }
     
 }
