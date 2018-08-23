@@ -114,8 +114,10 @@
                                          style="text-align: left">
                                 <h:outputText  value="#{item.tipo.toString()}"/>
                             </ace:column>
-                            <ace:column  headerText="Opciones" sortBy="#{item.opciones}" filterBy="#{item.opciones}" filterMatchMode="contains" style="text-align: left">
-                                <h:outputText  value="#{item.opciones}"/>
+                            <ace:column  headerText="Opciones" style="text-align: left">
+                                <ace:radioButtons value="#{item.opciones}">
+                                    <f:selectItems value="#{salutemCampos.traerOpciones()}"/>
+                                </ace:radioButtons>
                             </ace:column>
                             <ace:column  headerText="Clasificador"                                         
                                          sortBy="#{item.clasificador}" 

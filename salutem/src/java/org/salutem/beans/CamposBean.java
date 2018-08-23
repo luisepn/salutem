@@ -13,6 +13,7 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.model.SelectItem;
 import org.controladores.salutem.CamposFacade;
 import org.entidades.salutem.Campos;
 import org.entidades.salutem.Perfiles;
@@ -312,6 +313,12 @@ public class CamposBean implements Serializable, IMantenimiento {
             item.setClave(i++);
         }
         return null;
+    }
+
+    public SelectItem[] traerOpciones() {
+        Campos c = (Campos) parametros.getRowData();
+        c.setOpciones(ejbCampos.traerOpciones(c.getId()));
+        return CombosBean.getSelectItems(c.getOpcionesList(), "toString", false);
     }
 
     public String getNombreTabla() {
