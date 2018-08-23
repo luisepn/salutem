@@ -49,6 +49,7 @@ public class CombosBean implements Serializable {
     public static String DIAS_SEMANA = "DS";
     public static String ESPECIALIDADES = "ESP";
     public static String TIPO_DE_DATO = "TD";
+    public static String GRUPOS_DE_DATOS = "GD";
 
     private Parametros modulo;
     private Parametros grupo;
@@ -58,6 +59,8 @@ public class CombosBean implements Serializable {
 
     private Parametros foco;
     private Parametros tipo;
+
+    private String clasificador;
 
     @EJB
     private InstitucionesFacade ejbInstituciones;
@@ -246,8 +249,27 @@ public class CombosBean implements Serializable {
     public SelectItem[] getTiposDeDato() {
         return getSelectItems(traerParametros(TIPO_DE_DATO, "o.codigo"), "object", true);
     }
+
     public SelectItem[] getTiposDeDatoId() {
         return getSelectItems(traerParametros(TIPO_DE_DATO, "o.codigo"), "id", true);
+    }
+
+    public SelectItem[] getGruposDeDatos() {
+        List<Parametros> lista = traerParametros(GRUPOS_DE_DATOS, clasificador, "o.codigo");
+        if (lista != null && !lista.isEmpty()) {
+            return getSelectItems(traerParametros(GRUPOS_DE_DATOS, clasificador, "o.codigo"), "object", true);
+        } else {
+            return getSelectItems(traerParametros(GRUPOS_DE_DATOS, null, "o.codigo"), "object", true);
+        }
+    }
+
+    public SelectItem[] getGruposDeDatosId() {
+        List<Parametros> lista = traerParametros(GRUPOS_DE_DATOS, clasificador, "o.codigo");
+        if (lista != null && !lista.isEmpty()) {
+            return getSelectItems(traerParametros(GRUPOS_DE_DATOS, clasificador, "o.codigo"), "id", true);
+        } else {
+            return getSelectItems(traerParametros(GRUPOS_DE_DATOS, null, "o.codigo"), "id", true);
+        }
     }
 
     public SelectItem[] getHoras() {
@@ -329,6 +351,16 @@ public class CombosBean implements Serializable {
     private List<Parametros> traerParametros(String maestro, String orden) {
         try {
             return ejbParametros.traerParametros(maestro, orden);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CombosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    private List<Parametros> traerParametros(String maestro, String parametros, String orden) {
+        try {
+            return ejbParametros.traerParametros(maestro, parametros, orden);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CombosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -586,6 +618,7 @@ public class CombosBean implements Serializable {
         items[6] = new SelectItem("O", "[O] LogOUT");
         return items;
     }
+
     public SelectItem[] getTabla() {
         SelectItem[] items = new SelectItem[24];
         items[0] = new SelectItem("A", "");
@@ -711,5 +744,19 @@ public class CombosBean implements Serializable {
      */
     public void setEspecialidad(Parametros especialidad) {
         this.especialidad = especialidad;
+    }
+
+    /**
+     * @return the clasificador
+     */
+    public String getClasificador() {
+        return clasificador;
+    }
+
+    /**
+     * @param clasificador the clasificador to set
+     */
+    public void setClasificador(String clasificador) {
+        this.clasificador = clasificador;
     }
 }

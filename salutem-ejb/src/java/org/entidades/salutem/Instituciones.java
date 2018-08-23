@@ -49,17 +49,16 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Instituciones.findByActualizadopor", query = "SELECT i FROM Instituciones i WHERE i.actualizadopor = :actualizadopor")})
 public class Instituciones implements Serializable {
 
-    @OneToMany(mappedBy = "institucion")
-    private List<Campos> camposList;
-
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
+
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "email")
     private String email;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "web")
     private String web;
@@ -72,6 +71,8 @@ public class Instituciones implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    @OneToMany(mappedBy = "institucion")
+    private List<Campos> camposList;
     @OneToMany(mappedBy = "institucion")
     private List<Horas> horasList;
     @OneToMany(mappedBy = "institucion")
@@ -255,6 +256,13 @@ public class Instituciones implements Serializable {
     public void setProfesionalesList(List<Profesionales> profesionalesList) {
         this.profesionalesList = profesionalesList;
     }
+    @XmlTransient
+    public List<Campos> getCamposList() {
+        return camposList;
+    }
+    public void setCamposList(List<Campos> camposList) {
+        this.camposList = camposList;
+    }
 
     public String getNombre() {
         return nombre;
@@ -302,15 +310,6 @@ public class Instituciones implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    @XmlTransient
-    public List<Campos> getCamposList() {
-        return camposList;
-    }
-
-    public void setCamposList(List<Campos> camposList) {
-        this.camposList = camposList;
     }
     
 }

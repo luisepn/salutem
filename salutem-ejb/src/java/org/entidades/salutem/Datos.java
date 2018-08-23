@@ -16,13 +16,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -40,8 +40,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Datos.findByIdentificador", query = "SELECT d FROM Datos d WHERE d.identificador = :identificador")
     , @NamedQuery(name = "Datos.findByOrdengrupo", query = "SELECT d FROM Datos d WHERE d.ordengrupo = :ordengrupo")
     , @NamedQuery(name = "Datos.findByGrupo", query = "SELECT d FROM Datos d WHERE d.grupo = :grupo")
-    , @NamedQuery(name = "Datos.findByOrden", query = "SELECT d FROM Datos d WHERE d.orden = :orden")
+    , @NamedQuery(name = "Datos.findByCodigo", query = "SELECT d FROM Datos d WHERE d.codigo = :codigo")
     , @NamedQuery(name = "Datos.findByNombre", query = "SELECT d FROM Datos d WHERE d.nombre = :nombre")
+    , @NamedQuery(name = "Datos.findByDescripcion", query = "SELECT d FROM Datos d WHERE d.descripcion = :descripcion")
     , @NamedQuery(name = "Datos.findByTexto", query = "SELECT d FROM Datos d WHERE d.texto = :texto")
     , @NamedQuery(name = "Datos.findByBooleano", query = "SELECT d FROM Datos d WHERE d.booleano = :booleano")
     , @NamedQuery(name = "Datos.findByEntero", query = "SELECT d FROM Datos d WHERE d.entero = :entero")
@@ -72,14 +73,14 @@ public class Datos implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "grupo")
     private String grupo;
-    @Column(name = "orden")
-    private Integer orden;
+    @Column(name = "codigo")
+    private Integer codigo;
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
     @Size(max = 2147483647)
-    @Column(name = "opciones")
-    private String opciones;
+    @Column(name = "descripcion")
+    private String descripcion;
     @Size(max = 2147483647)
     @Column(name = "texto")
     private String texto;
@@ -99,9 +100,6 @@ public class Datos implements Serializable {
     @Column(name = "fechahora")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechahora;
-    @Size(max = 2147483647)
-    @Column(name = "seleccion")
-    private String seleccion;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
@@ -122,6 +120,11 @@ public class Datos implements Serializable {
     @JoinColumn(name = "tipo", referencedColumnName = "id")
     @ManyToOne
     private Parametros tipo;
+
+    @Transient
+    private String opciones;
+    @Transient
+    private String seleccion;
 
     public Datos() {
     }
@@ -170,12 +173,12 @@ public class Datos implements Serializable {
         this.grupo = grupo;
     }
 
-    public Integer getOrden() {
-        return orden;
+    public Integer getCodigo() {
+        return codigo;
     }
 
-    public void setOrden(Integer orden) {
-        this.orden = orden;
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
     }
 
     public String getNombre() {
@@ -184,6 +187,14 @@ public class Datos implements Serializable {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public String getOpciones() {
@@ -348,5 +359,4 @@ public class Datos implements Serializable {
         JsonParser parser = new JsonParser();
         return parser.parse(this.seleccion).getAsJsonObject();
     }
-
 }

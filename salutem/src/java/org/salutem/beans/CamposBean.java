@@ -38,11 +38,14 @@ public class CamposBean implements Serializable, IMantenimiento {
 
     @ManagedProperty("#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
+    @ManagedProperty("#{salutemCombos}")
+    private CombosBean combosBean;
 
     private Formulario formulario = new Formulario();
     private LazyDataModel<Campos> parametros;
     private Campos campo;
     private List<Items> opciones;
+    private String clasificador;
     private int grupo;
     private int tipo;
     private Perfiles perfil;
@@ -88,6 +91,12 @@ public class CamposBean implements Serializable, IMantenimiento {
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
             }
+
+            if (!formulario.isMostrar()) {
+                if (clasificador != null) {
+                    combosBean.setClasificador(clasificador);
+                }
+            }
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
                 where += " and o.creado between :iniciocreado and :fincreado";
                 parameters.put("iniciocreado", seguridadBean.getInicioCreado());
@@ -107,7 +116,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             parametros.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.clasificador, o.grupo.codigo, o.orden";
+                order = "o.clasificador, o.grupo.codigo, o.codigo";
             } else {
                 order = (seguridadBean.getVerAgrupado() ? "o.clasificador, o.grupo.codigo," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
@@ -151,6 +160,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             return null;
         }
         campo = (Campos) parametros.getRowData();
+        campo.setOpciones(ejbCampos.traerOpciones(campo.getId()));
         opciones = campo.getOpcionesList();
         formulario.editar();
         return null;
@@ -162,6 +172,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             return null;
         }
         campo = (Campos) parametros.getRowData();
+        campo.setOpciones(ejbCampos.traerOpciones(campo.getId()));
         formulario.eliminar();
         return null;
     }
@@ -176,23 +187,29 @@ public class CamposBean implements Serializable, IMantenimiento {
                 Mensajes.advertencia("Es necesario grupo");
                 return true;
             }
-            if (campo.getOrden() == null) {
-                Mensajes.advertencia("Es necesario orden");
+            if (campo.getTipo() == null) {
+                Mensajes.advertencia("Es necesario tipo de dato");
+                return true;
+            }
+            if (campo.getCodigo() == null) {
+                Mensajes.advertencia("Es necesario código");
                 return true;
             }
             if ((campo.getNombre() == null) || (campo.getNombre().isEmpty())) {
                 Mensajes.advertencia("Es necesario nombre");
                 return true;
             }
-            if ((campo.getOpciones() == null) || (campo.getOpciones().isEmpty())) {
-                Mensajes.advertencia("Es necesario descripción");
-                return true;
+            if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
+                if (opciones.isEmpty()) {
+                    Mensajes.advertencia("Es necesario opciones");
+                    return true;
+                }
             }
 
-            String where = " o.maestro=:maestro and o.orden=:orden";
+            String where = " o.grupo=:grupo and o.codigo=:codigo";
             Map parameters = new HashMap();
             parameters.put("grupo", campo.getGrupo());
-            parameters.put("orden", campo.getOrden());
+            parameters.put("codigo", campo.getCodigo());
             if (campo.getId() != null) {
                 where += " and o.id!=:id";
                 parameters.put("id", campo.getId());
@@ -223,7 +240,9 @@ public class CamposBean implements Serializable, IMantenimiento {
             campo.setActualizadopor(campo.getCreadopor());
             campo.setOpciones(campo.getOpcionesJsonFromList(opciones) != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
             ejbCampos.crear(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            ejbCampos.insertarOpciones(campo.getOpciones(), campo.getId());
+            if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
+                ejbCampos.insertarOpciones(campo.getOpciones(), campo.getId());
+            }
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -245,7 +264,9 @@ public class CamposBean implements Serializable, IMantenimiento {
             campo.setActualizadopor(seguridadBean.getLogueado().getUserid());
             campo.setOpciones(campo.getOpcionesJsonFromList(opciones) != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
             ejbCampos.actualizar(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            ejbCampos.insertarOpciones(campo.getOpciones(), campo.getId());
+            if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
+                ejbCampos.insertarOpciones(campo.getOpciones(), campo.getId());
+            }
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -278,7 +299,7 @@ public class CamposBean implements Serializable, IMantenimiento {
     public String nuevaOpcion() {
         int i = 0;
         for (Items item : opciones) {
-            item.setClave(i);
+            item.setClave(i++);
         }
         opciones.add(new Items(opciones.size(), null));
         return null;
@@ -288,7 +309,7 @@ public class CamposBean implements Serializable, IMantenimiento {
         opciones.remove(index);
         int i = 0;
         for (Items item : opciones) {
-            item.setClave(i);
+            item.setClave(i++);
         }
         return null;
     }
@@ -407,6 +428,34 @@ public class CamposBean implements Serializable, IMantenimiento {
      */
     public void setOpciones(List<Items> opciones) {
         this.opciones = opciones;
+    }
+
+    /**
+     * @return the clasificador
+     */
+    public String getClasificador() {
+        return clasificador;
+    }
+
+    /**
+     * @param clasificador the clasificador to set
+     */
+    public void setClasificador(String clasificador) {
+        this.clasificador = clasificador;
+    }
+
+    /**
+     * @return the combosBean
+     */
+    public CombosBean getCombosBean() {
+        return combosBean;
+    }
+
+    /**
+     * @param combosBean the combosBean to set
+     */
+    public void setCombosBean(CombosBean combosBean) {
+        this.combosBean = combosBean;
     }
 
 }

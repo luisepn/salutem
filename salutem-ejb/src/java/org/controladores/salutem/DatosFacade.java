@@ -6,8 +6,6 @@
 package org.controladores.salutem;
 
 import com.google.gson.JsonObject;
-import java.util.List;
-import java.util.Set;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -38,10 +36,11 @@ public class DatosFacade extends AbstractFacade<Datos> {
         json.addProperty("id", objeto.getId());
         json.addProperty("clasificador", objeto.getClasificador());
         json.addProperty("identificador", objeto.getIdentificador());
-        json.addProperty("ordengrupo", objeto.getOrden());
+        json.addProperty("ordengrupo", objeto.getOrdengrupo());
         json.addProperty("grupo", objeto.getGrupo());
-        json.addProperty("orden", objeto.getOrden());
+        json.addProperty("codigo", objeto.getCodigo());
         json.addProperty("nombre", objeto.getNombre());
+        json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : "");
 
         if (objeto.getOpciones() != null && !objeto.getOpciones().isEmpty()) {

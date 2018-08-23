@@ -198,6 +198,13 @@ public class Archivos implements Serializable {
     public String toString() {
         return "org.entidades.salutem.Archivos[ id=" + id + " ]";
     }
+    @XmlTransient
+    public List<Datos> getDatosList() {
+        return datosList;
+    }
+    public void setDatosList(List<Datos> datosList) {
+        this.datosList = datosList;
+    }
 
     public String getClasificador() {
         return clasificador;
@@ -253,15 +260,6 @@ public class Archivos implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    @XmlTransient
-    public List<Datos> getDatosList() {
-        return datosList;
-    }
-
-    public void setDatosList(List<Datos> datosList) {
-        this.datosList = datosList;
     }
 
 }

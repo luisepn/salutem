@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.entidades.salutem.Campos;
 
 /**
@@ -35,10 +36,10 @@ public class CamposFacade extends AbstractFacade<Campos> {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("clasificador", objeto.getClasificador());
-        json.addProperty("ordengrupo", objeto.getOrden());
+        json.addProperty("codigo", objeto.getCodigo());
         json.addProperty("grupo", objeto.getGrupo() != null ? objeto.getGrupo().toString() : "");
-        json.addProperty("orden", objeto.getOrden());
         json.addProperty("nombre", objeto.getNombre());
+        json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : "");
 
         if (objeto.getOpciones() != null && !objeto.getOpciones().isEmpty()) {
@@ -48,6 +49,12 @@ public class CamposFacade extends AbstractFacade<Campos> {
         }
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json.toString();
+    }
+
+    public String traerOpciones(Integer id) {
+        Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o.opciones) as opciones from Campos o WHERE o.id=:id");
+        q.setParameter("id", id);
+        return (String) q.getSingleResult();
     }
 
     public void insertarOpciones(String opciones, Integer id) {

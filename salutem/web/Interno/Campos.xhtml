@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!--
-    Documento   : Profesionales
-    Fecha       : 18 de Julio de 2018, 11:27:59 AM
+    Documento   : Campos
+    Fecha       : 23 de Agosto de 2018, 10:19:25 AM
     Author      : Luis Fernando Ordóñez Armijos
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -96,16 +96,19 @@
                                                   value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column>
-                            <ace:column  headerText="Código" sortBy="#{item.orden}" filterBy="#{item.orden}" filterMatchMode="contains" style="text-align: left">
-                                <h:outputText  value="#{item.orden}"/>
+                            <ace:column  headerText="Código" sortBy="#{item.codigo}" filterBy="#{item.codigo}" filterMatchMode="contains" style="text-align: right">
+                                <h:outputText  value="#{item.codigo}"/>
                             </ace:column>
                             <ace:column  headerText="Nombre" sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.nombre}"/>
                             </ace:column>
+                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
+                            </ace:column>
                             <ace:column  headerText="Tipo"                                         
                                          sortBy="#{item.tipo.nombre}" 
                                          filterBy="#{item.tipo.id}"
-                                         filterOptions="#{salutemCombos.tiposDeDato}"                                          
+                                         filterOptions="#{salutemCombos.tiposDeDatoId}"                                          
                                          filterValue="#{salutemCampos.tipo}"
                                          filterMatchMode="exact" 
                                          style="text-align: left">
@@ -114,14 +117,23 @@
                             <ace:column  headerText="Opciones" sortBy="#{item.opciones}" filterBy="#{item.opciones}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.opciones}"/>
                             </ace:column>
-                            <ace:column  headerText="Grupo"                                         
-                                         sortBy="#{item.maestro.nombre}" 
-                                         filterBy="#{item.maestro.id}"
-                                         filterOptions="#{salutemCombos.maestrosId}"                                          
-                                         filterValue="#{salutemParametros.maestro}"
+                            <ace:column  headerText="Clasificador"                                         
+                                         sortBy="#{item.clasificador}" 
+                                         filterBy="#{item.clasificador}"
+                                         filterOptions="#{salutemCombos.tabla}"                                          
+                                         filterValue="#{salutemCampos.clasificador}"
                                          filterMatchMode="exact" 
                                          style="text-align: left">
-                                <h:outputText  value="#{item.maestro.toString()}"/>
+                                <h:outputText  value="#{item.clasificador}"/>
+                            </ace:column>
+                            <ace:column  headerText="Grupo"                                         
+                                         sortBy="#{item.grupo.nombre}" 
+                                         filterBy="#{item.grupo.id}"
+                                         filterOptions="#{salutemCombos.gruposDeDatosId}"                                          
+                                         filterValue="#{salutemCampos.grupo}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.grupo.toString()}"/>
                             </ace:column>
                             <ace:column  headerText="Creación" sortBy="#{item.creado}" 
                                          filterBy="#{item.creado}" 
@@ -167,70 +179,69 @@
                     rendered="#{salutemCampos.formulario.mostrar}"
                     visible="#{salutemCampos.formulario.mostrar}"
                     zindex="1000">
-                    <ace:tabSet style="width: 100%">
-                        <ace:tabPane label="Profesional" rendered="#{salutemCampos.formulario.crear}">
-                            <ui:include src="cuadroProfesionales.xhtml" />
-                        </ace:tabPane>
-                        <ace:tabPane label="Profesional" rendered="#{salutemCampos.formulario.editar}">
-                            <ui:include src="cuadroProfesionales.xhtml"/>
-                        </ace:tabPane>
-                        <ace:tabPane label="Profesional" rendered="#{salutemCampos.formulario.eliminar}">
-                            <ui:include src="cuadroProfesionales.xhtml"/>
-                        </ace:tabPane>
-                        <ace:tabPane label="Dirección">
-                            <h:panelGrid columns="4">
-                                <h:outputLabel value="Ciudad:" for="ciudad" />
-                                <ace:textEntry id="ciudad" value="#{salutemCampos.direccion.ciudad}" title="Ciudad" />
-                                <h:outputLabel value="Calle Primaria:" for="primaria" />
-                                <ace:textEntry id="primaria" value="#{salutemCampos.direccion.primaria}" title="Primaria" />
-                                <h:outputLabel value="Número:" for="numero" />
-                                <ace:textEntry id="numero" value="#{salutemCampos.direccion.numero}" title="Numero" />
-                                <h:outputLabel value="Calle Secundaria:" for="secundaria" />
-                                <ace:textEntry id="secundaria" value="#{salutemCampos.direccion.secundaria}" title="Secundaria" />                                
-                                <h:outputLabel value="Teléfono fijo:" />
-                                <ace:textEntry value="#{salutemCampos.direccion.fijo}" title="Teléfono fijo" />
-                                <h:outputLabel value="Teléfono móvil:" />
-                                <ace:textEntry value="#{salutemCampos.direccion.movil}" title="Teléfono móvil" />
-                                <h:outputLabel value="Edificio/Piso:"/>
-                                <ace:textAreaEntry value="#{salutemCampos.direccion.piso}"
-                                                   rows="2" cols="22"/>
-                                <h:outputLabel value="Referencia:"/>
-                                <ace:textAreaEntry value="#{salutemCampos.direccion.referencia}" 
-                                                   rows="2" cols="22"/>
-                            </h:panelGrid>
-                        </ace:tabPane>
-                        <ace:tabPane label="Fotografía">
-                            <center>
-                                <ace:graphicImage value="#{salutemImagenes.archivo.archivo}" name="#{salutemImagenes.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " />
-                            </center>
-                            <h:panelGrid columns="2">
-                                <ace:fileEntry 
-                                    absolutePath="/tmp/salutem"
-                                    maxFileCount="1"
-                                    maxFileCountMessage="Sólo se puede subir 1 archivo"
-                                    fileEntryListener="#{salutemImagenes.ficheroDocumento}"
-                                    maxFileSize="10485760"
-                                    maxFileSizeMessage="El archivo supera el tamaño predefinido 10 MB"                                                                                                                 
-                                    useOriginalFilename="true"
-                                    label="Subido con éxito"
-                                    useSessionSubdir="true" />
-                                <h:commandButton  type="submit" value="Subir Archivo" />
-                            </h:panelGrid>
-
-                        </ace:tabPane>
-
-                    </ace:tabSet>
+                    <ace:panel>
+                        <h:panelGrid columns="4">
+                            <h:outputLabel value="Institución:" styleClass="bold"/>
+                            <h:selectOneMenu value="#{salutemCampos.campo.institucion}">
+                                <f:selectItems value="#{salutemCombos.instituciones}" />
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Clasificador:" styleClass="bold"/>
+                            <h:selectOneMenu value="#{salutemCampos.campo.clasificador}">
+                                <f:selectItems value="#{salutemCombos.tabla}" />
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Grupo:" styleClass="bold"/>
+                            <h:selectOneMenu value="#{salutemCampos.campo.grupo}">
+                                <f:selectItems value="#{salutemCombos.gruposDeDatos}" />
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Tipo:" styleClass="bold"/>
+                            <h:selectOneMenu value="#{salutemCampos.campo.tipo}">
+                                <f:selectItems value="#{salutemCombos.tiposDeDato}" />
+                                <ace:ajax execute="@all"/>
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Código:" styleClass="bold"/>
+                            <ace:textEntry value="#{salutemCampos.campo.codigo}" title="Código" />                                
+                            <h:outputLabel value="Nombre:"/>
+                            <ace:textEntry value="#{salutemCampos.campo.nombre}" title="Nombre"/>
+                            <h:outputLabel value="Descripción:"/>
+                            <ace:textAreaEntry value="#{salutemCampos.campo.descripcion}" 
+                                               rows="2" cols="22"/>
+                        </h:panelGrid>
+                        <h:panelGrid width="100%" rendered="#{salutemCampos.campo.tipo.codigo eq 'ONE' or salutemCampos.campo.tipo.codigo eq 'MANY'}">
+                            <ace:menuBar autoSubmenuDisplay="true" >
+                                <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" 
+                                              action="#{salutemCampos.nuevaOpcion()}"/>
+                            </ace:menuBar>
+                            <ace:dataTable
+                                value="#{salutemCampos.opciones}"
+                                resizableColumns="true"
+                                var="opcion"
+                                binding="#{bopcion}">
+                                <f:facet name="header">Opciones</f:facet>
+                                <ace:column headerText="Operaciones" style="text-align: left" >
+                                    <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                        <ace:menuItem action="#{salutemCampos.borrarOpcion(bopcion.rowIndex)}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
+                                    </ace:menuButton>
+                                </ace:column>
+                                <ace:column  headerText="Clave" style="text-align: right">
+                                    <h:outputText value="#{opcion.clave}"/>
+                                </ace:column>
+                                <ace:column  headerText="Valor" style="text-align: left">
+                                    <ace:textEntry value="#{opcion.valor}"/>
+                                </ace:column>
+                            </ace:dataTable>
+                        </h:panelGrid>
+                    </ace:panel>
 
                     <h:panelGrid columns="1" width="100%">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                          action="#{salutemCampos.grabarProfesional()}"
+                                          action="#{salutemCampos.insertar()}"
                                           rendered="#{salutemCampos.formulario.crear}"/>
                             <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                          action="#{salutemCampos.grabarProfesional()}"
+                                          action="#{salutemCampos.grabar()}"
                                           rendered="#{salutemCampos.formulario.editar}"/>
                             <ace:menuItem value="Eliminar" icon="ui-icon ui-icon-trash" 
-                                          action="#{salutemCampos.removerProfesional()}" 
+                                          action="#{salutemCampos.remover()}" 
                                           rendered="#{salutemCampos.formulario.eliminar}" />
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemCampos.cancelar()}"/>

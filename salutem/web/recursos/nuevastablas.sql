@@ -2,6 +2,8 @@
 --drop table formulas
 --drop table consultas
 
+SELECT opciones->'0' from campos;
+
 CREATE TABLE public.atenciones
 (
     id serial,
@@ -128,8 +130,9 @@ CREATE TABLE public.campos
 	institucion integer,
     clasificador text,
 	grupo integer,
-	orden integer,
+	codigo integer,
 	nombre text,
+	descripcion text,
     opciones jsonb,
 	tipo integer,
     creado timestamp without time zone,
@@ -151,8 +154,9 @@ CREATE TABLE public.datos
     identificador integer,
 	ordengrupo integer,
 	grupo text,
-	orden integer,
+	codigo integer,
 	nombre text, 
+	descripcion text, 
 	opciones jsonb,
 	tipo integer,
 	texto text,

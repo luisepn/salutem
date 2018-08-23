@@ -39,7 +39,7 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
             q.setParameter("maestro", maestro);
             q.setParameter("codigo", parametro);
             return (Parametros) q.getSingleResult();
-            
+
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(ParametrosFacade.class.getName(), e);
         }
@@ -49,6 +49,21 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
         try {
             Query q = getEntityManager().createQuery("Select object(o) from Parametros as o where o.maestro.codigo=:maestro order by " + orden);
             q.setParameter("maestro", maestro);
+            return q.getResultList();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(ParametrosFacade.class.getName(), e);
+        }
+    }
+
+    public List<Parametros> traerParametros(String maestro, String parametros, String orden) throws ExcepcionDeConsulta {
+        try {
+            Query q = getEntityManager().createQuery("Select object(o) from Parametros as o where o.maestro.codigo=:maestro "
+                    + (parametros == null ? " and (o.parametros is null or o.parametros = '')" : "and o.parametros =:parametros") + " order by " + orden
+            );
+            q.setParameter("maestro", maestro);
+            if (parametros != null) {
+                q.setParameter("parametros", parametros);
+            }
             return q.getResultList();
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(ParametrosFacade.class.getName(), e);

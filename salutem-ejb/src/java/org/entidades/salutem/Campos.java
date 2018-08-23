@@ -5,11 +5,11 @@
  */
 package org.entidades.salutem;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +20,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.utilitarios.salutem.Items;
@@ -42,18 +42,15 @@ import org.utilitarios.salutem.Items;
     @NamedQuery(name = "Campos.findAll", query = "SELECT c FROM Campos c")
     , @NamedQuery(name = "Campos.findById", query = "SELECT c FROM Campos c WHERE c.id = :id")
     , @NamedQuery(name = "Campos.findByClasificador", query = "SELECT c FROM Campos c WHERE c.clasificador = :clasificador")
-    , @NamedQuery(name = "Campos.findByOrden", query = "SELECT c FROM Campos c WHERE c.orden = :orden")
+    , @NamedQuery(name = "Campos.findByCodigo", query = "SELECT c FROM Campos c WHERE c.codigo = :codigo")
     , @NamedQuery(name = "Campos.findByNombre", query = "SELECT c FROM Campos c WHERE c.nombre = :nombre")
+    , @NamedQuery(name = "Campos.findByDescripcion", query = "SELECT c FROM Campos c WHERE c.descripcion = :descripcion")
     , @NamedQuery(name = "Campos.findByCreado", query = "SELECT c FROM Campos c WHERE c.creado = :creado")
     , @NamedQuery(name = "Campos.findByCreadopor", query = "SELECT c FROM Campos c WHERE c.creadopor = :creadopor")
     , @NamedQuery(name = "Campos.findByActualizado", query = "SELECT c FROM Campos c WHERE c.actualizado = :actualizado")
     , @NamedQuery(name = "Campos.findByActualizadopor", query = "SELECT c FROM Campos c WHERE c.actualizadopor = :actualizadopor")
     , @NamedQuery(name = "Campos.findByActivo", query = "SELECT c FROM Campos c WHERE c.activo = :activo")})
 public class Campos implements Serializable {
-
-    @JoinColumn(name = "institucion", referencedColumnName = "id")
-    @ManyToOne
-    private Instituciones institucion;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -64,14 +61,14 @@ public class Campos implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "clasificador")
     private String clasificador;
-    @Column(name = "orden")
-    private Integer orden;
+    @Column(name = "codigo")
+    private Integer codigo;
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
     @Size(max = 2147483647)
-    @Column(name = "opciones")
-    private String opciones;
+    @Column(name = "descripcion")
+    private String descripcion;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
@@ -86,12 +83,18 @@ public class Campos implements Serializable {
     private String actualizadopor;
     @Column(name = "activo")
     private Boolean activo;
+    @JoinColumn(name = "institucion", referencedColumnName = "id")
+    @ManyToOne
+    private Instituciones institucion;
     @JoinColumn(name = "grupo", referencedColumnName = "id")
     @ManyToOne
     private Parametros grupo;
     @JoinColumn(name = "tipo", referencedColumnName = "id")
     @ManyToOne
     private Parametros tipo;
+
+    @Transient
+    private String opciones;
 
     public Campos() {
     }
@@ -116,12 +119,12 @@ public class Campos implements Serializable {
         this.clasificador = clasificador;
     }
 
-    public Integer getOrden() {
-        return orden;
+    public Integer getCodigo() {
+        return codigo;
     }
 
-    public void setOrden(Integer orden) {
-        this.orden = orden;
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
     }
 
     public String getNombre() {
@@ -130,6 +133,14 @@ public class Campos implements Serializable {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public String getOpciones() {
@@ -180,6 +191,14 @@ public class Campos implements Serializable {
         this.activo = activo;
     }
 
+    public Instituciones getInstitucion() {
+        return institucion;
+    }
+
+    public void setInstitucion(Instituciones institucion) {
+        this.institucion = institucion;
+    }
+
     public Parametros getGrupo() {
         return grupo;
     }
@@ -194,14 +213,6 @@ public class Campos implements Serializable {
 
     public void setTipo(Parametros tipo) {
         this.tipo = tipo;
-    }
-
-    public Instituciones getInstitucion() {
-        return institucion;
-    }
-
-    public void setInstitucion(Instituciones institucion) {
-        this.institucion = institucion;
     }
 
     @Override
@@ -246,11 +257,10 @@ public class Campos implements Serializable {
         List<Items> retorno = new LinkedList<>();
         JsonObject json = getOpcionesJson();
         if (!json.isJsonNull()) {
-            for (String key : json.keySet()) {
-                retorno.add(new Items(Integer.parseInt(key), json.get(key).toString()));
+            for (Map.Entry<String, JsonElement> e : json.entrySet()) {
+                retorno.add(new Items(Integer.parseInt(e.getKey()), String.valueOf(e.getValue()).replace("\"", "")));
             }
         }
         return retorno;
     }
-
 }
