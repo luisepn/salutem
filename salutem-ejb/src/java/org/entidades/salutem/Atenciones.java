@@ -7,7 +7,6 @@ package org.entidades.salutem;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,14 +17,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -38,7 +35,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Atenciones.findAll", query = "SELECT a FROM Atenciones a")
     , @NamedQuery(name = "Atenciones.findById", query = "SELECT a FROM Atenciones a WHERE a.id = :id")
     , @NamedQuery(name = "Atenciones.findByFecha", query = "SELECT a FROM Atenciones a WHERE a.fecha = :fecha")
-    , @NamedQuery(name = "Atenciones.findByProfesional", query = "SELECT a FROM Atenciones a WHERE a.profesional = :profesional")
     , @NamedQuery(name = "Atenciones.findByMotivo", query = "SELECT a FROM Atenciones a WHERE a.motivo = :motivo")
     , @NamedQuery(name = "Atenciones.findByObservaciones", query = "SELECT a FROM Atenciones a WHERE a.observaciones = :observaciones")
     , @NamedQuery(name = "Atenciones.findByIndicaciones", query = "SELECT a FROM Atenciones a WHERE a.indicaciones = :indicaciones")
@@ -49,22 +45,6 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Atenciones.findByActualizadopor", query = "SELECT a FROM Atenciones a WHERE a.actualizadopor = :actualizadopor")})
 public class Atenciones implements Serializable {
 
-    @Size(max = 2147483647)
-    @Column(name = "motivo")
-    private String motivo;
-    @Size(max = 2147483647)
-    @Column(name = "observaciones")
-    private String observaciones;
-    @Size(max = 2147483647)
-    @Column(name = "indicaciones")
-    private String indicaciones;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,16 +54,29 @@ public class Atenciones implements Serializable {
     @Column(name = "fecha")
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
-    @Column(name = "profesional")
-    private Integer profesional;
+    @Size(max = 2147483647)
+    @Column(name = "motivo")
+    private String motivo;
+    @Size(max = 2147483647)
+    @Column(name = "observaciones")
+    private String observaciones;
+    @Size(max = 2147483647)
+    @Column(name = "indicaciones")
+    private String indicaciones;
     @Column(name = "activo")
     private Boolean activo;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @OneToOne(mappedBy = "atencion")
     private Formulas formula;
     @JoinColumn(name = "cita", referencedColumnName = "id")
@@ -95,8 +88,9 @@ public class Atenciones implements Serializable {
     @JoinColumn(name = "especialidad", referencedColumnName = "id")
     @ManyToOne
     private Parametros especialidad;
-    @OneToMany(mappedBy = "atencion")
-    private List<Prescripciones> prescripcionesList;
+    @JoinColumn(name = "profesional", referencedColumnName = "id")
+    @ManyToOne
+    private Profesionales profesional;
 
     public Atenciones() {
     }
@@ -121,14 +115,29 @@ public class Atenciones implements Serializable {
         this.fecha = fecha;
     }
 
-    public Integer getProfesional() {
-        return profesional;
+    public String getMotivo() {
+        return motivo;
     }
 
-    public void setProfesional(Integer profesional) {
-        this.profesional = profesional;
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
     }
 
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public String getIndicaciones() {
+        return indicaciones;
+    }
+
+    public void setIndicaciones(String indicaciones) {
+        this.indicaciones = indicaciones;
+    }
 
     public Boolean getActivo() {
         return activo;
@@ -146,6 +155,13 @@ public class Atenciones implements Serializable {
         this.creado = creado;
     }
 
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
 
     public Date getActualizado() {
         return actualizado;
@@ -155,6 +171,13 @@ public class Atenciones implements Serializable {
         this.actualizado = actualizado;
     }
 
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
 
     public Formulas getFormula() {
         return formula;
@@ -188,13 +211,12 @@ public class Atenciones implements Serializable {
         this.especialidad = especialidad;
     }
 
-    @XmlTransient
-    public List<Prescripciones> getPrescripcionesList() {
-        return prescripcionesList;
+    public Profesionales getProfesional() {
+        return profesional;
     }
 
-    public void setPrescripcionesList(List<Prescripciones> prescripcionesList) {
-        this.prescripcionesList = prescripcionesList;
+    public void setProfesional(Profesionales profesional) {
+        this.profesional = profesional;
     }
 
     @Override
@@ -220,46 +242,6 @@ public class Atenciones implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Atenciones[ id=" + id + " ]";
-    }
-
-    public String getMotivo() {
-        return motivo;
-    }
-
-    public void setMotivo(String motivo) {
-        this.motivo = motivo;
-    }
-
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
-    }
-
-    public String getIndicaciones() {
-        return indicaciones;
-    }
-
-    public void setIndicaciones(String indicaciones) {
-        this.indicaciones = indicaciones;
-    }
-
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
-
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
     }
     
 }

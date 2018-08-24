@@ -81,7 +81,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                if (clave.contains(".id")) {
+                if (clave.contains(".id") || clave.contains("codigo")) {
                     Integer id = Integer.parseInt(valor);
                     if (id != 0) {
                         where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");

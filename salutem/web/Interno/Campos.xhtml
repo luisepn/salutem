@@ -115,7 +115,7 @@
                                 <h:outputText  value="#{item.tipo.toString()}"/>
                             </ace:column>
                             <ace:column  headerText="Opciones" style="text-align: left">
-                                <ace:radioButtons value="#{item.oneSeleccion}" labelPosition="right"  rendered="#{item.tipo.codigo eq 'ONE'}">
+                                <ace:radioButtons value="#{item.oneSeleccion}" labelPosition="right" rendered="#{item.tipo.codigo eq 'ONE'}">
                                     <f:selectItems value="#{salutemCampos.traerOpciones()}"/>
                                 </ace:radioButtons>
                                 <ace:checkboxButtons value="#{item.manySeleccion}" labelPosition="right" rendered="#{item.tipo.codigo eq 'MANY'}">
@@ -185,57 +185,63 @@
                     visible="#{salutemCampos.formulario.mostrar}"
                     zindex="1000">
                     <ace:panel>
-                        <h:panelGrid columns="4">
+                        <h:panelGrid columns="2">
                             <h:outputLabel value="Institución:" styleClass="bold"/>
                             <h:selectOneMenu value="#{salutemCampos.campo.institucion}">
                                 <f:selectItems value="#{salutemCombos.instituciones}" />
                             </h:selectOneMenu>
                             <h:outputLabel value="Clasificador:" styleClass="bold"/>
                             <h:selectOneMenu value="#{salutemCampos.campo.clasificador}">
-                                <f:selectItems value="#{salutemCombos.tabla}" />
+                                <f:selectItems value="#{salutemCombos.tabla}"/>
+                                <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                             <h:outputLabel value="Grupo:" styleClass="bold"/>
-                            <h:selectOneMenu value="#{salutemCampos.campo.grupo}">
-                                <f:selectItems value="#{salutemCombos.gruposDeDatos}" />
+                            <h:selectOneMenu value="#{salutemCampos.campo.grupo}"
+                                             rendered="#{salutemCampos.campo.clasificador ne 'Atenciones'}">
+                                <f:selectItems value="#{salutemCombos.gruposDeDatos}"/>
+                            </h:selectOneMenu>
+                            <h:selectOneMenu value="#{salutemCampos.campo.grupo}"
+                                             rendered="#{salutemCampos.campo.clasificador eq 'Atenciones'}">
+                                <f:selectItems value="#{salutemCombos.especialidades}"/>
                             </h:selectOneMenu>
                             <h:outputLabel value="Tipo:" styleClass="bold"/>
                             <h:selectOneMenu value="#{salutemCampos.campo.tipo}">
-                                <f:selectItems value="#{salutemCombos.tiposDeDato}" />
+                                <f:selectItems value="#{salutemCombos.tiposDeDato}"/>
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                             <h:outputLabel value="Código:" styleClass="bold"/>
-                            <ace:textEntry value="#{salutemCampos.campo.codigo}" title="Código" />                                
+                            <ace:textEntry value="#{salutemCampos.campo.codigo}" title="Código"/>                                
                             <h:outputLabel value="Nombre:"/>
                             <ace:textEntry value="#{salutemCampos.campo.nombre}" title="Nombre"/>
                             <h:outputLabel value="Descripción:"/>
                             <ace:textAreaEntry value="#{salutemCampos.campo.descripcion}" 
                                                rows="2" cols="22"/>
                         </h:panelGrid>
-                        <h:panelGrid width="100%" rendered="#{salutemCampos.campo.tipo.codigo eq 'ONE' or salutemCampos.campo.tipo.codigo eq 'MANY'}">
-                            <ace:menuBar autoSubmenuDisplay="true" >
-                                <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" 
-                                              action="#{salutemCampos.nuevaOpcion()}"/>
-                            </ace:menuBar>
-                            <ace:dataTable
-                                value="#{salutemCampos.opciones}"
-                                resizableColumns="true"
-                                var="opcion"
-                                binding="#{bopcion}">
-                                <f:facet name="header">Opciones</f:facet>
-                                <ace:column headerText="Operaciones" style="text-align: left" >
-                                    <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
-                                        <ace:menuItem action="#{salutemCampos.borrarOpcion(bopcion.rowIndex)}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
-                                    </ace:menuButton>
-                                </ace:column>
-                                <ace:column  headerText="Clave" style="text-align: right">
-                                    <h:outputText value="#{opcion.clave}"/>
-                                </ace:column>
-                                <ace:column  headerText="Valor" style="text-align: left">
-                                    <ace:textEntry value="#{opcion.valor}"/>
-                                </ace:column>
-                            </ace:dataTable>
-                        </h:panelGrid>
                     </ace:panel>
+                    <h:panelGrid width="100%" rendered="#{salutemCampos.campo.tipo.codigo eq 'ONE' or salutemCampos.campo.tipo.codigo eq 'MANY'}">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" 
+                                          action="#{salutemCampos.nuevaOpcion()}"/>
+                        </ace:menuBar>
+                        <ace:dataTable
+                            value="#{salutemCampos.opciones}"
+                            resizableColumns="true"
+                            var="opcion"
+                            binding="#{bopcion}">
+                            <f:facet name="header">Opciones</f:facet>
+                            <ace:column headerText="Operaciones" style="text-align: left">
+                                <ace:menuBar>
+                                    <ace:menuItem action="#{salutemCampos.borrarOpcion(bopcion.rowIndex)}" icon="ui-icon ui-icon-trash"/>
+                                </ace:menuBar>
+                            </ace:column>
+                            <ace:column  headerText="Clave" style="text-align: right">
+                                <h:outputText value="#{opcion.clave}"/>
+                            </ace:column>
+                            <ace:column  headerText="Valor" style="text-align: left">
+                                <ace:textEntry value="#{opcion.valor}"/>
+                            </ace:column>
+                        </ace:dataTable>
+                    </h:panelGrid>
 
                     <h:panelGrid columns="1" width="100%">
                         <ace:menuBar autoSubmenuDisplay="true" >

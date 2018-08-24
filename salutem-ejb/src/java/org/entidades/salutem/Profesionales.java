@@ -54,6 +54,8 @@ public class Profesionales implements Serializable {
     @Column(name = "actualizadopor")
     private String actualizadopor;
     @OneToMany(mappedBy = "profesional")
+    private List<Atenciones> atencionesList;
+    @OneToMany(mappedBy = "profesional")
     private List<Citas> citasList;
 
     private static final long serialVersionUID = 1L;
@@ -195,6 +197,16 @@ public class Profesionales implements Serializable {
         this.institucion = institucion;
         this.especialidad = especialidad;
         this.persona = persona;
+    }
+
+
+    @XmlTransient
+    public List<Atenciones> getAtencionesList() {
+        return atencionesList;
+    }
+
+    public void setAtencionesList(List<Atenciones> atencionesList) {
+        this.atencionesList = atencionesList;
     }
 
     public String getDescripcion() {

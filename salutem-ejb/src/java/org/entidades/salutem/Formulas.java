@@ -243,6 +243,12 @@ public class Formulas implements Serializable {
     public String toString() {
         return "org.entidades.salutem.Formulas[ id=" + id + " ]";
     }
+    public Ordenes getOrden() {
+        return orden;
+    }
+    public void setOrden(Ordenes orden) {
+        this.orden = orden;
+    }
 
     public String getLod() {
         return lod;
@@ -418,14 +424,6 @@ public class Formulas implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    public Ordenes getOrden() {
-        return orden;
-    }
-
-    public void setOrden(Ordenes orden) {
-        this.orden = orden;
     }
     
 }

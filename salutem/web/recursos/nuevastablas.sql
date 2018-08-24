@@ -1,22 +1,24 @@
 --drop TABLE ordenes
 --drop table formulas
---drop table consultas
+--drop table atenciones
+--drop table prescripciones
+
 
 SELECT opciones->'0' from campos;
 
 CREATE TABLE public.atenciones
 (
     id serial,
-	fecha timestamp without time zone,
+    fecha timestamp without time zone,
     cita integer,
-	paciente integer,
-	profesional integer,
+    paciente integer,
+    profesional integer,
     especialidad integer,
     motivo text,
     observaciones text,
     indicaciones text,
     activo boolean,
-	creado timestamp without time zone,
+    creado timestamp without time zone,
     creadopor text,
     actualizado timestamp without time zone,
     actualizadopor text,
@@ -32,6 +34,10 @@ CREATE TABLE public.atenciones
         ON DELETE NO ACTION,
     CONSTRAINT atenciones_paciente_fkey FOREIGN KEY (paciente)
         REFERENCES public.pacientes (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT atenciones_profesional_fkey FOREIGN KEY (profesional)
+        REFERENCES public.profesionales (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
