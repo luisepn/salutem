@@ -115,9 +115,12 @@
                                 <h:outputText  value="#{item.tipo.toString()}"/>
                             </ace:column>
                             <ace:column  headerText="Opciones" style="text-align: left">
-                                <ace:radioButtons value="#{item.opciones}">
+                                <ace:radioButtons value="#{item.oneSeleccion}" labelPosition="right"  rendered="#{item.tipo.codigo eq 'ONE'}">
                                     <f:selectItems value="#{salutemCampos.traerOpciones()}"/>
                                 </ace:radioButtons>
+                                <ace:checkboxButtons value="#{item.manySeleccion}" labelPosition="right" rendered="#{item.tipo.codigo eq 'MANY'}">
+                                    <f:selectItems value="#{salutemCampos.traerOpciones()}"/>
+                                </ace:checkboxButtons>
                             </ace:column>
                             <ace:column  headerText="Clasificador"                                         
                                          sortBy="#{item.clasificador}" 

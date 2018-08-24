@@ -95,6 +95,10 @@ public class Campos implements Serializable {
 
     @Transient
     private String opciones;
+    @Transient
+    private String oneSeleccion;
+    @Transient
+    private List<String> manySeleccion;
 
     public Campos() {
     }
@@ -262,5 +266,33 @@ public class Campos implements Serializable {
             }
         }
         return retorno;
+    }
+
+    /**
+     * @return the oneSeleccion
+     */
+    public String getOneSeleccion() {
+        return oneSeleccion;
+    }
+
+    /**
+     * @param oneSeleccion the oneSeleccion to set
+     */
+    public void setOneSeleccion(String oneSeleccion) {
+        this.oneSeleccion = oneSeleccion;
+    }
+
+    /**
+     * @return the manySeleccion
+     */
+    public List<String> getManySeleccion() {
+        return manySeleccion;
+    }
+
+    /**
+     * @param manySeleccion the manySeleccion to set
+     */
+    public void setManySeleccion(List<String> manySeleccion) {
+        this.manySeleccion = manySeleccion;
     }
 }
