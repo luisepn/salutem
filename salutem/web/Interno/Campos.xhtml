@@ -24,6 +24,10 @@
                             <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
                                 <ace:ajax execute="@all"/>
                             </h:selectBooleanCheckbox>
+                            <h:outputLabel value="Ver agrupado:" />
+                            <h:selectBooleanCheckbox value="#{salutemSeguridad.verAgrupado}">
+                                <ace:ajax execute="@all"/>
+                            </h:selectBooleanCheckbox>
                         </h:panelGrid>
                         <h:panelGrid columns="2">
                             <ace:menuBar autoSubmenuDisplay="true" >

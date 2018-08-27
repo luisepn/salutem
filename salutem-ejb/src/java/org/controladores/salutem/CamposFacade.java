@@ -6,11 +6,15 @@
 package org.controladores.salutem;
 
 import com.google.gson.JsonObject;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Campos;
+import org.entidades.salutem.Parametros;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
  *
@@ -52,13 +56,13 @@ public class CamposFacade extends AbstractFacade<Campos> {
         return json.toString();
     }
 
-    public String traerOpciones(Integer id) {
+    public String buscarJsonb(Integer id) {
         Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o.opciones) as opciones from Campos o WHERE o.id=:id");
         q.setParameter("id", id);
         return (String) q.getSingleResult();
     }
 
-    public void insertarOpciones(String opciones, Integer id) {
+    public void actualizarJsonb(String opciones, Integer id) {
         if (opciones == null) {
             em.createNativeQuery("UPDATE Campos SET opciones = null WHERE id=:id")
                     .setParameter("id", id)
@@ -67,6 +71,24 @@ public class CamposFacade extends AbstractFacade<Campos> {
             em.createNativeQuery("UPDATE Campos SET opciones = '" + opciones + "' WHERE id=:id")
                     .setParameter("id", id)
                     .executeUpdate();
+        }
+    }
+
+    public List<Campos> traerCampos(String clasificador, Parametros grupo) throws ExcepcionDeConsulta {
+        if (clasificador == null) {
+            return null;
+        }
+        try {
+            String sql = "Select object(o) from Campos as o where o.clasificador=:clasificador "
+                    + (grupo != null ? " and o.grupo=:grupo" : "");
+            Query q = getEntityManager().createQuery(sql);
+            q.setParameter("clasificador", clasificador);
+            if (grupo != null) {
+                q.setParameter("grupo", grupo);
+            }
+            return q.getResultList();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(CamposFacade.class.getName(), e);
         }
     }
 

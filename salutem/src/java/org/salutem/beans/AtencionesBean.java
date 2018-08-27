@@ -24,6 +24,7 @@ import javax.faces.model.SelectItem;
 import org.controladores.salutem.AtencionesFacade;
 import org.controladores.salutem.HorariosFacade;
 import org.entidades.salutem.Atenciones;
+import org.entidades.salutem.Citas;
 import org.entidades.salutem.Horarios;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Pacientes;
@@ -53,6 +54,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private SeguridadBean seguridadBean;
     @ManagedProperty(value = "#{salutemPacientes}")
     private PacientesBean pacientesBean;
+    @ManagedProperty(value = "#{salutemDatos}")
+    private DatosBean datosBean;
 
     private Perfiles perfil;
 
@@ -60,30 +63,17 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private LazyDataModel<Atenciones> atenciones;
 
     private Profesionales profesional;
-    private Pacientes paciente;
-
-    private Horarios horario;
-    private List<Horarios> listaHorarios;
-    private Date fecha = new Date();
     private Atenciones atencion;
-    private String observaciones;
-
-    private boolean ver = false;
-    private Date inicio;
-    private Date fin;
+    private Boolean conCita;
+    private Citas cita;
 
     private Date fechaInicio;
     private Date fechaFin;
 
-    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-    @EJB
-    private HorariosFacade ejbHorarios;
     @EJB
     private AtencionesFacade ejbAtenciones;
 
     public AtencionesBean() {
-        fecha = new Date();
         atenciones = new LazyDataModel<Atenciones>() {
             @Override
             public List<Atenciones> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -104,11 +94,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     private List<Atenciones> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
-            if (fecha == null) {
-                fecha = new Date();
-            }
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(fecha);
             calendar.set(Calendar.HOUR_OF_DAY, 0);
             calendar.set(Calendar.MINUTE, 0);
             calendar.set(Calendar.SECOND, 0);
@@ -166,9 +152,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'R')) {
             return null;
         }
-        if (fecha == null) {
-            fecha = new Date();
-        }
         atenciones = new LazyDataModel<Atenciones>() {
             @Override
             public List<Atenciones> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -183,6 +166,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
+        insertar();
         return null;
     }
 
@@ -193,7 +177,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         atencion = (Atenciones) atenciones.getRowData();
         if (validarFecha(atencion.getFecha())) {
-            Mensajes.advertencia("No se puede editar citas con fechas menores a la de hoy");
+            Mensajes.advertencia("No se puede editar atenciones con fechas menores a la de hoy");
             return null;
         }
         formulario.editar();
@@ -207,7 +191,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         atencion = (Atenciones) atenciones.getRowData();
         if (validarFecha(atencion.getFecha())) {
-            Mensajes.advertencia("No se puede eliminar citas con fechas menores a la de hoy");
+            Mensajes.advertencia("No se puede eliminar atenciones con fechas menores a la de hoy");
             return null;
         }
         formulario.eliminar();
@@ -220,22 +204,22 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             Mensajes.advertencia("Seleccione un paciente");
             return true;
         }
-        if (fecha == null) {
-            Mensajes.advertencia("Seleccione una fecha");
-            return true;
+        if (conCita) {
+            if (cita == null) {
+                Mensajes.advertencia("Seleccione una cita");
+                return true;
+            }
+        } else {
+            if (pacientesBean.getPaciente() == null) {
+                Mensajes.advertencia("Seleccione un paciente");
+                return true;
+            }
+            if (profesional == null) {
+                Mensajes.advertencia("Seleccione un profesional médico");
+                return true;
+            }
         }
-        if (validarFecha(fecha)) {
-            Mensajes.advertencia("No se puede realizar citas con fechas menores a la de hoy");
-            return true;
-        }
-        if (profesional == null) {
-            Mensajes.advertencia("Seleccione un profesional médico");
-            return true;
-        }
-        if (horario == null) {
-            Mensajes.advertencia("Seleccione hora de atención");
-            return true;
-        }
+
         return false;
     }
 
@@ -255,17 +239,17 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         atencion.setActualizado(atencion.getCreado());
         atencion.setActualizadopor(atencion.getCreadopor());
 
-        Calendar h = Calendar.getInstance(); //Hora de la cita
-        h.setTime(horario.getHora().getHorainicio());
+        atencion.setFecha(new Date());
+        if (conCita) {
+            if (cita == null) {
+                atencion.setPaciente(cita.getPaciente());
+                atencion.setProfesional(cita.getProfesional());
+            }
+        } else {
+            atencion.setPaciente(pacientesBean.getPaciente());
+            atencion.setProfesional(profesional);
+        }
 
-        Calendar c = Calendar.getInstance(); //Fecha de la cita
-        c.setTime(fecha);
-        c.set(Calendar.HOUR_OF_DAY, h.get(Calendar.HOUR_OF_DAY)); //Hora de la cita a la fecha
-        c.set(Calendar.MINUTE, h.get(Calendar.MINUTE));//Minuto de la cita a la fecha
-
-        atencion.setFecha(c.getTime());
-        atencion.setPaciente(pacientesBean.getPaciente());
-        atencion.setProfesional(profesional);
         atencion.setCreado(new Date());
         atencion.setCreadopor(seguridadBean.getLogueado().getUserid());
         atencion.setActualizado(atencion.getCreado());
@@ -273,11 +257,11 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
         try {
             ejbAtenciones.crear(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            datosBean.crear(getNombreTabla(), profesional.getEspecialidad(), atencion.getId());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        observaciones = null;
         return null;
     }
 
@@ -338,210 +322,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     public String cancelar() {
         formulario.cancelar();
         return null;
-    }
-
-    public SelectItem[] getHorasDisponibles() {
-        try {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            if (fecha.before(calendar.getTime())) {
-                return null;
-            }
-
-            calendar.setTime(fecha);
-
-            String where = "o.profesional=:profesional and o.dia.parametros=:dia and o.hora.horainicio>=:hora and o.activo=true";
-            Map parametros = new HashMap();
-            parametros.put("profesional", profesional);
-            /**
-             * De la fecha seleccionada se extrae el numero del día de la semana
-             * Entoces se busca el horario del profesional médico seleccionado
-             */
-            parametros.put("dia", calendar.get(Calendar.DAY_OF_WEEK) == 1 ? "7" : (calendar.get(Calendar.DAY_OF_WEEK) - 1) + "");
-
-            calendar = Calendar.getInstance();
-            if (fecha.after(calendar.getTime())) {
-                calendar.set(Calendar.HOUR_OF_DAY, 0);
-            }
-
-            calendar.set(Calendar.YEAR, 1970);
-            calendar.set(Calendar.MONTH, Calendar.JANUARY);
-            calendar.set(Calendar.DAY_OF_MONTH, 1);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-
-            parametros.put("hora", calendar.getTime());
-            String order = "o.dia.parametros, o.hora.horainicio asc";
-            listaHorarios = ejbHorarios.buscar(where, parametros, order);
-
-            where = "o.profesional=:profesional and o.activo=true and o.fecha between :inicio and :fin";
-            parametros = new HashMap();
-            parametros.put("profesional", profesional);
-
-            calendar.setTime(fecha);
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-            parametros.put("inicio", calendar.getTime());
-
-            calendar.setTime(fecha);
-            calendar.set(Calendar.HOUR_OF_DAY, 23);
-            calendar.set(Calendar.MINUTE, 59);
-            calendar.set(Calendar.SECOND, 59);
-            calendar.set(Calendar.MILLISECOND, 999);
-            parametros.put("fin", calendar.getTime());
-
-            List<Atenciones> auxcitas = ejbAtenciones.buscar(where, parametros);
-
-            for (Atenciones c : auxcitas) {
-                Calendar horasOcupadas = Calendar.getInstance();
-                horasOcupadas.setTime(c.getFecha());
-                horasOcupadas.set(Calendar.YEAR, 0);
-                horasOcupadas.set(Calendar.MONTH, 0);
-                horasOcupadas.set(Calendar.DAY_OF_MONTH, 0);
-                for (Horarios h : listaHorarios) {
-                    Calendar horaSeleccionada = Calendar.getInstance();
-                    horaSeleccionada.setTime(h.getHora().getHorainicio());
-                    if (horaSeleccionada.get(Calendar.HOUR_OF_DAY) == horasOcupadas.get(Calendar.HOUR_OF_DAY)) {
-                        listaHorarios.remove(h);
-                        break;
-                    }
-                }
-            }
-
-            return CombosBean.getSelectItems(listaHorarios, "object", true);
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.error(ex.getMessage());
-            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    public String verAgenda() {
-        ver = Boolean.TRUE;
-
-        Calendar c = Calendar.getInstance();//Fecha de la cita
-        c.setTime(fecha);
-        c.set(Calendar.DAY_OF_WEEK, 2);//Dia Lunes
-
-        inicio = c.getTime();
-
-        c.setTime(fecha);
-        c.set(Calendar.DAY_OF_WEEK, 1);//Día Domingo
-
-        fin = c.getTime();
-
-        return null;
-    }
-
-    public String ocultarAgenda() {
-        ver = Boolean.FALSE;
-        return null;
-    }
-
-    public String getColor(Horas hora, Parametros dia) {
-        Map parametros = new HashMap();
-        String where = "o.hora=:hora and o.dia=:dia and o.activo=true and o.profesional=:profesional";
-        parametros.put("hora", hora);
-        parametros.put("dia", dia);
-        parametros.put("profesional", profesional);
-
-        try {
-            List<Horarios> aux = ejbHorarios.buscar(where, parametros);
-            if (!aux.isEmpty()) {
-                return "#195f88";
-            }
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "#FFFFFF";
-
-    }
-
-    public String getReservado(Horas hora, Parametros dia) {
-        try {
-            String where = "o.profesional=:profesional and o.activo=true and o.fecha>=:inicio and o.fecha<:fin";
-            Map parametros = new HashMap();
-            parametros.put("profesional", profesional);
-
-            Calendar calendar = Calendar.getInstance();
-            Calendar calendarHora = Calendar.getInstance();
-            int diaActual = calendar.get(Calendar.DAY_OF_WEEK); //Día de la fecha actual
-            int diaReferencia = Integer.parseInt(dia.getParametros()) + 1; //Día del que se quiere averiguar si tuvo atenciones
-
-            calendar = Calendar.getInstance();
-            calendarHora.setTime(hora.getHorainicio());
-            calendar.add(Calendar.DAY_OF_YEAR, (diaActual - diaReferencia) * -1);
-            calendar.set(Calendar.HOUR_OF_DAY, calendarHora.get(Calendar.HOUR_OF_DAY));
-            calendar.set(Calendar.MINUTE, calendarHora.get(Calendar.MINUTE));
-            calendar.set(Calendar.SECOND, calendarHora.get(Calendar.SECOND));
-            calendar.set(Calendar.MILLISECOND, calendarHora.get(Calendar.MILLISECOND));
-            parametros.put("inicio", calendar.getTime());
-
-            calendar = Calendar.getInstance();
-            calendarHora.setTime(hora.getHorafin());
-            calendar.add(Calendar.DAY_OF_YEAR, (diaActual - diaReferencia) * -1);
-            calendar.set(Calendar.HOUR_OF_DAY, calendarHora.get(Calendar.HOUR_OF_DAY));
-            calendar.set(Calendar.MINUTE, calendarHora.get(Calendar.MINUTE));
-            calendar.set(Calendar.SECOND, calendarHora.get(Calendar.SECOND));
-            calendar.set(Calendar.MILLISECOND, calendarHora.get(Calendar.MILLISECOND));
-            parametros.put("fin", calendar.getTime());
-
-            List<Atenciones> auxcitas = ejbAtenciones.buscar(where, parametros);
-            if (!auxcitas.isEmpty()) {
-                return auxcitas.get(0).getPaciente().toString();
-            } else {
-                parametros = new HashMap();
-                where = " o.activo = true and o.hora=:hora and o.dia=:dia and o.profesional=:profesional";
-                parametros.put("hora", hora);
-                parametros.put("dia", dia);
-                parametros.put("profesional", profesional);
-
-                if (ejbHorarios.contar(where, parametros) > 0) {
-                    return "-";
-                }
-            }
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.error(ex.getMessage());
-            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-
-    }
-
-    public String header() {
-        if (profesional == null) {
-            return null;
-        }
-        SimpleDateFormat f = new SimpleDateFormat("dd-MM-yyyy");
-        return "Agenda del " + f.format(inicio) + " al " + f.format(fin) + " - " + profesional.toString();
-    }
-
-    public SelectItem[] getComboAtenciones() {
-        Map parametros = new HashMap();
-        String where = "o.fecha=:fecha and o.activo=true and o.profesional=:profesional";
-        parametros.put("fecha", new Date());
-//        parametros.put("profesional", seguridadBean.getProfesional());
-        try {
-            return CombosBean.getSelectItems(ejbAtenciones.buscar(where, parametros), "object", true);
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.error(ex.getMessage());
-            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    public List<String> separar(String texto) {
-        List<String> lista = new LinkedList<>();
-        String[] aux = texto.split("\\]");
-        lista.addAll(Arrays.asList(aux));
-        return lista;
     }
 
     public String getNombreTabla() {

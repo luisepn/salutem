@@ -6,10 +6,15 @@
 package org.controladores.salutem;
 
 import com.google.gson.JsonObject;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import org.entidades.salutem.Campos;
 import org.entidades.salutem.Datos;
+import org.entidades.salutem.Parametros;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
  *
@@ -86,5 +91,31 @@ public class DatosFacade extends AbstractFacade<Datos> {
 
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json.toString();
+    }
+
+    public List<Datos> traerDatos(String clasificador, String grupo, Integer identificador) {
+        Query q = getEntityManager().createQuery("Select object(o) from Datos as o where o.activo = true and o.clasificador=:clasificador and o.grupo=:grupo and o.identificador=:identificador");
+        q.setParameter("clasificador", clasificador);
+        q.setParameter("grupo", grupo);
+        q.setParameter("identificador", identificador);
+        return q.getResultList();
+    }
+
+    public String buscarJsonb(String campo, Integer id) {
+        Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o." + campo + ") as opciones from Campos o WHERE o.id=:id");
+        q.setParameter("id", id);
+        return (String) q.getSingleResult();
+    }
+
+    public void actualizarJsonb(String campo, String valor, Integer id) {
+        if (valor == null) {
+            em.createNativeQuery("UPDATE Datos SET " + campo + " = null WHERE id=:id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } else {
+            em.createNativeQuery("UPDATE Campos SET " + campo + " = '" + valor + "' WHERE id=:id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        }
     }
 }

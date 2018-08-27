@@ -161,7 +161,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             return null;
         }
         campo = (Campos) parametros.getRowData();
-        campo.setOpciones(ejbCampos.traerOpciones(campo.getId()));
+        campo.setOpciones(ejbCampos.buscarJsonb(campo.getId()));
         opciones = campo.getOpcionesList();
         formulario.editar();
         return null;
@@ -173,7 +173,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             return null;
         }
         campo = (Campos) parametros.getRowData();
-        campo.setOpciones(ejbCampos.traerOpciones(campo.getId()));
+        campo.setOpciones(ejbCampos.buscarJsonb(campo.getId()));
         formulario.eliminar();
         return null;
     }
@@ -242,7 +242,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             campo.setOpciones(campo.getOpcionesJsonFromList(opciones) != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
             ejbCampos.crear(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
-                ejbCampos.insertarOpciones(campo.getOpciones(), campo.getId());
+                ejbCampos.actualizarJsonb(campo.getOpciones(), campo.getId());
             }
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -266,7 +266,7 @@ public class CamposBean implements Serializable, IMantenimiento {
             campo.setOpciones(campo.getOpcionesJsonFromList(opciones) != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
             ejbCampos.actualizar(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
-                ejbCampos.insertarOpciones(campo.getOpciones(), campo.getId());
+                ejbCampos.actualizarJsonb(campo.getOpciones(), campo.getId());
             }
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -317,7 +317,7 @@ public class CamposBean implements Serializable, IMantenimiento {
 
     public SelectItem[] traerOpciones() {
         Campos c = (Campos) parametros.getRowData();
-        c.setOpciones(ejbCampos.traerOpciones(c.getId()));
+        c.setOpciones(ejbCampos.buscarJsonb(c.getId()));
         return CombosBean.getSelectItems(c.getOpcionesList(), "toString", false);
     }
 

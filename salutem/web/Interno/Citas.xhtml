@@ -95,7 +95,7 @@
                                         <f:selectItems value="#{salutemCitas.horasDisponibles}"/>
                                     </h:selectOneMenu>
                                     <h:outputLabel value="Observaciones: " styleClass="bold"/>
-                                    <h:inputTextarea cols="50" rows="4" value="#{salutemCitas.observaciones}"/>
+                                    <ace:textAreaEntry cols="50" rows="4" value="#{salutemCitas.observaciones}"/>
                                 </h:panelGrid>
 
                                 <h:panelGrid columns="2" rendered="#{!salutemCitas.formulario.mostrar}" >
