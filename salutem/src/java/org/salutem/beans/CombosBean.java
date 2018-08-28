@@ -11,6 +11,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
+import org.controladores.salutem.CitasFacade;
 import org.controladores.salutem.HorariosFacade;
 import org.controladores.salutem.HorasFacade;
 import org.controladores.salutem.InstitucionesFacade;
@@ -20,6 +21,7 @@ import org.controladores.salutem.MenusFacade;
 import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.ProfesionalesFacade;
 import org.controladores.salutem.UsuariosFacade;
+import org.entidades.salutem.Citas;
 import org.entidades.salutem.Horarios;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Instituciones;
@@ -59,6 +61,7 @@ public class CombosBean implements Serializable {
 
     private Parametros foco;
     private Parametros tipo;
+    private Profesionales profesional;
 
     private String clasificador;
 
@@ -80,6 +83,8 @@ public class CombosBean implements Serializable {
     private HorariosFacade ejbhHorarios;
     @EJB
     private ProfesionalesFacade ejbProfesionales;
+    @EJB
+    private CitasFacade ejbCitas;
 
     public CombosBean() {
     }
@@ -87,6 +92,7 @@ public class CombosBean implements Serializable {
     @PostConstruct
     private void iniciar() {
         institucion = seguridadBean.getInstitucion();
+        profesional = seguridadBean.getProfesional();
     }
 
     public static SelectItem[] getSelectItems(List<?> entities, String clave, boolean selectOne) {
@@ -288,6 +294,10 @@ public class CombosBean implements Serializable {
         return getSelectItems(traerProfesionales(), "id", true);
     }
 
+    public SelectItem[] getCitas() {
+        return getSelectItems(traerCitas(), "id", true);
+    }
+
     private List<Instituciones> traerInstituciones(Boolean tipo) {
         try {
             return ejbInstituciones.traerInstituciones(tipo);
@@ -392,6 +402,16 @@ public class CombosBean implements Serializable {
         return null;
     }
 
+    private List<Citas> traerCitas() {
+        try {
+            return ejbCitas.traerCitas(profesional);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CombosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     public Instituciones traerInstitucion(Integer id) throws ExcepcionDeConsulta {
         return (Instituciones) ejbInstituciones.buscar(id);
     }
@@ -426,6 +446,10 @@ public class CombosBean implements Serializable {
 
     public Profesionales traerProfesional(Integer id) throws ExcepcionDeConsulta {
         return (Profesionales) ejbProfesionales.buscar(id);
+    }
+
+    public Citas traerCita(Integer id) throws ExcepcionDeConsulta {
+        return (Citas) ejbCitas.buscar(id);
     }
 
     public SelectItem[] getIconos() {

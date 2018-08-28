@@ -13,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Parametros;
+import org.entidades.salutem.Personas;
 import org.entidades.salutem.Profesionales;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 
@@ -42,6 +43,13 @@ public class ProfesionalesFacade extends AbstractFacade<Profesionales> {
             q.setParameter("especialidad", especialidad);
         }
         return q.getResultList();
+    }
+
+    public Profesionales traerProfesional(Personas persona, Instituciones institucion) {
+        Query q = getEntityManager().createQuery("Select object(o) from Profesionales as o where o.activo = true and o.persona=:persona and o.institucion=:institucion");
+        q.setParameter("persona", persona);
+        q.setParameter("institucion", institucion);
+        return (Profesionales) q.getSingleResult();
     }
 
     @Override

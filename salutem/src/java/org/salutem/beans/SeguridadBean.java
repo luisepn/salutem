@@ -27,12 +27,14 @@ import org.controladores.salutem.MenusFacade;
 import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.PerfilesFacade;
 import org.controladores.salutem.PersonasFacade;
+import org.controladores.salutem.ProfesionalesFacade;
 import org.controladores.salutemlogs.AsincronoLogFacade;
 import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Menus;
 import org.entidades.salutem.Perfiles;
 import org.entidades.salutem.Personas;
+import org.entidades.salutem.Profesionales;
 import org.entidades.salutem.Usuarios;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
@@ -59,6 +61,7 @@ public class SeguridadBean implements Serializable {
     private MenuModel menu;
     private Parametros grupo;
     private Instituciones institucion;
+    private Profesionales profesional;
     private String titulo;
     private List<Usuarios> usuarios;
 
@@ -90,6 +93,8 @@ public class SeguridadBean implements Serializable {
     private ParametrosFacade ejbParametros;
     @EJB
     private InstitucionesFacade ejbInstituciones;
+    @EJB
+    private ProfesionalesFacade ejbProfesionales;
     @EJB
     public AsincronoLogFacade ejbLogs;
 
@@ -199,6 +204,8 @@ public class SeguridadBean implements Serializable {
         this.titulo = usuario.getModulo().getNombre();
         this.grupo = usuario.getGrupo();
         this.institucion = usuario.getInstitucion();
+
+        this.profesional = ejbProfesionales.traerProfesional(logueado, institucion);
 
         String where = " o.modulo=:modulo";
         String order = " o.codigo";
@@ -651,6 +658,20 @@ public class SeguridadBean implements Serializable {
      */
     public void setFinActualizado(Date finActualizado) {
         this.finActualizado = finActualizado;
+    }
+
+    /**
+     * @return the profesional
+     */
+    public Profesionales getProfesional() {
+        return profesional;
+    }
+
+    /**
+     * @param profesional the profesional to set
+     */
+    public void setProfesional(Profesionales profesional) {
+        this.profesional = profesional;
     }
 
 }

@@ -6,10 +6,14 @@
 package org.controladores.salutem;
 
 import com.google.gson.JsonObject;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.entidades.salutem.Citas;
+import org.entidades.salutem.Profesionales;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
  *
@@ -30,6 +34,12 @@ public class CitasFacade extends AbstractFacade<Citas> {
         super(Citas.class);
     }
 
+    public List<Citas> traerCitas(Profesionales profesional) throws ExcepcionDeConsulta {
+        Query q = getEntityManager().createQuery("Select object(o) from Citas as o where o.activo = true and o.profesional=:profesional");
+        q.setParameter("profesional", profesional);
+        return q.getResultList();
+    }
+
     @Override
     protected String getJson(Citas objeto) {
         JsonObject json = new JsonObject();
@@ -41,4 +51,5 @@ public class CitasFacade extends AbstractFacade<Citas> {
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json.toString();
     }
+
 }

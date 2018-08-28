@@ -28,13 +28,13 @@
                                         <ace:ajax execute="@all"/>
                                     </h:selectOneMenu>
                                     <h:outputLabel value="Profesional: " styleClass="bold"/>
-                                    <h:selectOneMenu value="#{salutemAtenciones.profesional}">
+                                    <h:selectOneMenu value="#{salutemCombos.profesional}">
                                         <f:selectItems value="#{salutemCombos.profesionales}"/>
                                         <ace:ajax execute="@all"/>
                                     </h:selectOneMenu>
                                     <h:outputLabel value="Cita: " styleClass="bold"/>
                                     <h:selectOneMenu value="#{salutemAtenciones.cita}">
-                                        <f:selectItems value="#{salutemAtenciones.horasDisponibles}"/>
+                                        <f:selectItems value="#{salutemCombos.citas}"/>
                                     </h:selectOneMenu>
                                 </h:panelGrid>
                                 <h:panelGrid columns="3">
@@ -88,8 +88,6 @@
                                     <ace:menuBar autoSubmenuDisplay="true" >
                                         <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"  action="#{salutemAtenciones.insertar()}"/>
                                         <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscar()}"/>
-                                        <ace:menuItem value="Ver Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemAtenciones.verAgenda()}" rendered="#{salutemAtenciones.profesional ne null and !salutemAtenciones.ver}"/>
-                                        <ace:menuItem value="Ocultar Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemAtenciones.ocultarAgenda()}" rendered="#{salutemAtenciones.profesional ne null and salutemAtenciones.ver}"/>
                                     </ace:menuBar>
                                     <ace:messages style="white-space: pre-wrap" rendered="#{!salutemAtenciones.formulario.mostrar}"/>
                                 </h:panelGrid>

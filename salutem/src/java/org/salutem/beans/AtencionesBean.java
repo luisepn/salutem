@@ -5,12 +5,9 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,15 +17,9 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import javax.faces.model.SelectItem;
 import org.controladores.salutem.AtencionesFacade;
-import org.controladores.salutem.HorariosFacade;
 import org.entidades.salutem.Atenciones;
 import org.entidades.salutem.Citas;
-import org.entidades.salutem.Horarios;
-import org.entidades.salutem.Horas;
-import org.entidades.salutem.Pacientes;
-import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Perfiles;
 import org.entidades.salutem.Profesionales;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
@@ -280,10 +271,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         f.set(Calendar.SECOND, 0);
         f.set(Calendar.MILLISECOND, 1);
 
-        if (f.getTime().before(t.getTime())) {
-            return true;
-        }
-        return false;
+        return f.getTime().before(t.getTime());
     }
 
     @Override
@@ -326,6 +314,174 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     public String getNombreTabla() {
         return Atenciones.class.getSimpleName();
+    }
+
+    /**
+     * @return the seguridadBean
+     */
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
+    }
+
+    /**
+     * @return the pacientesBean
+     */
+    public PacientesBean getPacientesBean() {
+        return pacientesBean;
+    }
+
+    /**
+     * @param pacientesBean the pacientesBean to set
+     */
+    public void setPacientesBean(PacientesBean pacientesBean) {
+        this.pacientesBean = pacientesBean;
+    }
+
+    /**
+     * @return the datosBean
+     */
+    public DatosBean getDatosBean() {
+        return datosBean;
+    }
+
+    /**
+     * @param datosBean the datosBean to set
+     */
+    public void setDatosBean(DatosBean datosBean) {
+        this.datosBean = datosBean;
+    }
+
+    /**
+     * @return the perfil
+     */
+    public Perfiles getPerfil() {
+        return perfil;
+    }
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void setPerfil(Perfiles perfil) {
+        this.perfil = perfil;
+    }
+
+    /**
+     * @return the formulario
+     */
+    public Formulario getFormulario() {
+        return formulario;
+    }
+
+    /**
+     * @param formulario the formulario to set
+     */
+    public void setFormulario(Formulario formulario) {
+        this.formulario = formulario;
+    }
+
+    /**
+     * @return the atenciones
+     */
+    public LazyDataModel<Atenciones> getAtenciones() {
+        return atenciones;
+    }
+
+    /**
+     * @param atenciones the atenciones to set
+     */
+    public void setAtenciones(LazyDataModel<Atenciones> atenciones) {
+        this.atenciones = atenciones;
+    }
+
+    /**
+     * @return the profesional
+     */
+    public Profesionales getProfesional() {
+        return profesional;
+    }
+
+    /**
+     * @param profesional the profesional to set
+     */
+    public void setProfesional(Profesionales profesional) {
+        this.profesional = profesional;
+    }
+
+    /**
+     * @return the atencion
+     */
+    public Atenciones getAtencion() {
+        return atencion;
+    }
+
+    /**
+     * @param atencion the atencion to set
+     */
+    public void setAtencion(Atenciones atencion) {
+        this.atencion = atencion;
+    }
+
+    /**
+     * @return the conCita
+     */
+    public Boolean getConCita() {
+        return conCita;
+    }
+
+    /**
+     * @param conCita the conCita to set
+     */
+    public void setConCita(Boolean conCita) {
+        this.conCita = conCita;
+    }
+
+    /**
+     * @return the cita
+     */
+    public Citas getCita() {
+        return cita;
+    }
+
+    /**
+     * @param cita the cita to set
+     */
+    public void setCita(Citas cita) {
+        this.cita = cita;
+    }
+
+    /**
+     * @return the fechaInicio
+     */
+    public Date getFechaInicio() {
+        return fechaInicio;
+    }
+
+    /**
+     * @param fechaInicio the fechaInicio to set
+     */
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    /**
+     * @return the fechaFin
+     */
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    /**
+     * @param fechaFin the fechaFin to set
+     */
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
 }

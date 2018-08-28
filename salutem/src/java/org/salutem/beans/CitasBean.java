@@ -297,10 +297,7 @@ public class CitasBean implements Serializable, IMantenimiento {
         f.set(Calendar.SECOND, 0);
         f.set(Calendar.MILLISECOND, 1);
 
-        if (f.getTime().before(t.getTime())) {
-            return true;
-        }
-        return false;
+        return f.getTime().before(t.getTime());
     }
 
     @Override
