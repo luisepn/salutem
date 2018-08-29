@@ -11,7 +11,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Campos;
 import org.entidades.salutem.Parametros;
 import org.excepciones.salutem.ExcepcionDeConsulta;
