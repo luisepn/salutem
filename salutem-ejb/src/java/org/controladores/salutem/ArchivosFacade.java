@@ -41,10 +41,14 @@ public class ArchivosFacade extends AbstractFacade<Archivos> {
             Query q = getEntityManager().createQuery("Select object(o) from Archivos as o where o.clasificador=:clasificador and o.identificador=:identificador");
             q.setParameter("clasificador", clasificador);
             q.setParameter("identificador", identificador);
-            return (Archivos) q.getSingleResult();
+            List<Archivos> aux = q.getResultList();
+            if (!aux.isEmpty()) {
+                return aux.get(0);
+            }
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(ArchivosFacade.class.getName(), e);
         }
+        return null;
     }
 
     @Override

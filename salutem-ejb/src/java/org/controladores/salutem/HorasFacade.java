@@ -35,9 +35,13 @@ public class HorasFacade extends AbstractFacade<Horas> {
     }
 
     public List<Horas> traerHoras(Instituciones institucion) throws ExcepcionDeConsulta {
-        Query q = getEntityManager().createQuery("Select object(o) from Horas as o where o.activo = true and o.institucion=:institucion");
-        q.setParameter("institucion", institucion);
-        return q.getResultList();
+        try {
+            Query q = getEntityManager().createQuery("Select object(o) from Horas as o where o.activo = true and o.institucion=:institucion");
+            q.setParameter("institucion", institucion);
+            return q.getResultList();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(HorariosFacade.class.getName(), e);
+        }
     }
 
     @Override

@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -164,9 +165,9 @@ public class Citas implements Serializable {
 
     @Override
     public String toString() {
-        return "org.entidades.salutem.Citas[ id=" + id + " ]";
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        return "[" + format.format(fecha) + "] " + paciente.toString();
     }
-
 
     public Atenciones getAtenciones() {
         return atenciones;
@@ -199,5 +200,5 @@ public class Citas implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-  
+
 }

@@ -295,7 +295,7 @@ public class CombosBean implements Serializable {
     }
 
     public SelectItem[] getCitas() {
-        return getSelectItems(traerCitas(), "id", true);
+        return getSelectItems(traerCitas(), "object", true);
     }
 
     private List<Instituciones> traerInstituciones(Boolean tipo) {
@@ -782,5 +782,19 @@ public class CombosBean implements Serializable {
      */
     public void setClasificador(String clasificador) {
         this.clasificador = clasificador;
+    }
+
+    /**
+     * @return the profesional
+     */
+    public Profesionales getProfesional() {
+        return profesional;
+    }
+
+    /**
+     * @param profesional the profesional to set
+     */
+    public void setProfesional(Profesionales profesional) {
+        this.profesional = profesional;
     }
 }

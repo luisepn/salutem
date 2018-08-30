@@ -20,8 +20,10 @@ import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.AtencionesFacade;
 import org.entidades.salutem.Atenciones;
 import org.entidades.salutem.Citas;
+import org.entidades.salutem.Datos;
+import org.entidades.salutem.Formulas;
 import org.entidades.salutem.Perfiles;
-import org.entidades.salutem.Profesionales;
+import org.entidades.salutem.Prescripciones;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
@@ -45,6 +47,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private SeguridadBean seguridadBean;
     @ManagedProperty(value = "#{salutemPacientes}")
     private PacientesBean pacientesBean;
+    @ManagedProperty(value = "#{salutemCombos}")
+    private CombosBean combosBean;
     @ManagedProperty(value = "#{salutemDatos}")
     private DatosBean datosBean;
 
@@ -52,8 +56,10 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     private Formulario formulario = new Formulario();
     private LazyDataModel<Atenciones> atenciones;
+    private Formulas formula;
+    private List<Prescripciones> prescripciones;
+    private List<Datos> datos;
 
-    private Profesionales profesional;
     private Atenciones atencion;
     private Boolean conCita;
     private Citas cita;
@@ -65,6 +71,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private AtencionesFacade ejbAtenciones;
 
     public AtencionesBean() {
+        conCita = true;
         atenciones = new LazyDataModel<Atenciones>() {
             @Override
             public List<Atenciones> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -85,23 +92,19 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     private List<Atenciones> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(Calendar.HOUR_OF_DAY, 0);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND, 0);
-            calendar.set(Calendar.MILLISECOND, 0);
-
             Map parameters = new HashMap();
-            String where = " o.activo=:activo and o.fecha>=:fecha";
+            String where = " o.activo=:activo";
             parameters.put("activo", seguridadBean.getVerActivos());
-            parameters.put("fecha", calendar.getTime());
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
                 where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                 parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
             }
-
+            if (combosBean.getProfesional() != null) {
+                where += " and o.profesional=:profesional";
+                parameters.put("profesional", combosBean.getProfesional());
+            }
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
                 where += " and o.creado between :iniciocreado and :fincreado";
                 parameters.put("iniciocreado", seguridadBean.getInicioCreado());
@@ -126,7 +129,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             atenciones.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.fecha";
+                order = "o.fecha desc";
             } else {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
@@ -191,10 +194,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     @Override
     public boolean validar() {
-        if (pacientesBean.getPaciente() == null) {
-            Mensajes.advertencia("Seleccione un paciente");
-            return true;
-        }
         if (conCita) {
             if (cita == null) {
                 Mensajes.advertencia("Seleccione una cita");
@@ -205,7 +204,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 Mensajes.advertencia("Seleccione un paciente");
                 return true;
             }
-            if (profesional == null) {
+            if (combosBean.getProfesional() == null) {
                 Mensajes.advertencia("Seleccione un profesional médico");
                 return true;
             }
@@ -222,37 +221,44 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         if (validar()) {
             return null;
         }
-
-        atencion = new Atenciones();
-        atencion.setActivo(Boolean.TRUE);
-        atencion.setCreado(new Date());
-        atencion.setCreadopor(seguridadBean.getLogueado().getUserid());
-        atencion.setActualizado(atencion.getCreado());
-        atencion.setActualizadopor(atencion.getCreadopor());
-
-        atencion.setFecha(new Date());
-        if (conCita) {
-            if (cita == null) {
+        try {
+            atencion = new Atenciones();
+            atencion.setFecha(new Date());
+            Map parameters = new HashMap();
+            if (conCita) {
+                parameters.put("cita", cita);
+                if (ejbAtenciones.contar("o.cita=:cita", parameters) > 0) {
+                    Mensajes.advertencia("Ya existe una atención generada para la cita seleccionada");
+                    return null;
+                }
+                atencion.setCita(cita);
                 atencion.setPaciente(cita.getPaciente());
                 atencion.setProfesional(cita.getProfesional());
+            } else {
+                parameters.put("profesional", combosBean.getProfesional());
+                parameters.put("paciente", pacientesBean.getPaciente());
+                if (ejbAtenciones.contar("o.profesional=:profesional and o.paciente=:paciente", parameters) > 0) {
+                    Mensajes.advertencia("Ya existe una atención generada para el paciente seleccionado");
+                    return null;
+                }
+                atencion.setPaciente(pacientesBean.getPaciente());
+                atencion.setProfesional(combosBean.getProfesional());
             }
-        } else {
-            atencion.setPaciente(pacientesBean.getPaciente());
-            atencion.setProfesional(profesional);
-        }
+            atencion.setEspecialidad(atencion.getProfesional().getEspecialidad());
 
-        atencion.setCreado(new Date());
-        atencion.setCreadopor(seguridadBean.getLogueado().getUserid());
-        atencion.setActualizado(atencion.getCreado());
-        atencion.setActualizadopor(atencion.getCreadopor());
+            atencion.setCreado(new Date());
+            atencion.setCreadopor(seguridadBean.getLogueado().getUserid());
+            atencion.setActualizado(atencion.getCreado());
+            atencion.setActualizadopor(atencion.getCreadopor());
+            atencion.setActivo(Boolean.TRUE);
 
-        try {
             ejbAtenciones.crear(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            datosBean.crear(getNombreTabla(), profesional.getEspecialidad(), atencion.getId());
-        } catch (ExcepcionDeCreacion ex) {
+            datosBean.crear(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
+        } catch (ExcepcionDeCreacion | ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+        formulario.editar();
         return null;
     }
 
@@ -401,20 +407,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @return the profesional
-     */
-    public Profesionales getProfesional() {
-        return profesional;
-    }
-
-    /**
-     * @param profesional the profesional to set
-     */
-    public void setProfesional(Profesionales profesional) {
-        this.profesional = profesional;
-    }
-
-    /**
      * @return the atencion
      */
     public Atenciones getAtencion() {
@@ -482,6 +474,62 @@ public class AtencionesBean implements Serializable, IMantenimiento {
      */
     public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
+    }
+
+    /**
+     * @return the combosBean
+     */
+    public CombosBean getCombosBean() {
+        return combosBean;
+    }
+
+    /**
+     * @param combosBean the combosBean to set
+     */
+    public void setCombosBean(CombosBean combosBean) {
+        this.combosBean = combosBean;
+    }
+
+    /**
+     * @return the formula
+     */
+    public Formulas getFormula() {
+        return formula;
+    }
+
+    /**
+     * @param formula the formula to set
+     */
+    public void setFormula(Formulas formula) {
+        this.formula = formula;
+    }
+
+    /**
+     * @return the prescripciones
+     */
+    public List<Prescripciones> getPrescripciones() {
+        return prescripciones;
+    }
+
+    /**
+     * @param prescripciones the prescripciones to set
+     */
+    public void setPrescripciones(List<Prescripciones> prescripciones) {
+        this.prescripciones = prescripciones;
+    }
+
+    /**
+     * @return the datos
+     */
+    public List<Datos> getDatos() {
+        return datos;
+    }
+
+    /**
+     * @param datos the datos to set
+     */
+    public void setDatos(List<Datos> datos) {
+        this.datos = datos;
     }
 
 }

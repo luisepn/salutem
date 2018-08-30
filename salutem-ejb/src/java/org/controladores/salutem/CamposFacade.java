@@ -13,6 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.entidades.salutem.Campos;
 import org.entidades.salutem.Parametros;
+import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
@@ -55,21 +56,29 @@ public class CamposFacade extends AbstractFacade<Campos> {
         return json.toString();
     }
 
-    public String buscarJsonb(Integer id) {
-        Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o.opciones) as opciones from Campos o WHERE o.id=:id");
-        q.setParameter("id", id);
-        return (String) q.getSingleResult();
+    public String buscarJsonb(Integer id) throws ExcepcionDeConsulta {
+        try {
+            Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o.opciones) as opciones from Campos o WHERE o.id=:id");
+            q.setParameter("id", id);
+            return (String) q.getSingleResult();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(CamposFacade.class.getName(), e);
+        }
     }
 
-    public void actualizarJsonb(String opciones, Integer id) {
-        if (opciones == null) {
-            em.createNativeQuery("UPDATE Campos SET opciones = null WHERE id=:id")
-                    .setParameter("id", id)
-                    .executeUpdate();
-        } else {
-            em.createNativeQuery("UPDATE Campos SET opciones = '" + opciones + "' WHERE id=:id")
-                    .setParameter("id", id)
-                    .executeUpdate();
+    public void actualizarJsonb(String opciones, Integer id) throws ExcepcionDeActualizacion {
+        try {
+            if (opciones == null) {
+                em.createNativeQuery("UPDATE Campos SET opciones = null WHERE id=:id")
+                        .setParameter("id", id)
+                        .executeUpdate();
+            } else {
+                em.createNativeQuery("UPDATE Campos SET opciones = '" + opciones + "' WHERE id=:id")
+                        .setParameter("id", id)
+                        .executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new ExcepcionDeActualizacion(CamposFacade.class.getName(), e);
         }
     }
 

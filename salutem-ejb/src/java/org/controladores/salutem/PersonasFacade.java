@@ -55,10 +55,14 @@ public class PersonasFacade extends AbstractFacade<Personas> {
             Query q = em.createQuery("SELECT OBJECT(o) from Personas as o WHERE o.userid=:usuario and o.clave=:clave");
             q.setParameter("usuario", usuario);
             q.setParameter("clave", clave);
-            return (Personas) q.getSingleResult();
+            List<Personas> aux = q.getResultList();
+            if (!aux.isEmpty()) {
+                return aux.get(0);
+            }
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(PersonasFacade.class.getName(), e);
         }
+        return null;
     }
 
     @Override

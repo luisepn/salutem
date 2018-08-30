@@ -157,24 +157,39 @@ public class CamposBean implements Serializable, IMantenimiento {
 
     @Override
     public String editar() {
-        if (!IMantenimiento.validarPerfil(perfil, 'U')) {
-            return null;
+        try {
+            if (!IMantenimiento.validarPerfil(perfil, 'U')) {
+                return null;
+            }
+            campo = (Campos) parametros.getRowData();
+            if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
+                campo.setOpciones(ejbCampos.buscarJsonb(campo.getId()));
+                opciones = campo.getOpcionesList();
+            }
+            formulario.editar();
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        campo = (Campos) parametros.getRowData();
-        campo.setOpciones(ejbCampos.buscarJsonb(campo.getId()));
-        opciones = campo.getOpcionesList();
-        formulario.editar();
         return null;
     }
 
     @Override
     public String eliminar() {
-        if (!IMantenimiento.validarPerfil(perfil, 'D')) {
-            return null;
+        try {
+            if (!IMantenimiento.validarPerfil(perfil, 'D')) {
+                return null;
+            }
+            campo = (Campos) parametros.getRowData();
+            if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
+                campo.setOpciones(ejbCampos.buscarJsonb(campo.getId()));
+                opciones = campo.getOpcionesList();
+            }
+            formulario.eliminar();
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        campo = (Campos) parametros.getRowData();
-        campo.setOpciones(ejbCampos.buscarJsonb(campo.getId()));
-        formulario.eliminar();
         return null;
     }
 
@@ -239,16 +254,17 @@ public class CamposBean implements Serializable, IMantenimiento {
             campo.setCreadopor(seguridadBean.getLogueado().getUserid());
             campo.setActualizado(campo.getCreado());
             campo.setActualizadopor(campo.getCreadopor());
-            campo.setOpciones(campo.getOpcionesJsonFromList(opciones) != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
+            campo.setOpciones(opciones != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
             ejbCampos.crear(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
                 ejbCampos.actualizarJsonb(campo.getOpciones(), campo.getId());
             }
-        } catch (ExcepcionDeCreacion ex) {
+            formulario.cancelar();
+        } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -263,7 +279,7 @@ public class CamposBean implements Serializable, IMantenimiento {
         try {
             campo.setActualizado(new Date());
             campo.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            campo.setOpciones(campo.getOpcionesJsonFromList(opciones) != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
+            campo.setOpciones(opciones != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
             ejbCampos.actualizar(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
                 ejbCampos.actualizarJsonb(campo.getOpciones(), campo.getId());
@@ -316,9 +332,15 @@ public class CamposBean implements Serializable, IMantenimiento {
     }
 
     public SelectItem[] traerOpciones() {
-        Campos c = (Campos) parametros.getRowData();
-        c.setOpciones(ejbCampos.buscarJsonb(c.getId()));
-        return CombosBean.getSelectItems(c.getOpcionesList(), "toString", false);
+        try {
+            Campos c = (Campos) parametros.getRowData();
+            c.setOpciones(ejbCampos.buscarJsonb(c.getId()));
+            return CombosBean.getSelectItems(c.getOpcionesList(), "toString", false);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     public String getNombreTabla() {

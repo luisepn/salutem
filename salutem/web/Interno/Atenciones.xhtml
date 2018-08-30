@@ -28,16 +28,25 @@
                                         <ace:ajax execute="@all"/>
                                     </h:selectOneMenu>
                                     <h:outputLabel value="Profesional: " styleClass="bold"/>
-                                    <h:selectOneMenu value="#{salutemCombos.profesional}">
+                                    <h:selectOneMenu value="#{salutemCombos.profesional}" disabled="#{salutemSeguridad.profesional ne null}">
                                         <f:selectItems value="#{salutemCombos.profesionales}"/>
                                         <ace:ajax execute="@all"/>
                                     </h:selectOneMenu>
-                                    <h:outputLabel value="Cita: " styleClass="bold"/>
-                                    <h:selectOneMenu value="#{salutemAtenciones.cita}">
+                                    <h:outputLabel value="¿Con cita?: " styleClass="bold"/>
+                                    <h:selectBooleanCheckbox value="#{salutemAtenciones.conCita}">
+                                        <ace:ajax execute="@all"/>
+                                    </h:selectBooleanCheckbox>
+                                    <h:panelGroup>
+                                        <h:outputLabel value="Citas: " styleClass="bold" rendered="#{salutemAtenciones.conCita}"/>
+                                        <h:outputText  value="#{salutemSeguridad.fechaActual}">
+                                            <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                        </h:outputText>
+                                    </h:panelGroup>
+                                    <h:selectOneMenu value="#{salutemAtenciones.cita}" rendered="#{salutemAtenciones.conCita}">
                                         <f:selectItems value="#{salutemCombos.citas}"/>
                                     </h:selectOneMenu>
                                 </h:panelGrid>
-                                <h:panelGrid columns="3">
+                                <h:panelGrid columns="3" rendered="#{!salutemAtenciones.conCita}">
                                     <h:outputLabel value="Paciente:" />
                                     <h:selectOneMenu value="#{salutemPacientes.parametroBusqueda}">
                                         <f:selectItem itemLabel="Nombres" itemValue="o.persona.nombres"/>
@@ -86,50 +95,13 @@
 
                                 <h:panelGrid columns="2" rendered="#{!salutemAtenciones.formulario.mostrar}" >
                                     <ace:menuBar autoSubmenuDisplay="true" >
-                                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"  action="#{salutemAtenciones.insertar()}"/>
                                         <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscar()}"/>
+                                        <ace:menuItem value="Crear" icon="ui-icon ui-icon-document"  action="#{salutemAtenciones.insertar()}"/>
                                     </ace:menuBar>
-                                    <ace:messages style="white-space: pre-wrap" rendered="#{!salutemAtenciones.formulario.mostrar}"/>
+                                    <ace:messages style="white-space: pre-wrap"/>
                                 </h:panelGrid>
-                            </h:panelGrid>
-                            <h:panelGrid width="100%">
-                                <h:panelGrid columns="3" rendered="#{salutemAtenciones.ver}">
-                                    <h:outputLabel  value="Exportar a:"/>
-                                    <h:selectOneRadio  value="#{salutemAtenciones.formulario.tipo}" required="true">
-                                        <f:ajax disabled="false"/>
-                                        <f:selectItem itemValue="csv" itemLabel="CSV"/>
-                                        <f:selectItem itemValue="pdf" itemLabel="PDF"/>
-                                        <f:selectItem itemValue="xls" itemLabel="XLS"/>
-                                        <f:selectItem itemValue="xml" itemLabel="XML"/>
-                                    </h:selectOneRadio>
-                                    <ace:dataExporter id="dataExporter1" 
-                                                      label="Exportar Archivo" 
-                                                      type="#{salutemAtenciones.formulario.tipo}" 
-                                                      target="agenda" fileName="#{salutemAtenciones.header()}"/>
-                                </h:panelGrid>
-                                <h:panelGrid width="100%" rendered="#{salutemAtenciones.ver}">
-                                    <ace:dataTable  id="agenda"                                   
-                                                    value="#{salutemCombos.listaHoras}"
-                                                    resizableColumns="true"
-                                                    var="hora">
-                                        <f:facet name="header">#{salutemAtenciones.header()}</f:facet>
-                                        <ace:column  headerText="Horas" style="text-align: right">
-                                            <h:outputText value="#{hora.toString()}"/>
-                                        </ace:column>
-                                        <c:forEach items="#{salutemCombos.listaDias}" var="dia">
-                                            <ace:column headerText="#{dia.toString()}">
-                                                <!--<span style="background-color: #{salutemAtenciones.getColor(hora, dia)}; padding:  2px;">-->
-                                                <h:outputText value="#{salutemAtenciones.getReservado(hora, dia)}" style="color: #195f88 !important"/>
-                                                <!--</span>-->
-                                                <hr style="border: 1px solid #{salutemAtenciones.getColor(hora, dia)};"/>
-                                            </ace:column>
-                                        </c:forEach>
-                                    </ace:dataTable>
-                                </h:panelGrid> 
                             </h:panelGrid>
                         </h:panelGrid>
-
-
                     </ace:panel>
                     <ace:panel 
                         header="Resultado Búsqueda"
@@ -200,8 +172,8 @@
                                              filterBy="#{item.profesional.persona.apellidos}" filterMatchMode="contains">
                                     <h:outputText  value="#{item.profesional.toString()}"/>
                                 </ace:column>
-                                <ace:column  headerText="Observaciones" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
-                                    <h:outputText  value="#{item.descripcion}"/>
+                                <ace:column  headerText="Observaciones" sortBy="#{item.observaciones}" filterBy="#{item.observaciones}" filterMatchMode="contains" style="text-align: left">
+                                    <h:outputText  value="#{item.observaciones}"/>
                                 </ace:column>
                                 <ace:column  headerText="Creación" sortBy="#{item.creado}" 
                                              filterBy="#{item.creado}" 
@@ -244,30 +216,58 @@
                         draggable="false"
                         showEffect="clip"
                         hideEffect="fade"
+                        maximizableRestorable="true"
+                        zindex="10"
                         rendered="#{salutemAtenciones.formulario.mostrar}"
                         visible="#{salutemAtenciones.formulario.mostrar}">
                         <h:panelGrid columns="2">
-                            <h:outputText value="Observaciones:" styleClass="bold"/>
-                            <h:inputTextarea cols="50" rows="4" value="#{salutemAtenciones.cita.descripcion}"/>
+                            <h:panelGrid>
+                                <ace:panel header="Datos del paciente">
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel value="C.I.:" styleClass="bold"/>
+                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.cedula}"/>
+                                        <h:outputLabel value="Nombres:" styleClass="bold"/>
+                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.nombres}"/>
+                                        <h:outputLabel value="Apellidos:" styleClass="bold"/>
+                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.apellidos}"/>
+                                        <h:outputLabel value="E-mail:" styleClass="bold"/>
+                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.email}"/>
+                                        <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
+                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.fecha}">
+                                            <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>   
+                                        </h:outputLabel>
+                                        <h:outputLabel value="Ocupación:" styleClass="bold"/>
+                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.ocupacion}"/>
+                                        <h:outputLabel value="Género:" styleClass="bold"/>
+                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.genero.nombre}"/>
+                                        <h:outputLabel value="Descripción:" styleClass="bold"/>
+                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.descripcion}" style="white-space: pre-wrap"/>
+                                    </h:panelGrid>
+                                </ace:panel>
+                                <ace:panel header="Prescripción">
+
+                                </ace:panel>
+                            </h:panelGrid>
+                            <ace:panel header="Ficha médica">
+
+                            </ace:panel>
                         </h:panelGrid>
-                        <h:panelGrid columns="1" width="100%">
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Observaciones:" styleClass="bold"/>
+                            <h:inputTextarea cols="50" rows="4" value="#{salutemAtenciones.atencion.observaciones}"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
                             <ace:menuBar autoSubmenuDisplay="true" >
-                                <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"
-                                              action="#{salutemAtenciones.grabar()}"
+                                <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
+                                              action="#{salutemAtenciones.grabar()}" 
                                               rendered="#{salutemAtenciones.formulario.editar}"/>
-                                <ace:menuItem value="Cancelar Cita" icon="ui-icon ui-icon-arrowthickstop-1-s"
-                                              action="#{salutemAtenciones.cancelarCita()}"
-                                              rendered="#{salutemAtenciones.cita.activo and !salutemAtenciones.formulario.eliminar}"/>
-                                <ace:menuItem value="Reactivar Cita" icon="ui-icon ui-icon-arrowthickstop-1-n"
-                                              action="#{salutemAtenciones.reactivarCita()}" 
-                                              rendered="#{!salutemAtenciones.cita.activo and !salutemAtenciones.formulario.eliminar}"/>
                                 <ace:menuItem value="Eliminar" icon="ui-icon ui-icon-trash"
-                                              action="#{salutemAtenciones.remover()}"
+                                              action="#{salutemAtenciones.remover()}" 
                                               rendered="#{salutemAtenciones.formulario.eliminar}"/>
                                 <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                               action="#{salutemAtenciones.cancelar()}"/>
                             </ace:menuBar>
-                            <ace:messages style="white-space: pre-wrap" />
+                            <ace:messages style="white-space: pre-wrap"/>
                         </h:panelGrid>
                     </ace:dialog>
                     <ui:include src="../cuadroHistorial.xhtml"/>

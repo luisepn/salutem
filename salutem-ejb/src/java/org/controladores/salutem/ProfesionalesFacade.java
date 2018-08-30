@@ -37,19 +37,31 @@ public class ProfesionalesFacade extends AbstractFacade<Profesionales> {
     }
 
     public List<Profesionales> traerProfesionales(Instituciones institucion, Parametros especialidad) throws ExcepcionDeConsulta {
-        Query q = getEntityManager().createQuery("Select object(o) from Profesionales as o where o.activo = true and o.institucion=:institucion" + (especialidad != null ? " and o.especialidad=:especialidad" : ""));
-        q.setParameter("institucion", institucion);
-        if (especialidad != null) {
-            q.setParameter("especialidad", especialidad);
+        try {
+            Query q = em.createQuery("Select object(o) from Profesionales as o where o.activo = true and o.institucion=:institucion" + (especialidad != null ? " and o.especialidad=:especialidad" : ""));
+            q.setParameter("institucion", institucion);
+            if (especialidad != null) {
+                q.setParameter("especialidad", especialidad);
+            }
+            return q.getResultList();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(ProfesionalesFacade.class.getName(), e);
         }
-        return q.getResultList();
     }
 
-    public Profesionales traerProfesional(Personas persona, Instituciones institucion) {
-        Query q = getEntityManager().createQuery("Select object(o) from Profesionales as o where o.activo = true and o.persona=:persona and o.institucion=:institucion");
-        q.setParameter("persona", persona);
-        q.setParameter("institucion", institucion);
-        return (Profesionales) q.getSingleResult();
+    public Profesionales traerProfesional(Personas persona, Instituciones institucion) throws ExcepcionDeConsulta {
+        try {
+            Query q = em.createQuery("Select object(o) from Profesionales as o where o.activo = true and o.persona=:persona and o.institucion=:institucion");
+            q.setParameter("persona", persona);
+            q.setParameter("institucion", institucion);
+            List<Profesionales> aux = q.getResultList();
+            if (!aux.isEmpty()) {
+                return aux.get(0);
+            }
+            return null;
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(ProfesionalesFacade.class.getName(), e);
+        }
     }
 
     @Override

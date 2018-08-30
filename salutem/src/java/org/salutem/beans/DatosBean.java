@@ -32,6 +32,7 @@ public class DatosBean implements Serializable {
 
     @ManagedProperty("#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
+
     private List<Datos> datos;
 
     @EJB
@@ -55,7 +56,6 @@ public class DatosBean implements Serializable {
                 return null;
             }
 
-            int orden = 0;
             for (Campos c : campos) {
                 Datos d = new Datos();
                 d.setCreado(new Date());
@@ -65,8 +65,10 @@ public class DatosBean implements Serializable {
 
                 d.setClasificador(clasificador);
                 d.setIdentificador(identificador);
+                d.setCodigo(c.getCodigo());
+                d.setNombre(c.getNombre());
                 d.setDescripcion(c.getDescripcion());
-                d.setOrdengrupo(orden++);
+                d.setOrdengrupo(c.getGrupo().getId());
                 d.setGrupo(c.getGrupo().getNombre());
                 d.setTipo(c.getTipo());
                 d.setActivo(c.getActivo());
@@ -78,7 +80,7 @@ public class DatosBean implements Serializable {
                 }
             }
             datos = ejbDatos.traerDatos(clasificador, grupo.getNombre(), identificador);
-        } catch (ExcepcionDeConsulta | ExcepcionDeCreacion ex) {
+        } catch (ExcepcionDeConsulta | ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -92,11 +94,12 @@ public class DatosBean implements Serializable {
             for (Datos d : datos) {
                 ejbDatos.eliminar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
-        } catch (ExcepcionDeEliminacion ex) {
+            crear(clasificador, grupo, identificador);
+        } catch (ExcepcionDeEliminacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        crear(clasificador, grupo, identificador);
+
         return null;
     }
 
@@ -108,11 +111,39 @@ public class DatosBean implements Serializable {
                     ejbDatos.actualizarJsonb("opciones", ejbCampos.buscarJsonb(d.getId()), d.getId());
                 }
             }
-        } catch (ExcepcionDeActualizacion ex) {
+        } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    /**
+     * @return the seguridadBean
+     */
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
+    }
+
+    /**
+     * @return the datos
+     */
+    public List<Datos> getDatos() {
+        return datos;
+    }
+
+    /**
+     * @param datos the datos to set
+     */
+    public void setDatos(List<Datos> datos) {
+        this.datos = datos;
     }
 
 }

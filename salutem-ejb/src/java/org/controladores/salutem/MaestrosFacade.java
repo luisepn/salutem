@@ -34,8 +34,12 @@ public class MaestrosFacade extends AbstractFacade<Maestros> {
     }
 
     public List<Maestros> traerMaestros() throws ExcepcionDeConsulta {
-        Query q = getEntityManager().createQuery("Select object(o) from Maestros as o where o.activo = true");
-        return q.getResultList();
+        try {
+            Query q = getEntityManager().createQuery("Select object(o) from Maestros as o where o.activo = true");
+            return q.getResultList();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(MaestrosFacade.class.getName(), e);
+        }
     }
 
     @Override

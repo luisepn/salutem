@@ -6,6 +6,7 @@
 package org.controladores.salutem;
 
 import com.google.gson.JsonObject;
+import java.util.Calendar;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -35,8 +36,19 @@ public class CitasFacade extends AbstractFacade<Citas> {
     }
 
     public List<Citas> traerCitas(Profesionales profesional) throws ExcepcionDeConsulta {
-        Query q = getEntityManager().createQuery("Select object(o) from Citas as o where o.activo = true and o.profesional=:profesional");
+        Query q = getEntityManager().createQuery("Select object(o) from Citas as o where o.activo = true and o.profesional=:profesional and o.fecha between :inicio and :fin");
         q.setParameter("profesional", profesional);
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        q.setParameter("inicio", calendar.getTime());
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        q.setParameter("fin", calendar.getTime());
         return q.getResultList();
     }
 

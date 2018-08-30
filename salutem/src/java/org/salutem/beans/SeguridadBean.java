@@ -380,6 +380,10 @@ public class SeguridadBean implements Serializable {
         return ipAddress;
     }
 
+    public Date getFechaActual() {
+        return new Date();
+    }
+
     /**
      * @return the logueado
      */
