@@ -90,7 +90,9 @@ public class HistorialBean implements Serializable {
                         parameters.put("tabla", valor);
                     }
                 } else if (clave.contains("objeto")) {
-                    where += " and o.objeto->>" + valor;
+                    if (valor.matches("'*[a-zA-Z0-9]*'\\ *[=a-z]*\\ '*[%\\.\\_\\-\\ a-zA-Z0-9]*'")) {
+                        where += " and o.objeto->>" + valor;
+                    }
                 } else {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
