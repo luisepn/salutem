@@ -129,6 +129,13 @@ CREATE TABLE public.prescripciones
     CONSTRAINT prescripciones_atencion_fkey FOREIGN KEY (atencion)
         REFERENCES public.atenciones (id) MATCH SIMPLE
 );
+
+ALTER TABLE prescripciones  add column   activo boolean,
+   add column    creado timestamp without time zone,
+   add column    creadopor text COLLATE pg_catalog."default",
+   add column    actualizado timestamp without time zone,
+    add column   actualizadopor text COLLATE pg_catalog."default";
+
 drop table campos;
 CREATE TABLE public.campos
 (
