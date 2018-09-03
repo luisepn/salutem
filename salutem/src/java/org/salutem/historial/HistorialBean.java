@@ -90,8 +90,14 @@ public class HistorialBean implements Serializable {
                         parameters.put("tabla", valor);
                     }
                 } else if (clave.contains("objeto")) {
-                    if (valor.matches("'*[a-zA-Z0-9]*'\\ *[=a-z]*\\ '*[%\\.\\_\\-\\ a-zA-Z0-9]*'")) {
-                        where += " and o.objeto->>" + valor;
+                    if (valor.trim().contains(" in ")) {
+                        if (valor.trim().matches("'[^ ]*'\\ [><!=^like^ilike^not like^not ilike^in^not in]*\\ \\([^ŋ]*\\)")) {
+                            where += " and o.objeto->>" + valor;
+                        }
+                    } else {
+                        if (valor.trim().matches("'[^ ]*'\\ [><!=^like^ilike^not like^not ilike^in^not in]*\\ '[^ŋ]*'")) {
+                            where += " and o.objeto->>" + valor;
+                        }
                     }
                 } else {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
@@ -162,7 +168,7 @@ public class HistorialBean implements Serializable {
         lista = new LazyDataModel<Historial>() {
             @Override
             public List<Historial> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
-                if (map == null && map.isEmpty()) {
+                if (map == null || map.isEmpty()) {
                     map.put("o.tabla", tabla);
                 }
                 return cargar(i, pageSize, scs, map);
@@ -170,6 +176,10 @@ public class HistorialBean implements Serializable {
         };
         formulario.insertar();
         return null;
+    }
+
+    public String getAyudaCampos() {
+        return "Campos (Puede utilizar los operadores: '=', '!=', '>', '>=', '<='; y las instrucciones: like, ilike, in, not in)";
     }
 
     /**

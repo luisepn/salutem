@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -34,7 +37,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Prescripciones.findByDosis", query = "SELECT p FROM Prescripciones p WHERE p.dosis = :dosis")
     , @NamedQuery(name = "Prescripciones.findByFrecuencia", query = "SELECT p FROM Prescripciones p WHERE p.frecuencia = :frecuencia")
     , @NamedQuery(name = "Prescripciones.findByDuracion", query = "SELECT p FROM Prescripciones p WHERE p.duracion = :duracion")
-    , @NamedQuery(name = "Prescripciones.findByAdvertencias", query = "SELECT p FROM Prescripciones p WHERE p.advertencias = :advertencias")})
+    , @NamedQuery(name = "Prescripciones.findByAdvertencias", query = "SELECT p FROM Prescripciones p WHERE p.advertencias = :advertencias")
+    , @NamedQuery(name = "Prescripciones.findByActivo", query = "SELECT p FROM Prescripciones p WHERE p.activo = :activo")
+    , @NamedQuery(name = "Prescripciones.findByCreado", query = "SELECT p FROM Prescripciones p WHERE p.creado = :creado")
+    , @NamedQuery(name = "Prescripciones.findByCreadopor", query = "SELECT p FROM Prescripciones p WHERE p.creadopor = :creadopor")
+    , @NamedQuery(name = "Prescripciones.findByActualizado", query = "SELECT p FROM Prescripciones p WHERE p.actualizado = :actualizado")
+    , @NamedQuery(name = "Prescripciones.findByActualizadopor", query = "SELECT p FROM Prescripciones p WHERE p.actualizadopor = :actualizadopor")})
 public class Prescripciones implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -58,6 +66,20 @@ public class Prescripciones implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "advertencias")
     private String advertencias;
+    @Column(name = "activo")
+    private Boolean activo;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @JoinColumn(name = "atencion", referencedColumnName = "id")
     @ManyToOne
     private Atenciones atencion;
@@ -115,6 +137,46 @@ public class Prescripciones implements Serializable {
 
     public void setAdvertencias(String advertencias) {
         this.advertencias = advertencias;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
     }
 
     public Atenciones getAtencion() {

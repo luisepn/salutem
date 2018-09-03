@@ -5,10 +5,14 @@
  */
 package org.entidades.salutem;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,6 +29,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.utilitarios.salutem.Items;
 
 /**
  *
@@ -124,7 +129,9 @@ public class Datos implements Serializable {
     @Transient
     private String opciones;
     @Transient
-    private String seleccion;
+    private String oneSeleccion;
+    @Transient
+    private List<String> manySeleccion;
 
     public Datos() {
     }
@@ -261,14 +268,6 @@ public class Datos implements Serializable {
         this.fechahora = fechahora;
     }
 
-    public String getSeleccion() {
-        return seleccion;
-    }
-
-    public void setSeleccion(String seleccion) {
-        this.seleccion = seleccion;
-    }
-
     public Date getCreado() {
         return creado;
     }
@@ -357,6 +356,45 @@ public class Datos implements Serializable {
 
     public JsonObject getSeleccionJson() {
         JsonParser parser = new JsonParser();
-        return parser.parse(this.seleccion).getAsJsonObject();
+        return parser.parse(this.oneSeleccion).getAsJsonObject();
+    }
+
+    public List<Items> getOpcionesList() {
+        List<Items> retorno = new LinkedList<>();
+        JsonObject json = getOpcionesJson();
+        if (!json.isJsonNull()) {
+            for (Map.Entry<String, JsonElement> e : json.entrySet()) {
+                retorno.add(new Items(Integer.parseInt(e.getKey()), String.valueOf(e.getValue()).replace("\"", "")));
+            }
+        }
+        return retorno;
+    }
+
+    /**
+     * @return the oneSeleccion
+     */
+    public String getOneSeleccion() {
+        return oneSeleccion;
+    }
+
+    /**
+     * @param oneSeleccion the oneSeleccion to set
+     */
+    public void setOneSeleccion(String oneSeleccion) {
+        this.oneSeleccion = oneSeleccion;
+    }
+
+    /**
+     * @return the manySeleccion
+     */
+    public List<String> getManySeleccion() {
+        return manySeleccion;
+    }
+
+    /**
+     * @param manySeleccion the manySeleccion to set
+     */
+    public void setManySeleccion(List<String> manySeleccion) {
+        this.manySeleccion = manySeleccion;
     }
 }

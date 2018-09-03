@@ -220,8 +220,8 @@
                         zindex="10"
                         rendered="#{salutemAtenciones.formulario.mostrar}"
                         visible="#{salutemAtenciones.formulario.mostrar}">
-                        <h:panelGrid columns="2">
-                            <h:panelGrid>
+                        <h:panelGrid columns="2" width="100%" columnClasses="cuarenta, sesenta">
+                            <h:panelGrid width="100%">
                                 <ace:panel header="Datos del paciente">
                                     <h:panelGrid columns="2">
                                         <h:outputLabel value="C.I.:" styleClass="bold"/>
@@ -245,18 +245,105 @@
                                     </h:panelGrid>
                                 </ace:panel>
                                 <ace:panel header="Prescripción">
-
+                                    <h:panelGrid width="100%">
+                                        <ace:menuBar autoSubmenuDisplay="true" >
+                                            <ace:menuItem value="Nueva" icon="ui-icon ui-icon-document" 
+                                                          action="#{salutemAtenciones.crearPrescripcion()}"/>
+                                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                                          action="#{salutemAtenciones.grabarPrescripciones()}"
+                                                          rendered="#{salutemAtenciones.prescripciones.size() gt 0}"/>
+                                        </ace:menuBar>
+                                        <ace:dataTable
+                                            value="#{salutemAtenciones.prescripciones}"
+                                            resizableColumns="true"
+                                            var="prescripcion"
+                                            binding="#{bprescripcion}">
+                                            <f:facet name="header">Prescripciones</f:facet>
+                                            <ace:column headerText="Operaciones" style="text-align: left">
+                                                <ace:menuBar>
+                                                    <ace:menuItem action="#{salutemAtenciones.eliminarPrescripcion(bprescripcion.rowIndex)}" icon="ui-icon ui-icon-trash"/>
+                                                </ace:menuBar>
+                                            </ace:column>
+                                            <ace:column  headerText="Medicamento" style="text-align: right">
+                                                <ace:textAreaEntry value="#{prescripcion.medicamento}" rows="2" cols="10"/>
+                                            </ace:column>
+                                            <ace:column  headerText="Dosis" style="text-align: right">
+                                                <ace:textAreaEntry value="#{prescripcion.dosis}" rows="2" cols="10"/>
+                                            </ace:column>
+                                            <ace:column  headerText="Frecuencia" style="text-align: right">
+                                                <ace:textAreaEntry value="#{prescripcion.frecuencia}" rows="2" cols="10"/>
+                                            </ace:column>
+                                            <ace:column  headerText="Duración" style="text-align: right">
+                                                <ace:textAreaEntry value="#{prescripcion.duracion}" rows="2" cols="10"/>
+                                            </ace:column>
+                                            <ace:column  headerText="Advertencias" style="text-align: right">
+                                                <ace:textAreaEntry value="#{prescripcion.advertencias}" rows="2" cols="10"/>
+                                            </ace:column>
+                                        </ace:dataTable>
+                                    </h:panelGrid>
                                 </ace:panel>
                             </h:panelGrid>
-                            <ace:panel header="Ficha médica">
+                            <h:panelGrid width="100%">
+                                <ace:panel header="Ficha médica">
+                                    <h:panelGrid width="100%">
+                                        <ace:menuBar autoSubmenuDisplay="true" >
+                                            <ace:menuItem value="Nueva" icon="ui-icon ui-icon-document" 
+                                                          action="#{salutemAtenciones.crearPrescripcion()}"/>
+                                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                                          action="#{salutemAtenciones.grabarPrescripciones()}"
+                                                          rendered="#{salutemAtenciones.prescripciones.size() gt 0}"/>
+                                        </ace:menuBar>
+                                        <ace:dataTable
+                                            value="#{salutemDatos.datos}"
+                                            resizableColumns="true"
+                                            var="dato">
+                                            <f:facet name="header">Datos Atención</f:facet>
+                                            <ace:column  style="text-align: right">
+                                                <h:outputText value="#{dato.nombre}"/>
+                                            </ace:column>
+                                            <ace:column  style="text-align: right">
+                                                <ace:checkboxButton value="#{dato.booleano}" rendered="#{dato.tipo.codigo eq 'BOOLEAN'}"/>
+                                                <ace:textEntry value="#{dato.entero}" rendered="#{dato.tipo.codigo eq 'INTEGER'}"/>
+                                                <ace:textEntry value="#{dato.decimal}" rendered="#{dato.tipo.codigo eq 'DOUBLE'}"/>
+                                                <ace:textAreaEntry value="#{dato.texto}" rows="2" cols="10" rendered="#{dato.tipo.codigo eq 'TEXT'}"/>
+                                                <ace:dateTimeEntry value="#{dato.fecha}" navigator="true" 
+                                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"
+                                                                   rendered="#{dato.tipo.codigo eq 'DATE'}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                                </ace:dateTimeEntry>
+                                                <ace:dateTimeEntry value="#{dato.hora}" navigator="true"
+                                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                                   pattern="HH:mm:ss" label="HH:mm:ss" labelPosition="infield"
+                                                                   rendered="#{dato.tipo.codigo eq 'TIME'}">
+                                                    <f:convertDateTime pattern="HH:mm:ss" />
+                                                </ace:dateTimeEntry>
+                                                <ace:dateTimeEntry value="#{dato.fechahora}" navigator="true" 
+                                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                                   pattern="dd/MM/yyyy HH:mm:ss" label="dd/MM/yyyy HH:mm:ss" labelPosition="infield"
+                                                                   rendered="#{dato.tipo.codigo eq 'DATETIME'}">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                                                </ace:dateTimeEntry>
+                                                <ace:radioButtons value="#{dato.oneSeleccion}" labelPosition="right" rendered="#{dato.tipo.codigo eq 'ONE'}">
+                                                    <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
+                                                </ace:radioButtons>
+                                                <ace:checkboxButtons value="#{dato.manySeleccion}" labelPosition="right" rendered="#{dato.tipo.codigo eq 'MANY'}">
+                                                    <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
+                                                </ace:checkboxButtons>
 
-                            </ace:panel>
+                                            </ace:column>
+                                        </ace:dataTable>
+                                    </h:panelGrid>
+                                </ace:panel>
+                            </h:panelGrid>
                         </h:panelGrid>
-                        <h:panelGrid columns="2">
-                            <h:outputText value="Observaciones:" styleClass="bold"/>
-                            <h:inputTextarea cols="50" rows="4" value="#{salutemAtenciones.atencion.observaciones}"/>
-                        </h:panelGrid>
-                        <h:panelGrid>
+                        <ace:panel>    
+                            <h:panelGrid columns="2" width="100%">
+                                <h:outputText value="Observaciones:" styleClass="bold"/>
+                                <h:inputTextarea cols="150" rows="5" value="#{salutemAtenciones.atencion.observaciones}" style="width: 100%"/>
+                            </h:panelGrid>
+                        </ace:panel>
+                        <h:panelGrid width="100%">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
                                               action="#{salutemAtenciones.grabar()}" 

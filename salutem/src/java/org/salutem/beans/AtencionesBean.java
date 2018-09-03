@@ -18,6 +18,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.AtencionesFacade;
+import org.controladores.salutem.PrescripcionesFacade;
 import org.entidades.salutem.Atenciones;
 import org.entidades.salutem.Citas;
 import org.entidades.salutem.Datos;
@@ -58,7 +59,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private LazyDataModel<Atenciones> atenciones;
     private Formulas formula;
     private List<Prescripciones> prescripciones;
-    private List<Datos> datos;
 
     private Atenciones atencion;
     private Boolean conCita;
@@ -69,6 +69,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     @EJB
     private AtencionesFacade ejbAtenciones;
+    @EJB
+    private PrescripcionesFacade ejbPrescripciones;
 
     public AtencionesBean() {
         conCita = true;
@@ -174,6 +176,13 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             Mensajes.advertencia("No se puede editar atenciones con fechas menores a la de hoy");
             return null;
         }
+        try {
+            prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
+            datosBean.crear(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
+            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         formulario.editar();
         return null;
     }
@@ -187,6 +196,12 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         if (validarFecha(atencion.getFecha())) {
             Mensajes.advertencia("No se puede eliminar atenciones con fechas menores a la de hoy");
             return null;
+        }
+        try {
+            prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
+            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.eliminar();
         return null;
@@ -237,7 +252,19 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             } else {
                 parameters.put("profesional", combosBean.getProfesional());
                 parameters.put("paciente", pacientesBean.getPaciente());
-                if (ejbAtenciones.contar("o.profesional=:profesional and o.paciente=:paciente", parameters) > 0) {
+                parameters.put("paciente", pacientesBean.getPaciente());
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, 0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                parameters.put("inicio", calendar.getTime());
+                calendar.set(Calendar.HOUR_OF_DAY, 23);
+                calendar.set(Calendar.MINUTE, 59);
+                calendar.set(Calendar.SECOND, 59);
+                calendar.set(Calendar.MILLISECOND, 999);
+                parameters.put("fin", calendar.getTime());
+                if (ejbAtenciones.contar("o.profesional=:profesional and o.paciente=:paciente and o.fecha between :inicio and :fin", parameters) > 0) {
                     Mensajes.advertencia("Ya existe una atención generada para el paciente seleccionado");
                     return null;
                 }
@@ -320,6 +347,51 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     public String getNombreTabla() {
         return Atenciones.class.getSimpleName();
+    }
+
+    public String crearPrescripcion() {
+        Prescripciones prescripcion = new Prescripciones();
+        prescripcion.setAtencion(atencion);
+        prescripcion.setCreado(new Date());
+        prescripcion.setCreadopor(seguridadBean.getLogueado().getUserid());
+        prescripcion.setActualizado(prescripcion.getCreado());
+        prescripcion.setActualizadopor(prescripcion.getCreadopor());
+        prescripcion.setActivo(Boolean.TRUE);
+        try {
+            ejbPrescripciones.crear(prescripcion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
+        } catch (ExcepcionDeCreacion | ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
+            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public String grabarPrescripciones() {
+        try {
+            for (Prescripciones p : prescripciones) {
+                p.setActualizado(new Date());
+                p.setActualizadopor(seguridadBean.getLogueado().getUserid());
+                ejbPrescripciones.actualizar(p, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            }
+            prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
+            Mensajes.informacion("¡Prescripciones grabadas con éxito!");
+        } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
+            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public String eliminarPrescripcion(int index) {
+        try {
+            ejbPrescripciones.eliminar(prescripciones.get(index), seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
+        } catch (ExcepcionDeEliminacion | ExcepcionDeConsulta ex) {
+            Mensajes.error(ex.getMessage());
+            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     /**
@@ -517,19 +589,4 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     public void setPrescripciones(List<Prescripciones> prescripciones) {
         this.prescripciones = prescripciones;
     }
-
-    /**
-     * @return the datos
-     */
-    public List<Datos> getDatos() {
-        return datos;
-    }
-
-    /**
-     * @param datos the datos to set
-     */
-    public void setDatos(List<Datos> datos) {
-        this.datos = datos;
-    }
-
 }

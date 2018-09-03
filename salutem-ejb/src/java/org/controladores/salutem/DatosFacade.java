@@ -78,7 +78,7 @@ public class DatosFacade extends AbstractFacade<Datos> {
                     break;
                 case "ONE":
                 case "MANY":
-                    if (objeto.getSeleccion() != null && !objeto.getSeleccion().isEmpty()) {
+                    if (objeto.getOneSeleccion() != null && !objeto.getOneSeleccion().isEmpty()) {
                         json.add("valor", objeto.getSeleccionJson());
                     }
                     break;

@@ -6,10 +6,14 @@
 package org.controladores.salutem;
 
 import com.google.gson.JsonObject;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import org.entidades.salutem.Atenciones;
 import org.entidades.salutem.Prescripciones;
+import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
  *
@@ -28,6 +32,16 @@ public class PrescripcionesFacade extends AbstractFacade<Prescripciones> {
 
     public PrescripcionesFacade() {
         super(Prescripciones.class);
+    }
+
+    public List<Prescripciones> traerPrescripciones(Atenciones atencion) throws ExcepcionDeConsulta {
+        try {
+            Query q = getEntityManager().createQuery("Select object(o) from Prescripciones as o where o.activo = true and o.atencion=:atencion");
+            q.setParameter("atencion", atencion);
+            return q.getResultList();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(PrescripcionesFacade.class.getName(), e);
+        }
     }
 
     @Override

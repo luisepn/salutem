@@ -9,6 +9,7 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
+import javax.faces.model.SelectItem;
 import org.controladores.salutem.CamposFacade;
 import org.controladores.salutem.DatosFacade;
 import org.entidades.salutem.Campos;
@@ -114,6 +115,17 @@ public class DatosBean implements Serializable {
         } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public SelectItem[] traerOpciones(Datos d) {
+        try {
+            d.setOpciones(ejbDatos.buscarJsonb("opciones",d.getId()));
+            return CombosBean.getSelectItems(d.getOpcionesList(), "toString", false);
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }

@@ -84,7 +84,7 @@
                             style="text-align: left">
                     <h:outputText  value="#{item.tabla}"/>
                 </ace:column>
-                <ace:column  headerText="Campos" filterBy="#{item.objeto}" filterMatchMode="exact" style="text-align: left">
+                <ace:column  headerText="#{salutemHistorial.ayudaCampos}" filterBy="#{item.objeto}" filterMatchMode="exact" style="text-align: left">
                     <h:outputText  value="#{item.objetoSinFormato}" style="white-space: pre-wrap"/>
                 </ace:column>
             </ace:dataTable>            

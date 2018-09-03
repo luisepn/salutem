@@ -2,6 +2,9 @@ body{
     font: 65% sans-serif !important;
     margin: 25px;
 }
+.bold{
+    font-weight: bolder;
+}
 .columna1{
     text-align: -webkit-left;
     width:40%;
@@ -41,6 +44,56 @@ body{
     color: #453821;
     font-style: italic;
     background: #654b24 url("images/ui-bg_fine-grain_15_ffffff_60x60.png") 50% 50% repeat;
+}
+.diez{
+    vertical-align: top;
+    width: 10%;
+    height: 100%;
+}
+.veinte{
+    vertical-align: top;
+    width: 20%;
+    height: 100%;
+}
+.treinta{
+    vertical-align: top;
+    width: 30%;
+    height: 100%;
+}
+.cuarenta{
+    vertical-align: top;
+    width: 40%;
+    height: 100%;
+}
+.cincuenta{
+    vertical-align: top;
+    width: 50%;
+    height: 100%;
+}
+.sesenta{
+    vertical-align: top;
+    width: 60%;
+    height: 100%;
+}
+.setenta{
+    vertical-align: top;
+    width: 70%;
+    height: 100%;
+}
+.ochenta{
+    vertical-align: top;
+    width: 80%;
+    height: 100%;
+}
+.noventa{
+    vertical-align: top;
+    width: 90%;
+    height: 100%;
+}
+.cien{
+    vertical-align: top;
+    width: 100%;
+    height: 100%;
 }
 
 /*.iceSelInpTxtList{
