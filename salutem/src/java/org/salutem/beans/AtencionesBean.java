@@ -320,6 +320,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         atencion.setActualizadopor(seguridadBean.getLogueado().getUserid());
         try {
             datosBean.grabar();
+            grabarPrescripciones();
             ejbAtenciones.actualizar(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());
