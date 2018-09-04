@@ -20,6 +20,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -52,35 +53,36 @@ import org.utilitarios.salutem.Items;
     , @NamedQuery(name = "Campos.findByActivo", query = "SELECT c FROM Campos c WHERE c.activo = :activo")})
 public class Campos implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "clasificador")
     private String clasificador;
-    @Column(name = "codigo")
-    private Integer codigo;
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
     @Size(max = 2147483647)
     @Column(name = "descripcion")
     private String descripcion;
-    @Column(name = "creado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creado;
     @Size(max = 2147483647)
     @Column(name = "creadopor")
     private String creadopor;
-    @Column(name = "actualizado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date actualizado;
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "codigo")
+    private Integer codigo;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
     @Column(name = "activo")
     private Boolean activo;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
@@ -95,8 +97,6 @@ public class Campos implements Serializable {
 
     @Transient
     private String opciones;
-    @Transient
-    private String oneSeleccion;
     @Transient
     private List<String> manySeleccion;
 
@@ -115,36 +115,12 @@ public class Campos implements Serializable {
         this.id = id;
     }
 
-    public String getClasificador() {
-        return clasificador;
-    }
-
-    public void setClasificador(String clasificador) {
-        this.clasificador = clasificador;
-    }
-
     public Integer getCodigo() {
         return codigo;
     }
 
     public void setCodigo(Integer codigo) {
         this.codigo = codigo;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 
     public String getOpciones() {
@@ -163,28 +139,12 @@ public class Campos implements Serializable {
         this.creado = creado;
     }
 
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
-
     public Date getActualizado() {
         return actualizado;
     }
 
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
-    }
-
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
     }
 
     public Boolean getActivo() {
@@ -219,6 +179,20 @@ public class Campos implements Serializable {
         this.tipo = tipo;
     }
 
+    /**
+     * @return the manySeleccion
+     */
+    public List<String> getManySeleccion() {
+        return manySeleccion;
+    }
+
+    /**
+     * @param manySeleccion the manySeleccion to set
+     */
+    public void setManySeleccion(List<String> manySeleccion) {
+        this.manySeleccion = manySeleccion;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -246,7 +220,7 @@ public class Campos implements Serializable {
 
     public JsonObject getOpcionesJson() {
         JsonParser parser = new JsonParser();
-        return parser.parse(this.opciones).getAsJsonObject();
+        return this.opciones != null ? parser.parse(this.opciones).getAsJsonObject() : null;
     }
 
     public JsonObject getOpcionesJsonFromList(List<Items> opciones) {
@@ -260,7 +234,7 @@ public class Campos implements Serializable {
     public List<Items> getOpcionesList() {
         List<Items> retorno = new LinkedList<>();
         JsonObject json = getOpcionesJson();
-        if (!json.isJsonNull()) {
+        if (json != null) {
             for (Map.Entry<String, JsonElement> e : json.entrySet()) {
                 retorno.add(new Items(Integer.parseInt(e.getKey()), String.valueOf(e.getValue()).replace("\"", "")));
             }
@@ -268,31 +242,44 @@ public class Campos implements Serializable {
         return retorno;
     }
 
-    /**
-     * @return the oneSeleccion
-     */
-    public String getOneSeleccion() {
-        return oneSeleccion;
+    public String getClasificador() {
+        return clasificador;
     }
 
-    /**
-     * @param oneSeleccion the oneSeleccion to set
-     */
-    public void setOneSeleccion(String oneSeleccion) {
-        this.oneSeleccion = oneSeleccion;
+    public void setClasificador(String clasificador) {
+        this.clasificador = clasificador;
     }
 
-    /**
-     * @return the manySeleccion
-     */
-    public List<String> getManySeleccion() {
-        return manySeleccion;
+    public String getNombre() {
+        return nombre;
     }
 
-    /**
-     * @param manySeleccion the manySeleccion to set
-     */
-    public void setManySeleccion(List<String> manySeleccion) {
-        this.manySeleccion = manySeleccion;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
 }

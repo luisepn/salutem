@@ -19,6 +19,11 @@ public class Items {
         this.valor = valor;
     }
 
+    @Override
+    public int hashCode() {
+        return clave;
+    }
+
     /**
      * @return the clave
      */

@@ -45,12 +45,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Prescripciones.findByActualizadopor", query = "SELECT p FROM Prescripciones p WHERE p.actualizadopor = :actualizadopor")})
 public class Prescripciones implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "medicamento")
     private String medicamento;
@@ -66,20 +60,27 @@ public class Prescripciones implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "advertencias")
     private String advertencias;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @Column(name = "activo")
     private Boolean activo;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
     @JoinColumn(name = "atencion", referencedColumnName = "id")
     @ManyToOne
     private Atenciones atencion;
@@ -97,6 +98,66 @@ public class Prescripciones implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+
+    public Atenciones getAtencion() {
+        return atencion;
+    }
+
+    public void setAtencion(Atenciones atencion) {
+        this.atencion = atencion;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Prescripciones)) {
+            return false;
+        }
+        Prescripciones other = (Prescripciones) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "org.entidades.salutem.Prescripciones[ id=" + id + " ]";
     }
 
     public String getMedicamento() {
@@ -139,22 +200,6 @@ public class Prescripciones implements Serializable {
         this.advertencias = advertencias;
     }
 
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
-
-    public Date getCreado() {
-        return creado;
-    }
-
-    public void setCreado(Date creado) {
-        this.creado = creado;
-    }
-
     public String getCreadopor() {
         return creadopor;
     }
@@ -163,53 +208,12 @@ public class Prescripciones implements Serializable {
         this.creadopor = creadopor;
     }
 
-    public Date getActualizado() {
-        return actualizado;
-    }
-
-    public void setActualizado(Date actualizado) {
-        this.actualizado = actualizado;
-    }
-
     public String getActualizadopor() {
         return actualizadopor;
     }
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    public Atenciones getAtencion() {
-        return atencion;
-    }
-
-    public void setAtencion(Atenciones atencion) {
-        this.atencion = atencion;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Prescripciones)) {
-            return false;
-        }
-        Prescripciones other = (Prescripciones) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "org.entidades.salutem.Prescripciones[ id=" + id + " ]";
     }
     
 }

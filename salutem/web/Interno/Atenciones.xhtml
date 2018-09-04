@@ -286,61 +286,19 @@
                             <h:panelGrid width="100%">
                                 <ace:panel header="Ficha médica">
                                     <h:panelGrid width="100%">
-                                        <ace:menuBar autoSubmenuDisplay="true" >
-                                            <ace:menuItem value="Nueva" icon="ui-icon ui-icon-document" 
-                                                          action="#{salutemAtenciones.crearPrescripcion()}"/>
-                                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                                          action="#{salutemAtenciones.grabarPrescripciones()}"
-                                                          rendered="#{salutemAtenciones.prescripciones.size() gt 0}"/>
-                                        </ace:menuBar>
-                                        <ace:dataTable
-                                            value="#{salutemDatos.datos}"
-                                            resizableColumns="true"
-                                            var="dato">
-                                            <f:facet name="header">Datos Atención</f:facet>
-                                            <ace:column  style="text-align: right">
-                                                <h:outputText value="#{dato.nombre}"/>
-                                            </ace:column>
-                                            <ace:column  style="text-align: right">
-                                                <ace:checkboxButton value="#{dato.booleano}" rendered="#{dato.tipo.codigo eq 'BOOLEAN'}"/>
-                                                <ace:textEntry value="#{dato.entero}" rendered="#{dato.tipo.codigo eq 'INTEGER'}"/>
-                                                <ace:textEntry value="#{dato.decimal}" rendered="#{dato.tipo.codigo eq 'DOUBLE'}"/>
-                                                <ace:textAreaEntry value="#{dato.texto}" rows="2" cols="10" rendered="#{dato.tipo.codigo eq 'TEXT'}"/>
-                                                <ace:dateTimeEntry value="#{dato.fecha}" navigator="true" 
-                                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
-                                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"
-                                                                   rendered="#{dato.tipo.codigo eq 'DATE'}">
-                                                    <f:convertDateTime pattern="dd/MM/yyyy" />
-                                                </ace:dateTimeEntry>
-                                                <ace:dateTimeEntry value="#{dato.hora}" navigator="true"
-                                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
-                                                                   pattern="HH:mm:ss" label="HH:mm:ss" labelPosition="infield"
-                                                                   rendered="#{dato.tipo.codigo eq 'TIME'}">
-                                                    <f:convertDateTime pattern="HH:mm:ss" />
-                                                </ace:dateTimeEntry>
-                                                <ace:dateTimeEntry value="#{dato.fechahora}" navigator="true" 
-                                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
-                                                                   pattern="dd/MM/yyyy HH:mm:ss" label="dd/MM/yyyy HH:mm:ss" labelPosition="infield"
-                                                                   rendered="#{dato.tipo.codigo eq 'DATETIME'}">
-                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
-                                                </ace:dateTimeEntry>
-                                                <ace:radioButtons value="#{dato.oneSeleccion}" labelPosition="right" rendered="#{dato.tipo.codigo eq 'ONE'}">
-                                                    <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
-                                                </ace:radioButtons>
-                                                <ace:checkboxButtons value="#{dato.manySeleccion}" labelPosition="right" rendered="#{dato.tipo.codigo eq 'MANY'}">
-                                                    <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
-                                                </ace:checkboxButtons>
-
-                                            </ace:column>
-                                        </ace:dataTable>
+                                        <ui:include src="../cuadroDatos.xhtml"/>                                       
                                     </h:panelGrid>
                                 </ace:panel>
                             </h:panelGrid>
                         </h:panelGrid>
-                        <ace:panel>    
+                        <ace:panel header="Atención">    
                             <h:panelGrid columns="2" width="100%">
+                                <h:outputText value="Motivo:" styleClass="bold"/>
+                                <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.motivo}" style="width: 100%"/>
+                                <h:outputText value="Diagnostico:" styleClass="bold"/>
+                                <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.diagnostico}" style="width: 100%"/>
                                 <h:outputText value="Observaciones:" styleClass="bold"/>
-                                <h:inputTextarea cols="150" rows="5" value="#{salutemAtenciones.atencion.observaciones}" style="width: 100%"/>
+                                <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.observaciones}" style="width: 100%"/>
                             </h:panelGrid>
                         </ace:panel>
                         <h:panelGrid width="100%">

@@ -178,7 +178,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         try {
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
-            datosBean.crear(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
+            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
+            datosBean.crear();
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -199,6 +200,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         try {
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
+            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
+            datosBean.buscar();
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -280,7 +283,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             atencion.setActivo(Boolean.TRUE);
 
             ejbAtenciones.crear(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            datosBean.crear(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
+            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
+            datosBean.crear();
         } catch (ExcepcionDeCreacion | ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -315,6 +319,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         atencion.setActualizado(new Date());
         atencion.setActualizadopor(seguridadBean.getLogueado().getUserid());
         try {
+            datosBean.grabar();
             ejbAtenciones.actualizar(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());

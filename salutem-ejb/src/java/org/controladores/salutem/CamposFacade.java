@@ -48,8 +48,6 @@ public class CamposFacade extends AbstractFacade<Campos> {
         if (objeto.getTipo().getCodigo().equals("ONE") || objeto.getTipo().getCodigo().equals("MANY")) {
             if (objeto.getOpciones() != null && !objeto.getOpciones().isEmpty()) {
                 json.add("opciones", objeto.getOpcionesJson());
-            } else {
-                json.addProperty("opciones", "");
             }
         }
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
@@ -60,10 +58,14 @@ public class CamposFacade extends AbstractFacade<Campos> {
         try {
             Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o.opciones) as opciones from Campos o WHERE o.id=:id");
             q.setParameter("id", id);
-            return (String) q.getSingleResult();
+            List<String> aux = q.getResultList();
+            if (!aux.isEmpty()) {
+                return aux.get(0);
+            }
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(CamposFacade.class.getName(), e);
         }
+        return null;
     }
 
     public void actualizarJsonb(String opciones, Integer id) throws ExcepcionDeActualizacion {
@@ -88,7 +90,7 @@ public class CamposFacade extends AbstractFacade<Campos> {
         }
         try {
             String sql = "Select object(o) from Campos as o where o.clasificador=:clasificador "
-                    + (grupo != null ? " and o.grupo=:grupo" : "");
+                    + (grupo != null ? " and o.grupo=:grupo" : "") + " ORDER BY o.grupo.codigo, o.codigo";
             Query q = getEntityManager().createQuery(sql);
             q.setParameter("clasificador", clasificador);
             if (grupo != null) {

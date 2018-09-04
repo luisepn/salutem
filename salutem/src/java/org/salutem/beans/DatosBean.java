@@ -2,6 +2,7 @@ package org.salutem.beans;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +20,9 @@ import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
+import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
+import org.utilitarios.salutem.Items;
 
 /**
  *
@@ -34,7 +37,11 @@ public class DatosBean implements Serializable {
     @ManagedProperty("#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
 
+    private String clasificador;
+    private Parametros grupo;
+    private Integer identificador;
     private List<Datos> datos;
+    private Formulario formularioConfirmacion = new Formulario();
 
     @EJB
     private CamposFacade ejbCampos;
@@ -44,9 +51,15 @@ public class DatosBean implements Serializable {
     public DatosBean() {
     }
 
-    public String crear(String clasificador, Parametros grupo, Integer identificador) {
+    public void iniciar(String clasificador, Parametros grupo, Integer identificador) {
+        this.clasificador = clasificador;
+        this.grupo = grupo;
+        this.identificador = identificador;
+    }
+
+    public String crear() {
         try {
-            datos = ejbDatos.traerDatos(clasificador, grupo.getNombre(), identificador);
+            buscar();
             if (!datos.isEmpty()) {
                 return null;
             }
@@ -58,29 +71,9 @@ public class DatosBean implements Serializable {
             }
 
             for (Campos c : campos) {
-                Datos d = new Datos();
-                d.setCreado(new Date());
-                d.setCreadopor(seguridadBean.getLogueado().getUserid());
-                d.setActualizado(d.getCreado());
-                d.setActualizadopor(d.getCreadopor());
-
-                d.setClasificador(clasificador);
-                d.setIdentificador(identificador);
-                d.setCodigo(c.getCodigo());
-                d.setNombre(c.getNombre());
-                d.setDescripcion(c.getDescripcion());
-                d.setOrdengrupo(c.getGrupo().getId());
-                d.setGrupo(c.getGrupo().getNombre());
-                d.setTipo(c.getTipo());
-                d.setActivo(c.getActivo());
-
-                ejbDatos.crear(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-
-                if (c.getTipo().getCodigo().equals("ONE") || c.getTipo().getCodigo().equals("MANY")) {
-                    ejbDatos.actualizarJsonb("opciones", ejbCampos.buscarJsonb(c.getId()), d.getId());
-                }
+                grabarDato(c, new Datos(), true);
             }
-            datos = ejbDatos.traerDatos(clasificador, grupo.getNombre(), identificador);
+            buscar();
         } catch (ExcepcionDeConsulta | ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -89,14 +82,49 @@ public class DatosBean implements Serializable {
         return null;
     }
 
-    public String actualizar(String clasificador, Parametros grupo, Integer identificador) {
+    private void grabarDato(Campos c, Datos d, Boolean nuevo) throws ExcepcionDeCreacion, ExcepcionDeConsulta, ExcepcionDeActualizacion {
+        if (nuevo) {
+            d = new Datos();
+        }
+        d.setClasificador(clasificador);
+        d.setIdentificador(identificador);
+        d.setCodigo(c.getCodigo());
+        d.setNombre(c.getNombre());
+        d.setDescripcion(c.getDescripcion());
+        d.setOrdengrupo(c.getGrupo().getId());
+        d.setGrupo(c.getGrupo().getNombre());
+        d.setTipo(c.getTipo());
+        d.setOpciones(c.getOpciones());
+        d.setActivo(c.getActivo());
+        if (nuevo) {
+            d.setCreado(new Date());
+            d.setCreadopor(seguridadBean.getLogueado().getUserid());
+            d.setActualizado(d.getCreado());
+            d.setActualizadopor(d.getCreadopor());
+            ejbDatos.crear(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+        } else {
+            d.setActualizado(new Date());
+            d.setActualizadopor(seguridadBean.getLogueado().getUserid());
+            ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+        }
+        if (c.getTipo().getCodigo().equals("ONE") || c.getTipo().getCodigo().equals("MANY")) {
+            ejbDatos.actualizarJsonb("opciones", ejbCampos.buscarJsonb(c.getId()), d.getId());
+        }
+    }
+
+    public String buscar() {
         try {
             datos = ejbDatos.traerDatos(clasificador, grupo.getNombre(), identificador);
             for (Datos d : datos) {
-                ejbDatos.eliminar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                if (d.getTipo().getCodigo().equals("ONE") || d.getTipo().getCodigo().equals("MANY")) {
+                    d.setSeleccion(ejbDatos.buscarJsonb("seleccion", d.getId()));
+                    d.setManySeleccion(new LinkedList<>());
+                    for (Items i : d.getItemListFromJson(true)) {
+                        d.getManySeleccion().add(i.getClave() + "");
+                    }
+                }
             }
-            crear(clasificador, grupo, identificador);
-        } catch (ExcepcionDeEliminacion | ExcepcionDeConsulta ex) {
+        } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -104,14 +132,59 @@ public class DatosBean implements Serializable {
         return null;
     }
 
-    public String actualizar() {
+    public String pedirActualizacion() {
+        formularioConfirmacion.insertar();
+        return null;
+    }
+
+    public String actualizar(Boolean borrar) {
         try {
-            for (Datos d : datos) {
-                ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-                if (d.getTipo().getCodigo().equals("ONE") || d.getTipo().getCodigo().equals("MANY")) {
-                    ejbDatos.actualizarJsonb("opciones", ejbCampos.buscarJsonb(d.getId()), d.getId());
+
+            if (borrar) {
+                List<Datos> ld = ejbDatos.traerDatos(clasificador, grupo.getNombre(), identificador);
+                for (Datos d : ld) {
+                    ejbDatos.eliminar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                }
+                crear();
+            } else {
+                List<Campos> lc = ejbCampos.traerCampos(clasificador, grupo);
+                for (Campos c : lc) {
+                    Datos d = ejbDatos.traerDato(clasificador, grupo.getNombre(), identificador, c.getCodigo());
+                    grabarDato(c, d, d == null);
                 }
             }
+            datos = ejbDatos.traerDatos(clasificador, grupo.getNombre(), identificador);
+            buscar();
+            formularioConfirmacion.cancelar();
+        } catch (ExcepcionDeEliminacion | ExcepcionDeConsulta | ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    public String grabar() {
+        try {
+            for (Datos d : datos) {
+                if (d.getTipo().getCodigo().equals("ONE") || d.getTipo().getCodigo().equals("MANY")) {
+                    List<Items> lo = d.getItemListFromJson(false);
+                    if (!lo.isEmpty()) {
+                        List<Items> ls = new LinkedList<>();
+                        try {
+                            for (String st : d.getManySeleccion()) {
+                                int s = Integer.parseInt(st);
+                                ls.add(lo.get(s));
+                            }
+                        } catch (Exception ex) {
+                        }
+                        ejbDatos.actualizarJsonb("seleccion", d.getJsonFromList(ls).toString(), d.getId());
+                    }
+                    d.setSeleccion(ejbDatos.buscarJsonb("seleccion", d.getId()));
+                }
+                ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            }
+            Mensajes.informacion("¡Datos grabados con éxito!");
         } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -121,13 +194,19 @@ public class DatosBean implements Serializable {
 
     public SelectItem[] traerOpciones(Datos d) {
         try {
-            d.setOpciones(ejbDatos.buscarJsonb("opciones",d.getId()));
-            return CombosBean.getSelectItems(d.getOpcionesList(), "toString", false);
+            d.setOpciones(ejbDatos.buscarJsonb("opciones", d.getId()));
+            return CombosBean.getSelectItems(d.getItemListFromJson(false), "id", false);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    public String getMensajeActualizacion() {
+        return "Seleccione una opción cuidadosamente.\n"
+                + "Si desea sincronizar la lista de datos actual con los campos parametrizados presione 'Copiar nuevos'.\n"
+                + "Si desea eliminar la lista de datos y volver a copiar los campos parametrizados presione 'Eliminar y copiar'.";
     }
 
     /**
@@ -156,6 +235,20 @@ public class DatosBean implements Serializable {
      */
     public void setDatos(List<Datos> datos) {
         this.datos = datos;
+    }
+
+    /**
+     * @return the formularioConfirmacion
+     */
+    public Formulario getFormularioConfirmacion() {
+        return formularioConfirmacion;
+    }
+
+    /**
+     * @param formularioConfirmacion the formularioConfirmacion to set
+     */
+    public void setFormularioConfirmacion(Formulario formularioConfirmacion) {
+        this.formularioConfirmacion = formularioConfirmacion;
     }
 
 }

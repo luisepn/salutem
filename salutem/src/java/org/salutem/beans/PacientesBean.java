@@ -392,10 +392,10 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         return null;
     }
 
-    public String traerIndicaciones() {
+    public String traerObservaciones() {
         String m = formula.getMaterial() != null ? formula.getMaterial().getFoco().getNombre() + " - " + formula.getMaterial().getTipo().getNombre() + " - " + formula.getMaterial().getNombre() : "";
         String t = formula.getTratamiento() != null ? formula.getTratamiento().getNombre() : "";
-        return m + " " + t + "\n" + atencion.getIndicaciones();
+        return m + " " + t + "\n" + atencion.getObservaciones();
     }
 
     public void pacientesChangeEventHandler(TextChangeEvent event) {

@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+    Documento   : cuadroDatos
+    Fecha       : 04 de Septiembre de 2018, 09:08:23 AM
+    Author      : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <ace:menuBar autoSubmenuDisplay="true">
+        <ace:menuItem value="Actualizar" icon="ui-icon ui-icon-refresh" 
+                      action="#{salutemDatos.pedirActualizacion()}"/>
+        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                      action="#{salutemDatos.grabar()}"
+                      rendered="#{salutemDatos.datos.size() gt 0}"/>
+    </ace:menuBar>
+    <ace:dataTable
+        value="#{salutemDatos.datos}"
+        resizableColumns="true"
+        var="dato">
+        <f:facet name="header">Datos</f:facet>
+        <ace:row condition="group" groupBy="#{dato.grupo}" pos="before" styleClass="grupo">
+            <ace:column style="text-align: center" colspan="10">
+                <ace:excludeFromExport/>
+                <h:outputText value="#{dato.grupo}" />
+            </ace:column>
+        </ace:row>
+        <ace:column  style="text-align: right">
+            <h:outputText value="#{dato.codigo}"/>
+        </ace:column>
+        <ace:column  style="text-align: right">
+            <h:outputText value="#{dato.nombre}"/>
+        </ace:column>
+        <ace:column  style="text-align: left">
+            <ace:checkboxButton value="#{dato.booleano}" rendered="#{dato.tipo.codigo eq 'BOOLEAN'}"/>
+            <ace:textEntry value="#{dato.entero}" rendered="#{dato.tipo.codigo eq 'INTEGER'}"/>
+            <ace:textEntry value="#{dato.decimal}" rendered="#{dato.tipo.codigo eq 'DOUBLE'}"/>
+            <ace:textAreaEntry value="#{dato.texto}" rows="2" cols="10" rendered="#{dato.tipo.codigo eq 'TEXT'}"/>
+            <ace:dateTimeEntry value="#{dato.fecha}" navigator="true" 
+                               popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                               pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"
+                               rendered="#{dato.tipo.codigo eq 'DATE'}">
+                <f:convertDateTime pattern="dd/MM/yyyy" />
+            </ace:dateTimeEntry>
+            <ace:dateTimeEntry value="#{dato.hora}" navigator="true"
+                               popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                               pattern="HH:mm:ss" label="HH:mm:ss" labelPosition="infield"
+                               rendered="#{dato.tipo.codigo eq 'TIME'}">
+                <f:convertDateTime pattern="HH:mm:ss" />
+            </ace:dateTimeEntry>
+            <ace:dateTimeEntry value="#{dato.fechahora}" navigator="true" 
+                               popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                               pattern="dd/MM/yyyy HH:mm:ss" label="dd/MM/yyyy HH:mm:ss" labelPosition="infield"
+                               rendered="#{dato.tipo.codigo eq 'DATETIME'}">
+                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+            </ace:dateTimeEntry>
+            <ace:checkboxButtons value="#{dato.manySeleccion}" labelPosition="right" 
+                                 rendered="#{dato.tipo.codigo eq 'ONE' or dato.tipo.codigo eq 'MANY'}" 
+                                 mutuallyExclusive="#{dato.tipo.codigo eq 'ONE'}"
+                                 header="#{dato.tipo.codigo eq 'ONE' ? 'Seleccione Uno' : dato.tipo.codigo eq 'MANY' ? 'Seleccione Varios':''}">
+                <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
+                <ace:ajax/>
+            </ace:checkboxButtons>
+        </ace:column>
+    </ace:dataTable>
+
+    <ace:dialog 
+        header="¡Importante!"
+        closable="false"
+        modal="true"
+        draggable="false"
+        showEffect="clip"
+        hideEffect="fade"
+        zindex="10000"
+        rendered="#{salutemDatos.formularioConfirmacion.mostrar}"
+        visible="#{salutemDatos.formularioConfirmacion.mostrar}">
+        <h:panelGrid width="100%" style="text-align: center;">
+            <h:outputText value="#{salutemDatos.mensajeActualizacion}" style="white-space: pre-wrap"/>
+        </h:panelGrid>
+        <h:panelGrid>
+            <ace:menuBar autoSubmenuDisplay="true" >
+                <ace:menuItem value="Sincronizar" icon="ui-icon ui-icon-refresh" 
+                              action="#{salutemDatos.actualizar(false)}"/>
+                <ace:menuItem value="Eliminar y Copiar" icon="ui-icon ui-icon-shuffle"
+                              action="#{salutemDatos.actualizar(true)}"/>
+                <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                              action="#{salutemDatos.formularioConfirmacion.cancelar()}"/>
+            </ace:menuBar>
+            <ace:messages style="white-space: pre-wrap"/>
+        </h:panelGrid>
+    </ace:dialog>
+
+</html>

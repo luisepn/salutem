@@ -183,6 +183,13 @@ public class Horas implements Serializable {
         SimpleDateFormat sdfh = new SimpleDateFormat("kk:mm");
         return "[" + sdfh.format(horainicio) + " - " + sdfh.format(horafin) + "]";
     }
+    @XmlTransient
+    public List<Horarios> getHorariosList() {
+        return horariosList;
+    }
+    public void setHorariosList(List<Horarios> horariosList) {
+        this.horariosList = horariosList;
+    }
 
     public String getNombre() {
         return nombre;
@@ -222,15 +229,6 @@ public class Horas implements Serializable {
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
-    }
-
-    @XmlTransient
-    public List<Horarios> getHorariosList() {
-        return horariosList;
-    }
-
-    public void setHorariosList(List<Horarios> horariosList) {
-        this.horariosList = horariosList;
     }
 
 }

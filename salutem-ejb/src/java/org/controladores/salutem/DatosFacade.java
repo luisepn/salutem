@@ -49,8 +49,6 @@ public class DatosFacade extends AbstractFacade<Datos> {
 
         if (objeto.getOpciones() != null && !objeto.getOpciones().isEmpty()) {
             json.add("opciones", objeto.getOpcionesJson());
-        } else {
-            json.addProperty("opciones", "");
         }
 
         if (objeto.getTipo() != null) {
@@ -78,7 +76,7 @@ public class DatosFacade extends AbstractFacade<Datos> {
                     break;
                 case "ONE":
                 case "MANY":
-                    if (objeto.getOneSeleccion() != null && !objeto.getOneSeleccion().isEmpty()) {
+                    if (objeto.getSeleccion()!= null && !objeto.getSeleccion().isEmpty()) {
                         json.add("valor", objeto.getSeleccionJson());
                     }
                     break;
@@ -94,7 +92,7 @@ public class DatosFacade extends AbstractFacade<Datos> {
 
     public List<Datos> traerDatos(String clasificador, String grupo, Integer identificador) throws ExcepcionDeConsulta {
         try {
-            Query q = getEntityManager().createQuery("Select object(o) from Datos as o where o.activo = true and o.clasificador=:clasificador and o.grupo=:grupo and o.identificador=:identificador");
+            Query q = getEntityManager().createQuery("Select object(o) from Datos as o where o.activo = true and o.clasificador=:clasificador and o.grupo=:grupo and o.identificador=:identificador ORDER BY o.grupo, o.codigo");
             q.setParameter("clasificador", clasificador);
             q.setParameter("grupo", grupo);
             q.setParameter("identificador", identificador);
@@ -104,14 +102,35 @@ public class DatosFacade extends AbstractFacade<Datos> {
         }
     }
 
-    public String buscarJsonb(String campo, Integer id) throws ExcepcionDeConsulta {
+    public Datos traerDato(String clasificador, String grupo, Integer identificador, Integer codigo) throws ExcepcionDeConsulta {
         try {
-            Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o." + campo + ") as opciones from Campos o WHERE o.id=:id");
-            q.setParameter("id", id);
-            return (String) q.getSingleResult();
+            Query q = getEntityManager().createQuery("Select object(o) from Datos as o where o.activo = true and o.clasificador=:clasificador and o.grupo=:grupo and o.identificador=:identificador and o.codigo=:codigo");
+            q.setParameter("clasificador", clasificador);
+            q.setParameter("grupo", grupo);
+            q.setParameter("identificador", identificador);
+            q.setParameter("codigo", codigo);
+            List<Datos> aux = q.getResultList();
+            if (!aux.isEmpty()) {
+                return aux.get(0);
+            }
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(DatosFacade.class.getName(), e);
         }
+        return null;
+    }
+
+    public String buscarJsonb(String campo, Integer id) throws ExcepcionDeConsulta {
+        try {
+            Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o." + campo + ") as opciones from Datos o WHERE o.id=:id");
+            q.setParameter("id", id);
+            List<String> aux = q.getResultList();
+            if (!aux.isEmpty()) {
+                return aux.get(0);
+            }
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(DatosFacade.class.getName(), e);
+        }
+        return null;
     }
 
     public void actualizarJsonb(String campo, String valor, Integer id) throws ExcepcionDeActualizacion {
@@ -121,7 +140,7 @@ public class DatosFacade extends AbstractFacade<Datos> {
                         .setParameter("id", id)
                         .executeUpdate();
             } else {
-                em.createNativeQuery("UPDATE Campos SET " + campo + " = '" + valor + "' WHERE id=:id")
+                em.createNativeQuery("UPDATE Datos SET " + campo + " = '" + valor + "' WHERE id=:id")
                         .setParameter("id", id)
                         .executeUpdate();
             }

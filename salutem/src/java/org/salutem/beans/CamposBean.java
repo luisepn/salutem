@@ -231,7 +231,7 @@ public class CamposBean implements Serializable, IMantenimiento {
                 parameters.put("id", campo.getId());
             }
             if (ejbCampos.contar(where, parameters) > 0) {
-                Mensajes.advertencia("No se campos con orden duplicado");
+                Mensajes.advertencia("No se campos con código duplicado");
                 return true;
             }
         } catch (ExcepcionDeConsulta ex) {

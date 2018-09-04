@@ -37,8 +37,8 @@ public class AtencionesFacade extends AbstractFacade<Atenciones> {
         json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
         json.addProperty("cita", objeto.getCita() != null ? objeto.getCita().getId().toString() : "");
         json.addProperty("motivo", objeto.getMotivo());
+        json.addProperty("diganosticp", objeto.getDiagnostico());
         json.addProperty("observaciones", objeto.getObservaciones());
-        json.addProperty("indicaciones", objeto.getIndicaciones());
         json.addProperty("formula", objeto.getFormula()!= null ? objeto.getFormula().getId() : 0);
         json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : "");
         json.addProperty("especialidad", objeto.getEspecialidad() != null ? objeto.getEspecialidad().toString() : "");
