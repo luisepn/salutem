@@ -45,7 +45,7 @@ public class CamposFacade extends AbstractFacade<Campos> {
         json.addProperty("nombre", objeto.getNombre());
         json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : "");
-        if (objeto.getTipo().getCodigo().equals("ONE") || objeto.getTipo().getCodigo().equals("MANY")) {
+        if (objeto.getTipo().getCodigo().equals("ONE") || objeto.getTipo().getCodigo().equals("MANY") || objeto.getTipo().getCodigo().equals("LIST")) {
             if (objeto.getOpciones() != null && !objeto.getOpciones().isEmpty()) {
                 json.add("opciones", objeto.getOpcionesJson());
             }

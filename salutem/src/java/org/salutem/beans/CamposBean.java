@@ -162,7 +162,9 @@ public class CamposBean implements Serializable, IMantenimiento {
                 return null;
             }
             campo = (Campos) parametros.getRowData();
-            if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
+            if (campo.getTipo().getCodigo().equals("ONE")
+                    || campo.getTipo().getCodigo().equals("MANY")
+                    || campo.getTipo().getCodigo().equals("LIST")) {
                 campo.setOpciones(ejbCampos.buscarJsonb(campo.getId()));
                 opciones = campo.getOpcionesList();
             }
@@ -181,7 +183,9 @@ public class CamposBean implements Serializable, IMantenimiento {
                 return null;
             }
             campo = (Campos) parametros.getRowData();
-            if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
+            if (campo.getTipo().getCodigo().equals("ONE")
+                    || campo.getTipo().getCodigo().equals("MANY")
+                    || campo.getTipo().getCodigo().equals("LIST")) {
                 campo.setOpciones(ejbCampos.buscarJsonb(campo.getId()));
                 opciones = campo.getOpcionesList();
             }
@@ -215,7 +219,9 @@ public class CamposBean implements Serializable, IMantenimiento {
                 Mensajes.advertencia("Es necesario nombre");
                 return true;
             }
-            if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
+            if (campo.getTipo().getCodigo().equals("ONE")
+                    || campo.getTipo().getCodigo().equals("MANY")
+                    || campo.getTipo().getCodigo().equals("LIST")) {
                 if (opciones.isEmpty()) {
                     Mensajes.advertencia("Es necesario opciones");
                     return true;
@@ -256,7 +262,9 @@ public class CamposBean implements Serializable, IMantenimiento {
             campo.setActualizadopor(campo.getCreadopor());
             campo.setOpciones(opciones != null ? campo.getOpcionesJsonFromList(opciones).toString() : null);
             ejbCampos.crear(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
+            if (campo.getTipo().getCodigo().equals("ONE")
+                    || campo.getTipo().getCodigo().equals("MANY")
+                    || campo.getTipo().getCodigo().equals("LIST")) {
                 ejbCampos.actualizarJsonb(campo.getOpciones(), campo.getId());
             }
             formulario.cancelar();
@@ -335,7 +343,7 @@ public class CamposBean implements Serializable, IMantenimiento {
         try {
             Campos c = (Campos) parametros.getRowData();
             c.setOpciones(ejbCampos.buscarJsonb(c.getId()));
-            return CombosBean.getSelectItems(c.getOpcionesList(), "toString", false);
+            return CombosBean.getSelectItems(c.getOpcionesList(), "op", c.getTipo().getCodigo().equals("LIST"));
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);

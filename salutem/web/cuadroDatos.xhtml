@@ -10,7 +10,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ace="http://www.icefaces.org/icefaces/components"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
-    <ace:menuBar autoSubmenuDisplay="true">
+    <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemDatos.formulario.eliminar}">
         <ace:menuItem value="Actualizar" icon="ui-icon ui-icon-refresh" 
                       action="#{salutemDatos.pedirActualizacion()}"/>
         <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
@@ -57,6 +57,11 @@
                                rendered="#{dato.tipo.codigo eq 'DATETIME'}">
                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
             </ace:dateTimeEntry>
+
+            <h:selectOneMenu value="#{dato.oneSeleccion}" rendered="#{dato.tipo.codigo eq 'LIST'}">
+                <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
+            </h:selectOneMenu>
+
             <ace:checkboxButtons value="#{dato.manySeleccion}" labelPosition="right" 
                                  rendered="#{dato.tipo.codigo eq 'ONE' or dato.tipo.codigo eq 'MANY'}" 
                                  mutuallyExclusive="#{dato.tipo.codigo eq 'ONE'}"

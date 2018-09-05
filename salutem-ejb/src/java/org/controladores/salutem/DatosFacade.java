@@ -6,6 +6,7 @@
 package org.controladores.salutem;
 
 import com.google.gson.JsonObject;
+import java.util.LinkedList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -14,6 +15,7 @@ import javax.persistence.Query;
 import org.entidades.salutem.Datos;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
+import org.utilitarios.salutem.Items;
 
 /**
  *
@@ -46,11 +48,7 @@ public class DatosFacade extends AbstractFacade<Datos> {
         json.addProperty("nombre", objeto.getNombre());
         json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : "");
-
-        if (objeto.getOpciones() != null && !objeto.getOpciones().isEmpty()) {
-            json.add("opciones", objeto.getOpcionesJson());
-        }
-
+        json.addProperty("valor", "");
         if (objeto.getTipo() != null) {
             switch (objeto.getTipo().getCodigo()) {
                 case "TEXT":
@@ -76,7 +74,11 @@ public class DatosFacade extends AbstractFacade<Datos> {
                     break;
                 case "ONE":
                 case "MANY":
-                    if (objeto.getSeleccion()!= null && !objeto.getSeleccion().isEmpty()) {
+                case "LIST":
+                    if (objeto.getOpciones() != null && !objeto.getOpciones().isEmpty()) {
+                        json.add("opciones", objeto.getOpcionesJson());
+                    }
+                    if (objeto.getSeleccion() != null && !objeto.getSeleccion().isEmpty()) {
                         json.add("valor", objeto.getSeleccionJson());
                     }
                     break;
@@ -96,8 +98,30 @@ public class DatosFacade extends AbstractFacade<Datos> {
             q.setParameter("clasificador", clasificador);
             q.setParameter("grupo", grupo);
             q.setParameter("identificador", identificador);
-            return q.getResultList();
-        } catch (Exception e) {
+
+            List<Datos> aux = q.getResultList();
+
+            for (Datos d : aux) {
+                switch (d.getTipo().getCodigo()) {
+                    case "ONE":
+                    case "MANY":
+                    case "LIST":
+                        d.setSeleccion(buscarJsonb("seleccion", d.getId()));
+                        List<Items> seleccion = d.getItemListFromJson(true);
+                        if (d.getTipo().getCodigo().equals("LIST") && !seleccion.isEmpty()) {
+                            d.setOneSeleccion(seleccion.get(0).getClave() + "");
+                        } else {
+                            d.setManySeleccion(new LinkedList<>());
+                            for (Items i : seleccion) {
+                                d.getManySeleccion().add(i.getClave() + "");
+                            }
+                        }
+                        break;
+                }
+            }
+
+            return aux;
+        } catch (ExcepcionDeConsulta e) {
             throw new ExcepcionDeConsulta(DatosFacade.class.getName(), e);
         }
     }

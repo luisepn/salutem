@@ -67,6 +67,11 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private Date fechaInicio;
     private Date fechaFin;
 
+    private Atenciones ultimaAtencion;
+    private List<Prescripciones> ultimasPrescripciones;
+    private List<Datos> ultimosDatos;
+    private Boolean verHistorico = Boolean.FALSE;
+
     @EJB
     private AtencionesFacade ejbAtenciones;
     @EJB
@@ -80,6 +85,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 if (!IMantenimiento.validarPerfil(perfil, 'R')) {
                     return null;
                 } else {
+                    if (combosBean.getProfesional() != null) {
+                        map.put("profesional.id", combosBean.getProfesional().getId().toString());
+                    }
                     return cargar(i, i1, scs, map);
                 }
             }
@@ -100,12 +108,16 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
-            }
-            if (combosBean.getProfesional() != null) {
-                where += " and o.profesional=:profesional";
-                parameters.put("profesional", combosBean.getProfesional());
+                if (clave.contains(".id")) {
+                    Integer id = Integer.parseInt(valor);
+                    if (id != 0) {
+                        where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
+                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    }
+                } else {
+                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
             }
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
                 where += " and o.creado between :iniciocreado and :fincreado";
@@ -151,6 +163,22 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         atenciones = new LazyDataModel<Atenciones>() {
             @Override
             public List<Atenciones> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                if (combosBean.getProfesional() != null) {
+                    map.put("profesional.id", combosBean.getProfesional().getId().toString());
+                }
+                return cargar(i, i1, scs, map);
+            }
+        };
+        return null;
+    }
+
+    public String buscarHistorico() {
+        atenciones = new LazyDataModel<Atenciones>() {
+            @Override
+            public List<Atenciones> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+                map.put("profesional.institucion.id", atencion.getProfesional().getInstitucion().getId().toString());
+                map.put("especialidad.id", atencion.getEspecialidad().getId().toString());
+                map.put("paciente.id", atencion.getPaciente().getId().toString());
                 return cargar(i, i1, scs, map);
             }
         };
@@ -178,13 +206,14 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         try {
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
-            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
-            datosBean.crear();
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.editar();
+        datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
+        datosBean.crear();
+        buscarUltimaAtencion();
         return null;
     }
 
@@ -200,13 +229,14 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         try {
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
-            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
-            datosBean.buscar();
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.eliminar();
+        datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
+        datosBean.buscar();
+        buscarUltimaAtencion();
         return null;
     }
 
@@ -283,13 +313,14 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             atencion.setActivo(Boolean.TRUE);
 
             ejbAtenciones.crear(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId());
-            datosBean.crear();
         } catch (ExcepcionDeCreacion | ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         formulario.editar();
+        datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
+        datosBean.crear();
+        buscarUltimaAtencion();
         return null;
     }
 
@@ -326,7 +357,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+        cancelar();
         return null;
     }
 
@@ -341,13 +372,14 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+        cancelar();
         return null;
     }
 
     @Override
     public String cancelar() {
         formulario.cancelar();
+        buscar();
         return null;
     }
 
@@ -395,6 +427,30 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
         } catch (ExcepcionDeEliminacion | ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
+            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public String buscarUltimaAtencion() {
+        try {
+            this.ultimaAtencion = null;
+            this.ultimasPrescripciones = null;
+            this.ultimosDatos = null;
+            String where = "o.profesional.institucion=:institucion and o.especialidad=:especialidad and o.paciente=:paciente and o.id!=:id";
+            Map parametros = new HashMap();
+            parametros.put("institucion", this.atencion.getProfesional().getInstitucion());
+            parametros.put("especialidad", this.atencion.getEspecialidad());
+            parametros.put("paciente", this.atencion.getPaciente());
+            parametros.put("id", this.atencion.getId());
+            String order = "o.fecha desc";
+            List<Atenciones> aux = ejbAtenciones.buscar(where, parametros, order, 0, 1);
+            if (!aux.isEmpty()) {
+                setUltimaAtencion(aux.get(0));
+                buscarHistorico();
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -594,5 +650,70 @@ public class AtencionesBean implements Serializable, IMantenimiento {
      */
     public void setPrescripciones(List<Prescripciones> prescripciones) {
         this.prescripciones = prescripciones;
+    }
+
+    /**
+     * @return the ultimaAtencion
+     */
+    public Atenciones getUltimaAtencion() {
+        return ultimaAtencion;
+    }
+
+    /**
+     * @param ultimaAtencion the ultimaAtencion to set
+     */
+    public void setUltimaAtencion(Atenciones ultimaAtencion) {
+        try {
+            this.ultimaAtencion = ultimaAtencion;
+            this.ultimasPrescripciones = ejbPrescripciones.traerPrescripciones(ultimaAtencion);
+            this.ultimosDatos = datosBean.traerDatos(getNombreTabla(), ultimaAtencion.getEspecialidad().getNombre(), ultimaAtencion.getId());
+            this.verHistorico = Boolean.FALSE;
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * @return the ultimasPrescripciones
+     */
+    public List<Prescripciones> getUltimasPrescripciones() {
+        return ultimasPrescripciones;
+    }
+
+    /**
+     * @param ultimasPrescripciones the ultimasPrescripciones to set
+     */
+    public void setUltimasPrescripciones(List<Prescripciones> ultimasPrescripciones) {
+        this.ultimasPrescripciones = ultimasPrescripciones;
+    }
+
+    /**
+     * @return the ultimosDatos
+     */
+    public List<Datos> getUltimosDatos() {
+        return ultimosDatos;
+    }
+
+    /**
+     * @param ultimosDatos the ultimosDatos to set
+     */
+    public void setUltimosDatos(List<Datos> ultimosDatos) {
+        this.ultimosDatos = ultimosDatos;
+    }
+
+    /**
+     * @return the verHistorico
+     */
+    public Boolean getVerHistorico() {
+        return verHistorico;
+    }
+
+    /**
+     * @param verHistorico the verHistorico to set
+     */
+    public void setVerHistorico(Boolean verHistorico) {
+        this.verHistorico = verHistorico;
+        buscarHistorico();
     }
 }

@@ -172,6 +172,12 @@
                                              filterBy="#{item.profesional.persona.apellidos}" filterMatchMode="contains">
                                     <h:outputText  value="#{item.profesional.toString()}"/>
                                 </ace:column>
+                                <ace:column  headerText="Motivo" sortBy="#{item.motivo}" filterBy="#{item.motivo}" filterMatchMode="contains" style="text-align: left">
+                                    <h:outputText  value="#{item.motivo}"/>
+                                </ace:column>
+                                <ace:column  headerText="Dignóstico" sortBy="#{item.diagnostico}" filterBy="#{item.diagnostico}" filterMatchMode="contains" style="text-align: left">
+                                    <h:outputText  value="#{item.diagnostico}"/>
+                                </ace:column>
                                 <ace:column  headerText="Observaciones" sortBy="#{item.observaciones}" filterBy="#{item.observaciones}" filterMatchMode="contains" style="text-align: left">
                                     <h:outputText  value="#{item.observaciones}"/>
                                 </ace:column>
@@ -220,87 +226,276 @@
                         zindex="10"
                         rendered="#{salutemAtenciones.formulario.mostrar}"
                         visible="#{salutemAtenciones.formulario.mostrar}">
-                        <h:panelGrid columns="2" width="100%" columnClasses="cuarenta, sesenta">
-                            <h:panelGrid width="100%">
-                                <ace:panel header="Datos del paciente">
-                                    <h:panelGrid columns="2">
-                                        <h:outputLabel value="C.I.:" styleClass="bold"/>
-                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.cedula}"/>
-                                        <h:outputLabel value="Nombres:" styleClass="bold"/>
-                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.nombres}"/>
-                                        <h:outputLabel value="Apellidos:" styleClass="bold"/>
-                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.apellidos}"/>
-                                        <h:outputLabel value="E-mail:" styleClass="bold"/>
-                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.email}"/>
-                                        <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
-                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.fecha}">
-                                            <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>   
-                                        </h:outputLabel>
-                                        <h:outputLabel value="Ocupación:" styleClass="bold"/>
-                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.ocupacion}"/>
-                                        <h:outputLabel value="Género:" styleClass="bold"/>
-                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.genero.nombre}"/>
-                                        <h:outputLabel value="Descripción:" styleClass="bold"/>
-                                        <h:outputLabel value="#{salutemAtenciones.atencion.paciente.descripcion}" style="white-space: pre-wrap"/>
+                        <ace:tabSet style="width: 100%">
+                            <ace:tabPane label="#{salutemSeguridad.getFechaConFormato(salutemAtenciones.atencion.fecha)}">
+                                <h:panelGrid columns="2" width="100%" columnClasses="cuarenta, sesenta">
+                                    <h:panelGrid width="100%">
+                                        <ace:panel header="Datos del paciente">
+                                            <h:panelGrid columns="2">
+                                                <h:outputLabel value="C.I.:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.cedula}"/>
+                                                <h:outputLabel value="Nombres:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.nombres}"/>
+                                                <h:outputLabel value="Apellidos:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.apellidos}"/>
+                                                <h:outputLabel value="E-mail:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.email}"/>
+                                                <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.fecha}">
+                                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>   
+                                                </h:outputLabel>
+                                                <h:outputLabel value="Ocupación:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.ocupacion}"/>
+                                                <h:outputLabel value="Género:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.genero.nombre}"/>
+                                                <h:outputLabel value="Descripción:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.descripcion}" style="white-space: pre-wrap"/>
+                                            </h:panelGrid>
+                                        </ace:panel>
+                                        <ace:panel header="Prescripción">
+                                            <h:panelGrid width="100%">
+                                                <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar}">
+                                                    <ace:menuItem value="Nueva" icon="ui-icon ui-icon-document" 
+                                                                  action="#{salutemAtenciones.crearPrescripcion()}"/>
+                                                    <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                                                  action="#{salutemAtenciones.grabarPrescripciones()}"
+                                                                  rendered="#{salutemAtenciones.prescripciones.size() gt 0}"/>
+                                                </ace:menuBar>
+                                                <ace:dataTable
+                                                    value="#{salutemAtenciones.prescripciones}"
+                                                    resizableColumns="true"
+                                                    var="prescripcion"                                                    
+                                                    binding="#{bprescripcion}">
+                                                    <f:facet name="header">Prescripciones</f:facet>
+                                                    <ace:column headerText="Operaciones" style="text-align: left">
+                                                        <h:commandLink value="Eliminar" action="#{salutemAtenciones.eliminarPrescripcion(bprescripcion.rowIndex)}"/>
+                                                    </ace:column>
+                                                    <ace:column  headerText="Medicamento" style="text-align: right">
+                                                        <ace:textAreaEntry value="#{prescripcion.medicamento}" rows="1" cols="10"/>
+                                                    </ace:column>
+                                                    <ace:column  headerText="Dosis" style="text-align: right">
+                                                        <ace:textAreaEntry value="#{prescripcion.dosis}" rows="1" cols="10"/>
+                                                    </ace:column>
+                                                    <ace:column  headerText="Frecuencia" style="text-align: right">
+                                                        <ace:textAreaEntry value="#{prescripcion.frecuencia}" rows="1" cols="10"/>
+                                                    </ace:column>
+                                                    <ace:column  headerText="Duración" style="text-align: right">
+                                                        <ace:textAreaEntry value="#{prescripcion.duracion}" rows="1" cols="10"/>
+                                                    </ace:column>
+                                                    <ace:column  headerText="Advertencias" style="text-align: right">
+                                                        <ace:textAreaEntry value="#{prescripcion.advertencias}" rows="1" cols="10"/>
+                                                    </ace:column>
+                                                </ace:dataTable>
+                                            </h:panelGrid>
+                                        </ace:panel>
+                                    </h:panelGrid>
+                                    <h:panelGrid width="100%">
+                                        <ace:panel header="Ficha médica">
+                                            <h:panelGrid width="100%">
+                                                <ui:include src="../cuadroDatos.xhtml"/>                                       
+                                            </h:panelGrid>
+                                        </ace:panel>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                                <ace:panel header="Atención">    
+                                    <h:panelGrid columns="2" width="100%">
+                                        <h:outputText value="Motivo:" styleClass="bold"/>
+                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.motivo}" style="width: 100%"/>
+                                        <h:outputText value="Diagnostico:" styleClass="bold"/>
+                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.diagnostico}" style="width: 100%"/>
+                                        <h:outputText value="Observaciones:" styleClass="bold"/>
+                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.observaciones}" style="width: 100%"/>
                                     </h:panelGrid>
                                 </ace:panel>
-                                <ace:panel header="Prescripción">
-                                    <h:panelGrid width="100%">
+                            </ace:tabPane>
+                            <ace:tabPane label="#{salutemSeguridad.getFechaConFormato(salutemAtenciones.ultimaAtencion.fecha)}" rendered="#{salutemAtenciones.ultimaAtencion ne null}">
+                                <h:panelGrid width="100%" rendered="#{salutemAtenciones.verHistorico}">
+                                    <h:panelGrid columns="4" styleClass="centeredPanelGrid">
+                                        <h:outputLabel  value="Exportar a:"/>
+                                        <h:selectOneRadio  value="#{salutemAtenciones.formulario.tipo}" required="true">
+                                            <f:ajax disabled="false"/>
+                                            <f:selectItem itemValue="csv" itemLabel="CSV"/>
+                                            <f:selectItem itemValue="xls" itemLabel="XLS"/>
+                                            <f:selectItem itemValue="xml" itemLabel="XML"/>
+                                        </h:selectOneRadio>
+                                        <ace:dataExporter id="dataExportera" 
+                                                          label="Exportar Archivo" 
+                                                          type="#{salutemAtenciones.formulario.tipo}" 
+                                                          target="tablaa" 
+                                                          fileName="#{salutemSeguridad.titulo}"
+                                                          excludeColumns="1"/>
                                         <ace:menuBar autoSubmenuDisplay="true" >
-                                            <ace:menuItem value="Nueva" icon="ui-icon ui-icon-document" 
-                                                          action="#{salutemAtenciones.crearPrescripcion()}"/>
-                                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                                          action="#{salutemAtenciones.grabarPrescripciones()}"
-                                                          rendered="#{salutemAtenciones.prescripciones.size() gt 0}"/>
+                                            <ace:menuItem value="Ver Último" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscarUltimaAtencion()}"/>
                                         </ace:menuBar>
-                                        <ace:dataTable
-                                            value="#{salutemAtenciones.prescripciones}"
-                                            resizableColumns="true"
-                                            var="prescripcion"
-                                            binding="#{bprescripcion}">
-                                            <f:facet name="header">Prescripciones</f:facet>
-                                            <ace:column headerText="Operaciones" style="text-align: left">
-                                                <ace:menuBar>
-                                                    <ace:menuItem action="#{salutemAtenciones.eliminarPrescripcion(bprescripcion.rowIndex)}" icon="ui-icon ui-icon-trash"/>
+                                    </h:panelGrid>                                    
+                                    <h:panelGrid width="100%">
+                                        <ace:dataTable id="tablaa"
+                                                       lazy="true"
+                                                       paginatorAlwaysVisible="true"
+                                                       value="#{salutemAtenciones.atenciones}"
+                                                       var="itema"
+                                                       paginator="true"
+                                                       rowIndexVar="row"
+                                                       paginatorPosition="both"
+                                                       rowsPerPageTemplate="#{salutemAtenciones.formulario.rowsPerPageTemplate}"
+                                                       currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                       rows="50">
+                                            <ace:column headerText="Registro" style="text-align: right; width: 50px;">
+                                                <h:outputText value="#{row+1}"/>
+                                            </ace:column>
+                                            <ace:column headerText="Operaciones" style="text-align: left; width: 50px;">
+                                                <ace:menuBar autoSubmenuDisplay="true" >
+                                                    <ace:menuItem value="Ver" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.setUltimaAtencion(itema)}"/>
                                                 </ace:menuBar>
+                                            </ace:column> 
+                                            <ace:column  headerText="Fecha" sortBy="#{itema.fecha}" 
+                                                         filterBy="#{itema.fecha}" 
+                                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                                         filterValueMin="#{salutemAtenciones.fechaInicio}"
+                                                         filterValueMax="#{salutemAtenciones.fechaFin}"
+                                                         type="DATE"
+                                                         rangedFilter="true" 
+                                                         style="text-align: left">
+                                                <h:outputText  value="#{itema.fecha}">
+                                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                                </h:outputText>
                                             </ace:column>
-                                            <ace:column  headerText="Medicamento" style="text-align: right">
-                                                <ace:textAreaEntry value="#{prescripcion.medicamento}" rows="2" cols="10"/>
+                                            <ace:column  headerText="Profesional" sortBy="#{itema.profesional.persona.apellidos}" style="text-align: left" 
+                                                         filterBy="#{itema.profesional.persona.apellidos}" filterMatchMode="contains">
+                                                <h:outputText  value="#{itema.profesional.toString()}"/>
                                             </ace:column>
-                                            <ace:column  headerText="Dosis" style="text-align: right">
-                                                <ace:textAreaEntry value="#{prescripcion.dosis}" rows="2" cols="10"/>
+                                            <ace:column  headerText="Motivo" sortBy="#{itema.motivo}" filterBy="#{itema.motivo}" filterMatchMode="contains" style="text-align: left">
+                                                <h:outputText  value="#{itema.motivo}"/>
                                             </ace:column>
-                                            <ace:column  headerText="Frecuencia" style="text-align: right">
-                                                <ace:textAreaEntry value="#{prescripcion.frecuencia}" rows="2" cols="10"/>
+                                            <ace:column  headerText="Dignóstico" sortBy="#{itema.diagnostico}" filterBy="#{itema.diagnostico}" filterMatchMode="contains" style="text-align: left">
+                                                <h:outputText  value="#{itema.diagnostico}"/>
                                             </ace:column>
-                                            <ace:column  headerText="Duración" style="text-align: right">
-                                                <ace:textAreaEntry value="#{prescripcion.duracion}" rows="2" cols="10"/>
-                                            </ace:column>
-                                            <ace:column  headerText="Advertencias" style="text-align: right">
-                                                <ace:textAreaEntry value="#{prescripcion.advertencias}" rows="2" cols="10"/>
+                                            <ace:column  headerText="Observaciones" sortBy="#{itema.observaciones}" filterBy="#{itema.observaciones}" filterMatchMode="contains" style="text-align: left">
+                                                <h:outputText  value="#{itema.observaciones}"/>
                                             </ace:column>
                                         </ace:dataTable>
+                                    </h:panelGrid> 
+                                </h:panelGrid> 
+
+
+                                <h:panelGrid width="100%" rendered="#{!salutemAtenciones.verHistorico}">
+                                    <ace:menuBar autoSubmenuDisplay="true" >
+                                        <ace:menuItem value="Ver Histórico" icon="ui-icon ui-icon-script"  action="#{salutemAtenciones.setVerHistorico(true)}"/>
+                                        <ace:menuItem value="Ver Último" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscarUltimaAtencion()}" rendered="#{salutemAtenciones.atencion.id ne salutemAtenciones.ultimaAtencion.id}" />
+                                    </ace:menuBar>
+                                    <h:panelGrid columns="2" width="100%" columnClasses="cuarenta, sesenta" rendered="#{!salutemAtenciones.verHistorico}">
+                                        <h:panelGrid width="100%">
+                                            <ace:panel header="Datos del paciente">
+                                                <h:panelGrid columns="2">
+                                                    <h:outputLabel value="C.I.:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.cedula}"/>
+                                                    <h:outputLabel value="Nombres:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.nombres}"/>
+                                                    <h:outputLabel value="Apellidos:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.apellidos}"/>
+                                                    <h:outputLabel value="E-mail:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.email}"/>
+                                                    <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.fecha}">
+                                                        <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>   
+                                                    </h:outputLabel>
+                                                    <h:outputLabel value="Ocupación:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.ocupacion}"/>
+                                                    <h:outputLabel value="Género:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.genero.nombre}"/>
+                                                    <h:outputLabel value="Descripción:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.descripcion}" style="white-space: pre-wrap"/>
+                                                </h:panelGrid>
+                                            </ace:panel>
+                                            <ace:panel header="Prescripción">
+                                                <h:panelGrid width="100%">
+                                                    <ace:dataTable
+                                                        value="#{salutemAtenciones.prescripciones}"
+                                                        resizableColumns="true"
+                                                        rowIndexVar="row"
+                                                        var="prescripciona">
+                                                        <f:facet name="header">Prescripciones</f:facet>
+                                                        <ace:column  style="text-align: right">
+                                                            <h:outputText value="#{row + 1}"/>
+                                                        </ace:column>
+                                                        <ace:column  headerText="Medicamento" style="text-align: right">
+                                                            <h:outputText value="#{prescripciona.medicamento}" style="white-space: pre-wrap"/>
+                                                        </ace:column>
+                                                        <ace:column  headerText="Dosis" style="text-align: right">
+                                                            <h:outputText value="#{prescripciona.dosis}" style="white-space: pre-wrap"/>
+                                                        </ace:column>
+                                                        <ace:column  headerText="Frecuencia" style="text-align: right">
+                                                            <h:outputText value="#{prescripciona.frecuencia}" style="white-space: pre-wrap"/>
+                                                        </ace:column>
+                                                        <ace:column  headerText="Duración" style="text-align: right">
+                                                            <h:outputText value="#{prescripciona.duracion}" style="white-space: pre-wrap"/>
+                                                        </ace:column>
+                                                        <ace:column  headerText="Advertencias" style="text-align: right">
+                                                            <h:outputText value="#{prescripciona.advertencias}" style="white-space: pre-wrap"/>
+                                                        </ace:column>
+                                                    </ace:dataTable>
+                                                </h:panelGrid>
+                                            </ace:panel>
+                                        </h:panelGrid>
+                                        <h:panelGrid width="100%">
+                                            <ace:panel header="Ficha médica">
+                                                <h:panelGrid width="100%">
+                                                    <ace:dataTable
+                                                        value="#{salutemDatos.datos}"
+                                                        resizableColumns="true"
+                                                        var="datoa">
+                                                        <f:facet name="header">Datos</f:facet>
+                                                        <ace:row condition="group" groupBy="#{datoa.grupo}" pos="before" styleClass="grupo">
+                                                            <ace:column style="text-align: center" colspan="10">
+                                                                <ace:excludeFromExport/>
+                                                                <h:outputText value="#{datoa.grupo}" />
+                                                            </ace:column>
+                                                        </ace:row>
+                                                        <ace:column  style="text-align: right">
+                                                            <h:outputText value="#{datoa.codigo}"/>
+                                                        </ace:column>
+                                                        <ace:column  style="text-align: right">
+                                                            <h:outputText value="#{datoa.nombre}"/>
+                                                        </ace:column>
+                                                        <ace:column  style="text-align: left">
+                                                            <h:outputText value="#{datoa.booleano ne null ? datoa.booleano ? 'Sí':'No':''}" rendered="#{datoa.tipo.codigo eq 'BOOLEAN'}"/>
+                                                            <h:outputText value="#{datoa.entero}" rendered="#{datoa.tipo.codigo eq 'INTEGER'}"/>
+                                                            <h:outputText value="#{datoa.decimal}" rendered="#{datoa.tipo.codigo eq 'DOUBLE'}"/>
+                                                            <h:outputText value="#{datoa.texto}" rendered="#{datoa.tipo.codigo eq 'TEXT'}" style="white-space: pre-wrap"/>
+                                                            <h:outputText value="#{datoa.fecha}">
+                                                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                                                            </h:outputText>
+                                                            <h:outputText value="#{datoa.hora}">
+                                                                <f:convertDateTime pattern="HH:mm:ss" />
+                                                            </h:outputText>
+                                                            <h:outputText value="#{datoa.fechahora}">
+                                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                                                            </h:outputText>
+                                                            <h:outputText value="#{salutemDatos.traerSeleccion(datoa)}" 
+                                                                          rendered="#{datoa.tipo.codigo eq 'ONE'
+                                                                                      or datoa.tipo.codigo eq 'MANY'
+                                                                                      or datoa.tipo.codigo eq 'LIST'}">
+                                                            </h:outputText>
+                                                        </ace:column>
+                                                    </ace:dataTable>                                  
+                                                </h:panelGrid>
+                                            </ace:panel>
+                                        </h:panelGrid>
                                     </h:panelGrid>
-                                </ace:panel>
-                            </h:panelGrid>
-                            <h:panelGrid width="100%">
-                                <ace:panel header="Ficha médica">
-                                    <h:panelGrid width="100%">
-                                        <ui:include src="../cuadroDatos.xhtml"/>                                       
-                                    </h:panelGrid>
-                                </ace:panel>
-                            </h:panelGrid>
-                        </h:panelGrid>
-                        <ace:panel header="Atención">    
-                            <h:panelGrid columns="2" width="100%">
-                                <h:outputText value="Motivo:" styleClass="bold"/>
-                                <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.motivo}" style="width: 100%"/>
-                                <h:outputText value="Diagnostico:" styleClass="bold"/>
-                                <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.diagnostico}" style="width: 100%"/>
-                                <h:outputText value="Observaciones:" styleClass="bold"/>
-                                <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.observaciones}" style="width: 100%"/>
-                            </h:panelGrid>
-                        </ace:panel>
+                                    <ace:panel header="Atención">    
+                                        <h:panelGrid columns="2" width="100%">
+                                            <h:outputText value="Motivo:" styleClass="bold"/>
+                                            <h:outputText value="#{salutemAtenciones.ultimaAtencion.motivo}" style="white-space: pre-wrap"/>
+                                            <h:outputText value="Diagnostico:" styleClass="bold"/>
+                                            <h:outputText value="#{salutemAtenciones.ultimaAtencion.diagnostico}" style="white-space: pre-wrap"/>
+                                            <h:outputText value="Observaciones:" styleClass="bold"/>
+                                            <h:outputText value="#{salutemAtenciones.ultimaAtencion.observaciones}" style="white-space: pre-wrap"/>
+                                        </h:panelGrid>
+                                    </ace:panel>
+                                </h:panelGrid>
+                            </ace:tabPane>
+                        </ace:tabSet>
                         <h:panelGrid width="100%">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 

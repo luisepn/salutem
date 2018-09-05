@@ -111,9 +111,10 @@ public class CombosBean implements Serializable {
                 case "id":
                     items[i++] = new SelectItem(0, "--Seleccione uno--");
                     break;
-                case "toString":
-                    items[i++] = new SelectItem("", "--Seleccione uno--");
+                case "op":
+                    items[i++] = new SelectItem(-1, "--Seleccione uno--");
                     break;
+                case "toString":
                 case "parameters":
                     items[i++] = new SelectItem("", "--Seleccione uno--");
                     break;
@@ -121,12 +122,12 @@ public class CombosBean implements Serializable {
         }
 
         for (Object x : entities) {
-
             switch (clave) {
                 case "object":
                     items[i++] = new SelectItem(x, x.toString());
                     break;
                 case "id":
+                case "op":
                     items[i++] = new SelectItem(x.hashCode(), x.toString());
                     break;
                 case "toString":

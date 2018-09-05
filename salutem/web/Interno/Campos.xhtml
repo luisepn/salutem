@@ -119,12 +119,21 @@
                                 <h:outputText  value="#{item.tipo.toString()}"/>
                             </ace:column>
                             <ace:column  headerText="Opciones" style="text-align: left">
+
+                                <h:selectOneMenu value="#{item.oneSeleccion}" rendered="#{item.tipo.codigo eq 'LIST'}">
+                                    <f:selectItems value="#{salutemCampos.traerOpciones()}"/>
+                                </h:selectOneMenu>
+
                                 <ace:checkboxButtons value="#{item.manySeleccion}" labelPosition="right" 
-                                                     rendered="#{item.tipo.codigo eq 'ONE' or item.tipo.codigo eq 'MANY'}" 
+                                                     rendered="#{item.tipo.codigo eq 'ONE' 
+                                                                 or item.tipo.codigo eq 'MANY'}" 
                                                      mutuallyExclusive="#{item.tipo.codigo eq 'ONE'}" 
                                                      header="#{item.tipo.codigo eq 'ONE' ? 'Seleccione Uno' : item.tipo.codigo eq 'MANY' ? 'Seleccione Varios':''}">
                                     <f:selectItems value="#{salutemCampos.traerOpciones()}"/>
                                 </ace:checkboxButtons>
+
+
+
                             </ace:column>
                             <ace:column  headerText="Clasificador"                                         
                                          sortBy="#{item.clasificador}" 
@@ -215,14 +224,16 @@
                             </h:selectOneMenu>
                             <h:outputLabel value="Código:" styleClass="bold"/>
                             <ace:textEntry value="#{salutemCampos.campo.codigo}" title="Código"/>                                
-                            <h:outputLabel value="Nombre:"/>
+                            <h:outputLabel value="Nombre:" styleClass="bold"/>
                             <ace:textEntry value="#{salutemCampos.campo.nombre}" title="Nombre"/>
-                            <h:outputLabel value="Descripción:"/>
+                            <h:outputLabel value="Descripción:" styleClass="bold"/>
                             <ace:textAreaEntry value="#{salutemCampos.campo.descripcion}" 
                                                rows="2" cols="22"/>
                         </h:panelGrid>
                     </ace:panel>
-                    <h:panelGrid width="100%" rendered="#{salutemCampos.campo.tipo.codigo eq 'ONE' or salutemCampos.campo.tipo.codigo eq 'MANY'}">
+                    <h:panelGrid width="100%" rendered="#{salutemCampos.campo.tipo.codigo eq 'ONE' 
+                                                          or salutemCampos.campo.tipo.codigo eq 'MANY'
+                                                          or salutemCampos.campo.tipo.codigo eq 'LIST'}">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" 
                                           action="#{salutemCampos.nuevaOpcion()}"/>

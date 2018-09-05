@@ -20,7 +20,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -50,6 +49,7 @@ import org.utilitarios.salutem.Items;
     , @NamedQuery(name = "Campos.findByCreadopor", query = "SELECT c FROM Campos c WHERE c.creadopor = :creadopor")
     , @NamedQuery(name = "Campos.findByActualizado", query = "SELECT c FROM Campos c WHERE c.actualizado = :actualizado")
     , @NamedQuery(name = "Campos.findByActualizadopor", query = "SELECT c FROM Campos c WHERE c.actualizadopor = :actualizadopor")
+    , @NamedQuery(name = "Campos.findByRequerido", query = "SELECT c FROM Campos c WHERE c.requerido = :requerido")
     , @NamedQuery(name = "Campos.findByActivo", query = "SELECT c FROM Campos c WHERE c.activo = :activo")})
 public class Campos implements Serializable {
 
@@ -83,6 +83,8 @@ public class Campos implements Serializable {
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
+    @Column(name = "requerido")
+    private Boolean requerido;
     @Column(name = "activo")
     private Boolean activo;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
@@ -97,6 +99,8 @@ public class Campos implements Serializable {
 
     @Transient
     private String opciones;
+    @Transient
+    private String oneSeleccion;
     @Transient
     private List<String> manySeleccion;
 
@@ -145,6 +149,14 @@ public class Campos implements Serializable {
 
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
+    }
+
+    public Boolean getRequerido() {
+        return requerido;
+    }
+
+    public void setRequerido(Boolean requerido) {
+        this.requerido = requerido;
     }
 
     public Boolean getActivo() {
@@ -280,6 +292,20 @@ public class Campos implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
+    }
+
+    /**
+     * @return the oneSeleccion
+     */
+    public String getOneSeleccion() {
+        return oneSeleccion;
+    }
+
+    /**
+     * @param oneSeleccion the oneSeleccion to set
+     */
+    public void setOneSeleccion(String oneSeleccion) {
+        this.oneSeleccion = oneSeleccion;
     }
 
 }

@@ -168,7 +168,7 @@ public class HistorialBean implements Serializable {
         lista = new LazyDataModel<Historial>() {
             @Override
             public List<Historial> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
-                if (map == null || map.isEmpty()) {
+                if (map.isEmpty()) {
                     map.put("o.tabla", tabla);
                 }
                 return cargar(i, pageSize, scs, map);

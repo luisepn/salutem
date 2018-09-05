@@ -41,6 +41,7 @@ public class DatosBean implements Serializable {
     private Parametros grupo;
     private Integer identificador;
     private List<Datos> datos;
+    private Formulario formulario = new Formulario();
     private Formulario formularioConfirmacion = new Formulario();
 
     @EJB
@@ -51,10 +52,11 @@ public class DatosBean implements Serializable {
     public DatosBean() {
     }
 
-    public void iniciar(String clasificador, Parametros grupo, Integer identificador) {
+    public void iniciar(String clasificador, Parametros grupo, Integer identificador, Formulario formulario) {
         this.clasificador = clasificador;
         this.grupo = grupo;
         this.identificador = identificador;
+        this.formulario = formulario;
     }
 
     public String crear() {
@@ -95,6 +97,7 @@ public class DatosBean implements Serializable {
         d.setGrupo(c.getGrupo().getNombre());
         d.setTipo(c.getTipo());
         d.setOpciones(c.getOpciones());
+        d.setRequerido(c.getRequerido());
         d.setActivo(c.getActivo());
         if (nuevo) {
             d.setCreado(new Date());
@@ -107,29 +110,24 @@ public class DatosBean implements Serializable {
             d.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         }
-        if (c.getTipo().getCodigo().equals("ONE") || c.getTipo().getCodigo().equals("MANY")) {
+        if (c.getTipo().getCodigo().equals("ONE")
+                || c.getTipo().getCodigo().equals("MANY")
+                || c.getTipo().getCodigo().equals("LIST")) {
             ejbDatos.actualizarJsonb("opciones", ejbCampos.buscarJsonb(c.getId()), d.getId());
         }
     }
 
-    public String buscar() {
+    public void buscar() {
         try {
             datos = ejbDatos.traerDatos(clasificador, grupo.getNombre(), identificador);
-            for (Datos d : datos) {
-                if (d.getTipo().getCodigo().equals("ONE") || d.getTipo().getCodigo().equals("MANY")) {
-                    d.setSeleccion(ejbDatos.buscarJsonb("seleccion", d.getId()));
-                    d.setManySeleccion(new LinkedList<>());
-                    for (Items i : d.getItemListFromJson(true)) {
-                        d.getManySeleccion().add(i.getClave() + "");
-                    }
-                }
-            }
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
 
-        return null;
+    public List<Datos> traerDatos(String clasificador, String grupo, Integer identificador) throws ExcepcionDeConsulta {
+        return ejbDatos.traerDatos(clasificador, grupo, identificador);
     }
 
     public String pedirActualizacion() {
@@ -167,22 +165,33 @@ public class DatosBean implements Serializable {
     public String grabar() {
         try {
             for (Datos d : datos) {
-                if (d.getTipo().getCodigo().equals("ONE") || d.getTipo().getCodigo().equals("MANY")) {
-                    List<Items> lo = d.getItemListFromJson(false);
-                    if (!lo.isEmpty()) {
-                        List<Items> ls = new LinkedList<>();
-                        try {
-                            for (String st : d.getManySeleccion()) {
-                                int s = Integer.parseInt(st);
-                                ls.add(lo.get(s));
+
+                switch (d.getTipo().getCodigo()) {
+                    case "ONE":
+                    case "MANY":
+                    case "LIST":
+                        List<Items> opciones = d.getItemListFromJson(false);
+                        if (!opciones.isEmpty()) {
+                            List<Items> seleccion = new LinkedList<>();
+                            try {
+                                if (d.getTipo().getCodigo().equals("LIST")) {
+                                    if (d.getOneSeleccion() != null && !d.getOneSeleccion().equals("-1")) {
+                                        seleccion.add(opciones.get(Integer.parseInt(d.getOneSeleccion())));
+                                    }
+                                } else {
+                                    for (String s : d.getManySeleccion()) {
+                                        seleccion.add(opciones.get(Integer.parseInt(s)));
+                                    }
+                                }
+                            } catch (NumberFormatException ex) {
                             }
-                        } catch (Exception ex) {
+                            ejbDatos.actualizarJsonb("seleccion", seleccion.isEmpty() ? null : d.getJsonFromList(seleccion).toString(), d.getId());
                         }
-                        ejbDatos.actualizarJsonb("seleccion", d.getJsonFromList(ls).toString(), d.getId());
-                    }
-                    d.setSeleccion(ejbDatos.buscarJsonb("seleccion", d.getId()));
+                        d.setSeleccion(ejbDatos.buscarJsonb("seleccion", d.getId()));
+                        break;
                 }
                 ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+
             }
             Mensajes.informacion("¡Datos grabados con éxito!");
         } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
@@ -195,12 +204,27 @@ public class DatosBean implements Serializable {
     public SelectItem[] traerOpciones(Datos d) {
         try {
             d.setOpciones(ejbDatos.buscarJsonb("opciones", d.getId()));
-            return CombosBean.getSelectItems(d.getItemListFromJson(false), "id", false);
+            return CombosBean.getSelectItems(d.getItemListFromJson(false), "op", d.getTipo().getCodigo().equals("LIST"));
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    public String traerSeleccion(Datos d) {
+        String retorno = "";
+        try {
+            d.setOpciones(ejbDatos.buscarJsonb("seleccion", d.getId()));
+            List<Items> seleccion = d.getItemListFromJson(true);
+            for (Items i : seleccion) {
+                retorno += " - " + i.getValor() + "\n";
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return retorno;
     }
 
     public String getMensajeActualizacion() {
@@ -249,6 +273,20 @@ public class DatosBean implements Serializable {
      */
     public void setFormularioConfirmacion(Formulario formularioConfirmacion) {
         this.formularioConfirmacion = formularioConfirmacion;
+    }
+
+    /**
+     * @return the formulario
+     */
+    public Formulario getFormulario() {
+        return formulario;
+    }
+
+    /**
+     * @param formulario the formulario to set
+     */
+    public void setFormulario(Formulario formulario) {
+        this.formulario = formulario;
     }
 
 }

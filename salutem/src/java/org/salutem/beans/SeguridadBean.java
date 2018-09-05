@@ -2,6 +2,7 @@ package org.salutem.beans;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -382,6 +383,11 @@ public class SeguridadBean implements Serializable {
 
     public Date getFechaActual() {
         return new Date();
+    }
+
+    public String getFechaConFormato(Date fecha) {
+        SimpleDateFormat format = new SimpleDateFormat(this.formatoFechaHora);
+        return format.format(fecha);
     }
 
     /**
