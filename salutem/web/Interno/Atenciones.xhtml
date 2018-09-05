@@ -411,7 +411,7 @@
                                             <ace:panel header="Prescripción">
                                                 <h:panelGrid width="100%">
                                                     <ace:dataTable
-                                                        value="#{salutemAtenciones.prescripciones}"
+                                                        value="#{salutemAtenciones.ultimasPrescripciones}"
                                                         resizableColumns="true"
                                                         rowIndexVar="row"
                                                         var="prescripciona">
@@ -442,7 +442,7 @@
                                             <ace:panel header="Ficha médica">
                                                 <h:panelGrid width="100%">
                                                     <ace:dataTable
-                                                        value="#{salutemDatos.datos}"
+                                                        value="#{salutemAtenciones.ultimosDatos}"
                                                         resizableColumns="true"
                                                         var="datoa">
                                                         <f:facet name="header">Datos</f:facet>
