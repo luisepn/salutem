@@ -153,6 +153,9 @@
                                          style="text-align: left">
                                 <h:outputText  value="#{item.grupo.toString()}"/>
                             </ace:column>
+                            <ace:column  headerText="¿Requerido?" sortBy="#{item.requerido}">
+                                <h:outputText value="#{item.requerido ? 'SI' : 'NO'}" style="color: #{item.requerido ? 'green' : 'red'}"/>
+                            </ace:column>
                             <ace:column  headerText="Creación" sortBy="#{item.creado}" 
                                          filterBy="#{item.creado}" 
                                          filterDatePattern="dd/MM/yyyy HH:mm"
@@ -229,6 +232,10 @@
                             <h:outputLabel value="Descripción:" styleClass="bold"/>
                             <ace:textAreaEntry value="#{salutemCampos.campo.descripcion}" 
                                                rows="2" cols="22"/>
+                            <h:outputLabel value="Requerido:" styleClass="bold"/>
+                            <h:selectBooleanCheckbox value="#{salutemCampos.campo.requerido}" title="Requerido"/>
+                            <h:outputLabel value="Activo:" styleClass="bold"/>
+                            <h:selectBooleanCheckbox value="#{salutemCampos.campo.activo}" title="Activo"/>
                         </h:panelGrid>
                     </ace:panel>
                     <h:panelGrid width="100%" rendered="#{salutemCampos.campo.tipo.codigo eq 'ONE' 

@@ -382,7 +382,7 @@
                                 <h:panelGrid width="100%" rendered="#{!salutemAtenciones.verHistorico}">
                                     <ace:menuBar autoSubmenuDisplay="true" >
                                         <ace:menuItem value="Ver Histórico" icon="ui-icon ui-icon-script"  action="#{salutemAtenciones.setVerHistorico(true)}"/>
-                                        <ace:menuItem value="Ver Último" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscarUltimaAtencion()}" rendered="#{salutemAtenciones.atencion.id ne salutemAtenciones.ultimaAtencion.id}" />
+                                        <ace:menuItem value="Ver Último" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscarUltimaAtencion()}" rendered="#{salutemAtenciones.ultimaAtencion.id ne salutemAtenciones.idUltimaAtencion}" />
                                     </ace:menuBar>
                                     <h:panelGrid columns="2" width="100%" columnClasses="cuarenta, sesenta" rendered="#{!salutemAtenciones.verHistorico}">
                                         <h:panelGrid width="100%">

@@ -71,6 +71,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private List<Prescripciones> ultimasPrescripciones;
     private List<Datos> ultimosDatos;
     private Boolean verHistorico = Boolean.FALSE;
+    private Integer idUltimaAtencion = 0;
 
     @EJB
     private AtencionesFacade ejbAtenciones;
@@ -434,6 +435,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     public String buscarUltimaAtencion() {
         try {
+            this.idUltimaAtencion = 0;
             this.ultimaAtencion = null;
             this.ultimasPrescripciones = null;
             this.ultimosDatos = null;
@@ -447,6 +449,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             List<Atenciones> aux = ejbAtenciones.buscar(where, parametros, order, 0, 1);
             if (!aux.isEmpty()) {
                 setUltimaAtencion(aux.get(0));
+                idUltimaAtencion = ultimaAtencion.getId();
                 buscarHistorico();
             }
         } catch (ExcepcionDeConsulta ex) {
@@ -715,5 +718,19 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     public void setVerHistorico(Boolean verHistorico) {
         this.verHistorico = verHistorico;
         buscarHistorico();
+    }
+
+    /**
+     * @return the idUltimaAtencion
+     */
+    public Integer getIdUltimaAtencion() {
+        return idUltimaAtencion;
+    }
+
+    /**
+     * @param idUltimaAtencion the idUltimaAtencion to set
+     */
+    public void setIdUltimaAtencion(Integer idUltimaAtencion) {
+        this.idUltimaAtencion = idUltimaAtencion;
     }
 }

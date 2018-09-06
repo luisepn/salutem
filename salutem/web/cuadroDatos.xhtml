@@ -35,39 +35,38 @@
             <h:outputText value="#{dato.nombre}"/>
         </ace:column>
         <ace:column  style="text-align: left">
-            <ace:checkboxButton value="#{dato.booleano}" rendered="#{dato.tipo.codigo eq 'BOOLEAN'}"/>
-            <ace:textEntry value="#{dato.entero}" rendered="#{dato.tipo.codigo eq 'INTEGER'}"/>
-            <ace:textEntry value="#{dato.decimal}" rendered="#{dato.tipo.codigo eq 'DOUBLE'}"/>
-            <ace:textAreaEntry value="#{dato.texto}" rows="2" cols="10" rendered="#{dato.tipo.codigo eq 'TEXT'}"/>
-            <ace:dateTimeEntry value="#{dato.fecha}" navigator="true" 
+            <ace:checkboxButton value="#{dato.booleano}" rendered="#{dato.tipo.codigo eq 'BOOLEAN'}" required="#{dato.requerido}" requiredMessage="Respuesta requerida"/>
+            <ace:textEntry value="#{dato.entero}" rendered="#{dato.tipo.codigo eq 'INTEGER'}" required="#{dato.requerido}" requiredMessage="Número requerido" converterMessage="Es necesario un número entero"/>
+            <ace:textEntry value="#{dato.decimal}" rendered="#{dato.tipo.codigo eq 'DOUBLE'}" required="#{dato.requerido}" requiredMessage="Número requerido" converterMessage="Es necesario un número con punto decimal"/>
+            <ace:textAreaEntry value="#{dato.texto}" rows="2" cols="10" rendered="#{dato.tipo.codigo eq 'TEXT'}" required="#{dato.requerido}" requiredMessage="Texto requerido"/>
+            <ace:dateTimeEntry value="#{dato.fecha}" navigator="true" required="#{dato.requerido}" requiredMessage="Seleccione una fecha" converterMessage="Es necesario una fecha válida"
                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"
                                rendered="#{dato.tipo.codigo eq 'DATE'}">
                 <f:convertDateTime pattern="dd/MM/yyyy" />
             </ace:dateTimeEntry>
-            <ace:dateTimeEntry value="#{dato.hora}" navigator="true"
+            <ace:dateTimeEntry value="#{dato.hora}" navigator="true" required="#{dato.requerido}" requiredMessage="Seleccione una fecha" converterMessage="Es necesario una hora válida"
                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                pattern="HH:mm:ss" label="HH:mm:ss" labelPosition="infield"
                                rendered="#{dato.tipo.codigo eq 'TIME'}">
                 <f:convertDateTime pattern="HH:mm:ss" />
             </ace:dateTimeEntry>
-            <ace:dateTimeEntry value="#{dato.fechahora}" navigator="true" 
+            <ace:dateTimeEntry value="#{dato.fechahora}" navigator="true" required="#{dato.requerido}" requiredMessage="Seleccione una fecha" converterMessage="Es necesario una fecha válida"
                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                pattern="dd/MM/yyyy HH:mm:ss" label="dd/MM/yyyy HH:mm:ss" labelPosition="infield"
                                rendered="#{dato.tipo.codigo eq 'DATETIME'}">
                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
             </ace:dateTimeEntry>
 
-            <h:selectOneMenu value="#{dato.oneSeleccion}" rendered="#{dato.tipo.codigo eq 'LIST'}">
+            <h:selectOneMenu value="#{dato.oneSeleccion}" rendered="#{dato.tipo.codigo eq 'LIST'}" required="#{dato.requerido}" requiredMessage="Seleccione una opción">
                 <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
             </h:selectOneMenu>
 
-            <ace:checkboxButtons value="#{dato.manySeleccion}" labelPosition="right" 
+            <ace:checkboxButtons value="#{dato.manySeleccion}" labelPosition="right" required="#{dato.requerido}" requiredMessage="Seleccione una opción"
                                  rendered="#{dato.tipo.codigo eq 'ONE' or dato.tipo.codigo eq 'MANY'}" 
                                  mutuallyExclusive="#{dato.tipo.codigo eq 'ONE'}"
                                  header="#{dato.tipo.codigo eq 'ONE' ? 'Seleccione Uno' : dato.tipo.codigo eq 'MANY' ? 'Seleccione Varios':''}">
                 <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
-                <ace:ajax/>
             </ace:checkboxButtons>
         </ace:column>
     </ace:dataTable>

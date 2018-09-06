@@ -175,7 +175,7 @@ public class DatosBean implements Serializable {
                             List<Items> seleccion = new LinkedList<>();
                             try {
                                 if (d.getTipo().getCodigo().equals("LIST")) {
-                                    if (d.getOneSeleccion() != null && !d.getOneSeleccion().equals("-1")) {
+                                    if (d.getOneSeleccion() != null) {
                                         seleccion.add(opciones.get(Integer.parseInt(d.getOneSeleccion())));
                                     }
                                 } else {
