@@ -143,7 +143,7 @@
                                 </ace:menuButton>
                             </ace:column>
                             <ace:column style="text-align: center;">
-                                <ace:graphicImage value="#{salutemImagenes.traerImagen(item.logotipo.ruta)}" name="#{item.id}_#{item.logotipo.nombre}" id="resourceGraphicImage" style="height: 50px " rendered="#{item.logotipo ne null and item.logotipo.ruta ne null}"/>
+                                <ace:graphicImage value="#{salutemArchivos.traerImagen(item.logotipo.ruta)}" name="#{item.id}_#{item.logotipo.nombre}" id="resourceGraphicImage" style="height: 50px " rendered="#{item.logotipo ne null and item.logotipo.ruta ne null}"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
                                 <h:outputText  value="#{item.nombre} [#{item.id}]"/>
@@ -259,14 +259,14 @@
                         </ace:tabPane>
                         <ace:tabPane label="Logotipo">
                             <center>
-                                <ace:graphicImage value="#{salutemImagenes.archivo.archivo}" name="#{salutemImagenes.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " rendered="#{salutemImagenes.archivo.archivo ne null}"/>
+                                <ace:graphicImage value="#{salutemArchivos.archivo.archivo}" name="#{salutemArchivos.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " rendered="#{salutemArchivos.archivo.archivo ne null}"/>
                             </center>
                             <h:panelGrid columns="2">
                                 <ace:fileEntry 
                                     absolutePath="/tmp/salutem"
                                     maxFileCount="1"
                                     maxFileCountMessage="Sólo se puede subir 1 archivo"
-                                    fileEntryListener="#{salutemImagenes.ficheroDocumento}"
+                                    fileEntryListener="#{salutemArchivos.ficheroDocumento}"
                                     maxFileSize="10485760"
                                     maxFileSizeMessage="El archivo supera el tamaño predefinido 10 MB"                                                                                                                 
                                     useOriginalFilename="true"

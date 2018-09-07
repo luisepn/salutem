@@ -82,7 +82,7 @@
                                 </ace:menuButton>
                             </ace:column>
                             <ace:column headerText="Fotografía" >
-                                <ace:graphicImage value="#{salutemImagenes.traerImagen(item.persona.fotografia.ruta)}" 
+                                <ace:graphicImage value="#{salutemArchivos.traerImagen(item.persona.fotografia.ruta)}" 
                                                   name="#{item.id}_#{item.persona.fotografia.nombre}" id="resourceGraphicImage" style="height: 50px;" 
                                                   rendered="#{item.persona.fotografia ne null and item.persona.fotografia.ruta ne null}"/>
                             </ace:column> 
@@ -177,14 +177,14 @@
                         </ace:tabPane>
                         <ace:tabPane label="Fotografía">
                             <center>
-                                <ace:graphicImage value="#{salutemImagenes.archivo.archivo}" name="#{salutemImagenes.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " />
+                                <ace:graphicImage value="#{salutemArchivos.archivo.archivo}" name="#{salutemArchivos.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " />
                             </center>
                             <h:panelGrid columns="2">
                                 <ace:fileEntry 
                                     absolutePath="/tmp/salutem"
                                     maxFileCount="1"
                                     maxFileCountMessage="Sólo se puede subir 1 archivo"
-                                    fileEntryListener="#{salutemImagenes.ficheroDocumento}"
+                                    fileEntryListener="#{salutemArchivos.ficheroDocumento}"
                                     maxFileSize="10485760"
                                     maxFileSizeMessage="El archivo supera el tamaño predefinido 10 MB"                                                                                                                 
                                     useOriginalFilename="true"

@@ -213,7 +213,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         formulario.editar();
         datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
-        datosBean.crear();
         buscarUltimaAtencion();
         return null;
     }
@@ -236,7 +235,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         formulario.eliminar();
         datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
-        datosBean.buscar();
         buscarUltimaAtencion();
         return null;
     }
@@ -320,7 +318,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         formulario.editar();
         datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
-        datosBean.crear();
         buscarUltimaAtencion();
         return null;
     }
@@ -369,6 +366,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         try {
             ejbAtenciones.eliminar(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            datosBean.borrar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -448,7 +446,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             String order = "o.fecha desc";
             List<Atenciones> aux = ejbAtenciones.buscar(where, parametros, order, 0, 1);
             if (!aux.isEmpty()) {
-                setUltimaAtencion(aux.get(0));
+                colocarUltimaAtencion(aux.get(0));
                 idUltimaAtencion = ultimaAtencion.getId();
                 buscarHistorico();
             }
@@ -458,6 +456,32 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         return null;
     }
+
+    public void colocarUltimaAtencion(Atenciones ultimaAtencion) {
+        try {
+            this.ultimaAtencion = ultimaAtencion;
+            this.ultimasPrescripciones = ejbPrescripciones.traerPrescripciones(ultimaAtencion);
+            this.ultimosDatos = datosBean.traerDatos(getNombreTabla(), ultimaAtencion.getEspecialidad().getNombre(), ultimaAtencion.getId());
+            this.verHistorico = Boolean.FALSE;
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * @return the ultimaAtencion
+     */
+    public Atenciones getUltimaAtencion() {
+        return ultimaAtencion;
+    }
+
+//    /**
+//     * @param ultimaAtencion the ultimaAtencion to set
+//     */
+//    public void setUltimaAtencion(Atenciones ultimaAtencion) {
+//        this.ultimaAtencion = ultimaAtencion;
+//    }
 
     /**
      * @return the seguridadBean
@@ -653,28 +677,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
      */
     public void setPrescripciones(List<Prescripciones> prescripciones) {
         this.prescripciones = prescripciones;
-    }
-
-    /**
-     * @return the ultimaAtencion
-     */
-    public Atenciones getUltimaAtencion() {
-        return ultimaAtencion;
-    }
-
-    /**
-     * @param ultimaAtencion the ultimaAtencion to set
-     */
-    public void setUltimaAtencion(Atenciones ultimaAtencion) {
-        try {
-            this.ultimaAtencion = ultimaAtencion;
-            this.ultimasPrescripciones = ejbPrescripciones.traerPrescripciones(ultimaAtencion);
-            this.ultimosDatos = datosBean.traerDatos(getNombreTabla(), ultimaAtencion.getEspecialidad().getNombre(), ultimaAtencion.getId());
-            this.verHistorico = Boolean.FALSE;
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /**

@@ -143,7 +143,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         }
         profesional = (Profesionales) profesionales.getRowData();
         persona = profesional.getPersona();
-        imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         editar();
         formulario.editar();
         return null;
@@ -155,7 +155,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         }
         profesional = ((Profesionales) profesionales.getRowData());
         persona = profesional.getPersona();
-        imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.eliminar();
         return null;
     }

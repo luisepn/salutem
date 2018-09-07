@@ -39,8 +39,8 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
 
     @ManagedProperty("#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
-    @ManagedProperty("#{salutemImagenes}")
-    private ImagenesBean imagenesBean;
+    @ManagedProperty("#{salutemArchivos}")
+    private ArchivosBean archivosBean;
 
     private Formulario formulario = new Formulario();
     private LazyDataModel<Instituciones> instituciones;
@@ -128,7 +128,7 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
         institucion.setFecha(new Date());
         direccion = new Direcciones();
         direccion.setActivo(Boolean.TRUE);
-        imagenesBean.setArchivo(new Archivos());
+        archivosBean.iniciar(getNombreTabla(), institucion.getId(), new Archivos());
         formulario.insertar();
         return null;
     }
@@ -138,8 +138,8 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        institucion = ((Instituciones) instituciones.getRowData());
-        imagenesBean.setArchivo(institucion.getLogotipo() != null ? institucion.getLogotipo() : new Archivos());
+        institucion = ((Instituciones) instituciones.getRowData()); 
+        archivosBean.iniciar(getNombreTabla(), institucion.getId(), institucion.getLogotipo() != null ? institucion.getLogotipo() : new Archivos());
         direccion = institucion.getDireccion() != null ? institucion.getDireccion() : new Direcciones();
         formulario.editar();
         return null;
@@ -151,7 +151,7 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         institucion = ((Instituciones) instituciones.getRowData());
-        imagenesBean.setArchivo(institucion.getLogotipo() != null ? institucion.getLogotipo() : new Archivos());
+         archivosBean.iniciar(getNombreTabla(), institucion.getId(), institucion.getLogotipo() != null ? institucion.getLogotipo() : new Archivos());
         direccion = institucion.getDireccion() != null ? institucion.getDireccion() : new Direcciones();
         formulario.eliminar();
         return null;
@@ -192,10 +192,11 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
         }
         try {
             ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress(), "Logotipos", null);
-            institucion.setLogotipo(imagenesBean.getArchivo());
+            archivosBean.grabar();
+            institucion.setLogotipo(archivosBean.getArchivo());
             institucion.setDireccion(direccion);
             ejbInstituciones.crear(institucion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            archivosBean.actualizarIdentificador(institucion.getId().toString());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -215,8 +216,8 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
         }
         try {
             ejbDirecciones.actualizar(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress(), "Logotipos", null);
-            institucion.setLogotipo(imagenesBean.getArchivo());
+            archivosBean.grabar();
+            institucion.setLogotipo(archivosBean.getArchivo());
             ejbInstituciones.actualizar(institucion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -339,17 +340,17 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @return the imagenesBean
+     * @return the archivosBean
      */
-    public ImagenesBean getImagenesBean() {
-        return imagenesBean;
+    public ArchivosBean getArchivosBean() {
+        return archivosBean;
     }
 
     /**
-     * @param imagenesBean the imagenesBean to set
+     * @param archivosBean the archivosBean to set
      */
-    public void setImagenesBean(ImagenesBean imagenesBean) {
-        this.imagenesBean = imagenesBean;
+    public void setArchivosBean(ArchivosBean archivosBean) {
+        this.archivosBean = archivosBean;
     }
 
     /**

@@ -1,6 +1,9 @@
 package org.salutem.beans;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +16,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 import org.controladores.salutem.CamposFacade;
 import org.controladores.salutem.DatosFacade;
+import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Campos;
 import org.entidades.salutem.Datos;
 import org.entidades.salutem.Parametros;
@@ -20,6 +24,9 @@ import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
+import org.icefaces.ace.component.fileentry.FileEntry;
+import org.icefaces.ace.component.fileentry.FileEntryEvent;
+import org.icefaces.ace.component.fileentry.FileEntryResults;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
 import org.utilitarios.salutem.Items;
@@ -36,13 +43,16 @@ public class DatosBean implements Serializable {
 
     @ManagedProperty("#{salutemSeguridad}")
     private SeguridadBean seguridadBean;
+    @ManagedProperty("#{salutemArchivos}")
+    private ArchivosBean archivosBean;
+
+    private Formulario formulario = new Formulario();
+    private Formulario formularioConfirmacion = new Formulario();
 
     private String clasificador;
     private Parametros grupo;
     private Integer identificador;
     private List<Datos> datos;
-    private Formulario formulario = new Formulario();
-    private Formulario formularioConfirmacion = new Formulario();
 
     @EJB
     private CamposFacade ejbCampos;
@@ -57,11 +67,12 @@ public class DatosBean implements Serializable {
         this.grupo = grupo;
         this.identificador = identificador;
         this.formulario = formulario;
+        buscar();
+        crear();
     }
 
     public String crear() {
         try {
-            buscar();
             if (!datos.isEmpty()) {
                 return null;
             }
@@ -137,7 +148,6 @@ public class DatosBean implements Serializable {
 
     public String actualizar(Boolean borrar) {
         try {
-
             if (borrar) {
                 List<Datos> ld = ejbDatos.traerDatos(clasificador, grupo.getNombre(), identificador);
                 for (Datos d : ld) {
@@ -158,14 +168,12 @@ public class DatosBean implements Serializable {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return null;
     }
 
     public String grabar() {
         try {
             for (Datos d : datos) {
-
                 switch (d.getTipo().getCodigo()) {
                     case "ONE":
                     case "MANY":
@@ -188,13 +196,31 @@ public class DatosBean implements Serializable {
                             ejbDatos.actualizarJsonb("seleccion", seleccion.isEmpty() ? null : d.getJsonFromList(seleccion).toString(), d.getId());
                         }
                         d.setSeleccion(ejbDatos.buscarJsonb("seleccion", d.getId()));
+                        ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                        break;
+                    case "FILE":
+                        break;
+                    default:
+                        ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                         break;
                 }
-                ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
 
             }
             Mensajes.informacion("¡Datos grabados con éxito!");
         } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public String borrar() {
+        try {
+            for (Datos d : datos) {
+                ejbDatos.eliminar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            }
+            Mensajes.informacion("¡Datos removidos con éxito!");
+        } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -233,6 +259,23 @@ public class DatosBean implements Serializable {
                 + "Si desea eliminar la lista de datos y volver a copiar los campos parametrizados presione 'Eliminar y copiar'.";
     }
 
+    public void colocarFichero(FileEntryEvent e) {
+        Datos d = datos.get(formulario.getFila().getRowIndex());
+        Archivos a = d.getArchivo();
+        archivosBean.iniciar(getNombreTabla(), d.getId(), a != null ? a : new Archivos());
+        archivosBean.colocarFichero(e);
+        d.setArchivo(archivosBean.getArchivo());
+        try {
+            ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+        } catch (ExcepcionDeActualizacion ex) {
+            Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public String getNombreTabla() {
+        return Datos.class.getSimpleName();
+    }
+
     /**
      * @return the seguridadBean
      */
@@ -248,17 +291,31 @@ public class DatosBean implements Serializable {
     }
 
     /**
-     * @return the datos
+     * @return the archivosBean
      */
-    public List<Datos> getDatos() {
-        return datos;
+    public ArchivosBean getArchivosBean() {
+        return archivosBean;
     }
 
     /**
-     * @param datos the datos to set
+     * @param archivosBean the archivosBean to set
      */
-    public void setDatos(List<Datos> datos) {
-        this.datos = datos;
+    public void setArchivosBean(ArchivosBean archivosBean) {
+        this.archivosBean = archivosBean;
+    }
+
+    /**
+     * @return the formulario
+     */
+    public Formulario getFormulario() {
+        return formulario;
+    }
+
+    /**
+     * @param formulario the formulario to set
+     */
+    public void setFormulario(Formulario formulario) {
+        this.formulario = formulario;
     }
 
     /**
@@ -276,17 +333,59 @@ public class DatosBean implements Serializable {
     }
 
     /**
-     * @return the formulario
+     * @return the clasificador
      */
-    public Formulario getFormulario() {
-        return formulario;
+    public String getClasificador() {
+        return clasificador;
     }
 
     /**
-     * @param formulario the formulario to set
+     * @param clasificador the clasificador to set
      */
-    public void setFormulario(Formulario formulario) {
-        this.formulario = formulario;
+    public void setClasificador(String clasificador) {
+        this.clasificador = clasificador;
+    }
+
+    /**
+     * @return the grupo
+     */
+    public Parametros getGrupo() {
+        return grupo;
+    }
+
+    /**
+     * @param grupo the grupo to set
+     */
+    public void setGrupo(Parametros grupo) {
+        this.grupo = grupo;
+    }
+
+    /**
+     * @return the identificador
+     */
+    public Integer getIdentificador() {
+        return identificador;
+    }
+
+    /**
+     * @param identificador the identificador to set
+     */
+    public void setIdentificador(Integer identificador) {
+        this.identificador = identificador;
+    }
+
+    /**
+     * @return the datos
+     */
+    public List<Datos> getDatos() {
+        return datos;
+    }
+
+    /**
+     * @param datos the datos to set
+     */
+    public void setDatos(List<Datos> datos) {
+        this.datos = datos;
     }
 
 }

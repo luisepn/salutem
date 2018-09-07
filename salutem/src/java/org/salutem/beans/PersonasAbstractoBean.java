@@ -37,8 +37,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
 
     @ManagedProperty("#{salutemSeguridad}")
     protected SeguridadBean seguridadBean;
-    @ManagedProperty("#{salutemImagenes}")
-    protected ImagenesBean imagenesBean;
+    @ManagedProperty("#{salutemArchivos}")
+    protected ArchivosBean archivosBean;
 
     protected Formulario formulario = new Formulario();
     protected LazyDataModel<Personas> personas;
@@ -142,7 +142,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         persona.setActivo(Boolean.TRUE);
         direccion = new Direcciones();
         direccion.setActivo(Boolean.TRUE);
-        imagenesBean.setArchivo(new Archivos());
+        archivosBean.iniciar(getNombreTabla(), persona.getId(), new Archivos());
         formulario.insertar();
         return null;
     }
@@ -158,7 +158,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         }
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
         direccion.setActivo(Boolean.TRUE);
-        imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.editar();
         return null;
     }
@@ -170,7 +170,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         }
         persona = (Personas) personas.getRowData();
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
-        imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.eliminar();
         return null;
     }
@@ -216,8 +216,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             persona.setDireccion(direccion);
 
-            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress(), "Fotografias", null);
-            persona.setFotografia(imagenesBean.getArchivo());
+            archivosBean.grabar();
+            persona.setFotografia(archivosBean.getArchivo());
 
             persona.setUserid(persona.getCedula());
             persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
@@ -226,6 +226,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             persona.setActualizado(persona.getCreado());
             persona.setActualizadopor(persona.getActualizadopor());
             ejbPersonas.crear(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            archivosBean.actualizarIdentificador(persona.getId().toString());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -251,8 +252,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             }
             persona.setDireccion(direccion);
 
-            imagenesBean.grabarImagen(seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress(), "Fotografias", null);
-            persona.setFotografia(imagenesBean.getArchivo());
+            archivosBean.grabar();
+            persona.setFotografia(archivosBean.getArchivo());
             persona.setActualizado(new Date());
             persona.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
@@ -347,6 +348,10 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    public String getNombreTabla() {
+        return Personas.class.getSimpleName();
     }
 
     /**
@@ -462,17 +467,17 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
     }
 
     /**
-     * @return the imagenesBean
+     * @return the archivosBean
      */
-    public ImagenesBean getImagenesBean() {
-        return imagenesBean;
+    public ArchivosBean getArchivosBean() {
+        return archivosBean;
     }
 
     /**
-     * @param imagenesBean the imagenesBean to set
+     * @param archivosBean the archivosBean to set
      */
-    public void setImagenesBean(ImagenesBean imagenesBean) {
-        this.imagenesBean = imagenesBean;
+    public void setArchivosBean(ArchivosBean archivosBean) {
+        this.archivosBean = archivosBean;
     }
 
     /**

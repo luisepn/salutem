@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.entidades.salutem.Archivos;
+import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
@@ -49,6 +50,28 @@ public class ArchivosFacade extends AbstractFacade<Archivos> {
             throw new ExcepcionDeConsulta(ArchivosFacade.class.getName(), e);
         }
         return null;
+    }
+
+    public List<Archivos> traerArchivos(String clasificador, Integer identificador) throws ExcepcionDeConsulta {
+        try {
+            Query q = getEntityManager().createQuery("Select object(o) from Archivos as o where o.activo = true and o.clasificador=:clasificador and o.identificador=:identificador ORDER BY o.id desc");
+            q.setParameter("clasificador", clasificador);
+            q.setParameter("identificador", identificador);
+            return q.getResultList();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(ArchivosFacade.class.getName(), e);
+        }
+    }
+
+    public void actualizarCampo(String campo, String valor, Integer id) throws ExcepcionDeActualizacion {
+        try {
+            em.createNativeQuery("UPDATE Archivos SET " + campo + " = '" + valor + "' WHERE id=:id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+
+        } catch (Exception e) {
+            throw new ExcepcionDeActualizacion(ArchivosFacade.class.getName(), e);
+        }
     }
 
     @Override

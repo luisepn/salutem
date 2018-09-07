@@ -20,7 +20,8 @@
     <ace:dataTable
         value="#{salutemDatos.datos}"
         resizableColumns="true"
-        var="dato">
+        var="dato"
+        binding="#{salutemDatos.formulario.fila}">
         <f:facet name="header">Datos</f:facet>
         <ace:row condition="group" groupBy="#{dato.grupo}" pos="before" styleClass="grupo">
             <ace:column style="text-align: center" colspan="10">
@@ -68,6 +69,19 @@
                                  header="#{dato.tipo.codigo eq 'ONE' ? 'Seleccione Uno' : dato.tipo.codigo eq 'MANY' ? 'Seleccione Varios':''}">
                 <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
             </ace:checkboxButtons>
+            <h:panelGrid columns="2" rendered="#{dato.tipo.codigo eq 'FILE'}">
+                <ace:fileEntry 
+                    absolutePath="/tmp/salutem"
+                    maxFileCount="1"
+                    maxFileCountMessage="Sólo se puede subir 1 archivo"
+                    fileEntryListener="#{salutemDatos.colocarFichero}"
+                    maxFileSize="104857600"
+                    maxFileSizeMessage="El archivo supera el tamaño predefinido 100 MB"                                                                                                                 
+                    useOriginalFilename="true"
+                    label="Subido con éxito"
+                    useSessionSubdir="true"
+                    autoUpload="true"/>
+            </h:panelGrid>
         </ace:column>
     </ace:dataTable>
 

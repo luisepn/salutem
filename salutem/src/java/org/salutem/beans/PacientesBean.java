@@ -201,7 +201,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         paciente = (Pacientes) pacientes.getRowData();
         institucion = paciente.getInstitucion();
         persona = paciente.getPersona();
-        imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         editar();
         formulario.editar();
         return null;
@@ -213,7 +213,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         }
         paciente = ((Pacientes) pacientes.getRowData());
         persona = paciente.getPersona();
-        imagenesBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         institucion = paciente.getInstitucion();
         formulario.eliminar();
         return null;
