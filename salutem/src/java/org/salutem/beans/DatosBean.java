@@ -260,14 +260,17 @@ public class DatosBean implements Serializable {
     }
 
     public void colocarFichero(FileEntryEvent e) {
-        Datos d = datos.get(formulario.getFila().getRowIndex());
+        int index = formulario.getFila().getRowIndex();
+        Datos d = datos.get(index);
         Archivos a = d.getArchivo();
         archivosBean.iniciar(getNombreTabla(), d.getId(), a != null ? a : new Archivos());
         archivosBean.colocarFichero(e);
         d.setArchivo(archivosBean.getArchivo());
         try {
             ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            datos.set(index, d);
         } catch (ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

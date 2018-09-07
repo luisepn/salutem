@@ -477,6 +477,11 @@
                                                                                       or datoa.tipo.codigo eq 'MANY'
                                                                                       or datoa.tipo.codigo eq 'LIST'}">
                                                             </h:outputText>
+                                                            <ace:dynamicResource
+                                                                resource="#{salutemArchivos.traerRecurso(dato.archivo.ruta)}"
+                                                                label="#{datoa.archivo.nombre}"
+                                                                mimeType="#{datoa.archivo.tipo}"
+                                                                rendered="#{datoa.archivo ne null and salutemArchivos.traerRecurso(datoa.archivo.ruta) ne null}"/>
                                                         </ace:column>
                                                     </ace:dataTable>                                  
                                                 </h:panelGrid>

@@ -81,6 +81,11 @@
                     label="Subido con éxito"
                     useSessionSubdir="true"
                     autoUpload="true"/>
+                <ace:dynamicResource
+                    resource="#{salutemArchivos.traerRecurso(dato.archivo.ruta)}"
+                    label="#{dato.archivo.nombre}"
+                    mimeType="#{dato.archivo.tipo}"
+                    rendered="#{dato.archivo ne null and salutemArchivos.traerRecurso(dato.archivo.ruta) ne null}"/>
             </h:panelGrid>
         </ace:column>
     </ace:dataTable>

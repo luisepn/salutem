@@ -200,6 +200,15 @@ public class ArchivosBean implements Serializable {
         }
     }
 
+    public Recurso traerRecurso(String ruta) {
+        try {
+            return new Recurso(Files.readAllBytes(Paths.get(ruta != null ? ruta : "")));
+        } catch (IOException ex) {
+            Mensajes.fatal("El archivo no existe en la ruta " + (ruta != null ? ruta : ""));
+            return null;
+        }
+    }
+
     public byte[] traerImagen(String ruta) {
         try {
             if (ruta == null) {
