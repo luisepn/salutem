@@ -290,13 +290,73 @@
                                         </ace:panel>
                                     </h:panelGrid>
                                     <h:panelGrid width="100%">
-                                        <ace:panel header="Ficha médica">
+                                        <ace:panel header="Ficha médica" rendered="#{!salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">
                                             <h:panelGrid width="100%">
                                                 <ui:include src="../cuadroDatos.xhtml"/>                                       
                                             </h:panelGrid>
                                         </ace:panel>
+                                        <ace:panel header="Optometría" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">    
+                                            <h:panelGrid columns="3" width="100%">
+                                                <ace:panel header="LENSOMETRÍA">
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputText value="OD" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.lensometria.d}" title="Ojo derecho" style="width: 30px;"/>
+                                                        <h:outputText value="OI" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.lensometria.i}" title="Ojo izquierdo" style="width: 30px;"/>
+                                                    </h:panelGrid>                              
+                                                </ace:panel>
+
+                                                <ace:panel header="AV SC">
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputText value="OD" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.agudezavisualsincristal.d}" title="Ojo derecho" style="width: 30px;"/>
+                                                        <h:outputText value="OI" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.agudezavisualsincristal.i}" title="Ojo izquierdo" style="width: 30px;"/>
+                                                    </h:panelGrid>                              
+                                                </ace:panel>
+
+                                                <ace:panel header="AV CC">
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputText value="OD" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.agudezavisualconcristal.d}" title="Ojo derecho" style="width: 30px;"/>
+                                                        <h:outputText value="OI" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.agudezavisualconcristal.i}" title="Ojo izquierdo" style="width: 30px;"/>
+                                                    </h:panelGrid>                              
+                                                </ace:panel>
+                                            </h:panelGrid>
+                                            <h:panelGrid width="100%">
+                                                <ace:dataTable
+                                                    value="#{salutemAtenciones.listaRxFinal}"
+                                                    resizableColumns="true"
+                                                    var="rxfinal">
+                                                    <f:facet name="header">Rx Final</f:facet>
+                                                    <ace:column headerText="" style="text-align: center">
+                                                        <h:outputText value="#{rxfinal.ojo}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Esfera" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.esfera}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Cilindro" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.cilindro}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Eje" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.eje}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="ADD" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.adicion}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="DP" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.distanciapupilar}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="AV" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.agudezavisual}"/>
+                                                    </ace:column>
+                                                </ace:dataTable>
+                                            </h:panelGrid>
+                                        </ace:panel>
                                     </h:panelGrid>
                                 </h:panelGrid>
+
                                 <ace:panel header="Atención">    
                                     <h:panelGrid columns="2" width="100%">
                                         <h:outputText value="Motivo:" styleClass="bold"/>
@@ -487,7 +547,7 @@
                                                 </h:panelGrid>
                                             </ace:panel>
                                         </h:panelGrid>
-                                    </h:panelGrid>
+                                    </h:panelGrid>                                    
                                     <ace:panel header="Atención">    
                                         <h:panelGrid columns="2" width="100%">
                                             <h:outputText value="Motivo:" styleClass="bold"/>

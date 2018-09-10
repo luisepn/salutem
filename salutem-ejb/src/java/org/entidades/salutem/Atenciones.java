@@ -48,15 +48,6 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Atenciones.findByActualizadopor", query = "SELECT a FROM Atenciones a WHERE a.actualizadopor = :actualizadopor")})
 public class Atenciones implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
-    @Column(name = "fecha")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fecha;
     @Size(max = 2147483647)
     @Column(name = "motivo")
     private String motivo;
@@ -66,20 +57,30 @@ public class Atenciones implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "observaciones")
     private String observaciones;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "fecha")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha;
     @Column(name = "activo")
     private Boolean activo;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
     @OneToOne(mappedBy = "atencion")
     private Formulas formula;
     @JoinColumn(name = "cita", referencedColumnName = "id")
@@ -120,29 +121,6 @@ public class Atenciones implements Serializable {
         this.fecha = fecha;
     }
 
-    public String getMotivo() {
-        return motivo;
-    }
-
-    public void setMotivo(String motivo) {
-        this.motivo = motivo;
-    }
-
-    public String getDiagnostico() {
-        return diagnostico;
-    }
-
-    public void setDiagnostico(String diagnostico) {
-        this.diagnostico = diagnostico;
-    }
-
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
-    }
 
     public Boolean getActivo() {
         return activo;
@@ -160,13 +138,6 @@ public class Atenciones implements Serializable {
         this.creado = creado;
     }
 
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
 
     public Date getActualizado() {
         return actualizado;
@@ -176,13 +147,6 @@ public class Atenciones implements Serializable {
         this.actualizado = actualizado;
     }
 
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
-    }
 
     public Formulas getFormula() {
         return formula;
@@ -256,6 +220,46 @@ public class Atenciones implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutem.Atenciones[ id=" + id + " ]";
+    }
+
+    public String getMotivo() {
+        return motivo;
+    }
+
+    public void setMotivo(String motivo) {
+        this.motivo = motivo;
+    }
+
+    public String getDiagnostico() {
+        return diagnostico;
+    }
+
+    public void setDiagnostico(String diagnostico) {
+        this.diagnostico = diagnostico;
+    }
+
+    public String getObservaciones() {
+        return observaciones;
+    }
+
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
     }
     
 }

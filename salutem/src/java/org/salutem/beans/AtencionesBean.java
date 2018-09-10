@@ -18,6 +18,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.AtencionesFacade;
+import org.controladores.salutem.FormulasFacade;
 import org.controladores.salutem.PrescripcionesFacade;
 import org.entidades.salutem.Atenciones;
 import org.entidades.salutem.Citas;
@@ -34,6 +35,8 @@ import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
+import org.utilitarios.salutem.Ojos;
+import org.utilitarios.salutem.RxFinal;
 
 /**
  *
@@ -58,6 +61,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private Formulario formulario = new Formulario();
     private LazyDataModel<Atenciones> atenciones;
     private Formulas formula;
+    private Ojos lensometria;
+    private Ojos agudezavisualsincristal;
+    private Ojos agudezavisualconcristal;
     private List<Prescripciones> prescripciones;
 
     private Atenciones atencion;
@@ -73,10 +79,14 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private Boolean verHistorico = Boolean.FALSE;
     private Integer idUltimaAtencion = 0;
 
+    private List<RxFinal> listaRxFinal;
+
     @EJB
     private AtencionesFacade ejbAtenciones;
     @EJB
     private PrescripcionesFacade ejbPrescripciones;
+    @EJB
+    private FormulasFacade ejbFormulas;
 
     public AtencionesBean() {
         conCita = true;
@@ -207,7 +217,36 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         try {
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
-        } catch (ExcepcionDeConsulta ex) {
+            if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
+                formula = atencion.getFormula();
+
+                if (formula == null) {
+                    formula = new Formulas();
+                    formula.setLensometria(new Ojos());
+                    formula.setAgudezavisualsincristal(new Ojos());
+                    formula.setAgudezavisualconcristal(new Ojos());
+                    formula.setEsfera(new Ojos());
+                    formula.setCilindro(new Ojos());
+                    formula.setEje(new Ojos());
+                    formula.setAdicion(new Ojos());
+                    formula.setDistanciapupilar(new Ojos());
+                    formula.setAgudezavisual(new Ojos());
+                    formula.setAtencion(atencion);
+                    formula.setCreado(atencion.getCreado());
+                    formula.setCreadopor(atencion.getCreadopor());
+                    formula.setActualizado(atencion.getCreado());
+                    formula.setActualizadopor(atencion.getCreadopor());
+                    formula.setActivo(Boolean.TRUE);
+                    listaRxFinal = formula.getListaRxFinal();
+                    ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                }
+                lensometria = formula.getLensometria();
+                agudezavisualsincristal = formula.getAgudezavisualsincristal();
+                agudezavisualconcristal = formula.getAgudezavisualconcristal();
+
+                listaRxFinal = formula.getListaRxFinal();
+            }
+        } catch (ExcepcionDeConsulta | ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -228,8 +267,37 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
+                formula = atencion.getFormula();
+                if (formula == null) {
+                    formula = new Formulas();
+                    formula.setLensometria(new Ojos());
+                    formula.setAgudezavisualsincristal(new Ojos());
+                    formula.setAgudezavisualconcristal(new Ojos());
+                    formula.setEsfera(new Ojos());
+                    formula.setCilindro(new Ojos());
+                    formula.setEje(new Ojos());
+                    formula.setAdicion(new Ojos());
+                    formula.setDistanciapupilar(new Ojos());
+                    formula.setAgudezavisual(new Ojos());
+                    formula.setAtencion(atencion);
+                    formula.setCreado(atencion.getCreado());
+                    formula.setCreadopor(atencion.getCreadopor());
+                    formula.setActualizado(atencion.getCreado());
+                    formula.setActualizadopor(atencion.getCreadopor());
+                    formula.setActivo(Boolean.TRUE);
+                    listaRxFinal = formula.getListaRxFinal();
+                    ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                }
+                lensometria = formula.getLensometria();
+                agudezavisualsincristal = formula.getAgudezavisualsincristal();
+                agudezavisualconcristal = formula.getAgudezavisualconcristal();
+
+                listaRxFinal = formula.getListaRxFinal();
+            }
+
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
-        } catch (ExcepcionDeConsulta ex) {
+        } catch (ExcepcionDeConsulta | ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -312,6 +380,24 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             atencion.setActivo(Boolean.TRUE);
 
             ejbAtenciones.crear(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
+                formula = new Formulas();
+                formula.setEsfera(new Ojos());
+                formula.setCilindro(new Ojos());
+                formula.setEje(new Ojos());
+                formula.setAdicion(new Ojos());
+                formula.setDistanciapupilar(new Ojos());
+                formula.setAgudezavisual(new Ojos());
+
+                formula.setAtencion(atencion);
+                formula.setCreado(atencion.getCreado());
+                formula.setCreadopor(atencion.getCreadopor());
+                formula.setActualizado(atencion.getCreado());
+                formula.setActualizadopor(atencion.getCreadopor());
+                formula.setActivo(Boolean.TRUE);
+
+                ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            }
         } catch (ExcepcionDeCreacion | ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -351,7 +437,42 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             datosBean.grabar();
             grabarPrescripciones();
             ejbAtenciones.actualizar(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-        } catch (ExcepcionDeActualizacion ex) {
+            if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
+                if (formula.getId() == null) {
+                    formula = new Formulas();
+                    formula.setLensometria(lensometria);
+                    formula.setAgudezavisualsincristal(agudezavisualsincristal);
+                    formula.setAgudezavisualconcristal(agudezavisualconcristal);
+
+                    formula.setEsfera(new Ojos());
+                    formula.setCilindro(new Ojos());
+                    formula.setEje(new Ojos());
+                    formula.setAdicion(new Ojos());
+                    formula.setDistanciapupilar(new Ojos());
+                    formula.setAgudezavisual(new Ojos());
+
+                    formula.setAtencion(atencion);
+                    formula.setCreado(atencion.getCreado());
+                    formula.setCreadopor(atencion.getCreadopor());
+                    formula.setActualizado(atencion.getCreado());
+                    formula.setActualizadopor(atencion.getCreadopor());
+                    formula.setActivo(Boolean.TRUE);
+                    ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                } else {
+
+                    formula.setEsfera(new Ojos(listaRxFinal.get(0).getEsfera(), listaRxFinal.get(1).getEsfera()));
+                    formula.setCilindro(new Ojos(listaRxFinal.get(0).getCilindro(), listaRxFinal.get(1).getCilindro()));
+                    formula.setEje(new Ojos(listaRxFinal.get(0).getEje(), listaRxFinal.get(1).getEje()));
+                    formula.setAdicion(new Ojos(listaRxFinal.get(0).getAdicion(), listaRxFinal.get(1).getAdicion()));
+                    formula.setDistanciapupilar(new Ojos(listaRxFinal.get(0).getDistanciapupilar(), listaRxFinal.get(1).getDistanciapupilar()));
+                    formula.setAgudezavisual(new Ojos(listaRxFinal.get(0).getAgudezavisual(), listaRxFinal.get(1).getAgudezavisual()));
+
+                    formula.setActualizado(new Date());
+                    formula.setActualizadopor(seguridadBean.getLogueado().getUserid());
+                    ejbFormulas.actualizar(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                }
+            }
+        } catch (ExcepcionDeActualizacion | ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -482,7 +603,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 //    public void setUltimaAtencion(Atenciones ultimaAtencion) {
 //        this.ultimaAtencion = ultimaAtencion;
 //    }
-
     /**
      * @return the seguridadBean
      */
@@ -734,5 +854,61 @@ public class AtencionesBean implements Serializable, IMantenimiento {
      */
     public void setIdUltimaAtencion(Integer idUltimaAtencion) {
         this.idUltimaAtencion = idUltimaAtencion;
+    }
+
+    /**
+     * @return the listaRxFinal
+     */
+    public List<RxFinal> getListaRxFinal() {
+        return listaRxFinal;
+    }
+
+    /**
+     * @param listaRxFinal the listaRxFinal to set
+     */
+    public void setListaRxFinal(List<RxFinal> listaRxFinal) {
+        this.listaRxFinal = listaRxFinal;
+    }
+
+    /**
+     * @return the lensometria
+     */
+    public Ojos getLensometria() {
+        return lensometria;
+    }
+
+    /**
+     * @param lensometria the lensometria to set
+     */
+    public void setLensometria(Ojos lensometria) {
+        this.lensometria = lensometria;
+    }
+
+    /**
+     * @return the agudezavisualsincristal
+     */
+    public Ojos getAgudezavisualsincristal() {
+        return agudezavisualsincristal;
+    }
+
+    /**
+     * @param agudezavisualsincristal the agudezavisualsincristal to set
+     */
+    public void setAgudezavisualsincristal(Ojos agudezavisualsincristal) {
+        this.agudezavisualsincristal = agudezavisualsincristal;
+    }
+
+    /**
+     * @return the agudezavisualconcristal
+     */
+    public Ojos getAgudezavisualconcristal() {
+        return agudezavisualconcristal;
+    }
+
+    /**
+     * @param agudezavisualconcristal the agudezavisualconcristal to set
+     */
+    public void setAgudezavisualconcristal(Ojos agudezavisualconcristal) {
+        this.agudezavisualconcristal = agudezavisualconcristal;
     }
 }

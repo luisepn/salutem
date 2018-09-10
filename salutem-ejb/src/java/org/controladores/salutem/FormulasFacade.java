@@ -34,30 +34,79 @@ public class FormulasFacade extends AbstractFacade<Formulas> {
     protected String getJson(Formulas objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        json.addProperty("lod", objeto.getLod());
-        json.addProperty("loi", objeto.getLoi());
-        json.addProperty("avscod", objeto.getAvscod());
-        json.addProperty("avscoi", objeto.getAvscoi());
-        json.addProperty("avccod", objeto.getAvccod());
-        json.addProperty("avccoi", objeto.getAvccoi());
-        json.addProperty("esferaod", objeto.getEsferaod());
-        json.addProperty("esferaoi", objeto.getEsferaoi());
-        json.addProperty("cilindrood", objeto.getCilindrood());
-        json.addProperty("cilindrooi", objeto.getCilindrooi());
-        json.addProperty("ejeod", objeto.getEjeod());
-        json.addProperty("ejeoi", objeto.getEjeoi());
-        json.addProperty("addod", objeto.getAddod());
-        json.addProperty("addoi", objeto.getAddoi());
-        json.addProperty("dpod", objeto.getDpod());
-        json.addProperty("dpoi", objeto.getDpoi());
-        json.addProperty("avod", objeto.getAvod());
-        json.addProperty("avoi", objeto.getAvoi());
+
+        JsonObject jsone = new JsonObject();
+
+        if (objeto.getLensometria() != null) {
+            jsone.addProperty("izquierdo", objeto.getLensometria().getI());
+            jsone.addProperty("derecho", objeto.getLensometria().getD());
+            json.add("lensometria", jsone);
+        } else {
+            json.addProperty("lensometria", "");
+        }
+        if (objeto.getAgudezavisualsincristal() != null) {
+            jsone.addProperty("izquierdo", objeto.getAgudezavisualsincristal().getI());
+            jsone.addProperty("derecho", objeto.getAgudezavisualsincristal().getD());
+            json.add("agudezavisualsincristal", jsone);
+        } else {
+            json.addProperty("agudezavisualsincristal", "");
+        }
+        if (objeto.getAgudezavisualsincristal() != null) {
+            jsone.addProperty("izquierdo", objeto.getAgudezavisualconcristal().getI());
+            jsone.addProperty("derecho", objeto.getAgudezavisualconcristal().getD());
+            json.add("agudezavisualconcristal", jsone);
+        } else {
+            json.addProperty("agudezavisualconcristal", "");
+        }
+        if (objeto.getEsfera() != null) {
+            jsone.addProperty("izquierdo", objeto.getEsfera().getI());
+            jsone.addProperty("derecho", objeto.getEsfera().getD());
+            json.add("esfera", jsone);
+        } else {
+            json.addProperty("esfera", "");
+        }
+        if (objeto.getCilindro() != null) {
+            jsone.addProperty("izquierdo", objeto.getCilindro().getI());
+            jsone.addProperty("derecho", objeto.getCilindro().getD());
+            json.add("cilindro", jsone);
+        } else {
+            json.addProperty("cilindro", "");
+        }
+        if (objeto.getEje() != null) {
+            jsone.addProperty("izquierdo", objeto.getEje().getI());
+            jsone.addProperty("derecho", objeto.getEje().getD());
+            json.add("eje", jsone);
+        } else {
+            json.addProperty("eje", "");
+        }
+        if (objeto.getAdicion() != null) {
+            jsone.addProperty("izquierdo", objeto.getAdicion().getI());
+            jsone.addProperty("derecho", objeto.getAdicion().getD());
+            json.add("adicion", jsone);
+        } else {
+            json.addProperty("adicion", "");
+        }
+        if (objeto.getDistanciapupilar() != null) {
+            jsone.addProperty("izquierdo", objeto.getDistanciapupilar().getI());
+            jsone.addProperty("derecho", objeto.getDistanciapupilar().getD());
+            json.add("distanciapupilar", jsone);
+        } else {
+            json.addProperty("distanciapupilar", "");
+        }
+        if (objeto.getAgudezavisual() != null) {
+            jsone.addProperty("izquierdo", objeto.getAgudezavisual().getI());
+            jsone.addProperty("derecho", objeto.getAgudezavisual().getD());
+            json.add("agudezavisual", jsone);
+        } else {
+            json.addProperty("agudezavisual", "");
+        }
+
         json.addProperty("altura", objeto.getAltura());
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("consulta", objeto.getAtencion()!= null ? objeto.getAtencion().getId() : 0);
+        json.addProperty("consulta", objeto.getAtencion() != null ? objeto.getAtencion().getId() : 0);
         json.addProperty("material", objeto.getMaterial() != null ? objeto.getMaterial().toString() : "");
         json.addProperty("tratamiento", objeto.getTratamiento() != null ? objeto.getTratamiento().toString() : "");
-        json.addProperty("orden", objeto.getOrden()!= null ? objeto.getOrden().getId() : 0);
+        json.addProperty("orden", objeto.getOrden() != null ? objeto.getOrden().getId() : 0);
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json.toString();
     }
