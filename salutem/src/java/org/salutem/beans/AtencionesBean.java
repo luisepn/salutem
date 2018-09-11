@@ -237,7 +237,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                     formula.setActualizado(atencion.getCreado());
                     formula.setActualizadopor(atencion.getCreadopor());
                     formula.setActivo(Boolean.TRUE);
-                    listaRxFinal = formula.getListaRxFinal();
                     ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                 }
                 lensometria = formula.getLensometria();
@@ -286,7 +285,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                     formula.setActualizado(atencion.getCreado());
                     formula.setActualizadopor(atencion.getCreadopor());
                     formula.setActivo(Boolean.TRUE);
-                    listaRxFinal = formula.getListaRxFinal();
                     ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                 }
                 lensometria = formula.getLensometria();
@@ -382,6 +380,11 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             ejbAtenciones.crear(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
                 formula = new Formulas();
+
+                formula.setLensometria(new Ojos());
+                formula.setAgudezavisualsincristal(new Ojos());
+                formula.setAgudezavisualconcristal(new Ojos());
+
                 formula.setEsfera(new Ojos());
                 formula.setCilindro(new Ojos());
                 formula.setEje(new Ojos());
@@ -395,8 +398,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 formula.setActualizado(atencion.getCreado());
                 formula.setActualizadopor(atencion.getCreadopor());
                 formula.setActivo(Boolean.TRUE);
-
                 ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                listaRxFinal = formula.getListaRxFinal();
             }
         } catch (ExcepcionDeCreacion | ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
@@ -440,6 +443,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
                 if (formula.getId() == null) {
                     formula = new Formulas();
+
                     formula.setLensometria(lensometria);
                     formula.setAgudezavisualsincristal(agudezavisualsincristal);
                     formula.setAgudezavisualconcristal(agudezavisualconcristal);
