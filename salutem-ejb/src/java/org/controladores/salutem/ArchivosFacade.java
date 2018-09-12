@@ -68,7 +68,6 @@ public class ArchivosFacade extends AbstractFacade<Archivos> {
             em.createNativeQuery("UPDATE Archivos SET " + campo + " = '" + valor + "' WHERE id=:id")
                     .setParameter("id", id)
                     .executeUpdate();
-
         } catch (Exception e) {
             throw new ExcepcionDeActualizacion(ArchivosFacade.class.getName(), e);
         }

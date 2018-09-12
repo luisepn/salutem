@@ -158,7 +158,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         }
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
         direccion.setActivo(Boolean.TRUE);
-        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.iniciar(getNombreTabla(), persona.getId(), persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.editar();
         return null;
     }
@@ -170,7 +170,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         }
         persona = (Personas) personas.getRowData();
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
-        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.iniciar(getNombreTabla(), persona.getId(), persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.eliminar();
         return null;
     }
@@ -217,7 +217,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             persona.setDireccion(direccion);
 
             archivosBean.grabar();
-            persona.setFotografia(archivosBean.getArchivo());
+            persona.setFotografia(archivosBean.getArchivo().getId() != null ? archivosBean.getArchivo() : null);
 
             persona.setUserid(persona.getCedula());
             persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
@@ -253,10 +253,11 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             persona.setDireccion(direccion);
 
             archivosBean.grabar();
-            persona.setFotografia(archivosBean.getArchivo());
+            persona.setFotografia(archivosBean.getArchivo().getId() != null ? archivosBean.getArchivo() : null);
             persona.setActualizado(new Date());
             persona.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            archivosBean.actualizarIdentificador(persona.getId().toString());
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);

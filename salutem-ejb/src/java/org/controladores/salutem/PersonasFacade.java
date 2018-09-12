@@ -79,7 +79,7 @@ public class PersonasFacade extends AbstractFacade<Personas> {
         json.addProperty("ocupacion", objeto.getOcupacion());
         json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
-        json.addProperty("fotografia", objeto.getFotografia() != null ? objeto.getFotografia().getRuta() : "");
+        json.addProperty("fotografia", objeto.getFotografia() != null ? objeto.getFotografia().getRuta().replace("*", objeto.getFotografia().getId().toString()) : "");
         json.addProperty("direccion", objeto.getDireccion() != null ? objeto.getDireccion().toString() : "");
         json.addProperty("genero", objeto.getGenero() != null ? objeto.getGenero().toString() : "");
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');

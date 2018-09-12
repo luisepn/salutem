@@ -116,6 +116,9 @@ public class ArchivosBean implements Serializable {
 
     public void actualizarIdentificador(String identificador) {
         try {
+            if (archivo.getId() == null) {
+                return;
+            }
             ejbArchivos.actualizarCampo("identificador", identificador, archivo.getId());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -135,20 +138,24 @@ public class ArchivosBean implements Serializable {
     public void grabar() {
         try {
             if (archivo.getId() == null) {
-                archivo.setClasificador(clasificador);
-                archivo.setActivo(Boolean.TRUE);
-                archivo.setCreado(new Date());
-                archivo.setCreadopor(seguridadBean.getLogueado().getUserid());
-                archivo.setActualizado(archivo.getCreado());
-                archivo.setActualizadopor(archivo.getCreadopor());
-                archivo.setRuta(seguridadBean.getDirectorioArchivos() + "/" + clasificador + "/*");
-                ejbArchivos.crear(archivo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-                ejbArchivos.actualizarCampo("ruta", crearFichero(archivo.getId(), archivo.getArchivo(), clasificador), identificador);
+                if (archivo.getArchivo() != null) {
+                    archivo.setClasificador(clasificador);
+                    archivo.setActivo(Boolean.TRUE);
+                    archivo.setCreado(new Date());
+                    archivo.setCreadopor(seguridadBean.getLogueado().getUserid());
+                    archivo.setActualizado(archivo.getCreado());
+                    archivo.setActualizadopor(archivo.getCreadopor());
+                    archivo.setRuta(seguridadBean.getDirectorioArchivos() + "/" + clasificador + "/*");
+                    ejbArchivos.crear(archivo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                    ejbArchivos.actualizarCampo("ruta", crearFichero(archivo.getId(), archivo.getArchivo(), clasificador), archivo.getId());
+                }
             } else {
-                archivo.setActualizado(archivo.getCreado());
-                archivo.setActualizadopor(seguridadBean.getLogueado().getUserid());
-                archivo.setRuta(crearFichero(archivo.getId(), archivo.getArchivo(), clasificador));
-                ejbArchivos.actualizar(archivo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                if (archivo.getArchivo() != null) {
+                    archivo.setActualizado(archivo.getCreado());
+                    archivo.setActualizadopor(seguridadBean.getLogueado().getUserid());
+                    archivo.setRuta(crearFichero(archivo.getId(), archivo.getArchivo(), clasificador));
+                    ejbArchivos.actualizar(archivo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                }
             }
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
