@@ -43,6 +43,15 @@ public class PrescripcionesFacade extends AbstractFacade<Prescripciones> {
             throw new ExcepcionDeConsulta(PrescripcionesFacade.class.getName(), e);
         }
     }
+    public List<Prescripciones> traerPrescripcionesTodas(Atenciones atencion) throws ExcepcionDeConsulta {
+        try {
+            Query q = getEntityManager().createQuery("Select object(o) from Prescripciones as o where o.atencion=:atencion");
+            q.setParameter("atencion", atencion);
+            return q.getResultList();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(PrescripcionesFacade.class.getName(), e);
+        }
+    }
 
     @Override
     protected String getJson(Prescripciones objeto) {

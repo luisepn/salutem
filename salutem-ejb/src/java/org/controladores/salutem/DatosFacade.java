@@ -126,6 +126,18 @@ public class DatosFacade extends AbstractFacade<Datos> {
         }
     }
 
+    public List<Datos> traerDatosTodos(String clasificador, String grupo, Integer identificador) throws ExcepcionDeConsulta {
+        try {
+            Query q = getEntityManager().createQuery("Select object(o) from Datos as o where o.clasificador=:clasificador and o.grupo=:grupo and o.identificador=:identificador ORDER BY o.grupo, o.codigo");
+            q.setParameter("clasificador", clasificador);
+            q.setParameter("grupo", grupo);
+            q.setParameter("identificador", identificador);
+            return q.getResultList();
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(DatosFacade.class.getName(), e);
+        }
+    }
+
     public Datos traerDato(String clasificador, String grupo, Integer identificador, Integer codigo) throws ExcepcionDeConsulta {
         try {
             Query q = getEntityManager().createQuery("Select object(o) from Datos as o where o.activo = true and o.clasificador=:clasificador and o.grupo=:grupo and o.identificador=:identificador and o.codigo=:codigo");

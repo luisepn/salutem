@@ -79,7 +79,7 @@ public class DatosBean implements Serializable {
 
             List<Campos> campos = ejbCampos.traerCampos(clasificador, grupo);
             if (campos == null || campos.isEmpty()) {
-                Mensajes.advertencia("No existen campos registrados para el clasificador y grupo seleccionados ");
+//                Mensajes.advertencia("No existen campos registrados para el clasificador y grupo seleccionados ");
                 return null;
             }
 
@@ -171,7 +171,75 @@ public class DatosBean implements Serializable {
         return null;
     }
 
+    private boolean validar() {
+        for (Datos d : datos) {
+            if (d.getRequerido() != null && d.getRequerido()) {
+                switch (d.getTipo().getCodigo()) {
+                    case "INTEGER":
+                        if (d.getEntero() == null) {
+                            Mensajes.advertencia("Item " + d.getCodigo() + " es requerido");
+                            return true;
+                        }
+                        break;
+                    case "DOUBLE":
+                        if (d.getDecimal() == null) {
+                            Mensajes.advertencia("Item " + d.getCodigo() + " es requerido");
+                            return true;
+                        }
+                        break;
+                    case "TEXT":
+                        if (d.getTexto() == null) {
+                            Mensajes.advertencia("Item " + d.getCodigo() + " es requerido");
+                            return true;
+                        }
+                        break;
+                    case "DATE":
+                        if (d.getFecha() == null) {
+                            Mensajes.advertencia("Item " + d.getCodigo() + " es requerido");
+                            return true;
+                        }
+                        break;
+                    case "TIME":
+                        if (d.getHora() == null) {
+                            Mensajes.advertencia("Item " + d.getCodigo() + " es requerido");
+                            return true;
+                        }
+                        break;
+                    case "DATETIME":
+                        if (d.getFechahora() == null) {
+                            Mensajes.advertencia("Item " + d.getCodigo() + " es requerido");
+                            return true;
+                        }
+                        break;
+                    case "LIST":
+                        if (d.getOneSeleccion() == null) {
+                            Mensajes.advertencia("Item " + d.getCodigo() + " es requerido");
+                            return true;
+                        }
+                        break;
+                    case "FILE":
+                        if (d.getArchivo() == null) {
+                            Mensajes.advertencia("Item " + d.getCodigo() + " es requerido");
+                            return true;
+                        }
+                        break;
+                    case "ONE":
+                    case "MANY":
+                        if (d.getManySeleccion() == null || d.getManySeleccion().isEmpty()) {
+                            Mensajes.advertencia("Item " + d.getCodigo() + " es requerido");
+                            return true;
+                        }
+                        break;
+                }
+            }
+        }
+        return false;
+    }
+
     public String grabar() {
+        if (validar()) {
+            return null;
+        }
         try {
             for (Datos d : datos) {
                 switch (d.getTipo().getCodigo()) {
@@ -204,7 +272,6 @@ public class DatosBean implements Serializable {
                         ejbDatos.actualizar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                         break;
                 }
-
             }
             Mensajes.informacion("¡Datos grabados con éxito!");
         } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
@@ -216,11 +283,12 @@ public class DatosBean implements Serializable {
 
     public String borrar() {
         try {
-            for (Datos d : datos) {
+            List<Datos> datosBorrar = ejbDatos.traerDatosTodos(clasificador, grupo.getNombre(), identificador);
+            for (Datos d : datosBorrar) {
                 ejbDatos.eliminar(d, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
             Mensajes.informacion("¡Datos removidos con éxito!");
-        } catch (ExcepcionDeEliminacion ex) {
+        } catch (ExcepcionDeConsulta | ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -262,6 +330,7 @@ public class DatosBean implements Serializable {
     public void colocarFichero(FileEntryEvent e) {
         int index = formulario.getFila().getRowIndex();
         Datos d = datos.get(index);
+        d.setVerSubir(false);
         Archivos a = d.getArchivo();
         archivosBean.iniciar(getNombreTabla(), d.getId(), a != null ? a : new Archivos());
         archivosBean.colocarFichero(e);

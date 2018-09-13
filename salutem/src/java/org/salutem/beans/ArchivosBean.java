@@ -148,6 +148,7 @@ public class ArchivosBean implements Serializable {
                     archivo.setRuta(seguridadBean.getDirectorioArchivos() + "/" + clasificador + "/*");
                     ejbArchivos.crear(archivo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                     ejbArchivos.actualizarCampo("ruta", crearFichero(archivo.getId(), archivo.getArchivo(), clasificador), archivo.getId());
+                    archivo.setRuta(archivo.getRuta().replace("*", archivo.getId().toString()));
                 }
             } else {
                 if (archivo.getArchivo() != null) {

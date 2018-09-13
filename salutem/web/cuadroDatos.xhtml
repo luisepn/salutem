@@ -36,40 +36,47 @@
             <h:outputText value="#{dato.nombre}"/>
         </ace:column>
         <ace:column  style="text-align: left">
-            <ace:checkboxButton value="#{dato.booleano}" rendered="#{dato.tipo.codigo eq 'BOOLEAN'}" required="#{dato.requerido}" requiredMessage="Respuesta requerida"/>
-            <ace:textEntry value="#{dato.entero}" rendered="#{dato.tipo.codigo eq 'INTEGER'}" required="#{dato.requerido}" requiredMessage="Número requerido" converterMessage="Es necesario un número entero"/>
-            <ace:textEntry value="#{dato.decimal}" rendered="#{dato.tipo.codigo eq 'DOUBLE'}" required="#{dato.requerido}" requiredMessage="Número requerido" converterMessage="Es necesario un número con punto decimal"/>
-            <ace:textAreaEntry value="#{dato.texto}" rows="2" cols="10" rendered="#{dato.tipo.codigo eq 'TEXT'}" required="#{dato.requerido}" requiredMessage="Texto requerido"/>
-            <ace:dateTimeEntry value="#{dato.fecha}" navigator="true" required="#{dato.requerido}" requiredMessage="Seleccione una fecha" converterMessage="Es necesario una fecha válida"
+            <ace:checkboxButton value="#{dato.booleano}" rendered="#{dato.tipo.codigo eq 'BOOLEAN'}"/>
+            <ace:textEntry value="#{dato.entero}" rendered="#{dato.tipo.codigo eq 'INTEGER'}" converterMessage="Es necesario un número entero"/>
+            <ace:textEntry value="#{dato.decimal}" rendered="#{dato.tipo.codigo eq 'DOUBLE'}" converterMessage="Es necesario un número con punto decimal"/>
+            <ace:textAreaEntry value="#{dato.texto}" rows="2" cols="10" rendered="#{dato.tipo.codigo eq 'TEXT'}"/>
+            <ace:dateTimeEntry value="#{dato.fecha}" navigator="true" converterMessage="Es necesario una fecha válida" 
                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"
                                rendered="#{dato.tipo.codigo eq 'DATE'}">
                 <f:convertDateTime pattern="dd/MM/yyyy" />
             </ace:dateTimeEntry>
-            <ace:dateTimeEntry value="#{dato.hora}" navigator="true" required="#{dato.requerido}" requiredMessage="Seleccione una fecha" converterMessage="Es necesario una hora válida"
+            <ace:dateTimeEntry value="#{dato.hora}" navigator="true" converterMessage="Es necesario una hora válida"
                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                pattern="HH:mm:ss" label="HH:mm:ss" labelPosition="infield"
                                rendered="#{dato.tipo.codigo eq 'TIME'}">
                 <f:convertDateTime pattern="HH:mm:ss" />
             </ace:dateTimeEntry>
-            <ace:dateTimeEntry value="#{dato.fechahora}" navigator="true" required="#{dato.requerido}" requiredMessage="Seleccione una fecha" converterMessage="Es necesario una fecha válida"
+            <ace:dateTimeEntry value="#{dato.fechahora}" navigator="true" converterMessage="Es necesario una fecha válida"
                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                pattern="dd/MM/yyyy HH:mm:ss" label="dd/MM/yyyy HH:mm:ss" labelPosition="infield"
                                rendered="#{dato.tipo.codigo eq 'DATETIME'}">
                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
             </ace:dateTimeEntry>
 
-            <h:selectOneMenu value="#{dato.oneSeleccion}" rendered="#{dato.tipo.codigo eq 'LIST'}" required="#{dato.requerido}" requiredMessage="Seleccione una opción">
+            <h:selectOneMenu value="#{dato.oneSeleccion}" rendered="#{dato.tipo.codigo eq 'LIST'}">
                 <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
             </h:selectOneMenu>
 
-            <ace:checkboxButtons value="#{dato.manySeleccion}" labelPosition="right" required="#{dato.requerido}" requiredMessage="Seleccione una opción"
+            <ace:checkboxButtons value="#{dato.manySeleccion}" labelPosition="right"
                                  rendered="#{dato.tipo.codigo eq 'ONE' or dato.tipo.codigo eq 'MANY'}" 
                                  mutuallyExclusive="#{dato.tipo.codigo eq 'ONE'}"
                                  header="#{dato.tipo.codigo eq 'ONE' ? 'Seleccione Uno' : dato.tipo.codigo eq 'MANY' ? 'Seleccione Varios':''}">
                 <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
             </ace:checkboxButtons>
             <h:panelGrid columns="2" rendered="#{dato.tipo.codigo eq 'FILE'}">
+                <ace:dynamicResource
+                    resource="#{salutemArchivos.traerRecurso(dato.archivo.ruta)}"
+                    label="Descargar (#{dato.archivo.nombre})"
+                    mimeType="#{dato.archivo.tipo}"
+                    rendered="#{dato.archivo ne null and salutemArchivos.traerRecurso(dato.archivo.ruta) ne null}"/>
+                <h:commandLink value="Subir" action="#{dato.setVerSubir(true)}" rendered="#{!dato.verSubir}"/>
+                <h:commandLink value="Ocultar" action="#{dato.setVerSubir(false)}" rendered="#{dato.verSubir}"/>
                 <ace:fileEntry 
                     absolutePath="/tmp/salutem"
                     maxFileCount="1"
@@ -80,12 +87,8 @@
                     useOriginalFilename="true"
                     label="Subido con éxito"
                     useSessionSubdir="true"
-                    autoUpload="true"/>
-                <ace:dynamicResource
-                    resource="#{salutemArchivos.traerRecurso(dato.archivo.ruta)}"
-                    label="#{dato.archivo.nombre}"
-                    mimeType="#{dato.archivo.tipo}"
-                    rendered="#{dato.archivo ne null and salutemArchivos.traerRecurso(dato.archivo.ruta) ne null}"/>
+                    autoUpload="true"
+                    rendered="#{dato.verSubir}"/>
             </h:panelGrid>
         </ace:column>
     </ace:dataTable>

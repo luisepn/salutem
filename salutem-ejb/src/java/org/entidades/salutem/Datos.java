@@ -138,6 +138,8 @@ public class Datos implements Serializable {
     private String oneSeleccion;
     @Transient
     private List<String> manySeleccion;
+    @Transient
+    private boolean verSubir = false;
 
     public Datos() {
     }
@@ -438,6 +440,20 @@ public class Datos implements Serializable {
      */
     public void setOneSeleccion(String oneSeleccion) {
         this.oneSeleccion = oneSeleccion;
+    }
+
+    /**
+     * @return the verSubir
+     */
+    public boolean isVerSubir() {
+        return verSubir;
+    }
+
+    /**
+     * @param verSubir the verSubir to set
+     */
+    public void setVerSubir(boolean verSubir) {
+        this.verSubir = verSubir;
     }
 
 }
