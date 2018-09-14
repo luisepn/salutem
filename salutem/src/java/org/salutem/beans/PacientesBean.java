@@ -2,8 +2,6 @@ package org.salutem.beans;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,9 +13,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
-import org.controladores.salutem.AtencionesFacade;
-import org.controladores.salutem.FormulasFacade;
-import org.controladores.salutem.OrdenesFacade;
 import org.controladores.salutem.PacientesFacade;
 import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Atenciones;
@@ -58,23 +53,16 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     private Reportesds recursoPdf;
     private Reportesds ordenPdf;
 
-    private SimpleDateFormat formato = new SimpleDateFormat("dd-MM-yyyy");
     private DecimalFormat numero = new DecimalFormat("0000000.##");
 
     @EJB
     private PacientesFacade ejbPacientes;
-    @EJB
-    private AtencionesFacade ejbAtenciones;
-    @EJB
-    private FormulasFacade ejbFormulas;
-    @EJB
-    private OrdenesFacade ejbOrdenes;
-
+    
     @PostConstruct
     @Override
     public void activar() {
         perfil = seguridadBean.traerPerfil("CitasAtencionesPacientes");
-        institucion = getSeguridadBean().getInstitucion();
+        institucion = seguridadBean.getInstitucion();
     }
 
     public void cambiaMaterial(ValueChangeEvent event) {
@@ -121,6 +109,20 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
+            }
+            if (institucion != null) {
+                where += " and o.institucion=:institucion";
+                parameters.put("institucion", institucion);
+            }
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
             }
             int total = ejbPacientes.contar(where, parameters);
             formulario.setTotal(total);
@@ -261,141 +263,8 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         return null;
     }
 
-    public String cancelarConsulta() {
-        formularioAtencion.cancelar();
-        formularioAtenciones.insertar();
-        buscarPacientes();
-        return null;
-    }
-
-    public String nuevaConsulta() {
-        paciente = ((Pacientes) pacientes.getRowData());
-        atencion = new Atenciones();
-        formula = new Formulas();
-        atencion.setPaciente(paciente);
-        orden = new Ordenes();
-        formularioAtencion.insertar();
-        return null;
-    }
-
-    public String insertarConsulta() {
-        try {
-            atencion.setFecha(new Date());
-            ejbAtenciones.crear(atencion, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            formula.setAtencion(atencion);
-            ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            orden.setFormula(formula);
-            ejbOrdenes.crear(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-
-        } catch (ExcepcionDeCreacion ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //generarConsulta();
-        formularioAtencion.cancelar();
-        formularioAtencion.setMostrar(true);
-        formularioAtencion.editar();
-        return null;
-    }
-
-    public void generarConsulta() {
-
-    }
-
-    public void generarOrden() {
-
-    }
-
     public String formatearNumero(Integer id) {
         return numero.format(id);
-    }
-
-    public String verHistorial() {
-        paciente = ((Pacientes) pacientes.getRowData());
-
-        buscarConsulta();
-
-        formularioAtenciones.insertar();
-        return null;
-    }
-
-    public String buscarConsulta() {
-        String where = "o.paciente=:paciente";
-        String order = " o.id desc";
-        Map parametros = new HashMap();
-        parametros.put("paciente", paciente);
-        if (nroAtencion != null) {
-            where += " and o.id=:nroConsulta";
-            parametros.put("nroConsulta", nroAtencion);
-        }
-        try {
-            listaAtenciones = ejbAtenciones.buscar(where, parametros, order);
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
-    public String modificarConsulta() {
-        atencion = ((Atenciones) listaAtenciones.get(formularioAtencion.getFila().getRowIndex()));
-        formula = atencion.getFormula();
-        orden = formula.getOrden();
-        if (formula.getMaterial() != null) {
-            combosBean.setFoco(formula.getMaterial().getFoco());
-            combosBean.setTipo(formula.getMaterial().getTipo());
-        }
-        formularioAtencion.editar();
-        formularioAtenciones.cancelar();
-        return null;
-    }
-
-    public String grabarConsulta() {
-        try {
-            ejbAtenciones.actualizar(atencion, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            ejbFormulas.actualizar(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            ejbOrdenes.actualizar(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-        } catch (ExcepcionDeActualizacion ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        generarConsulta();
-        return null;
-    }
-
-    private boolean validarOrden() {
-        if ((orden.getFactura() == null) || (orden.getFactura().isEmpty())) {
-            Mensajes.advertencia("Ingrese número de factura");
-            return true;
-        }
-        return false;
-    }
-
-    public String grabarOrden() {
-        if (validarOrden()) {
-            return null;
-        }
-        orden.setFormula(formula);
-        orden.setRegistro(new Date());
-        orden.setUsuario(getSeguridadBean().getLogueado().toString());
-        try {
-            if (orden.getId() == null) {
-                ejbOrdenes.crear(orden, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            } else {
-                ejbOrdenes.actualizar(orden, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            }
-        } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        generarOrden();
-        return null;
-    }
-
-    public String traerObservaciones() {
-        String m = formula.getMaterial() != null ? formula.getMaterial().getFoco().getNombre() + " - " + formula.getMaterial().getTipo().getNombre() + " - " + formula.getMaterial().getNombre() : "";
-        String t = formula.getTratamiento() != null ? formula.getTratamiento().getNombre() : "";
-        return m + " " + t + "\n" + atencion.getObservaciones();
     }
 
     public void pacientesChangeEventHandler(TextChangeEvent event) {
@@ -444,6 +313,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         }
     }
 
+    @Override
     public String getNombreTabla() {
         return Pacientes.class.getSimpleName();
     }

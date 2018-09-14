@@ -1,187 +1,214 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!--
-    Documento   : CambioClaveVista
-    Created on : 28/08/2017, 09:40:03 AM
-    Author     : Luis Fernando Ordóñez Armijos
+    Documento   : Maestros
+    Fecha       : 18 de Noviembre de 2017, 08:41:03 AM
+    Author      : Luis Fernando Ordóñez Armijos
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:icecore="http://www.icefaces.org/icefaces/core"
       xmlns:ace="http://www.icefaces.org/icefaces/components">
-    <h:body>
+
+    <h:body >
 
         <ui:composition template="../plantillas/Plantilla.xhtml">
-            <!-- Aqui va todo el codigo de la pagina -->
             <ui:define name="content">
                 <ace:panel id="panel"
-                           header="#{salutemOrdenes.perfil.menu.nombre}"
+                           header="#{salutemSeguridad.titulo}"
                            closable="false"
-                           toggleable="true"       >
+                           toggleable="true">
                     <h:panelGrid>
                         <h:panelGrid columns="2">
-                            <h:outputLabel value="Institución:"/>
-                            <h:selectOneMenu value="#{salutemOrdenes.institucion}" valueChangeListener="#{salutemOrdenes.cambiaInstitucion}" disabled="#{!datosLogueo.usuario.grupo.codigo eq ('adm')}" >
-                                <f:selectItems value="#{instituciones.comboInstituciones}" />
+                            <h:outputLabel value="Sólo activos:" />
+                            <h:selectBooleanCheckbox value="#{salutemSeguridad.verActivos}">
                                 <ace:ajax execute="@all"/>
-                            </h:selectOneMenu>
+                            </h:selectBooleanCheckbox>                            
                         </h:panelGrid>
                         <h:panelGrid columns="2">
-                            <h:outputLabel value="Laboratorio:"/>
-                            <h:selectOneMenu value="#{salutemOrdenes.laboratorio}">
-                                <f:selectItems value="#{instituciones.comboLaboratorios}" />
-                            </h:selectOneMenu>
-                        </h:panelGrid>
-                        <h:panelGrid>
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemOrdenes.buscar()}"/>
+                                <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.crear()}"/>
                             </ace:menuBar>
+                            <ace:messages style="white-space: pre-wrap" rendered="#{!salutemOrdenes.formulario.mostrar}"/>
                         </h:panelGrid>
                     </h:panelGrid>
-                    <ace:messages/>
                 </ace:panel>
-
-                <ace:panel
+                <ace:panel 
                     header="Resultado Búsqueda"
                     closable="false"
-                    toggleable="true"              >
+                    toggleable="true"
+                    >
                     <h:panelGrid columns="3" styleClass="centeredPanelGrid">
                         <h:outputLabel  value="Exportar a:"/>
                         <h:selectOneRadio  value="#{salutemOrdenes.formulario.tipo}" required="true">
                             <f:ajax disabled="false"/>
                             <f:selectItem itemValue="csv" itemLabel="CSV"/>
-                            <f:selectItem itemValue="pdf" itemLabel="PDF"/>
                             <f:selectItem itemValue="xls" itemLabel="XLS"/>
                             <f:selectItem itemValue="xml" itemLabel="XML"/>
                         </h:selectOneRadio>
                         <ace:dataExporter id="dataExporter" 
                                           label="Exportar Archivo" 
-                                          type="#{salutemOrdenes.formulario.tipo}" 
-                                          target="tabla" fileName="datos"/>
+                                          type="#{salutemOrdenes.formulario.tipo}"
+                                          target="tabla" 
+                                          fileName="#{salutemSeguridad.titulo}"
+                                          excludeColumns="1"/>
                     </h:panelGrid>
                     <h:panelGrid width="100%">
                         <ace:dataTable id="tabla" 
+                                       lazy="true"
+                                       emptyMessage="No existen registros"
                                        paginatorAlwaysVisible="true"
-                                       value="#{salutemOrdenes.listaOrdenes}"
+                                       value="#{salutemOrdenes.ordenes}"
                                        var="item"
                                        paginator="true"
-                                       lazy="true"
-                                       resizableColumns="true"
                                        rowIndexVar="row"
                                        paginatorPosition="both"
-                                       rowsPerPageTemplate="5,10,15,30,50,100"
-                                       paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                       rows="30" >
-                            <ace:column  headerText="Registro" style="text-align: right">
+                                       rowsPerPageTemplate="#{salutemOrdenes.formulario.rowsPerPageTemplate}"
+                                       currentPageReportTemplate="{totalRecords} Registro(s). Página {currentPage} de {totalPages}"
+                                       paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                       rows="10">
+                            <ace:tableConfigPanel 
+                                dragHandle=".ui-tableconf-header"
+                                columnNameConfigurable="true"
+                                columnVisibilityConfigurable="true"
+                                columnOrderingConfigurable="true"
+                                columnSortingConfigurable="true"
+                                modal="true"/>
+                            <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                 <h:outputText value="#{row+1}"/>
                             </ace:column>
-                            <ace:column style="text-align: left" >
+                            <ace:column headerText="Operaciones" style="text-align: left; width: 50px;">
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
+                                    <ace:menuItem action="#{salutemOrdenes.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
+                                    <ace:menuItem action="#{salutemOrdenes.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
+                                    <ace:menuItem action="#{salutemHistorial.buscar(salutemOrdenes.nombreTabla, item.id)}" rendered="#{salutemOrdenes.perfil.auditoria}"
+                                                  value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column> 
-                            <ace:column  headerText="Laboratorio" style="text-align: left">
-                                <h:outputText  value="#{item.laboratorio.nombre}"/>
-                            </ace:column>
-                            <ace:column  headerText="Orden" style="text-align: left">
-                                <h:outputText  value="#{item.id}"/>
-                            </ace:column>
-                            <ace:column  headerText="Factura" style="text-align: left">
+                            <ace:column  headerText="Factura" sortBy="#{item.factura}" filterBy="#{item.factura}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.factura}"/>
                             </ace:column>
-                            <ace:column  headerText="Paciente" style="text-align: left">
-                                <h:outputText  value="#{item.formula.consulta.paciente.toString()}"/>
+
+                            <ace:column  headerText="Laboratorio"                                         
+                                         sortBy="#{item.laboratorio.nombre}" 
+                                         filterBy="#{item.laboratorio.id}"
+                                         filterOptions="#{salutemCombos.laboratoriosId}"                                          
+                                         filterValue="#{salutemOrdenes.laboratorio}"
+                                         filterMatchMode="exact" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.laboratorio.toString()}"/>
                             </ace:column>
-                            <ace:column  headerText="Fecha" style="text-align: left">
+
+                            <ace:column  headerText="Registro" sortBy="#{item.registro}" 
+                                         filterBy="#{item.registro}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemOrdenes.inicioRegistro}"
+                                         filterValueMax="#{salutemOrdenes.finRegistro}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left">
                                 <h:outputText  value="#{item.registro}">
-                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                 </h:outputText>
                             </ace:column>
-                            <ace:column  headerText="Fecha Entrega" style="text-align: left">
-                                <h:outputText  value="#{item.entrega}">
-                                    <f:convertDateTime  parent="dd/MM/yyyy"/>
+                            <ace:column  headerText="Envío" sortBy="#{item.envio}" 
+                                         filterBy="#{item.envio}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemOrdenes.inicioEnvio}"
+                                         filterValueMax="#{salutemOrdenes.finEnvio}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.envio}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                 </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Entrega" sortBy="#{item.entrega}" 
+                                         filterBy="#{item.entrega}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemOrdenes.inicioEntrega}"
+                                         filterValueMax="#{salutemOrdenes.finEntrega}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left">
+                                <h:outputText  value="#{item.entrega}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+
+                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.descripcion}"/>
+                            </ace:column>
+
+                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
+                                         filterBy="#{item.creado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                         filterValueMax="#{salutemSeguridad.finCreado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.creadopor}"/>
+                            </ace:column>
+                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
+                                         filterBy="#{item.actualizado}" 
+                                         filterDatePattern="dd/MM/yyyy HH:mm"
+                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                         filterValueMax="#{salutemSeguridad.finActualizado}"
+                                         type="DATE"
+                                         rangedFilter="true" 
+                                         style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizado}">
+                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                                </h:outputText>
+                            </ace:column>
+                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                                <h:outputText  value="#{item.actualizadopor}"/>
                             </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
                 </ace:panel>
-
-
-                <!--                <ace:dialog 
-                                    header="Registrar Entrega"
-                                    closable="false"
-                                    modal="true"
-                                    draggable="true"
-                                    resizable="false"
-                                    showEffect="clip"
-                                    hideEffect="fade"
-                                    rendered="#{consultas.formularioConsultas.mostrar}"
-                                    visible="#{consultas.formularioConsultas.mostrar}">
-                
-                                    <ace:panel header="Parámetros de Búsqueda" style="width: 100%">
-                                        <h:panelGrid columns="2">
-                                            <h:outputText value="Número de Consulta:"/>
-                                            <h:inputText value="#{consultas.nroConsulta}" title="Número de Consulta"/>                                
-                                        </h:panelGrid> 
-                                        <h:panelGrid>
-                                            <ace:menuBar autoSubmenuDisplay="true" >
-                                                <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search" 
-                                                              action="#{consultas.buscarConsulta()}"/>
-                                            </ace:menuBar> 
-                                        </h:panelGrid>
-                
-                
-                                    </ace:panel>
-                                    <ace:dataTable 
-                                        style="width: 100%"
-                                        paginatorAlwaysVisible="true"
-                                        value="#{consultas.listaConsultas}"
-                                        var="consulta"
-                                        paginator="true"
-                                        lazy="false"
-                                        resizableColumns="true"
-                                        rowIndexVar="row"
-                                        paginatorPosition="both"
-                                        rowsPerPageTemplate="5,10,15,30,50,100"
-                                        paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                        rows="5" 
-                                        binding="#{consultas.formularioConsulta.fila}">
-                                        <ace:column style="text-align: left" >
-                                            <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
-                                                <ace:menuItem action="#{consultas.modificarConsulta()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
-                                            </ace:menuButton>
-                                        </ace:column> 
-                                        <ace:column  headerText="Número de Consulta" style="text-align: left">
-                                            <h:outputText value="#{consultas.formatearNumero(consulta.id)}"/>
-                                        </ace:column>
-                                        <ace:column  headerText="Fecha" style="text-align: left">
-                                            <h:outputText  value="#{consulta.fecha}">
-                                                <f:convertDateTime  parent="dd/MM/yyyy"/>
-                                            </h:outputText>
-                                        </ace:column>
-                                        <ace:column  headerText="Observaciones" style="text-align: left">
-                                            <h:outputText  value="#{consulta.observaciones}"/>
-                                        </ace:column>
-                                        <ace:column  headerText="Indicaciones" style="text-align: left">
-                                            <h:outputText  value="#{consulta.indicaciones}"/>
-                                        </ace:column>
-                                    </ace:dataTable> 
-                
-                
-                                    <h:panelGrid columns="1" width="100%">
-                                        <ace:menuBar autoSubmenuDisplay="true" >
-                                            <ace:menuItem 
-                                                value="Salir" icon="ui-icon ui-icon-close" 
-                                                action="#{consultas.formularioConsultas.cancelar()}"/>
-                                        </ace:menuBar>
-                                        <ace:messages />
-                                    </h:panelGrid>
-                
-                                </ace:dialog>-->
+                <ace:dialog 
+                    header="#{salutemSeguridad.titulo}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{salutemOrdenes.formulario.mostrar}"
+                    visible="#{salutemOrdenes.formulario.mostrar}">
+                    <h:panelGroup>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Activo:" />
+                            <h:selectBooleanCheckbox value="#{salutemOrdenes.orden.activo}" title="Activo"/>
+                        </h:panelGrid>
+                    </h:panelGroup>
+                    <h:panelGrid>
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
+                                          action="#{salutemOrdenes.insertar()}"
+                                          rendered="#{salutemOrdenes.formulario.crear}"/>
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemOrdenes.grabar()}" 
+                                          rendered="#{salutemOrdenes.formulario.editar}"/>
+                            <ace:menuItem action="#{salutemOrdenes.remover()}" 
+                                          value="Eliminar" icon="ui-icon ui-icon-trash"
+                                          rendered="#{salutemOrdenes.formulario.eliminar}"/>
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemOrdenes.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap"/>
+                    </h:panelGrid>
+                </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>
             </ui:define>
-            <!-- Fin -->
         </ui:composition>
 
     </h:body>

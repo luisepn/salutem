@@ -166,6 +166,9 @@ public class CombosBean implements Serializable {
     public SelectItem[] getLaboratorios() {
         return getSelectItems(traerInstituciones(Boolean.TRUE), "object", true);
     }
+    public SelectItem[] getLaboratoriosId() {
+        return getSelectItems(traerInstituciones(Boolean.TRUE), "id", true);
+    }
 
     public SelectItem[] getMaestros() {
         return getSelectItems(traerMaestros(), "object", true);

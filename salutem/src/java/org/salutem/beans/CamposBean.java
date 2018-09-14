@@ -16,6 +16,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.model.SelectItem;
 import org.controladores.salutem.CamposFacade;
 import org.entidades.salutem.Campos;
+import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
@@ -51,6 +52,8 @@ public class CamposBean implements Serializable, IMantenimiento {
     private int tipo;
     private Perfiles perfil;
 
+    private Instituciones institucion;
+
     @EJB
     private CamposFacade ejbCampos;
 
@@ -70,6 +73,7 @@ public class CamposBean implements Serializable, IMantenimiento {
     @Override
     public void activar() {
         perfil = seguridadBean.traerPerfil("Campos");
+        institucion = seguridadBean.getInstitucion();
     }
 
     private List<Campos> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
@@ -92,7 +96,10 @@ public class CamposBean implements Serializable, IMantenimiento {
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
             }
-
+            if (institucion == null) {
+                where += " and o.institucion=:institucion";
+                parameters.put("institucion", institucion);
+            }
             if (!formulario.isMostrar()) {
                 if (clasificador != null) {
                     combosBean.setClasificador(clasificador);
@@ -493,6 +500,20 @@ public class CamposBean implements Serializable, IMantenimiento {
      */
     public void setCombosBean(CombosBean combosBean) {
         this.combosBean = combosBean;
+    }
+
+    /**
+     * @return the institucion
+     */
+    public Instituciones getInstitucion() {
+        return institucion;
+    }
+
+    /**
+     * @param institucion the institucion to set
+     */
+    public void setInstitucion(Instituciones institucion) {
+        this.institucion = institucion;
     }
 
 }

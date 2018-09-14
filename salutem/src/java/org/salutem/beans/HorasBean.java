@@ -19,6 +19,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.HorasFacade;
 import org.entidades.salutem.Horas;
+import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
@@ -48,6 +49,8 @@ public class HorasBean implements Serializable, IMantenimiento {
     private Horas hora;
     private Perfiles perfil;
 
+    private Instituciones institucion;
+
     @EJB
     private HorasFacade ejbHoras;
 
@@ -67,6 +70,7 @@ public class HorasBean implements Serializable, IMantenimiento {
     @Override
     public void activar() {
         perfil = seguridadBean.traerPerfil("Horas");
+        institucion = seguridadBean.getInstitucion();
     }
 
     private List<Horas> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
@@ -88,6 +92,10 @@ public class HorasBean implements Serializable, IMantenimiento {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
+            }
+            if (institucion != null) {
+                where += " and o.institucion=:institucion";
+                parameters.put("institucion", institucion);
             }
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
                 where += " and o.creado between :iniciocreado and :fincreado";
@@ -345,6 +353,20 @@ public class HorasBean implements Serializable, IMantenimiento {
      */
     public void setPerfil(Perfiles perfil) {
         this.perfil = perfil;
+    }
+
+    /**
+     * @return the institucion
+     */
+    public Instituciones getInstitucion() {
+        return institucion;
+    }
+
+    /**
+     * @param institucion the institucion to set
+     */
+    public void setInstitucion(Instituciones institucion) {
+        this.institucion = institucion;
     }
 
 }

@@ -34,6 +34,8 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
 
     private int especialidad;
 
+    private Instituciones institucion;
+
     @EJB
     private ProfesionalesFacade ejbProfesionales;
 
@@ -41,6 +43,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
     @Override
     public void activar() {
         perfil = seguridadBean.traerPerfil("Profesionales");
+        institucion = seguridadBean.getInstitucion();
     }
 
     public ProfesionalesBean() {
@@ -73,6 +76,20 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
+            }
+            if (institucion != null) {
+                where += " and o.institucion=:institucion";
+                parameters.put("institucion", institucion);
+            }
+            if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
+                where += " and o.creado between :iniciocreado and :fincreado";
+                parameters.put("iniciocreado", seguridadBean.getInicioCreado());
+                parameters.put("fincreado", seguridadBean.getFinCreado());
+            }
+            if (seguridadBean.getInicioActualizado() != null && seguridadBean.getFinActualizado() != null) {
+                where += " and o.actualizado between :inicioactualizado and :finactualizado";
+                parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
+                parameters.put("finactualizado", seguridadBean.getFinActualizado());
             }
             int total = ejbProfesionales.contar(where, parameters);
             formulario.setTotal(total);
@@ -215,6 +232,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         return null;
     }
 
+    @Override
     public String getNombreTabla() {
         return Profesionales.class.getSimpleName();
     }

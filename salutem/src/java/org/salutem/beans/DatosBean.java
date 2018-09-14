@@ -278,7 +278,7 @@ public class DatosBean implements Serializable {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(DatosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return null;
+        return "ok";
     }
 
     public String borrar() {

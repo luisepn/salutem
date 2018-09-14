@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -61,30 +62,37 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     private Perfiles perfil;
 
-    private Formulario formulario = new Formulario();
     private LazyDataModel<Atenciones> atenciones;
-    private Formulas formula;
-    private Ordenes orden;
+    private Formulario formulario = new Formulario();
+
+    private List<Prescripciones> prescripciones;
+    private List<RxFinal> listaRxFinal;
     private Ojos lensometria;
     private Ojos agudezavisualsincristal;
     private Ojos agudezavisualconcristal;
-    private List<Prescripciones> prescripciones;
+    private Formulas formula;
+    private Ordenes orden;
+
     private Instituciones laboratorio;
 
     private Atenciones atencion;
     private Boolean conCita;
     private Citas cita;
-
     private Date fechaInicio;
     private Date fechaFin;
 
     private Atenciones ultimaAtencion;
     private List<Prescripciones> ultimasPrescripciones;
     private List<Datos> ultimosDatos;
+    private Formulas ultimaFormula;
+    private Ordenes ultimaOrden;
+    private Ojos ultimaLensometria;
+    private Ojos ultimaAgudezavisualsincristal;
+    private Ojos ultimaAgudezavisualconcristal;
+    private List<RxFinal> ultimaListaRxFinal;
+
     private Boolean verHistorico = Boolean.FALSE;
     private Integer idUltimaAtencion = 0;
-
-    private List<RxFinal> listaRxFinal;
 
     @EJB
     private AtencionesFacade ejbAtenciones;
@@ -103,8 +111,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 if (!IMantenimiento.validarPerfil(perfil, 'R')) {
                     return null;
                 } else {
-                    if (combosBean.getProfesional() != null) {
-                        map.put("profesional.id", combosBean.getProfesional().getId().toString());
+                    if (getCombosBean().getProfesional() != null) {
+                        map.put("profesional.id", getCombosBean().getProfesional().getId().toString());
                     }
                     return cargar(i, i1, scs, map);
                 }
@@ -181,8 +189,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         atenciones = new LazyDataModel<Atenciones>() {
             @Override
             public List<Atenciones> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                if (combosBean.getProfesional() != null) {
-                    map.put("profesional.id", combosBean.getProfesional().getId().toString());
+                if (getCombosBean().getProfesional() != null) {
+                    map.put("profesional.id", getCombosBean().getProfesional().getId().toString());
                 }
                 return cargar(i, i1, scs, map);
             }
@@ -194,9 +202,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         atenciones = new LazyDataModel<Atenciones>() {
             @Override
             public List<Atenciones> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                map.put("profesional.institucion.id", atencion.getProfesional().getInstitucion().getId().toString());
-                map.put("especialidad.id", atencion.getEspecialidad().getId().toString());
-                map.put("paciente.id", atencion.getPaciente().getId().toString());
+                map.put("profesional.institucion.id", getAtencion().getProfesional().getInstitucion().getId().toString());
+                map.put("especialidad.id", getAtencion().getEspecialidad().getId().toString());
+                map.put("paciente.id", getAtencion().getPaciente().getId().toString());
                 return cargar(i, i1, scs, map);
             }
         };
@@ -223,36 +231,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
+            crearFormula();
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
-            if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
-                formula = atencion.getFormula();
 
-                if (formula == null) {
-                    formula = new Formulas();
-                    formula.setLensometria(new Ojos());
-                    formula.setAgudezavisualsincristal(new Ojos());
-                    formula.setAgudezavisualconcristal(new Ojos());
-                    formula.setEsfera(new Ojos());
-                    formula.setCilindro(new Ojos());
-                    formula.setEje(new Ojos());
-                    formula.setAdicion(new Ojos());
-                    formula.setDistanciapupilar(new Ojos());
-                    formula.setAgudezavisual(new Ojos());
-                    formula.setAtencion(atencion);
-                    formula.setCreado(atencion.getCreado());
-                    formula.setCreadopor(atencion.getCreadopor());
-                    formula.setActualizado(atencion.getCreado());
-                    formula.setActualizadopor(atencion.getCreadopor());
-                    formula.setActivo(Boolean.TRUE);
-                    ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-                }
-                lensometria = formula.getLensometria();
-                agudezavisualsincristal = formula.getAgudezavisualsincristal();
-                agudezavisualconcristal = formula.getAgudezavisualconcristal();
-
-                listaRxFinal = formula.getListaRxFinal();
-                orden = formula.getOrden();
-            }
         } catch (ExcepcionDeConsulta | ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -274,35 +255,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
-                formula = atencion.getFormula();
-                if (formula == null) {
-                    formula = new Formulas();
-                    formula.setLensometria(new Ojos());
-                    formula.setAgudezavisualsincristal(new Ojos());
-                    formula.setAgudezavisualconcristal(new Ojos());
-                    formula.setEsfera(new Ojos());
-                    formula.setCilindro(new Ojos());
-                    formula.setEje(new Ojos());
-                    formula.setAdicion(new Ojos());
-                    formula.setDistanciapupilar(new Ojos());
-                    formula.setAgudezavisual(new Ojos());
-                    formula.setAtencion(atencion);
-                    formula.setCreado(atencion.getCreado());
-                    formula.setCreadopor(atencion.getCreadopor());
-                    formula.setActualizado(atencion.getCreado());
-                    formula.setActualizadopor(atencion.getCreadopor());
-                    formula.setActivo(Boolean.TRUE);
-                    ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-                }
-                lensometria = formula.getLensometria();
-                agudezavisualsincristal = formula.getAgudezavisualsincristal();
-                agudezavisualconcristal = formula.getAgudezavisualconcristal();
-
-                listaRxFinal = formula.getListaRxFinal();
-                orden = formula.getOrden();
-            }
-
+            crearFormula();
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
         } catch (ExcepcionDeConsulta | ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
@@ -359,7 +312,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             } else {
                 parameters.put("profesional", combosBean.getProfesional());
                 parameters.put("paciente", pacientesBean.getPaciente());
-                parameters.put("paciente", pacientesBean.getPaciente());
+                parameters.put("especialidad", combosBean.getProfesional().getEspecialidad());
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(Calendar.HOUR_OF_DAY, 0);
                 calendar.set(Calendar.MINUTE, 0);
@@ -371,7 +324,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 calendar.set(Calendar.SECOND, 59);
                 calendar.set(Calendar.MILLISECOND, 999);
                 parameters.put("fin", calendar.getTime());
-                if (ejbAtenciones.contar("o.profesional=:profesional and o.paciente=:paciente and o.fecha between :inicio and :fin", parameters) > 0) {
+                if (ejbAtenciones.contar("o.profesional=:profesional and o.paciente=:paciente and o.especialidad=:especialidad and o.fecha between :inicio and :fin", parameters) > 0) {
                     Mensajes.advertencia("Ya existe una atención generada para el paciente seleccionado");
                     return null;
                 }
@@ -387,31 +340,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             atencion.setActivo(Boolean.TRUE);
 
             ejbAtenciones.crear(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
-                formula = new Formulas();
 
-                formula.setLensometria(new Ojos());
-                formula.setAgudezavisualsincristal(new Ojos());
-                formula.setAgudezavisualconcristal(new Ojos());
+            crearFormula();
 
-                formula.setEsfera(new Ojos());
-                formula.setCilindro(new Ojos());
-                formula.setEje(new Ojos());
-                formula.setAdicion(new Ojos());
-                formula.setDistanciapupilar(new Ojos());
-                formula.setAgudezavisual(new Ojos());
-
-                formula.setAtencion(atencion);
-                formula.setCreado(atencion.getCreado());
-                formula.setCreadopor(atencion.getCreadopor());
-                formula.setActualizado(atencion.getCreado());
-                formula.setActualizadopor(atencion.getCreadopor());
-                formula.setActivo(Boolean.TRUE);
-                ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-                listaRxFinal = formula.getListaRxFinal();
-
-                orden = formula.getOrden();
-            }
         } catch (ExcepcionDeCreacion | ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -448,45 +379,13 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         atencion.setActualizado(new Date());
         atencion.setActualizadopor(seguridadBean.getLogueado().getUserid());
         try {
-            datosBean.grabar();
+            if (datosBean.grabar() == null) {
+                return null;
+            }
             grabarPrescripciones();
             ejbAtenciones.actualizar(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
-                if (formula.getId() == null) {
-                    formula = new Formulas();
-
-                    formula.setLensometria(lensometria);
-                    formula.setAgudezavisualsincristal(agudezavisualsincristal);
-                    formula.setAgudezavisualconcristal(agudezavisualconcristal);
-
-                    formula.setEsfera(new Ojos());
-                    formula.setCilindro(new Ojos());
-                    formula.setEje(new Ojos());
-                    formula.setAdicion(new Ojos());
-                    formula.setDistanciapupilar(new Ojos());
-                    formula.setAgudezavisual(new Ojos());
-
-                    formula.setAtencion(atencion);
-                    formula.setCreado(new Date());
-                    formula.setCreadopor(seguridadBean.getLogueado().getUserid());
-                    formula.setActualizado(atencion.getCreado());
-                    formula.setActualizadopor(atencion.getCreadopor());
-                    formula.setActivo(Boolean.TRUE);
-                    ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-                } else {
-                    formula.setEsfera(new Ojos(listaRxFinal.get(0).getEsfera(), listaRxFinal.get(1).getEsfera()));
-                    formula.setCilindro(new Ojos(listaRxFinal.get(0).getCilindro(), listaRxFinal.get(1).getCilindro()));
-                    formula.setEje(new Ojos(listaRxFinal.get(0).getEje(), listaRxFinal.get(1).getEje()));
-                    formula.setAdicion(new Ojos(listaRxFinal.get(0).getAdicion(), listaRxFinal.get(1).getAdicion()));
-                    formula.setDistanciapupilar(new Ojos(listaRxFinal.get(0).getDistanciapupilar(), listaRxFinal.get(1).getDistanciapupilar()));
-                    formula.setAgudezavisual(new Ojos(listaRxFinal.get(0).getAgudezavisual(), listaRxFinal.get(1).getAgudezavisual()));
-
-                    formula.setActualizado(new Date());
-                    formula.setActualizadopor(seguridadBean.getLogueado().getUserid());
-                    ejbFormulas.actualizar(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-                }
-            }
-        } catch (ExcepcionDeActualizacion | ExcepcionDeCreacion ex) {
+            grabarFormula();
+        } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -504,6 +403,15 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             for (Prescripciones p : prescripcionesBorrar) {
                 ejbPrescripciones.eliminar(p, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
+            List<Formulas> formulasBorrar = ejbFormulas.traerFormulasTodas(atencion);
+            for (Formulas f : formulasBorrar) {
+                List<Ordenes> ordenesBorrar = ejbOrdenes.traerOrdenesTodas(f);
+                for (Ordenes o : ordenesBorrar) {
+                    ejbOrdenes.eliminar(o, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                }
+                ejbFormulas.eliminar(f, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            }
+
             ejbAtenciones.eliminar(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             datosBean.borrar();
         } catch (ExcepcionDeConsulta | ExcepcionDeEliminacion ex) {
@@ -553,7 +461,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 ejbPrescripciones.actualizar(p, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
-            Mensajes.informacion("¡Prescripciones grabadas con éxito!");
+            if (!prescripciones.isEmpty()) {
+                Mensajes.informacion("¡Prescripciones grabadas con éxito!");
+            }
         } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -603,11 +513,73 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             this.ultimaAtencion = ultimaAtencion;
             this.ultimasPrescripciones = ejbPrescripciones.traerPrescripciones(ultimaAtencion);
             this.ultimosDatos = datosBean.traerDatos(getNombreTabla(), ultimaAtencion.getEspecialidad().getNombre(), ultimaAtencion.getId());
+
+            this.ultimaFormula = ultimaAtencion.getFormula();
+            this.ultimaOrden = ultimaFormula != null ? ultimaFormula.getOrden() : null;
+            this.ultimaListaRxFinal = ultimaFormula != null ? ultimaFormula.getListaRxFinal() : new LinkedList<>();
+            this.ultimaLensometria = ultimaFormula != null ? ultimaFormula.getLensometria() : null;
+            this.ultimaAgudezavisualsincristal = ultimaFormula != null ? ultimaFormula.getAgudezavisualsincristal() : null;
+            this.ultimaAgudezavisualconcristal = ultimaFormula != null ? ultimaFormula.getAgudezavisualconcristal() : null;
+
             this.verHistorico = Boolean.FALSE;
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void crearFormula() throws ExcepcionDeCreacion {
+        if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
+
+            formula = atencion.getFormula();
+
+            if (formula == null) {
+                formula = new Formulas();
+
+                formula.setLensometria(new Ojos());
+                formula.setAgudezavisualsincristal(new Ojos());
+                formula.setAgudezavisualconcristal(new Ojos());
+
+                formula.setEsfera(new Ojos());
+                formula.setCilindro(new Ojos());
+                formula.setEje(new Ojos());
+                formula.setAdicion(new Ojos());
+                formula.setDistanciapupilar(new Ojos());
+                formula.setAgudezavisual(new Ojos());
+
+                formula.setAtencion(atencion);
+                formula.setCreado(new Date());
+                formula.setCreadopor(seguridadBean.getLogueado().getUserid());
+                formula.setActualizado(atencion.getCreado());
+                formula.setActualizadopor(atencion.getCreadopor());
+                formula.setActivo(Boolean.TRUE);
+                ejbFormulas.crear(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            }
+            lensometria = formula.getLensometria();
+            agudezavisualsincristal = formula.getAgudezavisualsincristal();
+            agudezavisualconcristal = formula.getAgudezavisualconcristal();
+
+            listaRxFinal = formula.getListaRxFinal();
+            orden = formula.getOrden();
+            laboratorio = orden != null ? orden.getLaboratorio() : null;
+        }
+    }
+
+    public String grabarFormula() throws ExcepcionDeActualizacion {
+        if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
+            formula.setEsfera(new Ojos(listaRxFinal.get(0).getEsfera(), listaRxFinal.get(1).getEsfera()));
+            formula.setCilindro(new Ojos(listaRxFinal.get(0).getCilindro(), listaRxFinal.get(1).getCilindro()));
+            formula.setEje(new Ojos(listaRxFinal.get(0).getEje(), listaRxFinal.get(1).getEje()));
+            formula.setAdicion(new Ojos(listaRxFinal.get(0).getAdicion(), listaRxFinal.get(1).getAdicion()));
+            formula.setDistanciapupilar(new Ojos(listaRxFinal.get(0).getDistanciapupilar(), listaRxFinal.get(1).getDistanciapupilar()));
+            formula.setAgudezavisual(new Ojos(listaRxFinal.get(0).getAgudezavisual(), listaRxFinal.get(1).getAgudezavisual()));
+
+            formula.setActualizado(new Date());
+            formula.setActualizadopor(seguridadBean.getLogueado().getUserid());
+            ejbFormulas.actualizar(formula, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            Mensajes.informacion("¡Datos de optometría grabados con éxito!");
+        }
+        return null;
     }
 
     public String crearOrden() {
@@ -622,16 +594,18 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         if (orden == null) {
             orden = new Ordenes();
         }
-        orden.setLaboratorio(laboratorio);
-        orden.setFormula(formula);
-        orden.setCreado(new Date());
-        orden.setCreadopor(seguridadBean.getLogueado().getUserid());
-        orden.setActualizado(atencion.getCreado());
-        orden.setActualizadopor(atencion.getCreadopor());
-        orden.setActivo(Boolean.TRUE);
-        orden.setRegistro(orden.getCreado());
         try {
+            orden.setLaboratorio(laboratorio);
+            orden.setFormula(formula);
+            orden.setCreado(new Date());
+            orden.setCreadopor(seguridadBean.getLogueado().getUserid());
+            orden.setActualizado(atencion.getCreado());
+            orden.setActualizadopor(atencion.getCreadopor());
+            orden.setActivo(Boolean.TRUE);
+            orden.setRegistro(orden.getCreado());
+
             ejbOrdenes.crear(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            Mensajes.informacion("¡Orden de Laboratorio grabado con éxito!");
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -644,15 +618,18 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             Mensajes.advertencia("Primero debe ser generada y grabada una receta optalmológica");
             return null;
         }
-        if (orden.getLaboratorio() == null) {
+        if (laboratorio == null) {
             Mensajes.advertencia("Seleccione un laboratorio");
             return null;
         }
-        orden.setFormula(formula);
-        orden.setActualizado(atencion.getCreado());
-        orden.setActualizadopor(atencion.getCreadopor());
         try {
+            orden.setLaboratorio(laboratorio);
+            orden.setFormula(formula);
+            orden.setActualizado(atencion.getCreado());
+            orden.setActualizadopor(atencion.getCreadopor());
+
             ejbOrdenes.actualizar(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            Mensajes.informacion("¡Orden de Laboratorio actualizado con éxito!");
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -660,19 +637,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         return null;
     }
 
-    /**
-     * @return the ultimaAtencion
-     */
-    public Atenciones getUltimaAtencion() {
-        return ultimaAtencion;
-    }
-
-//    /**
-//     * @param ultimaAtencion the ultimaAtencion to set
-//     */
-//    public void setUltimaAtencion(Atenciones ultimaAtencion) {
-//        this.ultimaAtencion = ultimaAtencion;
-//    }
     /**
      * @return the seguridadBean
      */
@@ -699,6 +663,20 @@ public class AtencionesBean implements Serializable, IMantenimiento {
      */
     public void setPacientesBean(PacientesBean pacientesBean) {
         this.pacientesBean = pacientesBean;
+    }
+
+    /**
+     * @return the combosBean
+     */
+    public CombosBean getCombosBean() {
+        return combosBean;
+    }
+
+    /**
+     * @param combosBean the combosBean to set
+     */
+    public void setCombosBean(CombosBean combosBean) {
+        this.combosBean = combosBean;
     }
 
     /**
@@ -730,6 +708,20 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     }
 
     /**
+     * @return the atenciones
+     */
+    public LazyDataModel<Atenciones> getAtenciones() {
+        return atenciones;
+    }
+
+    /**
+     * @param atenciones the atenciones to set
+     */
+    public void setAtenciones(LazyDataModel<Atenciones> atenciones) {
+        this.atenciones = atenciones;
+    }
+
+    /**
      * @return the formulario
      */
     public Formulario getFormulario() {
@@ -744,17 +736,115 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @return the atenciones
+     * @return the prescripciones
      */
-    public LazyDataModel<Atenciones> getAtenciones() {
-        return atenciones;
+    public List<Prescripciones> getPrescripciones() {
+        return prescripciones;
     }
 
     /**
-     * @param atenciones the atenciones to set
+     * @param prescripciones the prescripciones to set
      */
-    public void setAtenciones(LazyDataModel<Atenciones> atenciones) {
-        this.atenciones = atenciones;
+    public void setPrescripciones(List<Prescripciones> prescripciones) {
+        this.prescripciones = prescripciones;
+    }
+
+    /**
+     * @return the listaRxFinal
+     */
+    public List<RxFinal> getListaRxFinal() {
+        return listaRxFinal;
+    }
+
+    /**
+     * @param listaRxFinal the listaRxFinal to set
+     */
+    public void setListaRxFinal(List<RxFinal> listaRxFinal) {
+        this.listaRxFinal = listaRxFinal;
+    }
+
+    /**
+     * @return the lensometria
+     */
+    public Ojos getLensometria() {
+        return lensometria;
+    }
+
+    /**
+     * @param lensometria the lensometria to set
+     */
+    public void setLensometria(Ojos lensometria) {
+        this.lensometria = lensometria;
+    }
+
+    /**
+     * @return the agudezavisualsincristal
+     */
+    public Ojos getAgudezavisualsincristal() {
+        return agudezavisualsincristal;
+    }
+
+    /**
+     * @param agudezavisualsincristal the agudezavisualsincristal to set
+     */
+    public void setAgudezavisualsincristal(Ojos agudezavisualsincristal) {
+        this.agudezavisualsincristal = agudezavisualsincristal;
+    }
+
+    /**
+     * @return the agudezavisualconcristal
+     */
+    public Ojos getAgudezavisualconcristal() {
+        return agudezavisualconcristal;
+    }
+
+    /**
+     * @param agudezavisualconcristal the agudezavisualconcristal to set
+     */
+    public void setAgudezavisualconcristal(Ojos agudezavisualconcristal) {
+        this.agudezavisualconcristal = agudezavisualconcristal;
+    }
+
+    /**
+     * @return the formula
+     */
+    public Formulas getFormula() {
+        return formula;
+    }
+
+    /**
+     * @param formula the formula to set
+     */
+    public void setFormula(Formulas formula) {
+        this.formula = formula;
+    }
+
+    /**
+     * @return the orden
+     */
+    public Ordenes getOrden() {
+        return orden;
+    }
+
+    /**
+     * @param orden the orden to set
+     */
+    public void setOrden(Ordenes orden) {
+        this.orden = orden;
+    }
+
+    /**
+     * @return the laboratorio
+     */
+    public Instituciones getLaboratorio() {
+        return laboratorio;
+    }
+
+    /**
+     * @param laboratorio the laboratorio to set
+     */
+    public void setLaboratorio(Instituciones laboratorio) {
+        this.laboratorio = laboratorio;
     }
 
     /**
@@ -828,45 +918,17 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @return the combosBean
+     * @return the ultimaAtencion
      */
-    public CombosBean getCombosBean() {
-        return combosBean;
+    public Atenciones getUltimaAtencion() {
+        return ultimaAtencion;
     }
 
     /**
-     * @param combosBean the combosBean to set
+     * @param ultimaAtencion the ultimaAtencion to set
      */
-    public void setCombosBean(CombosBean combosBean) {
-        this.combosBean = combosBean;
-    }
-
-    /**
-     * @return the formula
-     */
-    public Formulas getFormula() {
-        return formula;
-    }
-
-    /**
-     * @param formula the formula to set
-     */
-    public void setFormula(Formulas formula) {
-        this.formula = formula;
-    }
-
-    /**
-     * @return the prescripciones
-     */
-    public List<Prescripciones> getPrescripciones() {
-        return prescripciones;
-    }
-
-    /**
-     * @param prescripciones the prescripciones to set
-     */
-    public void setPrescripciones(List<Prescripciones> prescripciones) {
-        this.prescripciones = prescripciones;
+    public void setUltimaAtencion(Atenciones ultimaAtencion) {
+        this.ultimaAtencion = ultimaAtencion;
     }
 
     /**
@@ -898,6 +960,92 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     }
 
     /**
+     * @return the ultimaFormula
+     */
+    public Formulas getUltimaFormula() {
+        return ultimaFormula;
+    }
+
+    /**
+     * @param ultimaFormula the ultimaFormula to set
+     */
+    public void setUltimaFormula(Formulas ultimaFormula) {
+        this.ultimaFormula = ultimaFormula;
+    }
+
+    /**
+     * @return the ultimaOrden
+     */
+    public Ordenes getUltimaOrden() {
+        return ultimaOrden;
+    }
+
+    /**
+     * @param ultimaOrden the ultimaOrden to set
+     */
+    public void setUltimaOrden(Ordenes ultimaOrden) {
+        this.ultimaOrden = ultimaOrden;
+    }
+
+    /**
+     * @return the ultimaLensometria
+     */
+    public Ojos getUltimaLensometria() {
+        return ultimaLensometria;
+    }
+
+    /**
+     * @param ultimaLensometria the ultimaLensometria to set
+     */
+    public void setUltimaLensometria(Ojos ultimaLensometria) {
+        this.ultimaLensometria = ultimaLensometria;
+    }
+
+    /**
+     * @return the ultimaAgudezavisualsincristal
+     */
+    public Ojos getUltimaAgudezavisualsincristal() {
+        return ultimaAgudezavisualsincristal;
+    }
+
+    /**
+     * @param ultimaAgudezavisualsincristal the ultimaAgudezavisualsincristal to
+     * set
+     */
+    public void setUltimaAgudezavisualsincristal(Ojos ultimaAgudezavisualsincristal) {
+        this.ultimaAgudezavisualsincristal = ultimaAgudezavisualsincristal;
+    }
+
+    /**
+     * @return the ultimaAgudezavisualconcristal
+     */
+    public Ojos getUltimaAgudezavisualconcristal() {
+        return ultimaAgudezavisualconcristal;
+    }
+
+    /**
+     * @param ultimaAgudezavisualconcristal the ultimaAgudezavisualconcristal to
+     * set
+     */
+    public void setUltimaAgudezavisualconcristal(Ojos ultimaAgudezavisualconcristal) {
+        this.ultimaAgudezavisualconcristal = ultimaAgudezavisualconcristal;
+    }
+
+    /**
+     * @return the ultimaListaRxFinal
+     */
+    public List<RxFinal> getUltimaListaRxFinal() {
+        return ultimaListaRxFinal;
+    }
+
+    /**
+     * @param ultimaListaRxFinal the ultimaListaRxFinal to set
+     */
+    public void setUltimaListaRxFinal(List<RxFinal> ultimaListaRxFinal) {
+        this.ultimaListaRxFinal = ultimaListaRxFinal;
+    }
+
+    /**
      * @return the verHistorico
      */
     public Boolean getVerHistorico() {
@@ -909,7 +1057,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
      */
     public void setVerHistorico(Boolean verHistorico) {
         this.verHistorico = verHistorico;
-        buscarHistorico();
     }
 
     /**
@@ -926,87 +1073,4 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         this.idUltimaAtencion = idUltimaAtencion;
     }
 
-    /**
-     * @return the listaRxFinal
-     */
-    public List<RxFinal> getListaRxFinal() {
-        return listaRxFinal;
-    }
-
-    /**
-     * @param listaRxFinal the listaRxFinal to set
-     */
-    public void setListaRxFinal(List<RxFinal> listaRxFinal) {
-        this.listaRxFinal = listaRxFinal;
-    }
-
-    /**
-     * @return the lensometria
-     */
-    public Ojos getLensometria() {
-        return lensometria;
-    }
-
-    /**
-     * @param lensometria the lensometria to set
-     */
-    public void setLensometria(Ojos lensometria) {
-        this.lensometria = lensometria;
-    }
-
-    /**
-     * @return the agudezavisualsincristal
-     */
-    public Ojos getAgudezavisualsincristal() {
-        return agudezavisualsincristal;
-    }
-
-    /**
-     * @param agudezavisualsincristal the agudezavisualsincristal to set
-     */
-    public void setAgudezavisualsincristal(Ojos agudezavisualsincristal) {
-        this.agudezavisualsincristal = agudezavisualsincristal;
-    }
-
-    /**
-     * @return the agudezavisualconcristal
-     */
-    public Ojos getAgudezavisualconcristal() {
-        return agudezavisualconcristal;
-    }
-
-    /**
-     * @param agudezavisualconcristal the agudezavisualconcristal to set
-     */
-    public void setAgudezavisualconcristal(Ojos agudezavisualconcristal) {
-        this.agudezavisualconcristal = agudezavisualconcristal;
-    }
-
-    /**
-     * @return the orden
-     */
-    public Ordenes getOrden() {
-        return orden;
-    }
-
-    /**
-     * @param orden the orden to set
-     */
-    public void setOrden(Ordenes orden) {
-        this.orden = orden;
-    }
-
-    /**
-     * @return the laboratorio
-     */
-    public Instituciones getLaboratorio() {
-        return laboratorio;
-    }
-
-    /**
-     * @param laboratorio the laboratorio to set
-     */
-    public void setLaboratorio(Instituciones laboratorio) {
-        this.laboratorio = laboratorio;
-    }
 }

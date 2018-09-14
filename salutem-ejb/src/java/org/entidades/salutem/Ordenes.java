@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Ordenes.findAll", query = "SELECT o FROM Ordenes o")
     , @NamedQuery(name = "Ordenes.findById", query = "SELECT o FROM Ordenes o WHERE o.id = :id")
     , @NamedQuery(name = "Ordenes.findByFactura", query = "SELECT o FROM Ordenes o WHERE o.factura = :factura")
-    , @NamedQuery(name = "Ordenes.findByUsuario", query = "SELECT o FROM Ordenes o WHERE o.usuario = :usuario")
     , @NamedQuery(name = "Ordenes.findByRegistro", query = "SELECT o FROM Ordenes o WHERE o.registro = :registro")
     , @NamedQuery(name = "Ordenes.findByEnvio", query = "SELECT o FROM Ordenes o WHERE o.envio = :envio")
     , @NamedQuery(name = "Ordenes.findByEntrega", query = "SELECT o FROM Ordenes o WHERE o.entrega = :entrega")
@@ -50,9 +49,6 @@ public class Ordenes implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "factura")
     private String factura;
-    @Size(max = 2147483647)
-    @Column(name = "usuario")
-    private String usuario;
     @Size(max = 2147483647)
     @Column(name = "descripcion")
     private String descripcion;
@@ -108,7 +104,6 @@ public class Ordenes implements Serializable {
         this.id = id;
     }
 
-
     public Date getRegistro() {
         return registro;
     }
@@ -133,7 +128,6 @@ public class Ordenes implements Serializable {
         this.entrega = entrega;
     }
 
-
     public Date getCreado() {
         return creado;
     }
@@ -142,7 +136,6 @@ public class Ordenes implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -150,7 +143,6 @@ public class Ordenes implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     public Boolean getActivo() {
         return activo;
@@ -209,14 +201,6 @@ public class Ordenes implements Serializable {
         this.factura = factura;
     }
 
-    public String getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-
     public String getDescripcion() {
         return descripcion;
     }
@@ -240,5 +224,5 @@ public class Ordenes implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-    
+
 }
