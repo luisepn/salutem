@@ -5,7 +5,7 @@
  */
 package org.salutem.utilitarios;
 
-import com.lowagie.text.Element;
+//import com.lowagie.text.Element;
 
 /**
  *
@@ -13,9 +13,12 @@ import com.lowagie.text.Element;
  */
 public class AuxiliarReporte {
 
-    public static int ALIGN_LEFT = Element.ALIGN_LEFT;
-    public static int ALIGN_RIGHT = Element.ALIGN_RIGHT;
-    public static int ALIGN_CENTER = Element.ALIGN_CENTER;
+    public static int ALIGN_LEFT = 0;
+    public static int ALIGN_RIGHT = 0;
+    public static int ALIGN_CENTER = 0;
+//    public static int ALIGN_LEFT = Element.ALIGN_LEFT;
+//    public static int ALIGN_RIGHT = Element.ALIGN_RIGHT;
+//    public static int ALIGN_CENTER = Element.ALIGN_CENTER;
     
     private String dato;
     private Object valor;

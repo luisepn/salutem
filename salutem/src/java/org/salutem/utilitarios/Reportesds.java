@@ -34,14 +34,14 @@ import org.icefaces.impl.push.http.DynamicResource.Options;
  */
 public class Reportesds extends Resource implements Serializable {
 
-    private String resourceName;
+    private final String resourceName;
     private HashMap<String, String> headers;
     private String path = "";
     private byte[] bytes;
     private final Date lastModified = null;
     private Map param;
     private String archivo;
-    private List ds;
+    private final List ds;
 
     public Reportesds(Map param, String archivo, List ds, String resourceName) {
         this.param = param;
@@ -57,8 +57,8 @@ public class Reportesds extends Resource implements Serializable {
 
             return new ByteArrayInputStream(this.iceFacesReporte());
 
-        } catch (Exception e) {
-            Mensajes.fatal(e.getMessage() + ":" + e.getCause());
+        } catch (JRException e) {
+            Mensajes.fatal(e.getMessage());
             Logger.getLogger("Reportes").log(Level.SEVERE, null, e);
         }
 
@@ -136,14 +136,17 @@ public class Reportesds extends Resource implements Serializable {
         this.path = path;
     }
 
+    @Override
     public Map<String, String> getResponseHeaders() {
         return headers;
     }
 
+    @Override
     public URL getURL() {
         return null;
     }
 
+    @Override
     public boolean userAgentNeedsUpdate(FacesContext context) {
         return false;
     }
