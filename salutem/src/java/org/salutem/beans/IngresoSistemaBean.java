@@ -12,7 +12,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import org.controladores.salutem.PersonasFacade;
-import org.controladores.salutemlogs.AsincronoLogFacade;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Personas;
 import org.excepciones.salutem.ExcepcionDeConsulta;
