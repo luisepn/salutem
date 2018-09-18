@@ -14,9 +14,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.HorasFacade;
 import org.entidades.salutem.Horas;
 import org.entidades.salutem.Instituciones;
@@ -37,11 +37,11 @@ import org.salutem.utilitarios.Mensajes;
  * @since 22 de Julio de 2018, 23:06:05 AM
  *
  */
-@ManagedBean(name = "salutemHoras")
+@Named("salutemHoras")
 @ViewScoped
 public class HorasBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty(value = "#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
 
     private Formulario formulario = new Formulario();

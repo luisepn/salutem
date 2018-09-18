@@ -9,9 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.inject.Any;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.MenusFacade;
 import org.controladores.salutem.ParametrosFacade;
 import org.controladores.salutem.PerfilesFacade;
@@ -31,13 +32,14 @@ import org.salutem.utilitarios.Mensajes;
  * @author Luis Fernando Ordóñez Armijos
  * @since 22 de Noviembre de 2017, 13:57:21 AM
  */
-@ManagedBean(name = "salutemPerfiles")
+@Named("salutemPerfiles")
 @ViewScoped
 public class PerfilesBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
-    @ManagedProperty("#{salutemCombos}")
+    @Inject
+    @Any
     private CombosBean combosBean;
 
     private Formulario formulario = new Formulario();

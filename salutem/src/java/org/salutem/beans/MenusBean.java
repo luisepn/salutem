@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.MenusFacade;
 import org.entidades.salutem.Menus;
 import org.entidades.salutem.Perfiles;
@@ -30,11 +30,11 @@ import org.salutem.utilitarios.Mensajes;
  * @author Luis Fernando Ordóñez Armijos
  * @since 19 de Noviembre de 2017, 04:49:59 AM
  */
-@ManagedBean(name = "salutemMenus")
+@Named("salutemMenus")
 @ViewScoped
 public class MenusBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
 
     private Formulario formulario = new Formulario();

@@ -1,19 +1,17 @@
 package org.salutem.beans;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.inject.Any;
+import javax.faces.view.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.CamposFacade;
 import org.controladores.salutem.DatosFacade;
 import org.entidades.salutem.Archivos;
@@ -24,9 +22,7 @@ import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
-import org.icefaces.ace.component.fileentry.FileEntry;
 import org.icefaces.ace.component.fileentry.FileEntryEvent;
-import org.icefaces.ace.component.fileentry.FileEntryResults;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
 import org.utilitarios.salutem.Items;
@@ -37,13 +33,14 @@ import org.utilitarios.salutem.Items;
  * @fecha Quito, 27 de agosto de 2018
  * @hora 15:03:23
  */
-@ManagedBean(name = "salutemDatos")
+@Named("salutemDatos")
 @ViewScoped
 public class DatosBean implements Serializable {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
-    @ManagedProperty("#{salutemArchivos}")
+    @Inject
+    @Any
     private ArchivosBean archivosBean;
 
     private Formulario formulario = new Formulario();

@@ -8,9 +8,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.PersonasFacade;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Personas;
@@ -20,11 +20,11 @@ import org.salutem.utilitarios.Codificador;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
 
-@ManagedBean(name = "ingresoSistema")
+@Named("ingresoSistema")
 @ViewScoped
 public class IngresoSistemaBean implements Serializable {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
 
     private Personas persona;

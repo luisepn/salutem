@@ -34,6 +34,9 @@ public interface IMantenimiento {
     public abstract String cancelar();
 
     public static boolean validarPerfil(Perfiles perfil, Character operacion) {
+        if (perfil == null) {
+            return false;
+        }
         switch (operacion) {
             case 'C': //create
                 if (!perfil.getNuevo()) {

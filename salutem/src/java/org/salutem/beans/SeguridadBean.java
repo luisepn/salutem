@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
+import javax.inject.Named;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -52,8 +52,8 @@ import org.salutem.utilitarios.Mensajes;
  * @author Luis Fernando Ordóñez Armijos
  * @since 24 de Noviembre de 2017, 10:20:09 AM
  */
-@ManagedBean(name = "salutemSeguridad")
 @SessionScoped
+@Named("salutemSeguridad")
 public class SeguridadBean implements Serializable {
 
     private Personas logueado;
@@ -65,6 +65,7 @@ public class SeguridadBean implements Serializable {
     private Profesionales profesional;
     private String titulo;
     private List<Usuarios> usuarios;
+    private String idPerfil;
 
     private String clave;
     private String claveNueva;
@@ -97,7 +98,7 @@ public class SeguridadBean implements Serializable {
     @EJB
     private ProfesionalesFacade ejbProfesionales;
     @EJB
-    public AsincronoLogFacade ejbLogs;
+    protected AsincronoLogFacade ejbLogs;
 
     public SeguridadBean() {
     }
@@ -150,7 +151,7 @@ public class SeguridadBean implements Serializable {
                 if (!usuarios.isEmpty()) {
                     seleccionarGrupo(usuarios.get(0));
                     ejbLogs.log("Ingreso exitoso", 'I', logueado.getUserid(), getCurrentClientIpAddress());
-                    return usuario.getModulo().getParametros().trim() + ".jsf?faces-redirect=true";
+                    return usuario.getModulo().getParametros().trim() + ".xhtml?faces-redirect=true";
                 } else {
                     String mensajeLog = "Usuario no tiene perfil asignado";
                     Mensajes.advertencia(mensajeLog);
@@ -181,7 +182,7 @@ public class SeguridadBean implements Serializable {
             seleccionarGrupo((Usuarios) event.getNewValue());
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
-            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".jsf?faces-redirect=true");
+            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".xhtml?faces-redirect=true");
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -193,7 +194,7 @@ public class SeguridadBean implements Serializable {
             seleccionarGrupo(ejbUsuarios.buscar(Integer.parseInt(event.getComponent().getId().replaceAll("_", ""))));
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
-            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".jsf?faces-redirect=true");
+            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".xhtml?faces-redirect=true");
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -234,7 +235,7 @@ public class SeguridadBean implements Serializable {
                 MenuItem item = new MenuItem();
                 item.setId(submenu.getId() + "_mmi_" + p.getId());
                 item.setValue(p.getMenu().getNombre());
-                item.setUrl(p.getMenu().getFormulario().trim() + ".jsf?faces-redirect=true&p=" + p.getId());
+                item.setUrl(p.getMenu().getFormulario().trim() + ".xhtml?faces-redirect=true&p=" + p.getId());
                 item.setIcon(p.getMenu().getIcono());
                 submenu.getChildren().add(item);
             }
@@ -286,9 +287,13 @@ public class SeguridadBean implements Serializable {
             Map params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
             String p = (String) params.get("p");
             if (p == null) {
+                p = idPerfil;
+            }
+            if (p == null) {
                 ctx.redirect(ctxPath + "?m=Sin perfil valido");
                 return null;
             }
+            idPerfil = p;
             Perfiles perfil = ejbPerfiles.buscar(Integer.parseInt(p));
             if (perfil == null) {
                 logout();

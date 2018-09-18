@@ -7,10 +7,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import org.controladores.salutem.CitasFacade;
 import org.controladores.salutem.HorariosFacade;
 import org.controladores.salutem.HorasFacade;
@@ -34,11 +34,11 @@ import org.entidades.salutem.Usuarios;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.salutem.utilitarios.Mensajes;
 
-@ManagedBean(name = "salutemCombos")
+@Named("salutemCombos")
 @ViewScoped
 public class CombosBean implements Serializable {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
 
     public static String PARAMETROS_GENERALES = "PG";
@@ -166,6 +166,7 @@ public class CombosBean implements Serializable {
     public SelectItem[] getLaboratorios() {
         return getSelectItems(traerInstituciones(Boolean.TRUE), "object", true);
     }
+
     public SelectItem[] getLaboratoriosId() {
         return getSelectItems(traerInstituciones(Boolean.TRUE), "id", true);
     }

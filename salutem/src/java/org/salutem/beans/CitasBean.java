@@ -17,10 +17,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.inject.Any;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import org.controladores.salutem.CitasFacade;
 import org.controladores.salutem.HorariosFacade;
 import org.entidades.salutem.Citas;
@@ -45,13 +46,14 @@ import org.salutem.utilitarios.Mensajes;
  * @author Luis Fernando Ordóñez Armijos
  * @since 25 de Julio de 2018, 11:13:55 AM
  */
-@ManagedBean(name = "salutemCitas")
+@Named("salutemCitas")
 @ViewScoped
 public class CitasBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty(value = "#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
-    @ManagedProperty(value = "#{salutemPacientes}")
+    @Inject
+    @Any
     private PacientesBean pacientesBean;
 
     private Perfiles perfil;

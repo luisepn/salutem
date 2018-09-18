@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.MaterialesFacade;
 import org.entidades.salutem.Materiales;
 import org.entidades.salutem.Perfiles;
@@ -32,11 +32,11 @@ import org.salutem.utilitarios.Mensajes;
  *
  *
  */
-@ManagedBean(name = "salutemMateriales")
+@Named("salutemMateriales")
 @ViewScoped
 public class MaterialesBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
 
     private Formulario formulario = new Formulario();

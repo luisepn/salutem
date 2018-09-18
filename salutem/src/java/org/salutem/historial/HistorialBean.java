@@ -10,9 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutemlogs.HistorialFacade;
 import org.entidades.salutemlogs.Historial;
 import org.entidades.salutem.Perfiles;
@@ -28,11 +28,11 @@ import org.salutem.utilitarios.Formulario;
  * @since 18 de Noviembre de 2017, 07:23:04 AM
  *
  */
-@ManagedBean(name = "salutemHistorial")
+@Named("salutemHistorial")
 @ViewScoped
 public class HistorialBean implements Serializable {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
 
     private Formulario formulario = new Formulario();

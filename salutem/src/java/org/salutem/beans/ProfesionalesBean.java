@@ -9,8 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import org.controladores.salutem.ProfesionalesFacade;
 import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Instituciones;
@@ -25,7 +25,7 @@ import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
-@ManagedBean(name = "salutemProfesionales")
+@Named("salutemProfesionales")
 @ViewScoped
 public class ProfesionalesBean extends PersonasAbstractoBean implements Serializable {
 

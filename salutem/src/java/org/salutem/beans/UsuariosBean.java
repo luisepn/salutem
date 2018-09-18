@@ -9,8 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 import org.controladores.salutem.UsuariosFacade;
 import org.entidades.salutem.Usuarios;
 import org.excepciones.salutem.ExcepcionDeEliminacion;
@@ -27,7 +27,7 @@ import org.salutem.utilitarios.Mensajes;
  * @author Luis Fernando Ordóñez Armijos
  * @since 21 de Noviembre de 2017, 09:36:18 AM
  */
-@ManagedBean(name = "salutemUsuarios")
+@Named("salutemUsuarios")
 @ViewScoped
 public class UsuariosBean extends PersonasAbstractoBean implements Serializable {
 

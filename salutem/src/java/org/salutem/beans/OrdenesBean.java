@@ -9,9 +9,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.OrdenesFacade;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Ordenes;
@@ -23,11 +23,11 @@ import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
-@ManagedBean(name = "salutemOrdenes")
+@Named("salutemOrdenes")
 @ViewScoped
 public class OrdenesBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
 
     private Formulario formulario = new Formulario();

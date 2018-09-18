@@ -9,10 +9,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.inject.Any;
+import javax.faces.view.ViewScoped;
 import javax.faces.event.ValueChangeEvent;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.PacientesFacade;
 import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Atenciones;
@@ -32,11 +33,12 @@ import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 import org.salutem.utilitarios.Reportesds;
 
-@ManagedBean(name = "salutemPacientes")
+@Named("salutemPacientes")
 @ViewScoped
 public class PacientesBean extends PersonasAbstractoBean implements Serializable {
 
-    @ManagedProperty("#{salutemCombos}")
+    @Inject
+    @Any
     private CombosBean combosBean;
 
     private LazyDataModel<Pacientes> pacientes;
@@ -57,7 +59,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
 
     @EJB
     private PacientesFacade ejbPacientes;
-    
+
     @PostConstruct
     @Override
     public void activar() {

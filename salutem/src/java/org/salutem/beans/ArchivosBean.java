@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -12,9 +13,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.application.Resource;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import org.controladores.salutem.ArchivosFacade;
 import org.entidades.salutem.Archivos;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
@@ -38,11 +40,11 @@ import org.salutem.utilitarios.Recurso;
  * puede ser parametrizado Módulo de Seguridad y Parametrización: [Maestro: PG;
  * Parámetro: DIRIMG (parametros)]
  */
-@ManagedBean(name = "salutemArchivos")
+@Named("salutemArchivos")
 @ViewScoped
 public class ArchivosBean implements Serializable {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
 
     private Archivos archivo;
@@ -147,14 +149,14 @@ public class ArchivosBean implements Serializable {
                     archivo.setActualizadopor(archivo.getCreadopor());
                     archivo.setRuta(seguridadBean.getDirectorioArchivos() + "/" + clasificador + "/*");
                     ejbArchivos.crear(archivo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-                    ejbArchivos.actualizarCampo("ruta", crearFichero(archivo.getId(), archivo.getArchivo(), clasificador), archivo.getId());
+                    ejbArchivos.actualizarCampo("ruta", crearFichero(archivo.getId(), archivo.getNombre(), archivo.getArchivo(), clasificador), archivo.getId());
                     archivo.setRuta(archivo.getRuta().replace("*", archivo.getId().toString()));
                 }
             } else {
                 if (archivo.getArchivo() != null) {
                     archivo.setActualizado(archivo.getCreado());
                     archivo.setActualizadopor(seguridadBean.getLogueado().getUserid());
-                    archivo.setRuta(crearFichero(archivo.getId(), archivo.getArchivo(), clasificador));
+                    archivo.setRuta(crearFichero(archivo.getId(), archivo.getNombre(), archivo.getArchivo(), clasificador));
                     ejbArchivos.actualizar(archivo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                 }
             }
@@ -164,7 +166,7 @@ public class ArchivosBean implements Serializable {
         }
     }
 
-    private String crearFichero(Integer id, byte[] archivo, String directorio) throws ExcepcionDeConsulta {
+    private String crearFichero(Integer id, String extension, byte[] archivo, String directorio) throws ExcepcionDeConsulta {
         if (archivo == null) {
             return null;
         }
@@ -175,7 +177,7 @@ public class ArchivosBean implements Serializable {
                 if (!folder.exists()) {
                     folder.mkdirs();
                 }
-                File fichero = new File(folder.getAbsolutePath() + "/" + id);
+                File fichero = new File(folder.getAbsolutePath() + "/" + id + "." + extension);
                 fichero.createNewFile();
 
                 try (OutputStream out = new FileOutputStream(fichero.getCanonicalPath())) {
@@ -199,7 +201,7 @@ public class ArchivosBean implements Serializable {
         }
     }
 
-    public Recurso traerImagen() {
+    public Resource traerImagen() {
         try {
             return new Recurso(Files.readAllBytes(Paths.get(archivo.getRuta() != null ? archivo.getRuta() : "")));
         } catch (IOException ex) {
@@ -208,11 +210,14 @@ public class ArchivosBean implements Serializable {
         }
     }
 
-    public Recurso traerRecurso(String ruta) {
+    public Recurso traerRecurso(Archivos archivo) {
         try {
-            return new Recurso(Files.readAllBytes(Paths.get(ruta != null ? ruta : "")));
+            Recurso recurso = new Recurso(Files.readAllBytes(Paths.get(archivo.getRuta() != null ? archivo.getRuta() : "")));
+            recurso.setResourceName(archivo.getNombre());
+            recurso.setContentType(archivo.getTipo());
+            return recurso;
         } catch (IOException ex) {
-            Mensajes.fatal("El archivo no existe en la ruta " + (ruta != null ? ruta : ""));
+            Mensajes.fatal("El archivo no existe en la ruta " + (archivo.getRuta() != null ? archivo.getRuta() : ""));
             return null;
         }
     }

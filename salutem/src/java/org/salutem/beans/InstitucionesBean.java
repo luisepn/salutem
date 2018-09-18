@@ -9,9 +9,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.inject.Any;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.DireccionesFacade;
 import org.controladores.salutem.InstitucionesFacade;
 import org.entidades.salutem.Archivos;
@@ -33,13 +34,14 @@ import org.salutem.utilitarios.Mensajes;
  * @author Luis Fernando Ordóñez Armijos
  * @since 23 de Noviembre de 2017, 07:46:08 AM
  */
-@ManagedBean(name = "salutemInstituciones")
+@Named("salutemInstituciones")
 @ViewScoped
 public class InstitucionesBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
-    @ManagedProperty("#{salutemArchivos}")
+    @Inject
+    @Any
     private ArchivosBean archivosBean;
 
     private Formulario formulario = new Formulario();
@@ -138,7 +140,7 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        institucion = ((Instituciones) instituciones.getRowData()); 
+        institucion = ((Instituciones) instituciones.getRowData());
         archivosBean.iniciar(getNombreTabla(), institucion.getId(), institucion.getLogotipo() != null ? institucion.getLogotipo() : new Archivos());
         direccion = institucion.getDireccion() != null ? institucion.getDireccion() : new Direcciones();
         formulario.editar();
@@ -151,7 +153,7 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         institucion = ((Instituciones) instituciones.getRowData());
-         archivosBean.iniciar(getNombreTabla(), institucion.getId(), institucion.getLogotipo() != null ? institucion.getLogotipo() : new Archivos());
+        archivosBean.iniciar(getNombreTabla(), institucion.getId(), institucion.getLogotipo() != null ? institucion.getLogotipo() : new Archivos());
         direccion = institucion.getDireccion() != null ? institucion.getDireccion() : new Direcciones();
         formulario.eliminar();
         return null;

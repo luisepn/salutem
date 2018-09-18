@@ -18,13 +18,13 @@ public class ValidadorRuc implements Validator {
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
 
         String numero = (String) value;
-        int suma = 0;
-        int residuo = 0;
+        int suma;
+        int residuo;
         boolean privada = false;
         boolean publica = false;
         boolean natural = false;
         int numeroProvincias = 24;
-        int digitoVerificador = 0;
+        int digitoVerificador;
         int modulo = 11;
 
         int d1, d2, d3, d4, d5, d6, d7, d8, d9, d10;

@@ -235,203 +235,195 @@
                                 <h:panelGrid columns="2" width="100%" columnClasses="cuarenta, sesenta">
 
                                     <h:panelGrid width="100%">
-                                        <ace:tabSet style="width: 100%">
-                                            <ace:tabPane label="Optometría" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">
-                                                <ace:menuBar autoSubmenuDisplay="true">
-                                                    <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                                                  action="#{salutemAtenciones.grabarFormula()}"/>
-                                                </ace:menuBar>
-                                                <h:panelGrid columns="3" width="100%">
-                                                    <ace:panel header="LENSOMETRÍA">
-                                                        <h:panelGrid columns="2">
-                                                            <h:outputText value="OD" styleClass="bold"/>
-                                                            <ace:textEntry value="#{salutemAtenciones.lensometria.d}" title="Ojo derecho" style="width: 50px"/>
-                                                            <h:outputText value="OI" styleClass="bold"/>
-                                                            <ace:textEntry value="#{salutemAtenciones.lensometria.i}" title="Ojo izquierdo" style="width: 50px"/>
-                                                        </h:panelGrid>                              
-                                                    </ace:panel>
+                                        <ace:panel header="Optometría" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">
+                                            <ace:menuBar autoSubmenuDisplay="true">
+                                                <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                                              action="#{salutemAtenciones.grabarFormula()}"/>
+                                            </ace:menuBar>
+                                            <h:panelGrid columns="3" width="100%">
+                                                <ace:panel header="LENSOMETRÍA">
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputText value="OD" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.lensometria.d}" title="Ojo derecho" style="width: 50px"/>
+                                                        <h:outputText value="OI" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.lensometria.i}" title="Ojo izquierdo" style="width: 50px"/>
+                                                    </h:panelGrid>                              
+                                                </ace:panel>
 
-                                                    <ace:panel header="AV SC">
-                                                        <h:panelGrid columns="2">
-                                                            <h:outputText value="OD" styleClass="bold"/>
-                                                            <ace:textEntry value="#{salutemAtenciones.agudezavisualsincristal.d}" title="Ojo derecho" style="width: 50px"/>
-                                                            <h:outputText value="OI" styleClass="bold"/>
-                                                            <ace:textEntry value="#{salutemAtenciones.agudezavisualsincristal.i}" title="Ojo izquierdo" style="width: 50px"/>
-                                                        </h:panelGrid>                              
-                                                    </ace:panel>
+                                                <ace:panel header="AV SC">
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputText value="OD" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.agudezavisualsincristal.d}" title="Ojo derecho" style="width: 50px"/>
+                                                        <h:outputText value="OI" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.agudezavisualsincristal.i}" title="Ojo izquierdo" style="width: 50px"/>
+                                                    </h:panelGrid>                              
+                                                </ace:panel>
 
-                                                    <ace:panel header="AV CC">
-                                                        <h:panelGrid columns="2">
-                                                            <h:outputText value="OD" styleClass="bold"/>
-                                                            <ace:textEntry value="#{salutemAtenciones.agudezavisualconcristal.d}" title="Ojo derecho" style="width: 50px"/>
-                                                            <h:outputText value="OI" styleClass="bold"/>
-                                                            <ace:textEntry value="#{salutemAtenciones.agudezavisualconcristal.i}" title="Ojo izquierdo" style="width: 50px"/>
-                                                        </h:panelGrid>                              
-                                                    </ace:panel>
-                                                </h:panelGrid>
-                                                <h:panelGrid width="100%">
-                                                    <ace:dataTable
-                                                        value="#{salutemAtenciones.listaRxFinal}"
-                                                        resizableColumns="true"
-                                                        var="rxfinal">
-                                                        <f:facet name="header">Rx Final</f:facet>
-                                                        <ace:column headerText="" style="text-align: center">
-                                                            <h:outputText value="#{rxfinal.ojo}" style="width: 50px"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Esfera" style="text-align: center">
-                                                            <ace:textEntry value="#{rxfinal.esfera}" style="width: 50px"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Cilindro" style="text-align: center">
-                                                            <ace:textEntry value="#{rxfinal.cilindro}" style="width: 50px"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Eje" style="text-align: center">
-                                                            <ace:textEntry value="#{rxfinal.eje}" style="width: 50px"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="ADD" style="text-align: center">
-                                                            <ace:textEntry value="#{rxfinal.adicion}" style="width: 50px"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="DP" style="text-align: center">
-                                                            <ace:textEntry value="#{rxfinal.distanciapupilar}" style="width: 50px"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="AV" style="text-align: center">
-                                                            <ace:textEntry value="#{rxfinal.agudezavisual}" style="width: 50px"/>
-                                                        </ace:column>
-                                                    </ace:dataTable>
-                                                </h:panelGrid>
-                                            </ace:tabPane>
-                                            <ace:tabPane label="Ficha médica" rendered="#{salutemDatos.datos.size() gt 0}">
-                                                <h:panelGrid width="100%">
-                                                    <ui:include src="../cuadroDatos.xhtml"/>                                       
-                                                </h:panelGrid>
-                                            </ace:tabPane>
-                                        </ace:tabSet>
+                                                <ace:panel header="AV CC">
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputText value="OD" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.agudezavisualconcristal.d}" title="Ojo derecho" style="width: 50px"/>
+                                                        <h:outputText value="OI" styleClass="bold"/>
+                                                        <ace:textEntry value="#{salutemAtenciones.agudezavisualconcristal.i}" title="Ojo izquierdo" style="width: 50px"/>
+                                                    </h:panelGrid>                              
+                                                </ace:panel>
+                                            </h:panelGrid>
+                                            <h:panelGrid width="100%">
+                                                <ace:dataTable
+                                                    value="#{salutemAtenciones.listaRxFinal}"
+                                                    resizableColumns="true"
+                                                    var="rxfinal">
+                                                    <f:facet name="header">Rx Final</f:facet>
+                                                    <ace:column headerText="" style="text-align: center">
+                                                        <h:outputText value="#{rxfinal.ojo}" style="width: 50px"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Esfera" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.esfera}" style="width: 50px"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Cilindro" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.cilindro}" style="width: 50px"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Eje" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.eje}" style="width: 50px"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="ADD" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.adicion}" style="width: 50px"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="DP" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.distanciapupilar}" style="width: 50px"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="AV" style="text-align: center">
+                                                        <ace:textEntry value="#{rxfinal.agudezavisual}" style="width: 50px"/>
+                                                    </ace:column>
+                                                </ace:dataTable>
+                                            </h:panelGrid>
+                                        </ace:panel>
+                                        <ace:panel header="Ficha médica" rendered="#{salutemDatos.datos.size() gt 0}">
+                                            <h:panelGrid width="100%">
+                                                <ui:include src="../cuadroDatos.xhtml"/>                                       
+                                            </h:panelGrid>
+                                        </ace:panel>
+
                                     </h:panelGrid>
 
                                     <h:panelGrid width="100%">
-                                        <ace:tabSet style="width: 100%">
-                                            <ace:tabPane label="Datos del Paciente">
-                                                <h:panelGrid columns="2">
-                                                    <h:outputLabel value="C.I.:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.cedula}"/>
-                                                    <h:outputLabel value="Nombres:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.nombres}"/>
-                                                    <h:outputLabel value="Apellidos:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.apellidos}"/>
-                                                    <h:outputLabel value="E-mail:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.email}"/>
-                                                    <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.fecha}">
-                                                        <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>   
-                                                    </h:outputLabel>
-                                                    <h:outputLabel value="Ocupación:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.ocupacion}"/>
-                                                    <h:outputLabel value="Género:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.genero.nombre}"/>
-                                                    <h:outputLabel value="Descripción:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.atencion.paciente.descripcion}" style="white-space: pre-wrap"/>
-                                                </h:panelGrid>
-                                            </ace:tabPane>
-                                        </ace:tabSet>
+                                        <ace:panel header="Datos del Paciente">
+                                            <h:panelGrid columns="2">
+                                                <h:outputLabel value="C.I.:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.cedula}"/>
+                                                <h:outputLabel value="Nombres:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.nombres}"/>
+                                                <h:outputLabel value="Apellidos:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.apellidos}"/>
+                                                <h:outputLabel value="E-mail:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.email}"/>
+                                                <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.fecha}">
+                                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>   
+                                                </h:outputLabel>
+                                                <h:outputLabel value="Ocupación:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.ocupacion}"/>
+                                                <h:outputLabel value="Género:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.genero.nombre}"/>
+                                                <h:outputLabel value="Descripción:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.descripcion}" style="white-space: pre-wrap"/>
+                                            </h:panelGrid>
+                                        </ace:panel>
 
-                                        <ace:tabSet style="width: 100%">
-                                            <ace:tabPane label="Prescripción" rendered="#{salutemAtenciones.atencion.especialidad.codigo ne 'OPT'}">
-                                                <h:panelGrid width="100%">
+                                        <ace:panel header="Prescripción" rendered="#{salutemAtenciones.atencion.especialidad.codigo ne 'OPT'}">
+                                            <h:panelGrid width="100%">
+                                                <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar}">
+                                                    <ace:menuItem value="Nueva" icon="ui-icon ui-icon-document" 
+                                                                  action="#{salutemAtenciones.crearPrescripcion()}"/>
+                                                    <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                                                  action="#{salutemAtenciones.grabarPrescripciones()}"
+                                                                  rendered="#{salutemAtenciones.prescripciones.size() gt 0}"/>
+                                                </ace:menuBar>
+                                                <ace:dataTable
+                                                    value="#{salutemAtenciones.prescripciones}"
+                                                    resizableColumns="true"
+                                                    var="prescripcion"                                                    
+                                                    binding="#{bprescripcion}">
+                                                    <f:facet name="header">Prescripciones</f:facet>
+                                                    <ace:column headerText="Operaciones" style="text-align: left">
+                                                        <h:commandLink value="Eliminar" action="#{salutemAtenciones.eliminarPrescripcion(bprescripcion.rowIndex)}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Medicamento" style="text-align: left">
+                                                        <ace:textAreaEntry value="#{prescripcion.medicamento}" rows="1"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Dosis" style="text-align: left">
+                                                        <ace:textAreaEntry value="#{prescripcion.dosis}" rows="1"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Frecuencia" style="text-align: left">
+                                                        <ace:textAreaEntry value="#{prescripcion.frecuencia}" rows="1"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Duración" style="text-align: left">
+                                                        <ace:textAreaEntry value="#{prescripcion.duracion}" rows="1"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Advertencias" style="text-align: left">
+                                                        <ace:textAreaEntry value="#{prescripcion.advertencias}" rows="1"/>
+                                                    </ace:column>
+                                                </ace:dataTable>
+                                            </h:panelGrid>
+                                        </ace:panel>
+                                        <ace:panel header="Orden de Laboratorio" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">
+                                            <h:panelGrid width="100%">
+                                                <h:panelGrid columns="4">
+                                                    <h:outputLabel value="Laboratorio" styleClass="bold"/>
+                                                    <h:selectOneMenu value="#{salutemAtenciones.laboratorio}">
+                                                        <f:selectItems value="#{salutemCombos.laboratorios}" />
+                                                    </h:selectOneMenu>
                                                     <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar}">
-                                                        <ace:menuItem value="Nueva" icon="ui-icon ui-icon-document" 
-                                                                      action="#{salutemAtenciones.crearPrescripcion()}"/>
+                                                        <ace:menuItem value="Generar" icon="ui-icon ui-icon-script" 
+                                                                      action="#{salutemAtenciones.crearOrden()}" 
+                                                                      rendered="#{salutemAtenciones.orden eq null or salutemAtenciones.orden.id eq null}"/>
                                                         <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                                                      action="#{salutemAtenciones.grabarPrescripciones()}"
-                                                                      rendered="#{salutemAtenciones.prescripciones.size() gt 0}"/>
+                                                                      action="#{salutemAtenciones.grabarOrden()}"
+                                                                      rendered="#{salutemAtenciones.orden ne null and salutemAtenciones.orden.id ne null}"/>/>
                                                     </ace:menuBar>
-                                                    <ace:dataTable
-                                                        value="#{salutemAtenciones.prescripciones}"
-                                                        resizableColumns="true"
-                                                        var="prescripcion"                                                    
-                                                        binding="#{bprescripcion}">
-                                                        <f:facet name="header">Prescripciones</f:facet>
-                                                        <ace:column headerText="Operaciones" style="text-align: left">
-                                                            <h:commandLink value="Eliminar" action="#{salutemAtenciones.eliminarPrescripcion(bprescripcion.rowIndex)}"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Medicamento" style="text-align: left">
-                                                            <ace:textAreaEntry value="#{prescripcion.medicamento}" rows="1"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Dosis" style="text-align: left">
-                                                            <ace:textAreaEntry value="#{prescripcion.dosis}" rows="1"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Frecuencia" style="text-align: left">
-                                                            <ace:textAreaEntry value="#{prescripcion.frecuencia}" rows="1"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Duración" style="text-align: left">
-                                                            <ace:textAreaEntry value="#{prescripcion.duracion}" rows="1"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Advertencias" style="text-align: left">
-                                                            <ace:textAreaEntry value="#{prescripcion.advertencias}" rows="1"/>
-                                                        </ace:column>
-                                                    </ace:dataTable>
                                                 </h:panelGrid>
-                                            </ace:tabPane>
-                                            <ace:tabPane label="Orden de Laboratorio" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">
-                                                <h:panelGrid width="100%">
-                                                    <h:panelGrid columns="4">
-                                                        <h:outputLabel value="Laboratorio" styleClass="bold"/>
-                                                        <h:selectOneMenu value="#{salutemAtenciones.laboratorio}">
-                                                            <f:selectItems value="#{salutemCombos.laboratorios}" />
-                                                        </h:selectOneMenu>
-                                                        <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar}">
-                                                            <ace:menuItem value="Generar" icon="ui-icon ui-icon-script" 
-                                                                          action="#{salutemAtenciones.crearOrden()}" 
-                                                                          rendered="#{salutemAtenciones.orden eq null or salutemAtenciones.orden.id eq null}"/>
-                                                            <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                                                          action="#{salutemAtenciones.grabarOrden()}"
-                                                                          rendered="#{salutemAtenciones.orden ne null and salutemAtenciones.orden.id ne null}"/>/>
-                                                        </ace:menuBar>
-                                                    </h:panelGrid>
-                                                    <ace:dataTable
-                                                        value="#{salutemAtenciones.listaRxFinal}"
-                                                        resizableColumns="true"
-                                                        var="rxorden">
-                                                        <f:facet name="header">Laboratorio: #{salutemAtenciones.orden.laboratorio}</f:facet>
-                                                        <ace:column headerText="" style="text-align: center">
-                                                            <h:outputText value="#{rxorden.ojo}"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Esfera" style="text-align: center">
-                                                            <h:outputText value="#{rxorden.esfera}"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Cilindro" style="text-align: center">
-                                                            <h:outputText value="#{rxorden.cilindro}"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="Eje" style="text-align: center">
-                                                            <h:outputText value="#{rxorden.eje}"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="ADD" style="text-align: center">
-                                                            <h:outputText value="#{rxorden.adicion}"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="DP" style="text-align: center">
-                                                            <h:outputText value="#{rxorden.distanciapupilar}"/>
-                                                        </ace:column>
-                                                        <ace:column headerText="AV" style="text-align: center">
-                                                            <h:outputText value="#{rxorden.agudezavisual}"/>
-                                                        </ace:column>
-                                                    </ace:dataTable>
-                                                </h:panelGrid>
-                                            </ace:tabPane>
-                                        </ace:tabSet>
+                                                <ace:dataTable
+                                                    value="#{salutemAtenciones.listaRxFinal}"
+                                                    resizableColumns="true"
+                                                    var="rxorden">
+                                                    <f:facet name="header">Laboratorio: #{salutemAtenciones.orden.laboratorio}</f:facet>
+                                                    <ace:column headerText="" style="text-align: center">
+                                                        <h:outputText value="#{rxorden.ojo}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Esfera" style="text-align: center">
+                                                        <h:outputText value="#{rxorden.esfera}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Cilindro" style="text-align: center">
+                                                        <h:outputText value="#{rxorden.cilindro}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="Eje" style="text-align: center">
+                                                        <h:outputText value="#{rxorden.eje}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="ADD" style="text-align: center">
+                                                        <h:outputText value="#{rxorden.adicion}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="DP" style="text-align: center">
+                                                        <h:outputText value="#{rxorden.distanciapupilar}"/>
+                                                    </ace:column>
+                                                    <ace:column headerText="AV" style="text-align: center">
+                                                        <h:outputText value="#{rxorden.agudezavisual}"/>
+                                                    </ace:column>
+                                                </ace:dataTable>
+                                            </h:panelGrid>
+                                        </ace:panel>
                                     </h:panelGrid>
 
                                 </h:panelGrid>
-
-                                <ace:tabSet style="width: 100%">
-                                    <ace:tabPane label="Atención">
-                                        <h:panelGrid columns="2" width="100%">
-                                            <h:outputText value="Motivo:" styleClass="bold"/>
-                                            <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.motivo}" style="width: 100%"/>
-                                            <h:outputText value="Diagnostico:" styleClass="bold"/>
-                                            <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.diagnostico}" style="width: 100%"/>
-                                            <h:outputText value="Observaciones:" styleClass="bold"/>
-                                            <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.observaciones}" style="width: 100%"/>
-                                        </h:panelGrid>
-                                    </ace:tabPane>
-                                </ace:tabSet>
+                                <ace:panel header="Atención" style="width: 100%">
+                                    <h:panelGrid columns="2" width="100%">
+                                        <h:outputText value="Motivo:" styleClass="bold"/>
+                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.motivo}" style="width: 99%"/>
+                                        <h:outputText value="Diagnostico:" styleClass="bold"/>
+                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.diagnostico}" style="width: 99%"/>
+                                        <h:outputText value="Observaciones:" styleClass="bold"/>
+                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.observaciones}" style="width: 99%"/>
+                                    </h:panelGrid>
+                                </ace:panel>
                             </ace:tabPane>
                             <ace:tabPane label="#{salutemSeguridad.getFechaConFormato(salutemAtenciones.ultimaAtencion.fecha)}" rendered="#{salutemAtenciones.ultimaAtencion ne null}">
                                 <h:panelGrid width="100%" rendered="#{salutemAtenciones.verHistorico}">
@@ -547,10 +539,11 @@
                                                                                       or datoa.tipo.codigo eq 'LIST'}">
                                                             </h:outputText>
                                                             <ace:dynamicResource
-                                                                resource="#{salutemArchivos.traerRecurso(datoa.archivo.ruta)}"
+                                                                fileName="#{datoa.archivo.nombre}"
+                                                                resource="#{salutemArchivos.traerRecurso(datoa.archivo)}"
                                                                 label="Descargar (#{datoa.archivo.nombre})"
                                                                 mimeType="#{datoa.archivo.tipo}"
-                                                                rendered="#{datoa.archivo ne null and salutemArchivos.traerRecurso(datoa.archivo.ruta) ne null}"/>
+                                                                rendered="#{datoa.archivo ne null and salutemArchivos.traerRecurso(datoa.archivo) ne null}"/>
                                                         </ace:column>
                                                     </ace:dataTable>                                  
                                                 </h:panelGrid>

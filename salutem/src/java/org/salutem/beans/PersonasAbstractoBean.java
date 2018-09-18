@@ -9,10 +9,9 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.inject.Any;
 import javax.faces.event.ValueChangeEvent;
+import javax.inject.Inject;
 import org.controladores.salutem.DireccionesFacade;
 import org.controladores.salutem.PersonasFacade;
 import org.entidades.salutem.Archivos;
@@ -31,13 +30,12 @@ import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
-@ManagedBean(name = "salutemPersonasAbstracto")
-@ViewScoped
 public abstract class PersonasAbstractoBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     protected SeguridadBean seguridadBean;
-    @ManagedProperty("#{salutemArchivos}")
+    @Inject
+    @Any
     protected ArchivosBean archivosBean;
 
     protected Formulario formulario = new Formulario();

@@ -15,10 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.inject.Any;
+import javax.faces.view.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.controladores.salutem.HorariosFacade;
 import org.entidades.salutem.Horarios;
 import org.entidades.salutem.Horas;
@@ -41,13 +42,14 @@ import org.salutem.utilitarios.Mensajes;
  *
  *
  */
-@ManagedBean(name = "salutemHorarios")
+@Named("salutemHorarios")
 @ViewScoped
 public class HorariosBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty(value = "#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
-    @ManagedProperty(value = "#{salutemCombos}")
+    @Inject
+    @Any
     private CombosBean combosBean;
 
     private Perfiles perfil;

@@ -15,9 +15,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.inject.Any;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import org.controladores.salutem.AtencionesFacade;
 import org.controladores.salutem.FormulasFacade;
 import org.controladores.salutem.OrdenesFacade;
@@ -47,17 +48,20 @@ import org.utilitarios.salutem.RxFinal;
  * @author Luis Fernando Ordóñez Armijos
  * @since 24 de Agosto de 2018, 15:46:28 PM
  */
-@ManagedBean(name = "salutemAtenciones")
+@Named("salutemAtenciones")
 @ViewScoped
 public class AtencionesBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty(value = "#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
-    @ManagedProperty(value = "#{salutemPacientes}")
+    @Inject
+    @Any
     private PacientesBean pacientesBean;
-    @ManagedProperty(value = "#{salutemCombos}")
+    @Inject
+    @Any
     private CombosBean combosBean;
-    @ManagedProperty(value = "#{salutemDatos}")
+    @Inject
+    @Any
     private DatosBean datosBean;
 
     private Perfiles perfil;

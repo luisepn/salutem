@@ -10,10 +10,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.enterprise.inject.Any;
+import javax.inject.Named;
+import javax.faces.view.ViewScoped;
 import javax.faces.model.SelectItem;
+import javax.inject.Inject;
 import org.controladores.salutem.CamposFacade;
 import org.entidades.salutem.Campos;
 import org.entidades.salutem.Instituciones;
@@ -34,13 +35,14 @@ import org.utilitarios.salutem.Items;
  * @author Luis Fernando Ordóñez Armijos
  * @since 21 de Agosto de 2018, 16:57:35 AM
  */
-@ManagedBean(name = "salutemCampos")
+@Named("salutemCampos")
 @ViewScoped
 public class CamposBean implements Serializable, IMantenimiento {
 
-    @ManagedProperty("#{salutemSeguridad}")
+    @Inject
     private SeguridadBean seguridadBean;
-    @ManagedProperty("#{salutemCombos}")
+    @Inject
+    @Any
     private CombosBean combosBean;
 
     private Formulario formulario = new Formulario();
