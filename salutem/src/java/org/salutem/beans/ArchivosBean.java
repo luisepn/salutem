@@ -75,7 +75,11 @@ public class ArchivosBean implements Serializable {
         this.clasificador = clasificador;
         this.identificador = identificador;
         this.archivo = archivo;
-        this.archivo.setArchivo(traerImagen(archivo.getRuta()));
+        if (archivo.existeFichero()) {
+            this.archivo.setArchivo(archivo.getArchivo());
+        } else {
+            Mensajes.fatal("El archivo no existe en la ruta " + archivo.getRuta());
+        }
         buscar();
     }
 
@@ -149,14 +153,14 @@ public class ArchivosBean implements Serializable {
                     archivo.setActualizadopor(archivo.getCreadopor());
                     archivo.setRuta(seguridadBean.getDirectorioArchivos() + "/" + clasificador + "/*");
                     ejbArchivos.crear(archivo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-                    ejbArchivos.actualizarCampo("ruta", crearFichero(archivo.getId(), archivo.getNombre(), archivo.getArchivo(), clasificador), archivo.getId());
+                    ejbArchivos.actualizarCampo("ruta", crearFichero(archivo.getId(), archivo.getArchivo(), clasificador), archivo.getId());
                     archivo.setRuta(archivo.getRuta().replace("*", archivo.getId().toString()));
                 }
             } else {
                 if (archivo.getArchivo() != null) {
                     archivo.setActualizado(archivo.getCreado());
                     archivo.setActualizadopor(seguridadBean.getLogueado().getUserid());
-                    archivo.setRuta(crearFichero(archivo.getId(), archivo.getNombre(), archivo.getArchivo(), clasificador));
+                    archivo.setRuta(crearFichero(archivo.getId(), archivo.getArchivo(), clasificador));
                     ejbArchivos.actualizar(archivo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                 }
             }
@@ -166,7 +170,7 @@ public class ArchivosBean implements Serializable {
         }
     }
 
-    private String crearFichero(Integer id, String extension, byte[] archivo, String directorio) throws ExcepcionDeConsulta {
+    private String crearFichero(Integer id, byte[] archivo, String directorio) throws ExcepcionDeConsulta {
         if (archivo == null) {
             return null;
         }
@@ -177,7 +181,7 @@ public class ArchivosBean implements Serializable {
                 if (!folder.exists()) {
                     folder.mkdirs();
                 }
-                File fichero = new File(folder.getAbsolutePath() + "/" + id + "." + extension);
+                File fichero = new File(folder.getAbsolutePath() + "/" + id);
                 fichero.createNewFile();
 
                 try (OutputStream out = new FileOutputStream(fichero.getCanonicalPath())) {
@@ -201,37 +205,17 @@ public class ArchivosBean implements Serializable {
         }
     }
 
-    public Resource traerImagen() {
-        try {
-            return new Recurso(Files.readAllBytes(Paths.get(archivo.getRuta() != null ? archivo.getRuta() : "")));
-        } catch (IOException ex) {
-            Mensajes.fatal("El archivo no existe en la ruta " + (archivo.getRuta() != null ? archivo.getRuta() : ""));
-            return null;
-        }
-    }
-
     public Recurso traerRecurso(Archivos archivo) {
-        try {
-            Recurso recurso = new Recurso(Files.readAllBytes(Paths.get(archivo.getRuta() != null ? archivo.getRuta() : "")));
-            recurso.setResourceName(archivo.getNombre());
-            recurso.setContentType(archivo.getTipo());
-            return recurso;
-        } catch (IOException ex) {
-            Mensajes.fatal("El archivo no existe en la ruta " + (archivo.getRuta() != null ? archivo.getRuta() : ""));
-            return null;
-        }
-    }
-
-    public byte[] traerImagen(String ruta) {
-        try {
-            if (ruta == null) {
-                return null;
+        if (archivo.existeFichero()) {
+            try {
+                return new Recurso(Files.readAllBytes(Paths.get(archivo.getRuta() != null ? archivo.getRuta() : "")));
+            } catch (IOException ex) {
+                Logger.getLogger(ArchivosBean.class.getName()).log(Level.SEVERE, null, ex);
             }
-            return Files.readAllBytes(Paths.get(ruta));
-        } catch (IOException ex) {
-            Mensajes.fatal("El archivo no existe en la ruta " + ruta);
-            return null;
+        } else {
+            Mensajes.fatal("El archivo no existe en la ruta " + (archivo.getRuta() != null ? archivo.getRuta() : ""));
         }
+        return null;
     }
 
     /**

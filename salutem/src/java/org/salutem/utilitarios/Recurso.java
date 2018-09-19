@@ -20,7 +20,6 @@ import javax.faces.context.FacesContext;
  */
 public final class Recurso extends Resource implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     private String path = "";
     private final HashMap<String, String> headers;
     private final byte[] bytes;
@@ -57,6 +56,13 @@ public final class Recurso extends Resource implements Serializable {
     @Override
     public boolean userAgentNeedsUpdate(FacesContext context) {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Recurso{" + "path=" + path + ", headers=" + headers + ", bytes=" + bytes + '}'
+                + getContentType() + "\n" + getLibraryName() + "\n" + getRequestPath() + "\n" + getResourceName() 
+                + "\n" + getResponseHeaders() + "\n" + getURL();
     }
 
 }

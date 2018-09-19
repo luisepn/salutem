@@ -16,6 +16,7 @@ public class Formulario {
     private boolean crear;
     private boolean editar;
     private boolean eliminar;
+    private boolean imprimir;
 
     //exportar
     private String tipo = "xls";
@@ -30,6 +31,7 @@ public class Formulario {
         crear = false;
         editar = false;
         eliminar = false;
+        imprimir = false;
     }
 
     public void insertar() {
@@ -37,6 +39,7 @@ public class Formulario {
         crear = true;
         editar = false;
         eliminar = false;
+        imprimir = false;
     }
 
     public void editar() {
@@ -44,6 +47,7 @@ public class Formulario {
         crear = false;
         editar = true;
         eliminar = false;
+        imprimir = false;
     }
 
     public void eliminar() {
@@ -51,6 +55,15 @@ public class Formulario {
         crear = false;
         editar = false;
         eliminar = true;
+        imprimir = false;
+    }
+
+    public void imprimir() {
+        mostrar = true;
+        crear = false;
+        editar = false;
+        eliminar = false;
+        imprimir = true;
     }
 
     public void cancelar() {
@@ -58,6 +71,7 @@ public class Formulario {
         crear = false;
         editar = false;
         eliminar = false;
+        imprimir = false;
     }
 
     public String getRowsPerPageTemplate() {
@@ -191,5 +205,19 @@ public class Formulario {
      */
     public void setFilaIndice(int filaIndice) {
         this.filaIndice = filaIndice;
+    }
+
+    /**
+     * @return the imprimir
+     */
+    public boolean isImprimir() {
+        return imprimir;
+    }
+
+    /**
+     * @param imprimir the imprimir to set
+     */
+    public void setImprimir(boolean imprimir) {
+        this.imprimir = imprimir;
     }
 }

@@ -7,7 +7,7 @@
     <h:body>
         <ui:composition>
             <h:panelGrid width="100%" style="text-align: center;">
-                <ace:graphicImage value="#{salutemArchivos.traerImagen(ingresoSistema.institucion.logotipo.ruta)}" 
+                <ace:graphicImage value="#{ingresoSistema.institucion.logotipo.traerImagen()}" 
                                   name="#{ingresoSistema.institucion.id}_#{ingresoSistema.institucion.nombre}" 
                                   rendered="#{ingresoSistema.institucion ne null and ingresoSistema.institucion.logotipo ne null and ingresoSistema.institucion.logotipo.ruta ne null}"
                                   alt="logo" height="100px" />

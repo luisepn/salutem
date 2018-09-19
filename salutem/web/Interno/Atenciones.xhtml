@@ -149,6 +149,7 @@
                                     <ace:menuButton  effect="slide" effectDuration="200" value="..." >
                                         <ace:menuItem action="#{salutemAtenciones.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
                                         <ace:menuItem action="#{salutemAtenciones.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                        <ace:menuItem action="#{salutemAtenciones.imprimir()}" value="Imprimir" icon="ui-icon ui-icon-print"/>
                                         <ace:menuItem action="#{salutemHistorial.buscar(salutemAtenciones.nombreTabla, item.id)}" value="Historial" icon="ui-icon ui-icon-script"/>
                                     </ace:menuButton>
                                 </ace:column> 
@@ -231,7 +232,7 @@
                         rendered="#{salutemAtenciones.formulario.mostrar}"
                         visible="#{salutemAtenciones.formulario.mostrar}">
                         <ace:tabSet style="width: 100%">
-                            <ace:tabPane label="#{salutemSeguridad.getFechaConFormato(salutemAtenciones.atencion.fecha)}">
+                            <ace:tabPane label="#{salutemSeguridad.getFechaConFormato(salutemAtenciones.atencion.fecha)}" rendered="#{salutemAtenciones.atencion ne null}">
                                 <h:panelGrid columns="2" width="100%" columnClasses="cuarenta, sesenta">
 
                                     <h:panelGrid width="100%">
@@ -368,20 +369,28 @@
                                         </ace:panel>
                                         <ace:panel header="Orden de Laboratorio" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">
                                             <h:panelGrid width="100%">
-                                                <h:panelGrid columns="4">
+                                                <h:panelGrid columns="2" rendered="#{salutemAtenciones.orden eq null or salutemAtenciones.orden.id eq null}">
                                                     <h:outputLabel value="Laboratorio" styleClass="bold"/>
                                                     <h:selectOneMenu value="#{salutemAtenciones.laboratorio}">
                                                         <f:selectItems value="#{salutemCombos.laboratorios}" />
                                                     </h:selectOneMenu>
-                                                    <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar}">
-                                                        <ace:menuItem value="Generar" icon="ui-icon ui-icon-script" 
-                                                                      action="#{salutemAtenciones.crearOrden()}" 
-                                                                      rendered="#{salutemAtenciones.orden eq null or salutemAtenciones.orden.id eq null}"/>
-                                                        <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
-                                                                      action="#{salutemAtenciones.grabarOrden()}"
-                                                                      rendered="#{salutemAtenciones.orden ne null and salutemAtenciones.orden.id ne null}"/>/>
-                                                    </ace:menuBar>
                                                 </h:panelGrid>
+                                                <h:panelGrid columns="2" rendered="#{salutemAtenciones.orden ne null and salutemAtenciones.orden.id ne null}">
+                                                    <h:outputLabel value="Laboratorio" styleClass="bold"/>
+                                                    <h:selectOneMenu value="#{salutemAtenciones.orden.laboratorio}">
+                                                        <f:selectItems value="#{salutemCombos.laboratorios}" />
+                                                    </h:selectOneMenu>
+                                                    <h:outputLabel value="Fcatura:" styleClass="bold"/>
+                                                    <ace:textEntry value="#{salutemAtenciones.orden.factura}"/>  
+                                                </h:panelGrid>
+                                                <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar}">
+                                                    <ace:menuItem value="Generar" icon="ui-icon ui-icon-script" 
+                                                                  action="#{salutemAtenciones.crearOrden()}" 
+                                                                  rendered="#{salutemAtenciones.orden eq null or salutemAtenciones.orden.id eq null}"/>
+                                                    <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
+                                                                  action="#{salutemAtenciones.grabarOrden()}"
+                                                                  rendered="#{salutemAtenciones.orden ne null and salutemAtenciones.orden.id ne null}"/>/>
+                                                </ace:menuBar>
                                                 <ace:dataTable
                                                     value="#{salutemAtenciones.listaRxFinal}"
                                                     resizableColumns="true"
@@ -492,9 +501,13 @@
                                     </h:panelGrid> 
                                 </h:panelGrid> 
 
+                                <h:commandLink value="Imprimir" rendered="#{salutemAtenciones.formulario.imprimir}">
+                                    <ace:printer for="imprimir"/>
+                                </h:commandLink>
 
-                                <h:panelGrid width="100%" rendered="#{!salutemAtenciones.verHistorico}">
-                                    <ace:menuBar autoSubmenuDisplay="true" >
+                                <h:panelGrid width="100%" rendered="#{!salutemAtenciones.verHistorico}"  id="imprimir">
+
+                                    <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar and !salutemAtenciones.formulario.imprimir}">
                                         <ace:menuItem value="Ver Histórico" icon="ui-icon ui-icon-script"  action="#{salutemAtenciones.setVerHistorico(true)}"/>
                                         <ace:menuItem value="Ver Último" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscarUltimaAtencion()}" rendered="#{salutemAtenciones.ultimaAtencion.id ne salutemAtenciones.idUltimaAtencion}"/>
                                     </ace:menuBar>
@@ -538,17 +551,23 @@
                                                                                       or datoa.tipo.codigo eq 'MANY'
                                                                                       or datoa.tipo.codigo eq 'LIST'}">
                                                             </h:outputText>
-                                                            <ace:dynamicResource
-                                                                fileName="#{datoa.archivo.nombre}"
-                                                                resource="#{salutemArchivos.traerRecurso(datoa.archivo)}"
-                                                                label="Descargar (#{datoa.archivo.nombre})"
-                                                                mimeType="#{datoa.archivo.tipo}"
-                                                                rendered="#{datoa.archivo ne null and salutemArchivos.traerRecurso(datoa.archivo) ne null}"/>
+                                                            <h:panelGrid columns="2" rendered="#{datoa.tipo.codigo eq 'FILE'}">
+                                                                <h:outputText value="#{datoa.archivo.nombre}"
+                                                                              rendered="#{datoa.archivo ne null}"/>
+                                                                <ace:dynamicResource
+                                                                    fileName="#{datoa.archivo.traerNombre()}"
+                                                                    mimeType="#{datoa.archivo.tipo}"
+                                                                    resource="#{salutemArchivos.traerRecurso(datoa.archivo)}"
+                                                                    label="Descargar"
+                                                                    rendered="#{datoa.archivo ne null and 
+                                                                                datoa.archivo.existeFichero()}"/>
+                                                            </h:panelGrid>
+
                                                         </ace:column>
                                                     </ace:dataTable>                                  
                                                 </h:panelGrid>
                                             </ace:panel>
-                                            <ace:panel header="Optometría" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT' and salutemAtenciones.ultimaFormula ne null}">
+                                            <ace:panel header="Optometría" rendered="#{salutemAtenciones.ultimaAtencion.especialidad.codigo eq 'OPT' and salutemAtenciones.ultimaFormula ne null}">
                                                 <h:panelGrid columns="3" width="100%">
                                                     <ace:panel header="LENSOMETRÍA" style="width: 100px">
                                                         <h:panelGrid columns="2">
@@ -631,7 +650,7 @@
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.descripcion}" style="white-space: pre-wrap"/>
                                                 </h:panelGrid>
                                             </ace:panel>
-                                            <ace:panel header="Prescripción" rendered="#{salutemAtenciones.atencion.especialidad.codigo ne 'OPT'}">
+                                            <ace:panel header="Prescripción" rendered="#{salutemAtenciones.ultimaAtencion.especialidad.codigo ne 'OPT'}">
                                                 <h:panelGrid width="100%">
                                                     <ace:dataTable
                                                         value="#{salutemAtenciones.ultimasPrescripciones}"
@@ -661,12 +680,12 @@
                                                 </h:panelGrid>
                                             </ace:panel>
 
-                                            <ace:panel header="Orden de Laboratorio" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT' and salutemAtenciones.ultimaOrden ne null}">
+                                            <ace:panel header="Orden de Laboratorio" rendered="#{salutemAtenciones.ultimaAtencion.especialidad.codigo eq 'OPT' and salutemAtenciones.ultimaOrden ne null}">
                                                 <ace:dataTable
                                                     value="#{salutemAtenciones.ultimaListaRxFinal}"
                                                     resizableColumns="true"
                                                     var="orden">
-                                                    <f:facet name="header">Laboratorio: #{salutemAtenciones.ultimaOrden.laboratorio}</f:facet>
+                                                    <f:facet name="header">Laboratorio: #{salutemAtenciones.ultimaOrden.laboratorio}; Factura: #{salutemAtenciones.ultimaOrden.factura}</f:facet>
                                                     <ace:column headerText="" style="text-align: center">
                                                         <h:outputText value="#{orden.ojo}"/>
                                                     </ace:column>
@@ -707,8 +726,8 @@
                                     </ace:panel>
                                 </h:panelGrid>
                             </ace:tabPane>
-                        </ace:tabSet>
-                        <h:panelGrid width="100%">
+                        </ace:tabSet>                        
+                        <h:panelGrid columns="2">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
                                               action="#{salutemAtenciones.grabar()}" 
@@ -717,8 +736,9 @@
                                               action="#{salutemAtenciones.remover()}" 
                                               rendered="#{salutemAtenciones.formulario.eliminar}"/>
                                 <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
-                                              action="#{salutemAtenciones.cancelar()}"/>
-                            </ace:menuBar>
+                                              action="#{salutemAtenciones.cancelar()}"/>                                
+                            </ace:menuBar>                           
+
                             <ace:messages style="white-space: pre-wrap"/>
                         </h:panelGrid>
                     </ace:dialog>

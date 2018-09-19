@@ -622,8 +622,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             Mensajes.advertencia("Primero debe ser generada y grabada una receta optalmológica");
             return null;
         }
-        if (laboratorio == null) {
+        if (orden.getLaboratorio() == null) {
             Mensajes.advertencia("Seleccione un laboratorio");
+            orden.setLaboratorio(laboratorio);
             return null;
         }
         try {
@@ -638,6 +639,19 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return null;
+    }
+
+    public String imprimir() {
+        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+            return null;
+        }
+
+        atencion = null;
+        colocarUltimaAtencion((Atenciones) atenciones.getRowData());
+        formulario.imprimir();
+        datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), ultimaAtencion.getId(), formulario);
+
         return null;
     }
 

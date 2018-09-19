@@ -33,7 +33,7 @@
     
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>/faces/*</url-pattern>
+        <url-pattern>/salutem/*</url-pattern>
     </servlet-mapping>
      
 <!--    <servlet-mapping>
@@ -47,7 +47,7 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>faces/Inicio.xhtml</welcome-file>
+        <welcome-file>salutem/Inicio.xhtml</welcome-file>
     </welcome-file-list>
     <context-param>
         <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>

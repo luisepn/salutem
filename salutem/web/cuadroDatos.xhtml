@@ -69,12 +69,17 @@
                                  header="#{dato.tipo.codigo eq 'ONE' ? 'Seleccione Uno' : dato.tipo.codigo eq 'MANY' ? 'Seleccione Varios':''}">
                 <f:selectItems value="#{salutemDatos.traerOpciones(dato)}"/>
             </ace:checkboxButtons>
-            <h:panelGrid columns="2" rendered="#{dato.tipo.codigo eq 'FILE'}">
+            <h:panelGrid columns="3" rendered="#{dato.tipo.codigo eq 'FILE'}">
+                <h:outputText value="#{dato.archivo.nombre}"
+                              rendered="#{dato.archivo ne null}"/>
                 <ace:dynamicResource
+                    fileName="#{dato.archivo.traerNombre()}"
+                    mimeType="#{dato.archivo.tipo}"
                     resource="#{salutemArchivos.traerRecurso(dato.archivo)}"
-                    label="Descargar (#{dato.archivo.nombre})"
-                    rendered="#{dato.archivo ne null and salutemArchivos.traerRecurso(dato.archivo) ne null}"/>
-                <h:commandLink value="Subir" action="#{dato.setVerSubir(true)}" rendered="#{!dato.verSubir}">
+                    label="Descargar"
+                    rendered="#{dato.archivo ne null and 
+                                dato.archivo.existeFichero()}"/>
+                <h:commandLink value="#{dato.archivo ne null and dato.archivo.ruta ne null ? 'Reemplazar' : 'Subir'}" action="#{dato.setVerSubir(true)}" rendered="#{!dato.verSubir}">
                     <ace:ajax render="@all"/>
                 </h:commandLink>
                 <h:commandLink value="Ocultar" action="#{dato.setVerSubir(false)}" rendered="#{dato.verSubir}">

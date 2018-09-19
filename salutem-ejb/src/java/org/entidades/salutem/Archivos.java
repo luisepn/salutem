@@ -5,9 +5,15 @@
  */
 package org.entidades.salutem;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,19 +40,19 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "archivos")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Archivos.findAll", query = "SELECT a FROM Archivos a")
-    , @NamedQuery(name = "Archivos.findById", query = "SELECT a FROM Archivos a WHERE a.id = :id")
-    , @NamedQuery(name = "Archivos.findByClasificador", query = "SELECT a FROM Archivos a WHERE a.clasificador = :clasificador")
-    , @NamedQuery(name = "Archivos.findByIdentificador", query = "SELECT a FROM Archivos a WHERE a.identificador = :identificador")
-    , @NamedQuery(name = "Archivos.findByNombre", query = "SELECT a FROM Archivos a WHERE a.nombre = :nombre")
-    , @NamedQuery(name = "Archivos.findByTipo", query = "SELECT a FROM Archivos a WHERE a.tipo = :tipo")
-    , @NamedQuery(name = "Archivos.findByRuta", query = "SELECT a FROM Archivos a WHERE a.ruta = :ruta")
-    , @NamedQuery(name = "Archivos.findByDescripcion", query = "SELECT a FROM Archivos a WHERE a.descripcion = :descripcion")
-    , @NamedQuery(name = "Archivos.findByCreado", query = "SELECT a FROM Archivos a WHERE a.creado = :creado")
-    , @NamedQuery(name = "Archivos.findByCreadopor", query = "SELECT a FROM Archivos a WHERE a.creadopor = :creadopor")
-    , @NamedQuery(name = "Archivos.findByActualizado", query = "SELECT a FROM Archivos a WHERE a.actualizado = :actualizado")
-    , @NamedQuery(name = "Archivos.findByActualizadopor", query = "SELECT a FROM Archivos a WHERE a.actualizadopor = :actualizadopor")
-    , @NamedQuery(name = "Archivos.findByActivo", query = "SELECT a FROM Archivos a WHERE a.activo = :activo")})
+    @NamedQuery(name = "Archivos.findAll", query = "SELECT a FROM Archivos a"),
+    @NamedQuery(name = "Archivos.findById", query = "SELECT a FROM Archivos a WHERE a.id = :id"),
+    @NamedQuery(name = "Archivos.findByClasificador", query = "SELECT a FROM Archivos a WHERE a.clasificador = :clasificador"),
+    @NamedQuery(name = "Archivos.findByIdentificador", query = "SELECT a FROM Archivos a WHERE a.identificador = :identificador"),
+    @NamedQuery(name = "Archivos.findByNombre", query = "SELECT a FROM Archivos a WHERE a.nombre = :nombre"),
+    @NamedQuery(name = "Archivos.findByTipo", query = "SELECT a FROM Archivos a WHERE a.tipo = :tipo"),
+    @NamedQuery(name = "Archivos.findByRuta", query = "SELECT a FROM Archivos a WHERE a.ruta = :ruta"),
+    @NamedQuery(name = "Archivos.findByDescripcion", query = "SELECT a FROM Archivos a WHERE a.descripcion = :descripcion"),
+    @NamedQuery(name = "Archivos.findByCreado", query = "SELECT a FROM Archivos a WHERE a.creado = :creado"),
+    @NamedQuery(name = "Archivos.findByCreadopor", query = "SELECT a FROM Archivos a WHERE a.creadopor = :creadopor"),
+    @NamedQuery(name = "Archivos.findByActualizado", query = "SELECT a FROM Archivos a WHERE a.actualizado = :actualizado"),
+    @NamedQuery(name = "Archivos.findByActualizadopor", query = "SELECT a FROM Archivos a WHERE a.actualizadopor = :actualizadopor"),
+    @NamedQuery(name = "Archivos.findByActivo", query = "SELECT a FROM Archivos a WHERE a.activo = :activo")})
 public class Archivos implements Serializable {
 
     @Size(max = 2147483647)
@@ -198,10 +204,12 @@ public class Archivos implements Serializable {
     public String toString() {
         return "org.entidades.salutem.Archivos[ id=" + id + " ]";
     }
+
     @XmlTransient
     public List<Datos> getDatosList() {
         return datosList;
     }
+
     public void setDatosList(List<Datos> datosList) {
         this.datosList = datosList;
     }
@@ -260,6 +268,38 @@ public class Archivos implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
+    }
+
+    public boolean existeFichero() {
+        File fichero = new File(ruta);
+        if (!fichero.exists() || !fichero.isFile()) {
+            return false;
+        }
+        return true;
+    }
+
+    public byte[] traerImagen() {
+        try {
+            if (ruta == null) {
+                return null;
+            }
+            return Files.readAllBytes(Paths.get(ruta));
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    public String traerNombre() {
+        if (tipo.equalsIgnoreCase("application/pdf")
+                || tipo.equalsIgnoreCase("image/jpeg")
+                || tipo.equalsIgnoreCase("image/png")
+                || tipo.equalsIgnoreCase("image/bmp")
+                || tipo.equalsIgnoreCase("audio/webm")
+                || tipo.equalsIgnoreCase("video/webm")) {
+            return null;
+        } else {
+            return nombre;
+        }
     }
 
 }

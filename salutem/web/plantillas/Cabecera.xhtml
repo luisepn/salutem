@@ -11,7 +11,7 @@
             <h:panelGrid columns="3" width="100%" style="text-align: left;">
                 <h:panelGrid width="99%" style="text-align: right">
                     <ace:graphicImage 
-                        value="#{salutemArchivos.traerImagen(salutemSeguridad.institucion.logotipo.ruta)}" 
+                        value="#{salutemSeguridad.institucion.logotipo.traerImagen()}" 
                         name="#{salutemSeguridad.institucion.id}_#{salutemSeguridad.institucion.nombre}" 
                         rendered="#{salutemSeguridad.institucion ne null 
                                     and salutemSeguridad.institucion.logotipo ne null 
@@ -45,7 +45,7 @@
                                 </h:panelGrid>
                                 <h:panelGrid>
                                     <ace:graphicImage 
-                                        value="#{salutemArchivos.traerImagen(salutemSeguridad.institucion.logotipo.ruta)}" 
+                                        value="#{salutemSeguridad.institucion.logotipo.traerImagen()}" 
                                         name="#{salutemSeguridad.institucion.id}_#{salutemSeguridad.institucion.nombre}" 
                                         rendered="#{salutemSeguridad.institucion ne null and salutemSeguridad.institucion.logotipo ne null and salutemSeguridad.institucion.logotipo.ruta ne null}"
                                         alt="logo" height="100px" />
