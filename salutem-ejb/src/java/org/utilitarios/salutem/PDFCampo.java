@@ -3,22 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.salutem.utilitarios;
-
-//import com.lowagie.text.Element;
+package org.utilitarios.salutem;
+import com.itextpdf.barcodes.Barcode1D;
 
 /**
  *
  * @author luis
  */
-public class AuxiliarReporte {
+public class PDFCampo {
 
-    public static int ALIGN_LEFT = 0;
-    public static int ALIGN_RIGHT = 0;
-    public static int ALIGN_CENTER = 0;
-//    public static int ALIGN_LEFT = Element.ALIGN_LEFT;
-//    public static int ALIGN_RIGHT = Element.ALIGN_RIGHT;
-//    public static int ALIGN_CENTER = Element.ALIGN_CENTER;
+    public static int ALIGN_LEFT = Barcode1D.ALIGN_LEFT;
+    public static int ALIGN_RIGHT = Barcode1D.ALIGN_RIGHT;
+    public static int ALIGN_CENTER = Barcode1D.ALIGN_CENTER;
     
     private String dato;
     private Object valor;
@@ -27,7 +23,7 @@ public class AuxiliarReporte {
     private int columnas;
     private int tamanio;
 
-    public AuxiliarReporte(String dato, int tamanio, int alineacion, int columnas, boolean negrilla, Object valor) {
+    public PDFCampo(String dato, int tamanio, int alineacion, int columnas, boolean negrilla, Object valor) {
         this.dato = dato;
         this.valor = valor;
         this.alineacion = alineacion;
@@ -36,7 +32,7 @@ public class AuxiliarReporte {
         this.tamanio = tamanio;
     }
 
-    public AuxiliarReporte(String dato, Object valor) {
+    public PDFCampo(String dato, Object valor) {
         this.dato = dato;
         this.valor = valor;
     }

@@ -801,19 +801,23 @@ exists or setup the property manually. For example like this:
     <target if="is.jars.in.ejbjar" name="-library-inclusion-in-archive-by-user">
         <copyfiles files="${libs.Gson.classpath}" todir="${build.classes.dir}"/>
         <copyfiles files="${libs.HibernateTypes.classpath}" todir="${build.classes.dir}"/>
+        <copyfiles files="${libs.iText.classpath}" todir="${build.classes.dir}"/>
     </target>
     <target if="is.server.weblogic" name="-library-inclusion-in-archive-weblogic">
         <basename file="${libs.Gson.classpath}" property="manifest.libs.Gson.classpath"/>
         <basename file="${libs.HibernateTypes.classpath}" property="manifest.libs.HibernateTypes.classpath"/>
+        <basename file="${libs.iText.classpath}" property="manifest.libs.iText.classpath"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
-            <attribute name="Extension-List" value="jar-1 jar-2 "/>
+            <attribute name="Extension-List" value="jar-1 jar-2 jar-3 "/>
             <attribute name="jar-1-Extension-Name" value="${manifest.libs.Gson.classpath}"/>
             <attribute name="jar-2-Extension-Name" value="${manifest.libs.HibernateTypes.classpath}"/>
+            <attribute name="jar-3-Extension-Name" value="${manifest.libs.iText.classpath}"/>
         </manifest>
     </target>
     <target depends="compile" name="library-inclusion-in-manifest">
         <copyfiles files="${libs.Gson.classpath}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${libs.HibernateTypes.classpath}" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${libs.iText.classpath}" todir="${dist.ear.dir}/lib"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">
