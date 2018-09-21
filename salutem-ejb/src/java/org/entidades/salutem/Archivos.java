@@ -271,6 +271,9 @@ public class Archivos implements Serializable {
     }
 
     public boolean existeFichero() {
+        if (ruta == null) {
+            return false;
+        }
         File fichero = new File(ruta);
         if (!fichero.exists() || !fichero.isFile()) {
             return false;

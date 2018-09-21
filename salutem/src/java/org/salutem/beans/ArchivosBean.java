@@ -78,7 +78,9 @@ public class ArchivosBean implements Serializable {
         if (archivo.existeFichero()) {
             this.archivo.setArchivo(archivo.getArchivo());
         } else {
-            Mensajes.fatal("El archivo no existe en la ruta " + archivo.getRuta());
+            if (archivo.getRuta() != null) {
+                Mensajes.fatal("El archivo no existe en la ruta " + archivo.getRuta());
+            }
         }
         buscar();
     }
