@@ -8,6 +8,7 @@ package org.utilitarios.salutem;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.test.annotations.WrapToTest;
@@ -31,8 +32,21 @@ public class PDFDocument {
         }
     }
 
+    private Cell crearCelda(boolean bold) {
+        Cell celda = new Cell();
+        if (bold) {
+            celda.setBold();
+        }
+        return null;
+    }
+
     private void agregarTabla(List<PDFCampo> campos) {
         Table table = new Table(3);
+
+        for (PDFCampo c : campos) {
+
+        }
+
     }
 
     public void createPdf(File dest) throws IOException {
