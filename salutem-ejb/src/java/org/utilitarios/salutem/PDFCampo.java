@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package org.utilitarios.salutem;
+
 import com.itextpdf.barcodes.Barcode1D;
 
 /**
@@ -15,7 +16,7 @@ public class PDFCampo {
     public static int ALIGN_LEFT = Barcode1D.ALIGN_LEFT;
     public static int ALIGN_RIGHT = Barcode1D.ALIGN_RIGHT;
     public static int ALIGN_CENTER = Barcode1D.ALIGN_CENTER;
-    
+
     private String dato;
     private Object valor;
     private int alineacion;
@@ -23,7 +24,7 @@ public class PDFCampo {
     private int columnas;
     private int tamanio;
 
-    public PDFCampo(String dato, int tamanio, int alineacion, int columnas, boolean negrilla, Object valor) {
+    public PDFCampo(int align, char style, int colspan, Object valor, int size, String type) {
         this.dato = dato;
         this.valor = valor;
         this.alineacion = alineacion;
