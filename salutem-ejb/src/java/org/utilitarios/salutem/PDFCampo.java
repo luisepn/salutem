@@ -1,11 +1,9 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
+ * To change this license header; choose License Headers in Project Properties.
+ * To change this template file; choose Tools | Templates
  * and open the template in the editor.
  */
 package org.utilitarios.salutem;
-
-import com.itextpdf.barcodes.Barcode1D;
 
 /**
  *
@@ -13,113 +11,141 @@ import com.itextpdf.barcodes.Barcode1D;
  */
 public class PDFCampo {
 
-    public static int ALIGN_LEFT = Barcode1D.ALIGN_LEFT;
-    public static int ALIGN_RIGHT = Barcode1D.ALIGN_RIGHT;
-    public static int ALIGN_CENTER = Barcode1D.ALIGN_CENTER;
+    private String type;
+    private Object value;
+    private char verticalAlign;
+    private char horizontalAlign;
+    private char style;
+    private int colspan;
+    private int rowspan;
+    private int size;
 
-    private String dato;
-    private Object valor;
-    private int alineacion;
-    private boolean negrilla;
-    private int columnas;
-    private int tamanio;
-
-    public PDFCampo(int align, char style, int colspan, Object valor, int size, String type) {
-        this.dato = dato;
-        this.valor = valor;
-        this.alineacion = alineacion;
-        this.negrilla = negrilla;
-        this.columnas = columnas;
-        this.tamanio = tamanio;
+    public PDFCampo(String type, Object value, char verticalAlign, char horizontalAlign, char style, int colspan, int rowspan, int size) {
+        this.type = type != null ? type : "String";
+        this.value = value != null ? value : "";
+        this.verticalAlign = verticalAlign;
+        this.horizontalAlign = horizontalAlign;
+        this.style = style;
+        this.colspan = colspan != 0 ? colspan : 1;
+        this.rowspan = rowspan != 0 ? rowspan : 1;
+        this.size = size != 0 ? size : 10;
     }
 
-    public PDFCampo(String dato, Object valor) {
-        this.dato = dato;
-        this.valor = valor;
-    }
-
-    /**
-     * @return the dato
-     */
-    public String getDato() {
-        return dato;
+    public PDFCampo(String type, Object value) {
+        this.type = type;
+        this.value = value;
     }
 
     /**
-     * @param dato the dato to set
+     * @return the type
      */
-    public void setDato(String dato) {
-        this.dato = dato;
+    public String getType() {
+        return type;
     }
 
     /**
-     * @return the valor
+     * @param type the type to set
      */
-    public Object getValor() {
-        return valor;
+    public void setType(String type) {
+        this.type = type;
     }
 
     /**
-     * @param valor the valor to set
+     * @return the value
      */
-    public void setValor(Object valor) {
-        this.valor = valor;
+    public Object getValue() {
+        return value;
     }
 
     /**
-     * @return the alineacion
+     * @param value the value to set
      */
-    public int getAlineacion() {
-        return alineacion;
+    public void setValue(Object value) {
+        this.value = value;
     }
 
     /**
-     * @param alineacion the alineacion to set
+     * @return the verticalAlign
      */
-    public void setAlineacion(int alineacion) {
-        this.alineacion = alineacion;
+    public char getVerticalAlign() {
+        return verticalAlign;
     }
 
     /**
-     * @return the negrilla
+     * @param verticalAlign the verticalAlign to set
      */
-    public boolean isNegrilla() {
-        return negrilla;
+    public void setVerticalAlign(char verticalAlign) {
+        this.verticalAlign = verticalAlign;
     }
 
     /**
-     * @param negrilla the negrilla to set
+     * @return the horizontalAlign
      */
-    public void setNegrilla(boolean negrilla) {
-        this.negrilla = negrilla;
+    public char getHorizontalAlign() {
+        return horizontalAlign;
     }
 
     /**
-     * @return the columnas
+     * @param horizontalAlign the horizontalAlign to set
      */
-    public int getColumnas() {
-        return columnas;
+    public void setHorizontalAlign(char horizontalAlign) {
+        this.horizontalAlign = horizontalAlign;
     }
 
     /**
-     * @param columnas the columnas to set
+     * @return the style
      */
-    public void setColumnas(int columnas) {
-        this.columnas = columnas;
+    public char getStyle() {
+        return style;
     }
 
     /**
-     * @return the tamanio
+     * @param style the style to set
      */
-    public int getTamanio() {
-        return tamanio;
+    public void setStyle(char style) {
+        this.style = style;
     }
 
     /**
-     * @param tamanio the tamanio to set
+     * @return the colspan
      */
-    public void setTamanio(int tamanio) {
-        this.tamanio = tamanio;
+    public int getColspan() {
+        return colspan;
+    }
+
+    /**
+     * @param colspan the colspan to set
+     */
+    public void setColspan(int colspan) {
+        this.colspan = colspan;
+    }
+
+    /**
+     * @return the rowspan
+     */
+    public int getRowspan() {
+        return rowspan;
+    }
+
+    /**
+     * @param rowspan the rowspan to set
+     */
+    public void setRowspan(int rowspan) {
+        this.rowspan = rowspan;
+    }
+
+    /**
+     * @return the size
+     */
+    public int getSize() {
+        return size;
+    }
+
+    /**
+     * @param size the size to set
+     */
+    public void setSize(int size) {
+        this.size = size;
     }
 
 }
