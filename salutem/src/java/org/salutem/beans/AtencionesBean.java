@@ -41,6 +41,7 @@ import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 import org.utilitarios.salutem.Ojos;
+import org.utilitarios.salutem.PDFCampo;
 import org.utilitarios.salutem.RxFinal;
 
 /**
@@ -653,6 +654,15 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), ultimaAtencion.getId(), formulario);
 
         return null;
+    }
+    
+    public String generarConsulta(){
+        
+        List<PDFCampo> titulos = new LinkedList<>();
+       // titulos.add(new PDFCampo("Integer", this, 0, 0, 0, 0, 0, 0))
+        
+        return null;
+        
     }
 
     /**
