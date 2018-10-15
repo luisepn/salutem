@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.salutem.utilitarios;
+package org.utilitarios.salutem;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -56,13 +56,6 @@ public final class Recurso extends Resource implements Serializable {
     @Override
     public boolean userAgentNeedsUpdate(FacesContext context) {
         return false;
-    }
-
-    @Override
-    public String toString() {
-        return "Recurso{" + "path=" + path + ", headers=" + headers + ", bytes=" + bytes + '}'
-                + getContentType() + "\n" + getLibraryName() + "\n" + getRequestPath() + "\n" + getResourceName() 
-                + "\n" + getResponseHeaders() + "\n" + getURL();
     }
 
 }

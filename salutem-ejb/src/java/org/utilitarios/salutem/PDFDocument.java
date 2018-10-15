@@ -8,6 +8,7 @@ package org.utilitarios.salutem;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.BlockElement;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
@@ -16,6 +17,8 @@ import com.itextpdf.layout.property.VerticalAlignment;
 import com.itextpdf.test.annotations.WrapToTest;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,68 +27,37 @@ import java.util.logging.Logger;
 @WrapToTest
 public class PDFDocument {
 
+    public Document document;
+    public PdfDocument pdfDocument;
+    public File tempFile;
+
     public PDFDocument(String nombre) {
         try {
             Calendar c = Calendar.getInstance();
-            File temp = File.createTempFile("DocumentoTemporal" + c.getTimeInMillis(), ".pdf");
+            tempFile = File.createTempFile("DocumentoTemporal" + c.getTimeInMillis(), ".pdf");
+            PdfWriter writer = new PdfWriter(tempFile);
+            pdfDocument = new PdfDocument(writer);
+            document = new Document(pdfDocument);
         } catch (IOException ex) {
             Logger.getLogger(PDFDocument.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    private Cell crearCelda(PDFCampo campo) {
-        Cell celda = new Cell(campo.getRowspan(), campo.getColspan());
-        celda.setFontSize(campo.getSize());
-
-        switch (campo.getVerticalAlign()) {
-            case 'T':
-                celda.setVerticalAlignment(VerticalAlignment.TOP);
-                break;
-            case 'M':
-                celda.setVerticalAlignment(VerticalAlignment.MIDDLE);
-                break;
-            case 'B':
-                celda.setVerticalAlignment(VerticalAlignment.BOTTOM);
-                break;
+    public Recurso traerRecurso() {
+        pdfDocument.close();
+        try {
+            return new Recurso(Files.readAllBytes(Paths.get(tempFile != null ? tempFile.getAbsolutePath() : "")));
+        } catch (IOException ex) {
+            Logger.getLogger(PDFDocument.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        switch (campo.getHorizontalAlign()) {
-            case 'L':
-                celda.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                break;
-            case 'C':
-                celda.setHorizontalAlignment(HorizontalAlignment.CENTER);
-                break;
-            case 'R':
-                celda.setHorizontalAlignment(HorizontalAlignment.RIGHT);
-                break;
-        }
-
-        switch (campo.getStyle()) {
-            case 'I':
-                celda.setItalic();
-                break;
-            case 'B':
-                celda.setBold();
-                break;
-            case 'U':
-                celda.setUnderline();
-                break;
-        }
-
-        Paragraph texto;
-        switch (campo.getType()) {
-            case "String":
-                texto = new Paragraph((String) campo.getValue());
-                break;
-        }
-
-        campo.setValue(celda);
-
         return null;
     }
 
-    private void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos) {
+    private Cell crearCelda(PDFCampo campo) {
+        return (Cell) getCampo("Cell", campo);
+    }
+
+    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos) {
         Table table = new Table(8);
 
         for (PDFCampo t : titulos) {
@@ -93,17 +65,92 @@ public class PDFDocument {
         }
 
         for (PDFCampo c : campos) {
-
+            table.addCell(crearCelda(c));
         }
+
+        document.add(table);
 
     }
 
-    public void createPdf(File dest) throws IOException {
-        PdfWriter writer = new PdfWriter(dest);
-        PdfDocument pdf = new PdfDocument(writer);
-        try (Document document = new Document(pdf)) {
-            document.add(new Paragraph("Hello World!"));
-        }
+    public void agregarParrafo(PDFCampo campo) {
+        document.add((Paragraph) getCampo("Paragraph", campo));
     }
 
+    private Object getCampo(String tipo, PDFCampo campo) {
+
+        String texto = new String();
+
+        switch (campo.getType()) {
+            case "String":
+                texto = (String) campo.getValue();
+                break;
+            case "Integer":
+                texto = ((Integer) campo.getValue()).toString();
+                break;
+            case "Double":
+                texto = ((Double) campo.getValue()).toString();
+                break;
+            case "Float":
+                texto = ((Float) campo.getValue()).toString();
+                break;
+            case "Boolean":
+                texto = ((Boolean) campo.getValue()) ? "SÍ" : "NO";
+                break;
+        }
+
+        BlockElement element;
+
+        switch (tipo) {
+            case "Cell":
+                element = new Cell(campo.getRowspan(), campo.getColspan());
+                Paragraph valor = new Paragraph(texto);
+                ((Cell) element).add(valor);
+                break;
+            case "Paragraph":
+                element = new Paragraph(texto);
+                break;
+            default:
+                element = new Paragraph();
+                break;
+        }
+
+        element.setFontSize(campo.getSize());
+
+        switch (campo.getVerticalAlign()) {
+            case 'T':
+                element.setVerticalAlignment(VerticalAlignment.TOP);
+                break;
+            case 'M':
+                element.setVerticalAlignment(VerticalAlignment.MIDDLE);
+                break;
+            case 'B':
+                element.setVerticalAlignment(VerticalAlignment.BOTTOM);
+                break;
+        }
+
+        switch (campo.getHorizontalAlign()) {
+            case 'L':
+                element.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                break;
+            case 'C':
+                element.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                break;
+            case 'R':
+                element.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                break;
+        }
+
+        switch (campo.getStyle()) {
+            case 'I':
+                element.setItalic();
+                break;
+            case 'B':
+                element.setBold();
+                break;
+            case 'U':
+                element.setUnderline();
+                break;
+        }
+        return element;
+    }
 }
