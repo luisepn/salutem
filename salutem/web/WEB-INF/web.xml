@@ -36,10 +36,10 @@
         <url-pattern>/salutem/*</url-pattern>
     </servlet-mapping>
      
-<!--    <servlet-mapping>
+    <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>*.jsf</url-pattern>
-    </servlet-mapping>-->
+        <url-pattern>*.salutem</url-pattern>
+    </servlet-mapping>
     
     <session-config>
         <session-timeout>
@@ -47,7 +47,7 @@
         </session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>salutem/Inicio.xhtml</welcome-file>
+        <welcome-file>Inicio.salutem</welcome-file>
     </welcome-file-list>
     <context-param>
         <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
@@ -55,7 +55,7 @@
     </context-param>
     <context-param>
         <param-name>org.icefaces.connectionLostRedirectURI</param-name>
-        <param-value>../Inicio.xhtml</param-value>
+        <param-value>../Inicio.salutem</param-value>
     </context-param>
     <context-param>
         <param-name>org.icefaces.standardFormSerialization</param-name>
@@ -71,7 +71,7 @@
     </context-param>
     <context-param>
         <param-name>org.icefaces.sessionExpiredRedirectURI</param-name>
-        <param-value>../Inicio.xhtml</param-value>
+        <param-value>../Inicio.salutem</param-value>
     </context-param>
     <context-param>
         <param-name>org.icefaces.replayNavigationOnReload</param-name>

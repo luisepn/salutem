@@ -151,7 +151,7 @@ public class SeguridadBean implements Serializable {
                 if (!usuarios.isEmpty()) {
                     seleccionarGrupo(usuarios.get(0));
                     ejbLogs.log("Ingreso exitoso", 'I', logueado.getUserid(), getCurrentClientIpAddress());
-                    return usuario.getModulo().getParametros().trim() + ".xhtml?faces-redirect=true";
+                    return usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true";
                 } else {
                     String mensajeLog = "Usuario no tiene perfil asignado";
                     Mensajes.advertencia(mensajeLog);
@@ -182,7 +182,7 @@ public class SeguridadBean implements Serializable {
             seleccionarGrupo((Usuarios) event.getNewValue());
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
-            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".xhtml?faces-redirect=true");
+            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true");
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -194,7 +194,7 @@ public class SeguridadBean implements Serializable {
             seleccionarGrupo(ejbUsuarios.buscar(Integer.parseInt(event.getComponent().getId().replaceAll("_", ""))));
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
-            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".xhtml?faces-redirect=true");
+            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true");
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -235,7 +235,7 @@ public class SeguridadBean implements Serializable {
                 MenuItem item = new MenuItem();
                 item.setId(submenu.getId() + "_mmi_" + p.getId());
                 item.setValue(p.getMenu().getNombre());
-                item.setUrl(p.getMenu().getFormulario().trim() + ".xhtml?faces-redirect=true&p=" + p.getId());
+                item.setUrl(p.getMenu().getFormulario().trim() + ".salutem?faces-redirect=true&p=" + p.getId());
                 item.setIcon(p.getMenu().getIcono());
                 submenu.getChildren().add(item);
             }
