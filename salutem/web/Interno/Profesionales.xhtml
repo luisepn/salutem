@@ -85,7 +85,7 @@
                                 </ace:menuButton>
                             </ace:column>
                             <ace:column headerText="Fotografía" >
-                                <ace:graphicImage value="#{salutemArchivos.traerImagen(item.persona.fotografia.ruta)}" 
+                                <ace:graphicImage value="#{item.persona.fotografia.traerImagen()}" 
                                                   name="#{item.id}_#{item.persona.fotografia.nombre}" id="resourceGraphicImage" style="height: 50px;" 
                                                   rendered="#{item.persona.fotografia ne null and item.persona.fotografia.ruta ne null}"/>
                             </ace:column> 
