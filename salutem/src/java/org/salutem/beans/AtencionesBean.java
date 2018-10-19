@@ -659,7 +659,23 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     public String generarConsulta(){
         
         List<PDFCampo> titulos = new LinkedList<>();
-       // titulos.add(new PDFCampo("Integer", this, 0, 0, 0, 0, 0, 0))
+        titulos.add(new PDFCampo("String", "LENSOMETRIA", 'M', 'C', 'B', 2, 0, 9));
+        titulos.add(new PDFCampo("String", "AV SC", 'M', 'C', 'B', 2, 0, 9));
+        titulos.add(new PDFCampo("String", "AV CC", 'M', 'C', 'B', 2, 0, 9));
+        
+        List<PDFCampo> campos = new LinkedList<>();
+        titulos.add(new PDFCampo("String", "OD", 'M', 'L', 'B', 2, 0, 9));
+        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', 'n', 2, 0, 9));
+        titulos.add(new PDFCampo("String", "OD", 'M', 'L', 'B', 2, 0, 9));
+        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', 'n', 2, 0, 9));
+        titulos.add(new PDFCampo("String", "OD", 'M', 'L', 'B', 2, 0, 9));
+        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', 'n', 2, 0, 9));
+        titulos.add(new PDFCampo("String", "OI", 'M', 'L', 'B', 2, 0, 9));
+        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', 'n', 2, 0, 9));
+        titulos.add(new PDFCampo("String", "OI", 'M', 'L', 'B', 2, 0, 9));
+        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', 'n', 2, 0, 9));
+        titulos.add(new PDFCampo("String", "OI", 'M', 'L', 'B', 2, 0, 9));
+        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', 'n', 2, 0, 9));
         
         return null;
         

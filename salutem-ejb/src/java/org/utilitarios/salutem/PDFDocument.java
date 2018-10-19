@@ -126,6 +126,8 @@ public class PDFDocument {
             case 'B':
                 element.setVerticalAlignment(VerticalAlignment.BOTTOM);
                 break;
+            default:
+                break;
         }
 
         switch (campo.getHorizontalAlign()) {
@@ -138,6 +140,8 @@ public class PDFDocument {
             case 'R':
                 element.setHorizontalAlignment(HorizontalAlignment.RIGHT);
                 break;
+            default:
+                break;
         }
 
         switch (campo.getStyle()) {
@@ -149,6 +153,8 @@ public class PDFDocument {
                 break;
             case 'U':
                 element.setUnderline();
+                break;
+            default:
                 break;
         }
         return element;
