@@ -144,19 +144,19 @@ public class PDFDocument {
                 break;
         }
 
-        switch (campo.getStyle()) {
-            case 'I':
+        if (campo.getStyle() != null
+                && campo.getStyle().length() > 1) {
+            if (campo.getStyle().contains("I")) {
                 element.setItalic();
-                break;
-            case 'B':
+            }
+            if (campo.getStyle().contains("B")) {
                 element.setBold();
-                break;
-            case 'U':
+            }
+            if (campo.getStyle().contains("U")) {
                 element.setUnderline();
-                break;
-            default:
-                break;
+            }
         }
+
         return element;
     }
 }

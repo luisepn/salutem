@@ -15,12 +15,12 @@ public class PDFCampo {
     private Object value;
     private char verticalAlign;
     private char horizontalAlign;
-    private char style;
+    private String style;
     private int colspan;
     private int rowspan;
     private int size;
 
-    public PDFCampo(String type, Object value, char verticalAlign, char horizontalAlign, char style, int colspan, int rowspan, int size) {
+    public PDFCampo(String type, Object value, char verticalAlign, char horizontalAlign, String style, int colspan, int rowspan, int size) {
         this.type = type != null ? type : "String";
         this.value = value != null ? value : "";
         this.verticalAlign = verticalAlign;
@@ -32,9 +32,31 @@ public class PDFCampo {
     }
 
     public PDFCampo(String type, Object value) {
-        this.type = type;
-        this.value = value;
+        this.type = type != null ? type : "String";
+        this.value = value != null ? value : "";
+        this.verticalAlign = 'M';
+        this.horizontalAlign = 'C';
+        this.style = "";
+        this.colspan = 1;
+        this.rowspan = 1;
+        this.size = 10;
     }
+
+    public PDFCampo(String type, Object value, String style) {
+        this.type = type != null ? type : "String";
+        this.value = value != null ? value : "";
+        this.verticalAlign = 'M';
+        this.horizontalAlign = 'C';
+        this.style = style;
+        this.colspan = colspan != 0 ? colspan : 1;
+        this.rowspan = 1;
+        this.size = 10;
+    }
+
+//    public PDFCampo(String type, Object value) {
+//        this.type = type;
+//        this.value = value;
+//    }
 
     /**
      * @return the type
@@ -95,14 +117,14 @@ public class PDFCampo {
     /**
      * @return the style
      */
-    public char getStyle() {
+    public String getStyle() {
         return style;
     }
 
     /**
      * @param style the style to set
      */
-    public void setStyle(char style) {
+    public void setStyle(String style) {
         this.style = style;
     }
 
