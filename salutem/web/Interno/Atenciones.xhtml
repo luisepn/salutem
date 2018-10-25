@@ -505,6 +505,11 @@
                                     <ace:printer for="imprimir"/>
                                 </h:commandLink>
 
+                                <ace:dynamicResource
+                                    mimeType="application/pdf"
+                                    resource="#{salutemAtenciones.generarConsulta()}"
+                                    label="Imprimir"/>
+
                                 <h:panelGrid width="100%" rendered="#{!salutemAtenciones.verHistorico}"  id="imprimir">
 
                                     <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar and !salutemAtenciones.formulario.imprimir}">

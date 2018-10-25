@@ -8,6 +8,7 @@ package org.utilitarios.salutem;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.BlockElement;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
@@ -57,9 +58,23 @@ public class PDFDocument {
         return (Cell) getCampo("Cell", campo);
     }
 
-    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos) {
-        Table table = new Table(8);
+    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, int columnas) {
+        Table table = new Table(columnas);
 
+        for (PDFCampo t : titulos) {
+            table.addCell(crearCelda(t));
+        }
+
+        for (PDFCampo c : campos) {
+            table.addCell(crearCelda(c));
+        }
+
+        document.add(table);
+
+    }
+
+    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, float[] with) {
+        Table table = new Table(with);
         for (PDFCampo t : titulos) {
             table.addCell(crearCelda(t));
         }
@@ -115,6 +130,7 @@ public class PDFDocument {
         }
 
         element.setFontSize(campo.getSize());
+        //element.setBorder();
 
         switch (campo.getVerticalAlign()) {
             case 'T':

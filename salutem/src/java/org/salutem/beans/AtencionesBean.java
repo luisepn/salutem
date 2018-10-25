@@ -42,6 +42,8 @@ import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 import org.utilitarios.salutem.Ojos;
 import org.utilitarios.salutem.PDFCampo;
+import org.utilitarios.salutem.PDFDocument;
+import org.utilitarios.salutem.Recurso;
 import org.utilitarios.salutem.RxFinal;
 
 /**
@@ -655,30 +657,49 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
         return null;
     }
-    
-    public String generarConsulta(){
-        
-        List<PDFCampo> titulos = new LinkedList<>();
-        titulos.add(new PDFCampo("String", "LENSOMETRIA", 'M', 'C', "BU", 2, 0, 9));
-        titulos.add(new PDFCampo("String", "AV SC", 'M', 'C', "BU", 2, 0, 9));
-        titulos.add(new PDFCampo("String", "AV CC", 'M', 'C', "BU", 2, 0, 9));
-        
-        List<PDFCampo> campos = new LinkedList<>();
-        titulos.add(new PDFCampo("String", "OD", 'M', 'L', "B", 2, 0, 9));
-        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', "", 2, 0, 9));
-        titulos.add(new PDFCampo("String", "OD", 'M', 'L', "B", 2, 0, 9));
-        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', "", 2, 0, 9));
-        titulos.add(new PDFCampo("String", "OD", 'M', 'L', "B", 2, 0, 9));
-        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', "", 2, 0, 9));
-        titulos.add(new PDFCampo("String", "OI", 'M', 'L', "B", 2, 0, 9));
-        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', "", 2, 0, 9));
-        titulos.add(new PDFCampo("String", "OI", 'M', 'L', "B", 2, 0, 9));
-        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', "", 2, 0, 9));
-        titulos.add(new PDFCampo("String", "OI", 'M', 'L', "B", 2, 0, 9));
-        titulos.add(new PDFCampo("String", new Object(), 'M', 'C', "", 2, 0, 9));
-        
+
+    public Recurso generarConsulta() {
+        if (atencion != null) {
+            return generarConsulta(atencion, lensometria, agudezavisualsincristal, agudezavisualconcristal);
+        }
+        if (ultimaAtencion != null) {
+            return generarConsulta(ultimaAtencion, ultimaLensometria, ultimaAgudezavisualsincristal, ultimaAgudezavisualconcristal);
+        }
         return null;
-        
+    }
+
+    private Recurso generarConsulta(Atenciones atencion, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal) {
+
+        List<PDFCampo> titulos = new LinkedList<>();
+        titulos.add(new PDFCampo("String", "LENSOMETRÍA", "IB", 2, 3));
+        titulos.add(new PDFCampo("String", "AV SC", "IB", 2, 3));
+        titulos.add(new PDFCampo("String", "AV CC", "IB", 2, 3));
+
+        List<PDFCampo> campos = new LinkedList<>();
+
+        titulos.add(new PDFCampo("String", "OD", "IB"));
+        titulos.add(new PDFCampo("String", lensometria != null ? lensometria.getD() : ""));
+
+        titulos.add(new PDFCampo("String", "OD", "IB"));
+        titulos.add(new PDFCampo("String", lensometria != null ? lensometria.getI() : ""));
+
+        titulos.add(new PDFCampo("String", "OD", "IB"));
+        titulos.add(new PDFCampo("String", agudezavisualsincristal != null ? agudezavisualsincristal.getD() : ""));
+
+        titulos.add(new PDFCampo("String", "OI", "IB"));
+        titulos.add(new PDFCampo("String", agudezavisualsincristal != null ? agudezavisualsincristal.getI() : ""));
+
+        titulos.add(new PDFCampo("String", "OI", "IB"));
+        titulos.add(new PDFCampo("String", agudezavisualconcristal != null ? agudezavisualconcristal.getD() : ""));
+
+        titulos.add(new PDFCampo("String", "OI", "IB"));
+        titulos.add(new PDFCampo("String", agudezavisualconcristal != null ? agudezavisualconcristal.getI() : ""));
+
+        PDFDocument pdf = new PDFDocument(atencion.getPaciente().toString());
+        float[] columnas = {50, 50, 50, 50, 50, 50};
+        pdf.agregarTabla(titulos, campos, columnas);
+        return pdf.traerRecurso();
+
     }
 
     /**

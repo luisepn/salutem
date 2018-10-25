@@ -5,6 +5,8 @@
  */
 package org.utilitarios.salutem;
 
+import com.itextpdf.layout.borders.Border;
+
 /**
  *
  * @author luis
@@ -19,8 +21,9 @@ public class PDFCampo {
     private int colspan;
     private int rowspan;
     private int size;
+    private int border;
 
-    public PDFCampo(String type, Object value, char verticalAlign, char horizontalAlign, String style, int colspan, int rowspan, int size) {
+    public PDFCampo(String type, Object value, char verticalAlign, char horizontalAlign, String style, int colspan, int rowspan, int size, int border) {
         this.type = type != null ? type : "String";
         this.value = value != null ? value : "";
         this.verticalAlign = verticalAlign;
@@ -29,6 +32,8 @@ public class PDFCampo {
         this.colspan = colspan != 0 ? colspan : 1;
         this.rowspan = rowspan != 0 ? rowspan : 1;
         this.size = size != 0 ? size : 10;
+        this.border = border;
+
     }
 
     public PDFCampo(String type, Object value) {
@@ -40,6 +45,7 @@ public class PDFCampo {
         this.colspan = 1;
         this.rowspan = 1;
         this.size = 10;
+        this.border = -1; //NO_BORDER
     }
 
     public PDFCampo(String type, Object value, String style) {
@@ -51,12 +57,56 @@ public class PDFCampo {
         this.colspan = colspan != 0 ? colspan : 1;
         this.rowspan = 1;
         this.size = 10;
+        this.border = -1; //NO_BORDER
     }
 
-//    public PDFCampo(String type, Object value) {
-//        this.type = type;
-//        this.value = value;
-//    }
+    public PDFCampo(String type, Object value, String style, int border) {
+        this.type = type != null ? type : "String";
+        this.value = value != null ? value : "";
+        this.verticalAlign = 'M';
+        this.horizontalAlign = 'C';
+        this.style = style;
+        this.colspan = colspan != 0 ? colspan : 1;
+        this.rowspan = 1;
+        this.size = 10;
+        this.border = border;
+    }
+
+    public PDFCampo(String type, Object value, int colspan, int rowspan, int border) {
+        this.type = type != null ? type : "String";
+        this.value = value != null ? value : "";
+        this.verticalAlign = 'M';
+        this.horizontalAlign = 'C';
+        this.style = "";
+        this.colspan = colspan;
+        this.rowspan = rowspan;
+        this.size = 10;
+        this.border = border;
+    }
+
+    public PDFCampo(String type, Object value, int colspan, int border) {
+        this.type = type != null ? type : "String";
+        this.value = value != null ? value : "";
+        this.verticalAlign = 'M';
+        this.horizontalAlign = 'C';
+        this.style = "";
+        this.colspan = colspan;
+        this.rowspan = 1;
+        this.size = 10;
+        this.border = border;
+    }
+
+    public PDFCampo(String type, Object value, String style, int colspan, int border) {
+        this.type = type != null ? type : "String";
+        this.value = value != null ? value : "";
+        this.verticalAlign = 'M';
+        this.horizontalAlign = 'C';
+        this.style = style;
+        this.colspan = colspan;
+        this.rowspan = 1;
+        this.size = 10;
+        this.border = border;
+    }
 
     /**
      * @return the type
@@ -168,6 +218,20 @@ public class PDFCampo {
      */
     public void setSize(int size) {
         this.size = size;
+    }
+
+    /**
+     * @return the border
+     */
+    public int getBorder() {
+        return border;
+    }
+
+    /**
+     * @param border the border to set
+     */
+    public void setBorder(int border) {
+        this.border = border;
     }
 
 }
