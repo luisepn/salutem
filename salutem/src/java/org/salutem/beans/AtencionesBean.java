@@ -4,7 +4,9 @@
  */
 package org.salutem.beans;
 
+import com.google.gson.JsonObject;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +42,7 @@ import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
+import org.utilitarios.salutem.Items;
 import org.utilitarios.salutem.Ojos;
 import org.utilitarios.salutem.PDFCampo;
 import org.utilitarios.salutem.PDFDocument;
@@ -660,46 +663,134 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     public Recurso generarConsulta() {
         if (atencion != null) {
-            return generarConsulta(atencion, lensometria, agudezavisualsincristal, agudezavisualconcristal);
+            return generarConsulta(atencion, datosBean.getDatos(), lensometria, agudezavisualsincristal, agudezavisualconcristal, listaRxFinal);
         }
         if (ultimaAtencion != null) {
-            return generarConsulta(ultimaAtencion, ultimaLensometria, ultimaAgudezavisualsincristal, ultimaAgudezavisualconcristal);
+            return generarConsulta(ultimaAtencion, ultimosDatos, ultimaLensometria, ultimaAgudezavisualsincristal, ultimaAgudezavisualconcristal, ultimaListaRxFinal);
         }
         return null;
     }
 
-    private Recurso generarConsulta(Atenciones atencion, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal) {
-
-        List<PDFCampo> titulos = new LinkedList<>();
-        titulos.add(new PDFCampo("String", "LENSOMETRÍA", "IB", 2, "RB"));
-        titulos.add(new PDFCampo("String", "AV SC", "IB", 2, "LRB"));
-        titulos.add(new PDFCampo("String", "AV CC", "IB", 2, "LB"));
-
-        List<PDFCampo> campos = new LinkedList<>();
-
-        titulos.add(new PDFCampo("String", "OD", "IB"));
-        titulos.add(new PDFCampo("String", lensometria != null ? lensometria.getD() : "", 1, "R"));
-
-        titulos.add(new PDFCampo("String", "OD", "IB"));
-        titulos.add(new PDFCampo("String", lensometria != null ? lensometria.getI() : "", 1, "R"));
-
-        titulos.add(new PDFCampo("String", "OD", "IB"));
-        titulos.add(new PDFCampo("String", agudezavisualsincristal != null ? agudezavisualsincristal.getD() : ""));
-
-        titulos.add(new PDFCampo("String", "OI", "IB"));
-        titulos.add(new PDFCampo("String", agudezavisualsincristal != null ? agudezavisualsincristal.getI() : "", 1, "R"));
-
-        titulos.add(new PDFCampo("String", "OI", "IB"));
-        titulos.add(new PDFCampo("String", agudezavisualconcristal != null ? agudezavisualconcristal.getD() : "", 1, "R"));
-
-        titulos.add(new PDFCampo("String", "OI", "IB"));
-        titulos.add(new PDFCampo("String", agudezavisualconcristal != null ? agudezavisualconcristal.getI() : ""));
+    private Recurso generarConsulta(Atenciones atencion, List<Datos> datos, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal, List<RxFinal> listaRxFinal) {
 
         PDFDocument pdf = new PDFDocument(atencion.getPaciente().toString());
-        float[] columnas = {50, 50, 50, 50, 50, 50};
-        pdf.agregarTabla(titulos, campos, columnas, 'C');
-        return pdf.traerRecurso();
+        List<PDFCampo> titulos;
+        List<PDFCampo> campos;
 
+        if (datos != null) {
+            titulos = new LinkedList<>();
+            campos = new LinkedList<>();
+            for (Datos d : datos) {
+                campos.add(new PDFCampo("Integer", d.getCodigo(), 'R', "IB", 1, "R"));
+                campos.add(new PDFCampo("String", d.getNombre(), 'R', "IB", 1, "R"));
+                if (d.getTipo() != null) {
+                    switch (d.getTipo().getCodigo()) {
+                        case "TEXT":
+                            campos.add(new PDFCampo("String", d.getTexto(), 'L', "", 1, ""));
+                            break;
+                        case "BOOLEAN":
+                            campos.add(new PDFCampo("Boolean", d.getBooleano(), 'L', "", 1, ""));
+                            break;
+                        case "INTEGER":
+                            campos.add(new PDFCampo("Integer", d.getEntero(), 'L', "", 1, ""));
+                            break;
+                        case "DOUBLE":
+                            campos.add(new PDFCampo("Double", d.getDecimal(), 'L', "", 1, ""));
+                            break;
+                        case "DATE":
+                            campos.add(new PDFCampo("Date", d.getFecha(), 'L', "", 1, ""));
+                            break;
+                        case "TIME":
+                            campos.add(new PDFCampo("Time", d.getHora(), 'L', "", 1, ""));
+                            break;
+                        case "DATETIME":
+                            campos.add(new PDFCampo("DateTime", d.getFechahora(), 'L', "", 1, ""));
+                            break;
+                        case "ONE":
+                        case "MANY":
+                        case "LIST":
+                            if (d.getSeleccion() != null && !d.getSeleccion().isEmpty()) {
+
+                                List<Items> lista = d.getItemListFromJson(true);
+                                String valor = "";
+
+                                for (Items i : lista) {
+                                    valor += i.getValor() + "\n";
+                                }
+
+                                campos.add(new PDFCampo("Selection", valor, 'L', "", 1, ""));
+                            }
+                            break;
+                        case "FILE":
+                            campos.add(new PDFCampo("File", d.getArchivo(), 'L', "", 1, ""));
+                            break;
+                    }
+                }
+
+            }
+            float[] columnas = {10, 160, 160};
+            pdf.agregarTabla(titulos, campos, columnas, 'C', new PDFCampo("String", atencion.getEspecialidad().getNombre(), 'C', "IB", columnas.length, "B"));
+        }
+        //Receta Optometría
+        if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
+
+            if (lensometria != null && agudezavisualsincristal != null && agudezavisualconcristal != null) {
+
+                titulos = new LinkedList<>();
+                titulos.add(new PDFCampo("String", "LENSOMETRÍA", "IB", 2, "LRTB"));
+                titulos.add(new PDFCampo("String", "AV SC", "IB", 2, "LRTB"));
+                titulos.add(new PDFCampo("String", "AV CC", "IB", 2, "LRTB"));
+
+                campos = new LinkedList<>();
+
+                campos.add(new PDFCampo("String", "OD", "IB", 1, "L"));
+                campos.add(new PDFCampo("String", lensometria.getD(), 1, "R"));
+
+                campos.add(new PDFCampo("String", "OD", "IB", 1, "L"));
+                campos.add(new PDFCampo("String", lensometria.getI(), 1, "R"));
+
+                campos.add(new PDFCampo("String", "OD", "IB", 1, "L"));
+                campos.add(new PDFCampo("String", agudezavisualsincristal.getD(), 1, "R"));
+
+                campos.add(new PDFCampo("String", "OI", "IB", 1, "LB"));
+                campos.add(new PDFCampo("String", agudezavisualsincristal.getI(), 1, "RB"));
+
+                campos.add(new PDFCampo("String", "OI", "IB", 1, "LB"));
+                campos.add(new PDFCampo("String", agudezavisualconcristal.getD(), 1, "RB"));
+
+                campos.add(new PDFCampo("String", "OI", "IB", 1, "LB"));
+                campos.add(new PDFCampo("String", agudezavisualconcristal.getI(), 1, "RB"));
+
+                float[] columnas = {55, 55, 55, 55, 55, 55};
+                pdf.agregarTabla(titulos, campos, columnas, 'C', null);
+            }
+
+            if (listaRxFinal != null) {
+                titulos = new LinkedList<>();
+                titulos.add(new PDFCampo("String", "", "IB", 1, "RLTB"));
+                titulos.add(new PDFCampo("String", "Esfera", "IB", 1, "RLTB"));
+                titulos.add(new PDFCampo("String", "Cilindro", "IB", 1, "RLTB"));
+                titulos.add(new PDFCampo("String", "Eje", "IB", 1, "RLTB"));
+                titulos.add(new PDFCampo("String", "ADD", "IB", 1, "RLTB"));
+                titulos.add(new PDFCampo("String", "DP", "IB", 1, "RLTB"));
+                titulos.add(new PDFCampo("String", "AV", "IB", 1, "RLTB"));
+
+                campos = new LinkedList<>();
+                for (RxFinal rx : listaRxFinal) {
+                    campos.add(new PDFCampo("String", rx.getOjo(), "IB", 1, "RLTB"));
+                    campos.add(new PDFCampo("String", rx.getEsfera(), 1, "RLTB"));
+                    campos.add(new PDFCampo("String", rx.getCilindro(), 1, "RLTB"));
+                    campos.add(new PDFCampo("String", rx.getEje(), 1, "RLTB"));
+                    campos.add(new PDFCampo("String", rx.getAdicion(), 1, "RLTB"));
+                    campos.add(new PDFCampo("String", rx.getDistanciapupilar(), 1, "RLTB"));
+                    campos.add(new PDFCampo("String", rx.getAgudezavisual(), 1, "RLTB"));
+                }
+                float[] columnas = {30, 50, 50, 50, 50, 50, 50};
+                pdf.agregarTabla(titulos, campos, columnas, 'C', new PDFCampo("String", "Rx Final", 'C', "IBU", columnas.length, "B"));
+            }
+
+        }
+        return pdf.traerRecurso();
     }
 
     /**

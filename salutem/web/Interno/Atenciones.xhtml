@@ -501,9 +501,9 @@
                                     </h:panelGrid> 
                                 </h:panelGrid> 
 
-                                <h:commandLink value="Imprimir" rendered="#{salutemAtenciones.formulario.imprimir}">
+<!--                                <h:commandLink value="Imprimir" rendered="#{salutemAtenciones.formulario.imprimir}">
                                     <ace:printer for="imprimir"/>
-                                </h:commandLink>
+                                </h:commandLink>-->
 
                                 <ace:dynamicResource
                                     mimeType="application/pdf"
@@ -542,13 +542,13 @@
                                                             <h:outputText value="#{datoa.entero}" rendered="#{datoa.tipo.codigo eq 'INTEGER'}"/>
                                                             <h:outputText value="#{datoa.decimal}" rendered="#{datoa.tipo.codigo eq 'DOUBLE'}"/>
                                                             <h:outputText value="#{datoa.texto}" rendered="#{datoa.tipo.codigo eq 'TEXT'}" style="white-space: pre-wrap"/>
-                                                            <h:outputText value="#{datoa.fecha}">
+                                                            <h:outputText value="#{datoa.fecha}" rendered="#{datoa.tipo.codigo eq 'DATE'}">
                                                                 <f:convertDateTime pattern="dd/MM/yyyy" />
                                                             </h:outputText>
-                                                            <h:outputText value="#{datoa.hora}">
+                                                            <h:outputText value="#{datoa.hora}" rendered="#{datoa.tipo.codigo eq 'TIME'}">
                                                                 <f:convertDateTime pattern="HH:mm:ss" />
                                                             </h:outputText>
-                                                            <h:outputText value="#{datoa.fechahora}">
+                                                            <h:outputText value="#{datoa.fechahora}" rendered="#{datoa.tipo.codigo eq 'DATETIME'}">
                                                                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
                                                             </h:outputText>
                                                             <h:outputText value="#{salutemDatos.traerSeleccion(datoa)}" 

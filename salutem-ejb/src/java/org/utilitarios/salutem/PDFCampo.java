@@ -22,7 +22,7 @@ public class PDFCampo {
 
     public PDFCampo(String type, Object value, char textAlign, String style, int colspan, int rowspan, int size, String border) {
         this.type = type != null ? type : "String";
-        this.value = value != null ? value : "";
+        this.value = value ;
         this.textAlign = textAlign;
         this.style = style;
         this.colspan = colspan != 0 ? colspan : 1;
@@ -32,9 +32,21 @@ public class PDFCampo {
 
     }
 
+    public PDFCampo(String type, Object value, char textAlign, String style, int colspan, String border) {
+        this.type = type != null ? type : "String";
+        this.value = value ;
+        this.textAlign = textAlign;
+        this.style = style;
+        this.colspan = colspan != 0 ? colspan : 1;
+        this.rowspan = 1;
+        this.size = 10;
+        this.borderSide = border;
+
+    }
+
     public PDFCampo(String type, Object value) {
         this.type = type != null ? type : "String";
-        this.value = value != null ? value : "";
+        this.value = value ;
         this.textAlign = 'C';
         this.style = "";
         this.colspan = 1;
@@ -45,7 +57,7 @@ public class PDFCampo {
 
     public PDFCampo(String type, Object value, String style) {
         this.type = type != null ? type : "String";
-        this.value = value != null ? value : "";
+        this.value = value ;
         this.textAlign = 'C';
         this.style = style;
         this.colspan = colspan != 0 ? colspan : 1;
@@ -56,7 +68,7 @@ public class PDFCampo {
 
     public PDFCampo(String type, Object value, String style, String border) {
         this.type = type != null ? type : "String";
-        this.value = value != null ? value : "";
+        this.value = value ;
         this.textAlign = 'C';
         this.style = style;
         this.colspan = colspan != 0 ? colspan : 1;
@@ -67,7 +79,7 @@ public class PDFCampo {
 
     public PDFCampo(String type, Object value, int colspan, int rowspan, String border) {
         this.type = type != null ? type : "String";
-        this.value = value != null ? value : "";
+        this.value = value ;
         this.textAlign = 'C';
         this.style = "";
         this.colspan = colspan;
@@ -78,7 +90,7 @@ public class PDFCampo {
 
     public PDFCampo(String type, Object value, int colspan, String border) {
         this.type = type != null ? type : "String";
-        this.value = value != null ? value : "";
+        this.value = value ;
         this.textAlign = 'C';
         this.style = "";
         this.colspan = colspan;
@@ -89,7 +101,7 @@ public class PDFCampo {
 
     public PDFCampo(String type, Object value, String style, int colspan, String border) {
         this.type = type != null ? type : "String";
-        this.value = value != null ? value : "";
+        this.value = value ;
         this.textAlign = 'C';
         this.style = style;
         this.colspan = colspan;

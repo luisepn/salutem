@@ -43,18 +43,21 @@
             <ace:dateTimeEntry value="#{dato.fecha}" navigator="true" converterMessage="Es necesario una fecha válida" 
                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"
+                               todayNowButtonsAlsoSelect="true"
                                rendered="#{dato.tipo.codigo eq 'DATE'}">
                 <f:convertDateTime pattern="dd/MM/yyyy" />
             </ace:dateTimeEntry>
             <ace:dateTimeEntry value="#{dato.hora}" navigator="true" converterMessage="Es necesario una hora válida"
                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                pattern="HH:mm:ss" label="HH:mm:ss" labelPosition="infield"
+                               todayNowButtonsAlsoSelect="true"
                                rendered="#{dato.tipo.codigo eq 'TIME'}">
                 <f:convertDateTime pattern="HH:mm:ss" />
             </ace:dateTimeEntry>
             <ace:dateTimeEntry value="#{dato.fechahora}" navigator="true" converterMessage="Es necesario una fecha válida"
                                popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
                                pattern="dd/MM/yyyy HH:mm:ss" label="dd/MM/yyyy HH:mm:ss" labelPosition="infield"
+                               todayNowButtonsAlsoSelect="true"
                                rendered="#{dato.tipo.codigo eq 'DATETIME'}">
                 <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
             </ace:dateTimeEntry>

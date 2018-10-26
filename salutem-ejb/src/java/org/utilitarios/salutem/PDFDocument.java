@@ -10,6 +10,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.DoubleBorder;
+import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.BlockElement;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
@@ -23,17 +24,24 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.entidades.salutem.Archivos;
 
 @WrapToTest
 public class PDFDocument {
 
-    public Document document;
-    public PdfDocument pdfDocument;
-    public File tempFile;
+    private Document document;
+    private PdfDocument pdfDocument;
+    private File tempFile;
+
+    private SimpleDateFormat formatoFechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+    private SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
 
     public PDFDocument(String nombre) {
         try {
@@ -64,8 +72,11 @@ public class PDFDocument {
         return (Cell) getCampo("Cell", campo);
     }
 
-    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, int columnas, char align) {
+    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, int columnas, char align, PDFCampo titulo) {
         Table table = new Table(columnas);
+        if (titulo != null) {
+            table.addCell(crearCelda(titulo));
+        }
         switch (align) {
             case 'L':
                 table.setHorizontalAlignment(HorizontalAlignment.LEFT);
@@ -92,8 +103,11 @@ public class PDFDocument {
 
     }
 
-    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, float[] with, char align) {
+    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, float[] with, char align, PDFCampo titulo) {
         Table table = new Table(with);
+        if (titulo != null) {
+            table.addCell(crearCelda(titulo));
+        }
         switch (align) {
             case 'L':
                 table.setHorizontalAlignment(HorizontalAlignment.LEFT);
@@ -130,19 +144,34 @@ public class PDFDocument {
 
         switch (campo.getType()) {
             case "String":
-                texto = (String) campo.getValue();
+                texto = campo.getValue() != null ? (String) campo.getValue() : "";
                 break;
             case "Integer":
-                texto = ((Integer) campo.getValue()).toString();
+                texto = campo.getValue() != null ? ((Integer) campo.getValue()).toString() : "";
                 break;
             case "Double":
-                texto = ((Double) campo.getValue()).toString();
+                texto = campo.getValue() != null ? ((Double) campo.getValue()).toString() : "";
                 break;
             case "Float":
-                texto = ((Float) campo.getValue()).toString();
+                texto = campo.getValue() != null ? ((Float) campo.getValue()).toString() : "";
                 break;
             case "Boolean":
-                texto = ((Boolean) campo.getValue()) ? "SÍ" : "NO";
+                texto = campo.getValue() != null ? ((Boolean) campo.getValue() ? "SÍ" : "NO") : "";
+                break;
+            case "Date":
+                texto = campo.getValue() != null ? formatoFecha.format((Date) campo.getValue()) : "";
+                break;
+            case "Time":
+                texto = campo.getValue() != null ? formatoHora.format((Date) campo.getValue()) : "";
+                break;
+            case "DateTime":
+                texto = campo.getValue() != null ? formatoFechaHora.format((Date) campo.getValue()) : "";
+                break;
+            case "Selection":
+                texto = campo.getValue() != null ? (String) campo.getValue() : "";
+                break;
+            case "File":
+                texto = campo.getValue() != null ? ((Archivos) campo.getValue()).getNombre() : "";
                 break;
         }
 
@@ -194,16 +223,16 @@ public class PDFDocument {
 
         if (campo.getBorderSide() != null) {
             if (campo.getBorderSide().contains("L")) {
-                element.setBorderLeft(new DoubleBorder(1));
+                element.setBorderLeft(new SolidBorder(1));
             }
             if (campo.getBorderSide().contains("R")) {
-                element.setBorderRight(new DoubleBorder(1));
+                element.setBorderRight(new SolidBorder(1));
             }
             if (campo.getBorderSide().contains("T")) {
-                element.setBorderTop(new DoubleBorder(1));
+                element.setBorderTop(new SolidBorder(1));
             }
             if (campo.getBorderSide().contains("B")) {
-                element.setBorderBottom(new DoubleBorder(1));
+                element.setBorderBottom(new SolidBorder(1));
             }
         }
 
