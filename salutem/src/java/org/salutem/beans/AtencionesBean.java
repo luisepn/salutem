@@ -671,33 +671,33 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private Recurso generarConsulta(Atenciones atencion, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal) {
 
         List<PDFCampo> titulos = new LinkedList<>();
-        titulos.add(new PDFCampo("String", "LENSOMETRÍA", "IB", 2, 3));
-        titulos.add(new PDFCampo("String", "AV SC", "IB", 2, 3));
-        titulos.add(new PDFCampo("String", "AV CC", "IB", 2, 3));
+        titulos.add(new PDFCampo("String", "LENSOMETRÍA", "IB", 2, "RB"));
+        titulos.add(new PDFCampo("String", "AV SC", "IB", 2, "LRB"));
+        titulos.add(new PDFCampo("String", "AV CC", "IB", 2, "LB"));
 
         List<PDFCampo> campos = new LinkedList<>();
 
         titulos.add(new PDFCampo("String", "OD", "IB"));
-        titulos.add(new PDFCampo("String", lensometria != null ? lensometria.getD() : ""));
+        titulos.add(new PDFCampo("String", lensometria != null ? lensometria.getD() : "", 1, "R"));
 
         titulos.add(new PDFCampo("String", "OD", "IB"));
-        titulos.add(new PDFCampo("String", lensometria != null ? lensometria.getI() : ""));
+        titulos.add(new PDFCampo("String", lensometria != null ? lensometria.getI() : "", 1, "R"));
 
         titulos.add(new PDFCampo("String", "OD", "IB"));
         titulos.add(new PDFCampo("String", agudezavisualsincristal != null ? agudezavisualsincristal.getD() : ""));
 
         titulos.add(new PDFCampo("String", "OI", "IB"));
-        titulos.add(new PDFCampo("String", agudezavisualsincristal != null ? agudezavisualsincristal.getI() : ""));
+        titulos.add(new PDFCampo("String", agudezavisualsincristal != null ? agudezavisualsincristal.getI() : "", 1, "R"));
 
         titulos.add(new PDFCampo("String", "OI", "IB"));
-        titulos.add(new PDFCampo("String", agudezavisualconcristal != null ? agudezavisualconcristal.getD() : ""));
+        titulos.add(new PDFCampo("String", agudezavisualconcristal != null ? agudezavisualconcristal.getD() : "", 1, "R"));
 
         titulos.add(new PDFCampo("String", "OI", "IB"));
         titulos.add(new PDFCampo("String", agudezavisualconcristal != null ? agudezavisualconcristal.getI() : ""));
 
         PDFDocument pdf = new PDFDocument(atencion.getPaciente().toString());
         float[] columnas = {50, 50, 50, 50, 50, 50};
-        pdf.agregarTabla(titulos, campos, columnas);
+        pdf.agregarTabla(titulos, campos, columnas, 'C');
         return pdf.traerRecurso();
 
     }
