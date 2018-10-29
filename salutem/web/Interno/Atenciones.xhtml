@@ -310,24 +310,33 @@
                                     <h:panelGrid width="100%">
                                         <ace:panel header="Datos del Paciente">
                                             <h:panelGrid columns="2">
-                                                <h:outputLabel value="C.I.:" styleClass="bold"/>
-                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.cedula}"/>
                                                 <h:outputLabel value="Nombres:" styleClass="bold"/>
                                                 <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.nombres}"/>
                                                 <h:outputLabel value="Apellidos:" styleClass="bold"/>
                                                 <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.apellidos}"/>
+                                                <h:outputLabel value="C.I.:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.cedula}"/>
+                                                <h:outputLabel value="Dirección:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.direccion}"/>
+                                                <h:outputLabel value="Teléfono:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.direccion ne null 
+                                                                        ?salutemAtenciones.atencion.paciente.persona.direccion.telefonos:''}"/>
                                                 <h:outputLabel value="E-mail:" styleClass="bold"/>
                                                 <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.email}"/>
                                                 <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
                                                 <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.fecha}">
                                                     <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>   
                                                 </h:outputLabel>
+                                                <h:outputLabel value="Edad:" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.getEdad(salutemAtenciones.atencion.fecha)}"/>
                                                 <h:outputLabel value="Ocupación:" styleClass="bold"/>
                                                 <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.ocupacion}"/>
                                                 <h:outputLabel value="Género:" styleClass="bold"/>
                                                 <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.genero.nombre}"/>
-                                                <h:outputLabel value="Descripción:" styleClass="bold"/>
-                                                <h:outputLabel value="#{salutemAtenciones.atencion.paciente.descripcion}" style="white-space: pre-wrap"/>
+                                                <h:outputLabel value="Fecha de Atención" styleClass="bold"/>
+                                                <h:outputLabel value="#{salutemAtenciones.atencion.fecha}">
+                                                    <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>   
+                                                </h:outputLabel>
                                             </h:panelGrid>
                                         </ace:panel>
 
@@ -635,24 +644,33 @@
                                         <h:panelGrid width="100%">
                                             <ace:panel header="Datos del paciente">
                                                 <h:panelGrid columns="2">
-                                                    <h:outputLabel value="C.I.:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.cedula}"/>
                                                     <h:outputLabel value="Nombres:" styleClass="bold"/>
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.nombres}"/>
                                                     <h:outputLabel value="Apellidos:" styleClass="bold"/>
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.apellidos}"/>
+                                                    <h:outputLabel value="C.I.:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.cedula}"/>
+                                                    <h:outputLabel value="Dirección:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.direccion}"/>
+                                                    <h:outputLabel value="Teléfono:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.direccion ne null 
+                                                                            ?salutemAtenciones.ultimaAtencion.paciente.persona.direccion.telefonos:''}"/>
                                                     <h:outputLabel value="E-mail:" styleClass="bold"/>
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.email}"/>
                                                     <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.fecha}">
                                                         <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>   
                                                     </h:outputLabel>
+                                                    <h:outputLabel value="Edad:" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.getEdad(salutemAtenciones.ultimaAtencion.fecha)}"/>
                                                     <h:outputLabel value="Ocupación:" styleClass="bold"/>
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.ocupacion}"/>
                                                     <h:outputLabel value="Género:" styleClass="bold"/>
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.genero.nombre}"/>
-                                                    <h:outputLabel value="Descripción:" styleClass="bold"/>
-                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.descripcion}" style="white-space: pre-wrap"/>
+                                                    <h:outputLabel value="Fecha de Atención" styleClass="bold"/>
+                                                    <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.fecha}">
+                                                        <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>   
+                                                    </h:outputLabel>
                                                 </h:panelGrid>
                                             </ace:panel>
                                             <ace:panel header="Prescripción" rendered="#{salutemAtenciones.ultimaAtencion.especialidad.codigo ne 'OPT'}">

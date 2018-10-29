@@ -9,7 +9,7 @@ package org.utilitarios.salutem;
  *
  * @author luis
  */
-public class PDFCampo {
+public final class PDFCampo {
 
     private String type;
     private Object value;
@@ -19,95 +19,124 @@ public class PDFCampo {
     private int rowspan;
     private int size;
     private String borderSide;
+    private int defaultSize = 8;
 
-    public PDFCampo(String type, Object value, char textAlign, String style, int colspan, int rowspan, int size, String border) {
+    /**
+     *
+     * @param type
+     * @param value
+     * @param textAlign
+     * @param style
+     * @param colspan
+     * @param rowspan
+     * @param size
+     * @param borderSide
+     */
+    public PDFCampo(String type, Object value, char textAlign, String style, int colspan, int rowspan, int size, String borderSide) {
+        inicializar(type, value, textAlign, style, colspan, rowspan, size, borderSide);
+    }
+
+    /**
+     *
+     * @param value
+     * @param textAlign
+     * @param style
+     * @param colspan
+     * @param rowspan
+     * @param size
+     * @param borderSide
+     */
+    public PDFCampo(Object value, char textAlign, String style, int colspan, int rowspan, int size, String borderSide) {
+        inicializar(type, value, textAlign, style, colspan, rowspan, size, borderSide);
+    }
+
+    /**
+     *
+     * @param type
+     * @param value
+     * @param colspan
+     * @param borderSide
+     */
+    public PDFCampo(String type, Object value, int colspan, String borderSide) {
+        inicializar(type, value, 'L', "", colspan, 1, defaultSize, borderSide);
+    }
+
+    /**
+     *
+     * @param value
+     * @param style
+     * @param borderSide
+     */
+    public PDFCampo(Object value, String style, String borderSide) {
+        inicializar(null, value, 'L', style, 1, 1, defaultSize, borderSide);
+    }
+
+    /**
+     *
+     * @param value
+     * @param textAlign
+     * @param style
+     */
+    public PDFCampo(Object value, char textAlign, String style) {
+        inicializar(null, value, textAlign, style, 1, 1, defaultSize, "");
+    }
+
+    /**
+     *
+     * @param value
+     * @param textAlign
+     */
+    public PDFCampo(Object value, char textAlign) {
+        inicializar(null, value, textAlign, "", 1, 1, defaultSize, "");
+    }
+
+    /**
+     *
+     * @param type
+     * @param value
+     * @param style
+     * @param borderSide
+     */
+    public PDFCampo(String type, Object value, String style, String borderSide) {
+        inicializar(type, value, 'L', style, 1, 1, defaultSize, borderSide);
+    }
+
+    /**
+     *
+     * @param type
+     * @param value
+     */
+    public PDFCampo(String type, Object value) {
+        inicializar(type, value, 'L', "", 1, 1, defaultSize, "");
+    }
+    /**
+     *
+     * @param value
+     */
+    public PDFCampo( Object value) {
+        inicializar(null, value, 'L', "", 1, 1, defaultSize, "");
+    }
+
+    /**
+     *
+     * @param type
+     * @param value
+     * @param textAlign
+     * @param style
+     * @param colspan
+     * @param rowspan
+     * @param size
+     * @param borderSide
+     */
+    private void inicializar(String type, Object value, char textAlign, String style, int colspan, int rowspan, int size, String borderSide) {
         this.type = type != null ? type : "String";
-        this.value = value ;
+        this.value = value;
         this.textAlign = textAlign;
         this.style = style;
         this.colspan = colspan != 0 ? colspan : 1;
         this.rowspan = rowspan != 0 ? rowspan : 1;
-        this.size = size != 0 ? size : 10;
-        this.borderSide = border;
-
-    }
-
-    public PDFCampo(String type, Object value, char textAlign, String style, int colspan, String border) {
-        this.type = type != null ? type : "String";
-        this.value = value ;
-        this.textAlign = textAlign;
-        this.style = style;
-        this.colspan = colspan != 0 ? colspan : 1;
-        this.rowspan = 1;
-        this.size = 10;
-        this.borderSide = border;
-
-    }
-
-    public PDFCampo(String type, Object value) {
-        this.type = type != null ? type : "String";
-        this.value = value ;
-        this.textAlign = 'C';
-        this.style = "";
-        this.colspan = 1;
-        this.rowspan = 1;
-        this.size = 10;
-        this.borderSide = ""; //NO_BORDER
-    }
-
-    public PDFCampo(String type, Object value, String style) {
-        this.type = type != null ? type : "String";
-        this.value = value ;
-        this.textAlign = 'C';
-        this.style = style;
-        this.colspan = colspan != 0 ? colspan : 1;
-        this.rowspan = 1;
-        this.size = 10;
-        this.borderSide = ""; //NO_BORDER
-    }
-
-    public PDFCampo(String type, Object value, String style, String border) {
-        this.type = type != null ? type : "String";
-        this.value = value ;
-        this.textAlign = 'C';
-        this.style = style;
-        this.colspan = colspan != 0 ? colspan : 1;
-        this.rowspan = 1;
-        this.size = 10;
-        this.borderSide = border;
-    }
-
-    public PDFCampo(String type, Object value, int colspan, int rowspan, String border) {
-        this.type = type != null ? type : "String";
-        this.value = value ;
-        this.textAlign = 'C';
-        this.style = "";
-        this.colspan = colspan;
-        this.rowspan = rowspan;
-        this.size = 10;
-        this.borderSide = border;
-    }
-
-    public PDFCampo(String type, Object value, int colspan, String border) {
-        this.type = type != null ? type : "String";
-        this.value = value ;
-        this.textAlign = 'C';
-        this.style = "";
-        this.colspan = colspan;
-        this.rowspan = 1;
-        this.size = 10;
-        this.borderSide = border;
-    }
-
-    public PDFCampo(String type, Object value, String style, int colspan, String border) {
-        this.type = type != null ? type : "String";
-        this.value = value ;
-        this.textAlign = 'C';
-        this.style = style;
-        this.colspan = colspan;
-        this.rowspan = 1;
-        this.size = 10;
-        this.borderSide = border;
+        this.size = size != 0 ? size : defaultSize;
+        this.borderSide = borderSide;
     }
 
     /**
@@ -216,10 +245,24 @@ public class PDFCampo {
     }
 
     /**
-     * @param borderSide the borderSide to set
+     * @param borderSide
      */
     public void setBorderSide(String borderSide) {
         this.borderSide = borderSide;
+    }
+
+    /**
+     * @return the defaultSize
+     */
+    public int getDefaultSize() {
+        return defaultSize;
+    }
+
+    /**
+     * @param defaultSize the defaultSize to set
+     */
+    public void setDefaultSize(int defaultSize) {
+        this.defaultSize = defaultSize;
     }
 
 }

@@ -6,6 +6,11 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -36,23 +41,23 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "personas")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Personas.findAll", query = "SELECT p FROM Personas p")
-    , @NamedQuery(name = "Personas.findById", query = "SELECT p FROM Personas p WHERE p.id = :id")
-    , @NamedQuery(name = "Personas.findByNombres", query = "SELECT p FROM Personas p WHERE p.nombres = :nombres")
-    , @NamedQuery(name = "Personas.findByApellidos", query = "SELECT p FROM Personas p WHERE p.apellidos = :apellidos")
-    , @NamedQuery(name = "Personas.findByEmail", query = "SELECT p FROM Personas p WHERE p.email = :email")
-    , @NamedQuery(name = "Personas.findByUserid", query = "SELECT p FROM Personas p WHERE p.userid = :userid")
-    , @NamedQuery(name = "Personas.findByClave", query = "SELECT p FROM Personas p WHERE p.clave = :clave")
-    , @NamedQuery(name = "Personas.findByCedula", query = "SELECT p FROM Personas p WHERE p.cedula = :cedula")
-    , @NamedQuery(name = "Personas.findByFecha", query = "SELECT p FROM Personas p WHERE p.fecha = :fecha")
-    , @NamedQuery(name = "Personas.findByRol", query = "SELECT p FROM Personas p WHERE p.rol = :rol")
-    , @NamedQuery(name = "Personas.findByActivo", query = "SELECT p FROM Personas p WHERE p.activo = :activo")
-    , @NamedQuery(name = "Personas.findByOcupacion", query = "SELECT p FROM Personas p WHERE p.ocupacion = :ocupacion")
-    , @NamedQuery(name = "Personas.findByDescripcion", query = "SELECT p FROM Personas p WHERE p.descripcion = :descripcion")
-    , @NamedQuery(name = "Personas.findByCreado", query = "SELECT p FROM Personas p WHERE p.creado = :creado")
-    , @NamedQuery(name = "Personas.findByCreadopor", query = "SELECT p FROM Personas p WHERE p.creadopor = :creadopor")
-    , @NamedQuery(name = "Personas.findByActualizado", query = "SELECT p FROM Personas p WHERE p.actualizado = :actualizado")
-    , @NamedQuery(name = "Personas.findByActualizadopor", query = "SELECT p FROM Personas p WHERE p.actualizadopor = :actualizadopor")})
+    @NamedQuery(name = "Personas.findAll", query = "SELECT p FROM Personas p"),
+    @NamedQuery(name = "Personas.findById", query = "SELECT p FROM Personas p WHERE p.id = :id"),
+    @NamedQuery(name = "Personas.findByNombres", query = "SELECT p FROM Personas p WHERE p.nombres = :nombres"),
+    @NamedQuery(name = "Personas.findByApellidos", query = "SELECT p FROM Personas p WHERE p.apellidos = :apellidos"),
+    @NamedQuery(name = "Personas.findByEmail", query = "SELECT p FROM Personas p WHERE p.email = :email"),
+    @NamedQuery(name = "Personas.findByUserid", query = "SELECT p FROM Personas p WHERE p.userid = :userid"),
+    @NamedQuery(name = "Personas.findByClave", query = "SELECT p FROM Personas p WHERE p.clave = :clave"),
+    @NamedQuery(name = "Personas.findByCedula", query = "SELECT p FROM Personas p WHERE p.cedula = :cedula"),
+    @NamedQuery(name = "Personas.findByFecha", query = "SELECT p FROM Personas p WHERE p.fecha = :fecha"),
+    @NamedQuery(name = "Personas.findByRol", query = "SELECT p FROM Personas p WHERE p.rol = :rol"),
+    @NamedQuery(name = "Personas.findByActivo", query = "SELECT p FROM Personas p WHERE p.activo = :activo"),
+    @NamedQuery(name = "Personas.findByOcupacion", query = "SELECT p FROM Personas p WHERE p.ocupacion = :ocupacion"),
+    @NamedQuery(name = "Personas.findByDescripcion", query = "SELECT p FROM Personas p WHERE p.descripcion = :descripcion"),
+    @NamedQuery(name = "Personas.findByCreado", query = "SELECT p FROM Personas p WHERE p.creado = :creado"),
+    @NamedQuery(name = "Personas.findByCreadopor", query = "SELECT p FROM Personas p WHERE p.creadopor = :creadopor"),
+    @NamedQuery(name = "Personas.findByActualizado", query = "SELECT p FROM Personas p WHERE p.actualizado = :actualizado"),
+    @NamedQuery(name = "Personas.findByActualizadopor", query = "SELECT p FROM Personas p WHERE p.actualizadopor = :actualizadopor")})
 public class Personas implements Serializable {
 
     @Size(max = 2147483647)
@@ -151,7 +156,6 @@ public class Personas implements Serializable {
         this.id = id;
     }
 
-
     public Date getFecha() {
         return fecha;
     }
@@ -159,7 +163,6 @@ public class Personas implements Serializable {
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
-
 
     public Boolean getActivo() {
         return activo;
@@ -169,7 +172,6 @@ public class Personas implements Serializable {
         this.activo = activo;
     }
 
-
     public Date getCreado() {
         return creado;
     }
@@ -178,7 +180,6 @@ public class Personas implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -186,7 +187,6 @@ public class Personas implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     @XmlTransient
     public List<Usuarios> getUsuariosList() {
@@ -254,10 +254,36 @@ public class Personas implements Serializable {
     public String toString() {
         return (apellidos != null ? apellidos : "") + " " + (nombres != null ? nombres : "");
     }
+
+    public static LocalDate getLocalDateFromDate(Date date) {
+        return LocalDate.from(Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()));
+    }
+
+    public String getEdad() {
+        if (this.fecha == null) {
+            return "";
+        }
+        LocalDate nacimiento = getLocalDateFromDate(this.fecha);
+        LocalDate ahora = LocalDate.now();
+        Period periodo = Period.between(nacimiento, ahora);
+        return periodo.getYears() + " años, " + periodo.getMonths() + " meses y " + periodo.getDays() + " días.";
+    }
+
+    public String getEdad(Date fecha) {
+        if (this.fecha == null) {
+            return "";
+        }
+        LocalDate nacimiento = getLocalDateFromDate(this.fecha);
+        LocalDate ahora = getLocalDateFromDate(fecha);
+        Period periodo = Period.between(nacimiento, ahora);
+        return periodo.getYears() + " años, " + periodo.getMonths() + " meses y " + periodo.getDays() + " días.";
+    }
+
     @XmlTransient
     public List<Profesionales> getProfesionalesList() {
         return profesionalesList;
     }
+
     public void setProfesionalesList(List<Profesionales> profesionalesList) {
         this.profesionalesList = profesionalesList;
     }
@@ -349,5 +375,5 @@ public class Personas implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-    
+
 }

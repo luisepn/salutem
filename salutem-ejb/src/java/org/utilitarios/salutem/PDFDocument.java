@@ -5,11 +5,11 @@
  */
 package org.utilitarios.salutem;
 
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.Border;
-import com.itextpdf.layout.borders.DoubleBorder;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.BlockElement;
 import com.itextpdf.layout.element.Cell;
@@ -17,8 +17,6 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
-import com.itextpdf.layout.property.VerticalAlignment;
-import com.itextpdf.styledxmlparser.jsoup.nodes.Element;
 import com.itextpdf.test.annotations.WrapToTest;
 import java.io.File;
 import java.io.IOException;
@@ -39,17 +37,103 @@ public class PDFDocument {
     private PdfDocument pdfDocument;
     private File tempFile;
 
-    private SimpleDateFormat formatoFechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-    private SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-    private SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
+    public static SimpleDateFormat formatoFechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    public static SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
+    public static SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
 
-    public PDFDocument(String nombre) {
+    public PDFDocument(String name, String pageSize, boolean rotate) {
         try {
             Calendar c = Calendar.getInstance();
             tempFile = File.createTempFile("DocumentoTemporal" + c.getTimeInMillis(), ".pdf");
             PdfWriter writer = new PdfWriter(tempFile);
             pdfDocument = new PdfDocument(writer);
-            document = new Document(pdfDocument);
+
+            switch (pageSize) {
+                case "A0":
+                    document = new Document(pdfDocument, rotate ? PageSize.A0.rotate() : PageSize.A0);
+                    break;
+                case "A1":
+                    document = new Document(pdfDocument, rotate ? PageSize.A1.rotate() : PageSize.A1);
+                    break;
+                case "A2":
+                    document = new Document(pdfDocument, rotate ? PageSize.A2.rotate() : PageSize.A2);
+                    break;
+                case "A3":
+                    document = new Document(pdfDocument, rotate ? PageSize.A3.rotate() : PageSize.A3);
+                    break;
+                case "A4":
+                    document = new Document(pdfDocument, rotate ? PageSize.A4.rotate() : PageSize.A4);
+                    break;
+                case "A5":
+                    document = new Document(pdfDocument, rotate ? PageSize.A5.rotate() : PageSize.A5);
+                    break;
+                case "A6":
+                    document = new Document(pdfDocument, rotate ? PageSize.A6.rotate() : PageSize.A6);
+                    break;
+                case "A7":
+                    document = new Document(pdfDocument, rotate ? PageSize.A7.rotate() : PageSize.A7);
+                    break;
+                case "A8":
+                    document = new Document(pdfDocument, rotate ? PageSize.A8.rotate() : PageSize.A8);
+                    break;
+                case "A9":
+                    document = new Document(pdfDocument, rotate ? PageSize.A9.rotate() : PageSize.A9);
+                    break;
+                case "A10":
+                    document = new Document(pdfDocument, rotate ? PageSize.A10.rotate() : PageSize.A10);
+                    break;
+                case "B0":
+                    document = new Document(pdfDocument, rotate ? PageSize.B0.rotate() : PageSize.B0);
+                    break;
+                case "B1":
+                    document = new Document(pdfDocument, rotate ? PageSize.B1.rotate() : PageSize.B1);
+                    break;
+                case "B2":
+                    document = new Document(pdfDocument, rotate ? PageSize.B1.rotate() : PageSize.B2);
+                    break;
+                case "B3":
+                    document = new Document(pdfDocument, rotate ? PageSize.B3.rotate() : PageSize.B3);
+                    break;
+                case "B4":
+                    document = new Document(pdfDocument, rotate ? PageSize.B4.rotate() : PageSize.B4);
+                    break;
+                case "B5":
+                    document = new Document(pdfDocument, rotate ? PageSize.B5.rotate() : PageSize.B5);
+                    break;
+                case "B6":
+                    document = new Document(pdfDocument, rotate ? PageSize.B6.rotate() : PageSize.B6);
+                    break;
+                case "B7":
+                    document = new Document(pdfDocument, rotate ? PageSize.B7.rotate() : PageSize.B7);
+                    break;
+                case "B8":
+                    document = new Document(pdfDocument, rotate ? PageSize.B8.rotate() : PageSize.B8);
+                    break;
+                case "B9":
+                    document = new Document(pdfDocument, rotate ? PageSize.B9.rotate() : PageSize.B9);
+                    break;
+                case "B10":
+                    document = new Document(pdfDocument, rotate ? PageSize.B10.rotate() : PageSize.B10);
+                    break;
+                case "LETTER":
+                    document = new Document(pdfDocument, rotate ? PageSize.LETTER.rotate() : PageSize.LETTER);
+                    break;
+                case "LEGAL":
+                    document = new Document(pdfDocument, rotate ? PageSize.LEGAL.rotate() : PageSize.LEGAL);
+                    break;
+                case "TABLOID":
+                    document = new Document(pdfDocument, rotate ? PageSize.TABLOID.rotate() : PageSize.TABLOID);
+                    break;
+                case "LEDGER":
+                    document = new Document(pdfDocument, rotate ? PageSize.LEDGER.rotate() : PageSize.LEDGER);
+                    break;
+                case "EXECUTIVE":
+                    document = new Document(pdfDocument, rotate ? PageSize.EXECUTIVE.rotate() : PageSize.EXECUTIVE);
+                    break;
+                default:
+                    document = new Document(pdfDocument, rotate ? PageSize.A4.rotate() : PageSize.A4);
+            }
+
         } catch (IOException ex) {
             Logger.getLogger(PDFDocument.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -72,8 +156,9 @@ public class PDFDocument {
         return (Cell) getCampo("Cell", campo);
     }
 
-    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, int columnas, char align, PDFCampo titulo) {
+    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, float[] columnas, char align, PDFCampo titulo, boolean salto) {
         Table table = new Table(columnas);
+
         if (titulo != null) {
             table.addCell(crearCelda(titulo));
         }
@@ -90,52 +175,35 @@ public class PDFDocument {
             default:
                 break;
         }
-
-        for (PDFCampo t : titulos) {
-            table.addCell(crearCelda(t));
+        if (titulos != null) {
+            for (PDFCampo t : titulos) {
+                table.addCell(crearCelda(t));
+            }
         }
-
-        for (PDFCampo c : campos) {
-            table.addCell(crearCelda(c));
-        }
-
-        document.add(table);
-
-    }
-
-    public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, float[] with, char align, PDFCampo titulo) {
-        Table table = new Table(with);
-        if (titulo != null) {
-            table.addCell(crearCelda(titulo));
-        }
-        switch (align) {
-            case 'L':
-                table.setHorizontalAlignment(HorizontalAlignment.LEFT);
-                break;
-            case 'C':
-                table.setHorizontalAlignment(HorizontalAlignment.CENTER);
-                break;
-            case 'R':
-                table.setHorizontalAlignment(HorizontalAlignment.RIGHT);
-                break;
-            default:
-                break;
-        }
-
-        for (PDFCampo t : titulos) {
-            table.addCell(crearCelda(t));
-        }
-
-        for (PDFCampo c : campos) {
-            table.addCell(crearCelda(c));
+        if (campos != null) {
+            for (PDFCampo c : campos) {
+                table.addCell(crearCelda(c));
+            }
         }
 
         document.add(table);
+        if (salto) {
+            agregarLineas(1);
+        }
 
     }
 
-    public void agregarParrafo(PDFCampo campo) {
+    public void agregarParrafo(PDFCampo campo, boolean salto) {
         document.add((Paragraph) getCampo("Paragraph", campo));
+        if (salto) {
+            agregarLineas(1);
+        }
+    }
+
+    public void agregarLineas(int numero) {
+        for (int i = 0; i < numero; i++) {
+            document.add(new Paragraph("\n"));
+        }
     }
 
     private Object getCampo(String tipo, PDFCampo campo) {

@@ -30,22 +30,22 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "direcciones")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Direcciones.findAll", query = "SELECT d FROM Direcciones d")
-    , @NamedQuery(name = "Direcciones.findById", query = "SELECT d FROM Direcciones d WHERE d.id = :id")
-    , @NamedQuery(name = "Direcciones.findByPrimaria", query = "SELECT d FROM Direcciones d WHERE d.primaria = :primaria")
-    , @NamedQuery(name = "Direcciones.findByNumero", query = "SELECT d FROM Direcciones d WHERE d.numero = :numero")
-    , @NamedQuery(name = "Direcciones.findBySecundaria", query = "SELECT d FROM Direcciones d WHERE d.secundaria = :secundaria")
-    , @NamedQuery(name = "Direcciones.findByPiso", query = "SELECT d FROM Direcciones d WHERE d.piso = :piso")
-    , @NamedQuery(name = "Direcciones.findByReferencia", query = "SELECT d FROM Direcciones d WHERE d.referencia = :referencia")
-    , @NamedQuery(name = "Direcciones.findByFijo", query = "SELECT d FROM Direcciones d WHERE d.fijo = :fijo")
-    , @NamedQuery(name = "Direcciones.findByMovil", query = "SELECT d FROM Direcciones d WHERE d.movil = :movil")
-    , @NamedQuery(name = "Direcciones.findByCiudad", query = "SELECT d FROM Direcciones d WHERE d.ciudad = :ciudad")
-    , @NamedQuery(name = "Direcciones.findByDescripcion", query = "SELECT d FROM Direcciones d WHERE d.descripcion = :descripcion")
-    , @NamedQuery(name = "Direcciones.findByCreado", query = "SELECT d FROM Direcciones d WHERE d.creado = :creado")
-    , @NamedQuery(name = "Direcciones.findByCreadopor", query = "SELECT d FROM Direcciones d WHERE d.creadopor = :creadopor")
-    , @NamedQuery(name = "Direcciones.findByActualizado", query = "SELECT d FROM Direcciones d WHERE d.actualizado = :actualizado")
-    , @NamedQuery(name = "Direcciones.findByActualizadopor", query = "SELECT d FROM Direcciones d WHERE d.actualizadopor = :actualizadopor")
-    , @NamedQuery(name = "Direcciones.findByActivo", query = "SELECT d FROM Direcciones d WHERE d.activo = :activo")})
+    @NamedQuery(name = "Direcciones.findAll", query = "SELECT d FROM Direcciones d"),
+    @NamedQuery(name = "Direcciones.findById", query = "SELECT d FROM Direcciones d WHERE d.id = :id"),
+    @NamedQuery(name = "Direcciones.findByPrimaria", query = "SELECT d FROM Direcciones d WHERE d.primaria = :primaria"),
+    @NamedQuery(name = "Direcciones.findByNumero", query = "SELECT d FROM Direcciones d WHERE d.numero = :numero"),
+    @NamedQuery(name = "Direcciones.findBySecundaria", query = "SELECT d FROM Direcciones d WHERE d.secundaria = :secundaria"),
+    @NamedQuery(name = "Direcciones.findByPiso", query = "SELECT d FROM Direcciones d WHERE d.piso = :piso"),
+    @NamedQuery(name = "Direcciones.findByReferencia", query = "SELECT d FROM Direcciones d WHERE d.referencia = :referencia"),
+    @NamedQuery(name = "Direcciones.findByFijo", query = "SELECT d FROM Direcciones d WHERE d.fijo = :fijo"),
+    @NamedQuery(name = "Direcciones.findByMovil", query = "SELECT d FROM Direcciones d WHERE d.movil = :movil"),
+    @NamedQuery(name = "Direcciones.findByCiudad", query = "SELECT d FROM Direcciones d WHERE d.ciudad = :ciudad"),
+    @NamedQuery(name = "Direcciones.findByDescripcion", query = "SELECT d FROM Direcciones d WHERE d.descripcion = :descripcion"),
+    @NamedQuery(name = "Direcciones.findByCreado", query = "SELECT d FROM Direcciones d WHERE d.creado = :creado"),
+    @NamedQuery(name = "Direcciones.findByCreadopor", query = "SELECT d FROM Direcciones d WHERE d.creadopor = :creadopor"),
+    @NamedQuery(name = "Direcciones.findByActualizado", query = "SELECT d FROM Direcciones d WHERE d.actualizado = :actualizado"),
+    @NamedQuery(name = "Direcciones.findByActualizadopor", query = "SELECT d FROM Direcciones d WHERE d.actualizadopor = :actualizadopor"),
+    @NamedQuery(name = "Direcciones.findByActivo", query = "SELECT d FROM Direcciones d WHERE d.activo = :activo")})
 public class Direcciones implements Serializable {
 
     @Size(max = 2147483647)
@@ -115,7 +115,6 @@ public class Direcciones implements Serializable {
         this.id = id;
     }
 
-
     public Date getCreado() {
         return creado;
     }
@@ -124,7 +123,6 @@ public class Direcciones implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -132,7 +130,6 @@ public class Direcciones implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     public Boolean getActivo() {
         return activo;
@@ -186,6 +183,15 @@ public class Direcciones implements Serializable {
                 + (numero != null ? numero : "")
                 + (secundaria != null ? secundaria : "");
     }
+
+    public String getTelefonos() {
+        return ((fijo != null && movil != null)
+                ? (fijo + " - " + movil)
+                : fijo != null
+                        ? fijo
+                        : movil != null ? movil : "");
+    }
+
     public Direcciones(String primaria, String numero, String secundaria, String piso, String referencia, String fijo, String movil, String ciudad, String descripcion, String creadopor, String actualizadopor, Integer id, Date creado, Date actualizado, Boolean activo, Instituciones instituciones, Personas personas) {
         this.primaria = primaria;
         this.numero = numero;
@@ -287,5 +293,5 @@ public class Direcciones implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-    
+
 }

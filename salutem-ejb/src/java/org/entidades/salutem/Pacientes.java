@@ -6,6 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
+import java.time.Period;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -34,14 +35,14 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "pacientes")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Pacientes.findAll", query = "SELECT p FROM Pacientes p")
-    , @NamedQuery(name = "Pacientes.findById", query = "SELECT p FROM Pacientes p WHERE p.id = :id")
-    , @NamedQuery(name = "Pacientes.findByActivo", query = "SELECT p FROM Pacientes p WHERE p.activo = :activo")
-    , @NamedQuery(name = "Pacientes.findByDescripcion", query = "SELECT p FROM Pacientes p WHERE p.descripcion = :descripcion")
-    , @NamedQuery(name = "Pacientes.findByCreado", query = "SELECT p FROM Pacientes p WHERE p.creado = :creado")
-    , @NamedQuery(name = "Pacientes.findByCreadopor", query = "SELECT p FROM Pacientes p WHERE p.creadopor = :creadopor")
-    , @NamedQuery(name = "Pacientes.findByActualizado", query = "SELECT p FROM Pacientes p WHERE p.actualizado = :actualizado")
-    , @NamedQuery(name = "Pacientes.findByActualizadopor", query = "SELECT p FROM Pacientes p WHERE p.actualizadopor = :actualizadopor")})
+    @NamedQuery(name = "Pacientes.findAll", query = "SELECT p FROM Pacientes p"),
+    @NamedQuery(name = "Pacientes.findById", query = "SELECT p FROM Pacientes p WHERE p.id = :id"),
+    @NamedQuery(name = "Pacientes.findByActivo", query = "SELECT p FROM Pacientes p WHERE p.activo = :activo"),
+    @NamedQuery(name = "Pacientes.findByDescripcion", query = "SELECT p FROM Pacientes p WHERE p.descripcion = :descripcion"),
+    @NamedQuery(name = "Pacientes.findByCreado", query = "SELECT p FROM Pacientes p WHERE p.creado = :creado"),
+    @NamedQuery(name = "Pacientes.findByCreadopor", query = "SELECT p FROM Pacientes p WHERE p.creadopor = :creadopor"),
+    @NamedQuery(name = "Pacientes.findByActualizado", query = "SELECT p FROM Pacientes p WHERE p.actualizado = :actualizado"),
+    @NamedQuery(name = "Pacientes.findByActualizadopor", query = "SELECT p FROM Pacientes p WHERE p.actualizadopor = :actualizadopor")})
 public class Pacientes implements Serializable {
 
     @Size(max = 2147483647)
@@ -134,6 +135,48 @@ public class Pacientes implements Serializable {
         this.persona = persona;
     }
 
+    @XmlTransient
+    public List<Citas> getCitasList() {
+        return citasList;
+    }
+
+    public void setCitasList(List<Citas> citasList) {
+        this.citasList = citasList;
+    }
+
+    @XmlTransient
+    public List<Atenciones> getAtencionesList() {
+        return atencionesList;
+    }
+
+    public void setAtencionesList(List<Atenciones> atencionesList) {
+        this.atencionesList = atencionesList;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -169,49 +212,6 @@ public class Pacientes implements Serializable {
 
     public String toStringCedula() {
         return persona != null ? persona.getCedula() + " " + persona.getNombres() + " " + persona.getApellidos() : "";
-    }
-
-    @XmlTransient
-    public List<Citas> getCitasList() {
-        return citasList;
-    }
-
-    public void setCitasList(List<Citas> citasList) {
-        this.citasList = citasList;
-    }
-
-
-    @XmlTransient
-    public List<Atenciones> getAtencionesList() {
-        return atencionesList;
-    }
-
-    public void setAtencionesList(List<Atenciones> atencionesList) {
-        this.atencionesList = atencionesList;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
-
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
     }
 
 }
