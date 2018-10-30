@@ -5,6 +5,7 @@
  */
 package org.utilitarios.salutem;
 
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -13,6 +14,7 @@ import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.BlockElement;
 import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.HorizontalAlignment;
@@ -206,6 +208,27 @@ public class PDFDocument {
         }
     }
 
+    public void agregarImagen(byte[] imagen, int height, char horizontalAlign) {
+        if (imagen != null) {
+            Image element = new Image(ImageDataFactory.create(imagen));
+            element.setHeight(height);
+            switch (horizontalAlign) {
+                case 'L':
+                    element.setHorizontalAlignment(HorizontalAlignment.LEFT);
+                    break;
+                case 'C':
+                    element.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                    break;
+                case 'R':
+                    element.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+                    break;
+                default:
+                    break;
+            }
+            document.add(element);
+        }
+    }
+
     private Object getCampo(String tipo, PDFCampo campo) {
 
         String texto = new String();
@@ -291,16 +314,16 @@ public class PDFDocument {
 
         if (campo.getBorderSide() != null) {
             if (campo.getBorderSide().contains("L")) {
-                element.setBorderLeft(new SolidBorder(1));
+                element.setBorderLeft(new SolidBorder(new Float(0.10)));
             }
             if (campo.getBorderSide().contains("R")) {
-                element.setBorderRight(new SolidBorder(1));
+                element.setBorderRight(new SolidBorder(new Float(0.10)));
             }
             if (campo.getBorderSide().contains("T")) {
-                element.setBorderTop(new SolidBorder(1));
+                element.setBorderTop(new SolidBorder(new Float(0.10)));
             }
             if (campo.getBorderSide().contains("B")) {
-                element.setBorderBottom(new SolidBorder(1));
+                element.setBorderBottom(new SolidBorder(new Float(0.10)));
             }
         }
 

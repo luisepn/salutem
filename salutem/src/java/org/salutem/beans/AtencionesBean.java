@@ -676,6 +676,11 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private Recurso generarConsulta(Atenciones atencion, List<Datos> datos, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal, List<RxFinal> listaRxFinal) {
 
         PDFDocument pdf = new PDFDocument(atencion.getPaciente().toString(), "A5", false);
+
+        if (atencion.getProfesional().getInstitucion().getLogotipo() != null) {
+            pdf.agregarImagen(atencion.getProfesional().getInstitucion().getLogotipo().traerImagen(), 40, 'C');
+        }
+
         List<PDFCampo> titulos;
         List<PDFCampo> campos;
 
@@ -705,8 +710,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             pdf.agregarTabla(null, campos, columnas, 'C', new PDFCampo("Datos del Paciente", 'L', "IB", columnas.length, 1, 8, "B"), false);
         }
         campos = new LinkedList<>();
-        campos.add(new PDFCampo("Fecha de Atención:", 'L', "IB"));
-        campos.add(new PDFCampo(PDFDocument.formatoFechaHora.format(atencion.getFecha()), 'L'));
+        campos.add(new PDFCampo("Fecha de Atención:", 'L', "IB", 1, 1, 8, "T"));
+        campos.add(new PDFCampo(PDFDocument.formatoFechaHora.format(atencion.getFecha()), 'L', "", 1, 1, 8, "T"));
         campos.add(new PDFCampo("Motivo de Consulta:", 'L', "IB"));
         campos.add(new PDFCampo(atencion.getMotivo(), 'L'));
         float[] col = {100, 230};

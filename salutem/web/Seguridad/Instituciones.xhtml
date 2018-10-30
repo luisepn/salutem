@@ -143,7 +143,7 @@
                                 </ace:menuButton>
                             </ace:column>
                             <ace:column style="text-align: center;">
-                                <ace:graphicImage value="#{salutemArchivos.traerImagen(item.logotipo.ruta)}" name="#{item.id}_#{item.logotipo.nombre}" id="resourceGraphicImage" style="height: 50px " rendered="#{item.logotipo ne null and item.logotipo.ruta ne null}"/>
+                                <ace:graphicImage value="#{item.logotipo.traerImagen()}" name="#{item.id}_#{item.logotipo.nombre}" id="resourceGraphicImage" style="height: 50px " rendered="#{item.logotipo ne null and item.logotipo.ruta ne null}"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
                                 <h:outputText  value="#{item.nombre} [#{item.id}]"/>
