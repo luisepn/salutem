@@ -4,9 +4,7 @@
  */
 package org.salutem.beans;
 
-import com.google.gson.JsonObject;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -467,6 +465,15 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         try {
             if (prescripciones != null) {
                 for (Prescripciones p : prescripciones) {
+
+                    if (p.getMedicamento() != null || !p.getMedicamento().isEmpty()
+                            || p.getDosis() != null || !p.getDosis().isEmpty()
+                            || p.getFrecuencia() != null || !p.getFrecuencia().isEmpty()
+                            || p.getDuracion() != null || !p.getDuracion().isEmpty()
+                            || p.getAdvertencias() != null || !p.getAdvertencias().isEmpty()) {
+
+                    }
+
                     p.setActualizado(new Date());
                     p.setActualizadopor(seguridadBean.getLogueado().getUserid());
                     ejbPrescripciones.actualizar(p, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
@@ -665,15 +672,15 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     public Recurso generarConsulta() {
         if (atencion != null) {
-            return generarConsulta(atencion, datosBean.getDatos(), lensometria, agudezavisualsincristal, agudezavisualconcristal, listaRxFinal);
+            return generarConsulta(atencion, datosBean.getDatos(), prescripciones, lensometria, agudezavisualsincristal, agudezavisualconcristal, listaRxFinal);
         }
         if (ultimaAtencion != null) {
-            return generarConsulta(ultimaAtencion, ultimosDatos, ultimaLensometria, ultimaAgudezavisualsincristal, ultimaAgudezavisualconcristal, ultimaListaRxFinal);
+            return generarConsulta(ultimaAtencion, ultimosDatos, ultimasPrescripciones, ultimaLensometria, ultimaAgudezavisualsincristal, ultimaAgudezavisualconcristal, ultimaListaRxFinal);
         }
         return null;
     }
 
-    private Recurso generarConsulta(Atenciones atencion, List<Datos> datos, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal, List<RxFinal> listaRxFinal) {
+    private Recurso generarConsulta(Atenciones atencion, List<Datos> datos, List<Prescripciones> prescripciones, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal, List<RxFinal> listaRxFinal) {
 
         PDFDocument pdf = new PDFDocument(atencion.getPaciente().toString(), "A5", false);
 
@@ -706,16 +713,14 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             campos.add(new PDFCampo(atencion.getPaciente().getPersona().getOcupacion(), 'L'));
             campos.add(new PDFCampo("Género:", 'L', "IB"));
             campos.add(new PDFCampo(atencion.getPaciente().getPersona().getGenero().getNombre(), 'L'));
-            float[] columnas = {50, 115, 50, 115};
-            pdf.agregarTabla(null, campos, columnas, 'C', new PDFCampo("Datos del Paciente", 'L', "IB", columnas.length, 1, 8, "B"), false);
+            pdf.agregarTabla(null, campos, new float[]{10, 40, 10, 40}, 'C', new PDFCampo("Datos del Paciente", 'L', "IB", 4, 1, 8, "B"), false);
         }
         campos = new LinkedList<>();
         campos.add(new PDFCampo("Fecha de Atención:", 'L', "IB", 1, 1, 8, "T"));
         campos.add(new PDFCampo(PDFDocument.formatoFechaHora.format(atencion.getFecha()), 'L', "", 1, 1, 8, "T"));
         campos.add(new PDFCampo("Motivo de Consulta:", 'L', "IB"));
         campos.add(new PDFCampo(atencion.getMotivo(), 'L'));
-        float[] col = {100, 230};
-        pdf.agregarTabla(null, campos, col, 'C', null, false);
+        pdf.agregarTabla(null, campos, new float[]{10, 90}, 'C', null, false);
 
         if (datos != null) {
             titulos = new LinkedList<>();
@@ -773,8 +778,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 }
 
             }
-            float[] columnas = {10, 130, 190};
-            pdf.agregarTabla(titulos, campos, columnas, 'C', new PDFCampo(atencion.getEspecialidad().getNombre(), 'L', "IB", columnas.length, 1, 8, "TB"), false);
+            pdf.agregarTabla(titulos, campos, new float[]{10, 30, 60}, 'C', new PDFCampo(atencion.getEspecialidad().getNombre(), 'L', "IB", 3, 1, 8, "TB"), false);
 
         }
         //Receta Optometría
@@ -807,8 +811,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 campos.add(new PDFCampo("OI", "IB", "LB"));
                 campos.add(new PDFCampo(agudezavisualconcristal.getI(), "", "RB"));
 
-                float[] columnas = {55, 55, 55, 55, 55, 55};
-                pdf.agregarTabla(titulos, campos, columnas, 'C', new PDFCampo("Rx", 'L', "IB", columnas.length, 1, 8, "B"), false);
+                pdf.agregarTabla(titulos, campos, new float[]{new Float(16.66), new Float(16.66), new Float(16.66), new Float(16.66), new Float(16.66), new Float(16.66)}, 'C', new PDFCampo("Rx", 'L', "IB", 6, 1, 8, "B"), false);
 
             }
 
@@ -832,16 +835,34 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                     campos.add(new PDFCampo(rx.getDistanciapupilar(), "", "RLTB"));
                     campos.add(new PDFCampo(rx.getAgudezavisual(), "", "RLTB"));
                 }
-                float[] columnas = {30, 50, 50, 50, 50, 50, 50};
-                pdf.agregarTabla(titulos, campos, columnas, 'C', new PDFCampo("Rx Final", 'L', "IB", columnas.length, 1, 8, "B"), false);
+                pdf.agregarTabla(titulos, campos, new float[]{10, 15, 15, 15, 15, 15, 15}, 'C', new PDFCampo("Rx Final", 'L', "IB", titulos.size(), 1, 8, "B"), false);
 
+            }
+        } else {
+            if (prescripciones != null) {
+                titulos = new LinkedList<>();
+                campos = new LinkedList<>();
+
+                titulos.add(new PDFCampo("Medicamento", "IB", "RLTB"));
+                titulos.add(new PDFCampo("Dosis", "IB", "RLTB"));
+                titulos.add(new PDFCampo("Frecuencia", "IB", "RLTB"));
+                titulos.add(new PDFCampo("Duración", "IB", "RLTB"));
+                titulos.add(new PDFCampo("Advertencia", "IB", "RLTB"));
+
+                for (Prescripciones p : prescripciones) {
+                    campos.add(new PDFCampo(p.getMedicamento(), "", "RLTB"));
+                    campos.add(new PDFCampo(p.getDosis(), "", "RLTB"));
+                    campos.add(new PDFCampo(p.getFrecuencia(), "", "RLTB"));
+                    campos.add(new PDFCampo(p.getDuracion(), "", "RLTB"));
+                    campos.add(new PDFCampo(p.getAdvertencias(), "", "RLTB"));
+                }
+                pdf.agregarTabla(titulos, campos, new float[]{20, 20, 20, 20, 20}, 'C', new PDFCampo("Prescripciones", 'L', "IB", 5, 1, 8, "B"), false);
             }
         }
         campos = new LinkedList<>();
         campos.add(new PDFCampo("Observaciones:", 'L', "IB"));
         campos.add(new PDFCampo(atencion.getObservaciones(), 'L'));
-        float[] columnas = {100, 230};
-        pdf.agregarTabla(null, campos, columnas, 'C', null, false);
+        pdf.agregarTabla(null, campos, new float[]{10, 90}, 'C', null, false);
 
         return pdf.traerRecurso();
     }

@@ -25,6 +25,11 @@ public class AsincronoLogFacade {
 
     @Asynchronous
     public void log(String json, String tabla, char operacion, String userid, String ip) {
+
+        if (json.replaceAll("\\{", "").replaceAll("\\}", "").trim().matches("^\"id\":[0-9]")) {
+            return;
+        }
+
         String query = "INSERT INTO "
                 + "Historial(fecha, tabla, objeto, operacion, userid, ip) "
                 + "VALUES (:fecha, :tabla, '" + json + "', :operacion, :userid, :ip);";

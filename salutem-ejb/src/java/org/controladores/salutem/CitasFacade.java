@@ -64,4 +64,8 @@ public class CitasFacade extends AbstractFacade<Citas> {
         return json.toString();
     }
 
+    private Citas getActual(Integer id) {
+        return em.find(Citas.class, id);
+    }
+
 }

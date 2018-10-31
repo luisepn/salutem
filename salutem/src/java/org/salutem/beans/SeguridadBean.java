@@ -679,6 +679,16 @@ public class SeguridadBean implements Serializable {
      * @return the profesional
      */
     public Profesionales getProfesional() {
+
+        try {
+            if (profesional != null) {
+                profesional = ejbProfesionales.buscar(profesional.getId());
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         return profesional;
     }
 

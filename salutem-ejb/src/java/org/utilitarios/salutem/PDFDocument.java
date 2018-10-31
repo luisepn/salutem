@@ -19,6 +19,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
 import com.itextpdf.test.annotations.WrapToTest;
 import java.io.File;
 import java.io.IOException;
@@ -159,8 +160,14 @@ public class PDFDocument {
     }
 
     public void agregarTabla(List<PDFCampo> titulos, List<PDFCampo> campos, float[] columnas, char align, PDFCampo titulo, boolean salto) {
-        Table table = new Table(columnas);
+        UnitValue[] uv = new UnitValue[columnas.length];
+        int i = 0;
+        for (float f : columnas) {
+            uv[i++] = new UnitValue(UnitValue.PERCENT, f);
+        }
 
+        Table table = new Table(uv);
+        table.setWidth(UnitValue.createPercentValue(100));
         if (titulo != null) {
             table.addCell(crearCelda(titulo));
         }
