@@ -45,7 +45,7 @@ public class FormulasFacade extends AbstractFacade<Formulas> {
     }
 
     @Override
-    protected String getJson(Formulas objeto) {
+    protected String getJson(Formulas actual, Formulas objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
 

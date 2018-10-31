@@ -31,7 +31,7 @@ public class DireccionesFacade extends AbstractFacade<Direcciones> {
     }
 
     @Override
-    protected String getJson(Direcciones objeto) {
+    protected String getJson(Direcciones actual, Direcciones objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("primaria", objeto.getPrimaria());

@@ -46,8 +46,6 @@ public class HistorialBean implements Serializable {
     private String usuario;
     private Character operacion;
     private String tabla;
-    private String campo;
-    private String busqueda;
 
     @EJB
     private HistorialFacade ejbHistorial;
@@ -75,7 +73,13 @@ public class HistorialBean implements Serializable {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
 
-                if (clave.contains("operacion")) {
+                if (clave.contains("registro")) {
+                    Integer id = Integer.parseInt(valor);
+                    if (id != 0) {
+                        where += " and o.registro=:" + clave.replaceAll("\\.", "");
+                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    }
+                } else if (clave.contains("operacion")) {
                     if (valor.equals("A")) {
                         where += " and o.operacion is not null";
                     } else {
@@ -89,24 +93,20 @@ public class HistorialBean implements Serializable {
                         where += " and o.tabla=:tabla";
                         parameters.put("tabla", valor);
                     }
-                } else if (clave.contains("objeto")) {
+                } else if (clave.contains("anterior") || clave.contains("nuevo")) {
                     if (valor.trim().contains(" in ")) {
                         if (valor.trim().matches("'[^ ]*'\\ [><!=^like^ilike^not like^not ilike^in^not in]*\\ \\([^ŋ]*\\)")) {
-                            where += " and o.objeto->>" + valor;
+                            where += " and " + clave + "->>" + valor;
                         }
                     } else {
                         if (valor.trim().matches("'[^ ]*'\\ [><!=^like^ilike^not like^not ilike^in^not in]*\\ '[^ŋ]*'")) {
-                            where += " and o.objeto->>" + valor;
+                            where += " and " + clave + "->>" + valor;
                         }
                     }
                 } else {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
-            }
-
-            if (campo != null && busqueda != null) {
-                where += " and o.objeto->>'" + campo + "'='" + busqueda + "'";
             }
 
             if (fechaInicio != null && fechaFin != null) {
@@ -159,17 +159,15 @@ public class HistorialBean implements Serializable {
         return null;
     }
 
-    public String buscar(String tabla, int id) {
-        titulo = "Tabla = " + tabla + "; ID = " + id;
-        this.tabla = tabla;
-        this.campo = "id";
-        this.busqueda = id + "";
+    public String buscar(String tabla, Integer registro) {
+        titulo = "Tabla = " + tabla + "; ID = " + registro;
         verColumnaTabla = false;
         lista = new LazyDataModel<Historial>() {
             @Override
             public List<Historial> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
                 if (map.isEmpty()) {
                     map.put("o.tabla", tabla);
+                    map.put("o.registro", registro.toString());
                 }
                 return cargar(i, pageSize, scs, map);
             }
@@ -295,48 +293,6 @@ public class HistorialBean implements Serializable {
     }
 
     /**
-     * @return the tabla
-     */
-    public String getTabla() {
-        return tabla;
-    }
-
-    /**
-     * @param tabla the tabla to set
-     */
-    public void setTabla(String tabla) {
-        this.tabla = tabla;
-    }
-
-    /**
-     * @return the campo
-     */
-    public String getCampo() {
-        return campo;
-    }
-
-    /**
-     * @param campo the campo to set
-     */
-    public void setCampo(String campo) {
-        this.campo = campo;
-    }
-
-    /**
-     * @return the busqueda
-     */
-    public String getBusqueda() {
-        return busqueda;
-    }
-
-    /**
-     * @param busqueda the busqueda to set
-     */
-    public void setBusqueda(String busqueda) {
-        this.busqueda = busqueda;
-    }
-
-    /**
      * @return the seguridadBean
      */
     public SeguridadBean getSeguridadBean() {
@@ -362,6 +318,20 @@ public class HistorialBean implements Serializable {
      */
     public void setVerColumnaTabla(Boolean verColumnaTabla) {
         this.verColumnaTabla = verColumnaTabla;
+    }
+
+    /**
+     * @return the tabla
+     */
+    public String getTabla() {
+        return tabla;
+    }
+
+    /**
+     * @param tabla the tabla to set
+     */
+    public void setTabla(String tabla) {
+        this.tabla = tabla;
     }
 
 }

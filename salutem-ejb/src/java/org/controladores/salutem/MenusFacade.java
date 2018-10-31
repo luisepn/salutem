@@ -77,7 +77,7 @@ public class MenusFacade extends AbstractFacade<Menus> {
     }
 
     @Override
-    protected String getJson(Menus objeto) {
+    protected String getJson(Menus actual, Menus objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("codigo", objeto.getCodigo());

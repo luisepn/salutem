@@ -74,7 +74,7 @@ public class ArchivosFacade extends AbstractFacade<Archivos> {
     }
 
     @Override
-    protected String getJson(Archivos objeto) {
+    protected String getJson(Archivos actual, Archivos objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("clasificador", objeto.getClasificador());

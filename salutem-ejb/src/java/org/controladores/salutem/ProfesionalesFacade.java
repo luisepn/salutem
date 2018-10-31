@@ -65,7 +65,7 @@ public class ProfesionalesFacade extends AbstractFacade<Profesionales> {
     }
 
     @Override
-    protected String getJson(Profesionales objeto) {
+    protected String getJson(Profesionales actual, Profesionales objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("persona", objeto.getPersona() != null ? objeto.getPersona().toString() : "");

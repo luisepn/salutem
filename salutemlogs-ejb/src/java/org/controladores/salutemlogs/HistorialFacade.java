@@ -38,8 +38,17 @@ public class HistorialFacade extends AbstractFacade<Historial> {
     public Object buscar(String where, Map parameters, String order, Integer firstResult, Integer maxResults, Boolean contar) throws ExcepcionDeConsulta {
         try {
             String sql
-                    = (contar ? "Select count(o.id) from Historial o"
-                            : "Select o.id, o.fecha, o.tabla, jsonb_pretty(o.objeto) as objeto, o.operacion, o.userid, o.ip from Historial o");
+                    = (contar ? "Select count(o.id) from Historial o" : "Select "
+                            + "o.id, "
+                            + "o.fecha, "
+                            + "o.usuario, "
+                            + "o.ip, "
+                            + "o.operacion, "
+                            + "o.tabla, "
+                            + "o.registro, "
+                            + "jsonb_pretty(o.anterior) as anterior,"
+                            + "jsonb_pretty(o.nuevo) as nuevo "
+                            + "from Historial o");
             if (where != null) {
                 sql += " where " + where;
             }

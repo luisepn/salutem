@@ -53,8 +53,8 @@
                         <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                     </h:outputText>
                 </ace:column>               
-                <ace:column  headerText="Usuario" sortBy="#{item.userid}" filterBy="#{item.userid}" filterMatchMode="contains" style="text-align: left">
-                    <h:outputText  value="#{item.userid}"/>
+                <ace:column  headerText="Usuario" sortBy="#{item.usuario}" filterBy="#{item.usuario}" filterMatchMode="contains" style="text-align: left">
+                    <h:outputText  value="#{item.usuario}"/>
                 </ace:column>
                 <ace:column  headerText="IP" sortBy="#{item.ip}" filterBy="#{item.ip}" filterMatchMode="contains" style="text-align: left">
                     <h:outputText  value="#{item.ip}"/>
@@ -84,8 +84,11 @@
                             style="text-align: left">
                     <h:outputText  value="#{item.tabla}"/>
                 </ace:column>
-                <ace:column  headerText="#{salutemHistorial.ayudaCampos}" filterBy="#{item.objeto}" filterMatchMode="exact" style="text-align: left">
-                    <h:outputText  value="#{item.objetoSinFormato}" style="white-space: pre-wrap"/>
+                <ace:column  headerText="Valor Anterior" filterBy="#{item.anterior}" filterMatchMode="contains" style="text-align: left">
+                    <h:outputText  value="#{item.anteriorSinFormato}" style="white-space: pre-wrap"/>
+                </ace:column>
+                <ace:column  headerText="Valor Nuevo" filterBy="#{item.nuevo}" filterMatchMode="contains" style="text-align: left">
+                    <h:outputText  value="#{item.nuevoSinFormato}" style="white-space: pre-wrap"/>
                 </ace:column>
             </ace:dataTable>            
         </h:panelGrid>

@@ -24,34 +24,56 @@ public class AsincronoLogFacade {
     private EntityManager em;
 
     @Asynchronous
-    public void log(String json, String tabla, char operacion, String userid, String ip) {
+    public void log(Integer registro, String json, String tabla, char operacion, String userid, String ip) {
 
-        if (json.replaceAll("\\{", "").replaceAll("\\}", "").trim().matches("^\"id\":[0-9]")) {
+        if (json.equals("{}")) {
             return;
         }
 
-        String query = "INSERT INTO "
-                + "Historial(fecha, tabla, objeto, operacion, userid, ip) "
-                + "VALUES (:fecha, :tabla, '" + json + "', :operacion, :userid, :ip);";
+        String query = "INSERT INTO Historial("
+                + "fecha, "
+                + "usuario, "
+                + "ip, "
+                + "operacion, "
+                + "tabla, "
+                + "registro, "
+                + "anterior, "
+                + "nuevo) "
+                + "VALUES ("
+                + ":fecha, "
+                + ":usuario, "
+                + ":ip, "
+                + ":operacion, "
+                + ":tabla, "
+                + ":registro, "
+                + "'" + json + "',"
+                + "'" + json + "');";
         em.createNativeQuery(query)
                 .setParameter("fecha", new Date())
-                .setParameter("tabla", tabla)
-                .setParameter("operacion", operacion)
-                .setParameter("userid", userid)
+                .setParameter("usuario", userid)
                 .setParameter("ip", ip)
+                .setParameter("tabla", tabla)
+                .setParameter("registro", registro)
+                .setParameter("operacion", operacion)
                 .executeUpdate();
     }
 
     @Asynchronous
-    public void log(String mensaje, char operacion, String userid, String ip) {
-        String query = "INSERT INTO "
-                + "Historial(fecha, tabla, objeto, operacion, userid, ip) "
-                + "VALUES (:fecha, 'Logs', '{\"mensaje\":\"" + mensaje + "\"}', :operacion, :userid, :ip);";
+    public void log(String mensaje, char operacion, String usuario, String ip) {
+        String query = "INSERT INTO Historial("
+                + "fecha, "
+                + "usuario, "
+                + "ip, "
+                + "operacion, "
+                + "tabla, "
+                + "registro, "
+                + "nuevo) "
+                + "VALUES (:fecha, :usuario, :ip, :operacion, 'Logs','0', '{\"mensaje\":\"" + mensaje + "\"}');";
         em.createNativeQuery(query)
                 .setParameter("fecha", new Date())
-                .setParameter("operacion", operacion)
-                .setParameter("userid", userid)
+                .setParameter("usuario", usuario)
                 .setParameter("ip", ip)
+                .setParameter("operacion", operacion)
                 .executeUpdate();
     }
 }

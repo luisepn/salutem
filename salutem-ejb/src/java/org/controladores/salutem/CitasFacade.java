@@ -53,7 +53,7 @@ public class CitasFacade extends AbstractFacade<Citas> {
     }
 
     @Override
-    protected String getJson(Citas objeto) {
+    protected String getJson(Citas actual, Citas objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));

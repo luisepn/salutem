@@ -23,18 +23,20 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author fernando
+ * @author usuario
  */
 @Entity
 @Table(name = "historial")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Historial.findAll", query = "SELECT h FROM Historial h")
-    , @NamedQuery(name = "Historial.findById", query = "SELECT h FROM Historial h WHERE h.id = :id")
-    , @NamedQuery(name = "Historial.findByFecha", query = "SELECT h FROM Historial h WHERE h.fecha = :fecha")
-    , @NamedQuery(name = "Historial.findByTabla", query = "SELECT h FROM Historial h WHERE h.tabla = :tabla")
-    , @NamedQuery(name = "Historial.findByOperacion", query = "SELECT h FROM Historial h WHERE h.operacion = :operacion")
-    , @NamedQuery(name = "Historial.findByUserid", query = "SELECT h FROM Historial h WHERE h.userid = :userid")})
+    @NamedQuery(name = "Historial.findAll", query = "SELECT h FROM Historial h"),
+    @NamedQuery(name = "Historial.findById", query = "SELECT h FROM Historial h WHERE h.id = :id"),
+    @NamedQuery(name = "Historial.findByFecha", query = "SELECT h FROM Historial h WHERE h.fecha = :fecha"),
+    @NamedQuery(name = "Historial.findByUsuario", query = "SELECT h FROM Historial h WHERE h.usuario = :usuario"),
+    @NamedQuery(name = "Historial.findByIp", query = "SELECT h FROM Historial h WHERE h.ip = :ip"),
+    @NamedQuery(name = "Historial.findByOperacion", query = "SELECT h FROM Historial h WHERE h.operacion = :operacion"),
+    @NamedQuery(name = "Historial.findByTabla", query = "SELECT h FROM Historial h WHERE h.tabla = :tabla"),
+    @NamedQuery(name = "Historial.findByRegistro", query = "SELECT h FROM Historial h WHERE h.registro = :registro")})
 public class Historial implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -47,18 +49,22 @@ public class Historial implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
     @Size(max = 2147483647)
-    @Column(name = "tabla")
-    private String tabla;
-    @Column(name = "objeto")
-    private String objeto;
-    @Column(name = "operacion")
-    private Character operacion;
-    @Size(max = 2147483647)
-    @Column(name = "userid")
-    private String userid;
+    @Column(name = "usuario")
+    private String usuario;
     @Size(max = 2147483647)
     @Column(name = "ip")
     private String ip;
+    @Column(name = "operacion")
+    private Character operacion;
+    @Size(max = 2147483647)
+    @Column(name = "tabla")
+    private String tabla;
+    @Column(name = "registro")
+    private Integer registro;
+    @Column(name = "anterior")
+    private String anterior;
+    @Column(name = "nuevo")
+    private String nuevo;
 
     public Historial() {
     }
@@ -83,24 +89,20 @@ public class Historial implements Serializable {
         this.fecha = fecha;
     }
 
-    public String getTabla() {
-        return tabla;
+    public String getUsuario() {
+        return usuario;
     }
 
-    public void setTabla(String tabla) {
-        this.tabla = tabla;
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 
-    public String getObjeto() {
-        return objeto;
+    public String getIp() {
+        return ip;
     }
 
-    public String getObjetoSinFormato() {
-        return objeto.replace("\":", "' =").replace("\"", "'");
-    }
-
-    public void setObjeto(String objeto) {
-        this.objeto = objeto;
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 
     public Character getOperacion() {
@@ -111,20 +113,36 @@ public class Historial implements Serializable {
         this.operacion = operacion;
     }
 
-    public String getUserid() {
-        return userid;
+    public String getTabla() {
+        return tabla;
     }
 
-    public void setUserid(String userid) {
-        this.userid = userid;
+    public void setTabla(String tabla) {
+        this.tabla = tabla;
     }
 
-    public String getIp() {
-        return ip;
+    public Integer getRegistro() {
+        return registro;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setRegistro(Integer registro) {
+        this.registro = registro;
+    }
+
+    public String getAnterior() {
+        return anterior;
+    }
+
+    public void setAnterior(String anterior) {
+        this.anterior = anterior;
+    }
+
+    public String getNuevo() {
+        return nuevo;
+    }
+
+    public void setNuevo(String nuevo) {
+        this.nuevo = nuevo;
     }
 
     @Override
@@ -150,6 +168,14 @@ public class Historial implements Serializable {
     @Override
     public String toString() {
         return "org.entidades.salutemlogs.Historial[ id=" + id + " ]";
+    }
+
+    public String getAnteriorSinFormato() {
+        return anterior != null ? anterior.replace("\":", "' =").replace("\"", "'") : "";
+    }
+
+    public String getNuevoSinFormato() {
+        return nuevo != null ? nuevo.replace("\":", "' =").replace("\"", "'") : "";
     }
 
 }

@@ -54,7 +54,7 @@ public class PrescripcionesFacade extends AbstractFacade<Prescripciones> {
     }
 
     @Override
-    protected String getJson(Prescripciones objeto) {
+    protected String getJson(Prescripciones actual, Prescripciones objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("atencion", objeto.getAtencion() != null ? objeto.getAtencion().getId().toString() : "");

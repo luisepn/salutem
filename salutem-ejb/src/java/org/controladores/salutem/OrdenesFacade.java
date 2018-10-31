@@ -45,7 +45,7 @@ public class OrdenesFacade extends AbstractFacade<Ordenes> {
     }
 
     @Override
-    protected String getJson(Ordenes objeto) {
+    protected String getJson(Ordenes actual, Ordenes objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');

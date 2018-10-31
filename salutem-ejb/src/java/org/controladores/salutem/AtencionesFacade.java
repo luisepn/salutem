@@ -31,7 +31,7 @@ public class AtencionesFacade extends AbstractFacade<Atenciones> {
     }
 
     @Override
-    protected String getJson(Atenciones objeto) {
+    protected String getJson(Atenciones actual, Atenciones objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
@@ -39,7 +39,7 @@ public class AtencionesFacade extends AbstractFacade<Atenciones> {
         json.addProperty("motivo", objeto.getMotivo());
         json.addProperty("diagnostico", objeto.getDiagnostico());
         json.addProperty("observaciones", objeto.getObservaciones());
-        json.addProperty("formula", objeto.getFormula()!= null ? objeto.getFormula().getId() : 0);
+        json.addProperty("formula", objeto.getFormula() != null ? objeto.getFormula().getId() : 0);
         json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : "");
         json.addProperty("especialidad", objeto.getEspecialidad() != null ? objeto.getEspecialidad().toString() : "");
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');

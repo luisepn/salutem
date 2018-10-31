@@ -43,7 +43,7 @@ public class MaestrosFacade extends AbstractFacade<Maestros> {
     }
 
     @Override
-    protected String getJson(Maestros objeto) {
+    protected String getJson(Maestros actual, Maestros objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("codigo", objeto.getCodigo());

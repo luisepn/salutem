@@ -31,7 +31,7 @@ public class UsuariosFacade extends AbstractFacade<Usuarios> {
     }
 
     @Override
-    protected String getJson(Usuarios objeto) {
+    protected String getJson(Usuarios actual, Usuarios objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("modulo", objeto.getModulo() != null ? objeto.getModulo().toString() : "");

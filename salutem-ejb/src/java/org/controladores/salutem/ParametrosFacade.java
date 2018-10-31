@@ -74,7 +74,7 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
     }
 
     @Override
-    protected String getJson(Parametros objeto) {
+    protected String getJson(Parametros actual, Parametros objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("codigo", objeto.getCodigo());

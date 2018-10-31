@@ -37,7 +37,7 @@ public class DatosFacade extends AbstractFacade<Datos> {
     }
 
     @Override
-    protected String getJson(Datos objeto) {
+    protected String getJson(Datos actual, Datos objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("clasificador", objeto.getClasificador());

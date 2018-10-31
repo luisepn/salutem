@@ -67,8 +67,7 @@ public class PersonasFacade extends AbstractFacade<Personas> {
     }
 
     @Override
-    protected String getJson(Personas objeto) {
-        Personas actual = em.find(Personas.class, objeto.getId());
+    protected String getJson(Personas actual, Personas objeto) {
         JsonObject json = new JsonObject();
 
         if (!Objects.equals(objeto.getId(), actual.getId())) {

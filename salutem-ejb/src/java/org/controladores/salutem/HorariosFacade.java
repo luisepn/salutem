@@ -31,7 +31,7 @@ public class HorariosFacade extends AbstractFacade<Horarios> {
     }
 
     @Override
-    protected String getJson(Horarios objeto) {
+    protected String getJson(Horarios actual, Horarios objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("descripcion", objeto.getDescripcion());

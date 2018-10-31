@@ -62,7 +62,7 @@ public class MaterialesFacade extends AbstractFacade<Materiales> {
     }
 
     @Override
-    protected String getJson(Materiales objeto) {
+    protected String getJson(Materiales actual, Materiales objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("codigo", objeto.getCodigo());

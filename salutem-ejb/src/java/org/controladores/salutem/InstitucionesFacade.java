@@ -44,7 +44,7 @@ public class InstitucionesFacade extends AbstractFacade<Instituciones> {
     }
 
     @Override
-    protected String getJson(Instituciones objeto) {
+    protected String getJson(Instituciones actual, Instituciones objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("nombre", objeto.getNombre());

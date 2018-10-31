@@ -36,7 +36,7 @@ public class CamposFacade extends AbstractFacade<Campos> {
     }
 
     @Override
-    protected String getJson(Campos objeto) {
+    protected String getJson(Campos actual, Campos objeto) {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("clasificador", objeto.getClasificador());
