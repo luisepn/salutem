@@ -53,7 +53,10 @@ public class CitasFacade extends AbstractFacade<Citas> {
     }
 
     @Override
-    protected String getJson(Citas actual, Citas objeto) {
+    protected JsonObject getJson(Citas objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
@@ -61,7 +64,7 @@ public class CitasFacade extends AbstractFacade<Citas> {
         json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : "");
         json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
     private Citas getActual(Integer id) {

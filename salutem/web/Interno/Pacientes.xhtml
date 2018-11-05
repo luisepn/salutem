@@ -28,7 +28,7 @@
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemPacientes.buscarPacientes()}"/>
                             <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemPacientes.crearPaciente()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemPacientes.formulario.mostrar}"/>
+                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemPacientes.formulario.mostrar}"/>
                     </h:panelGrid>
                 </ace:panel>
 
@@ -82,9 +82,9 @@
                                 </ace:menuButton>
                             </ace:column>
                             <ace:column headerText="Fotografía" >
-                                <ace:graphicImage value="#{item.persona.fotografia.traerImagen()}" 
-                                                  name="#{item.id}_#{item.persona.fotografia.nombre}" id="resourceGraphicImage" style="height: 50px;" 
-                                                  rendered="#{item.persona.fotografia ne null and item.persona.fotografia.ruta ne null}"/>
+                                <ace:graphicImage value="#{item.fotografia.traerImagen()}" 
+                                                  name="#{item.id}_#{item.fotografia.nombre}" id="resourceGraphicImage" style="height: 50px;" 
+                                                  rendered="#{item.fotografia ne null and item.fotografia.ruta ne null}"/>
                             </ace:column> 
                             <ace:column headerText="Cédula de Identidad" sortBy="#{item.persona.cedula}" style="text-align: left" 
                                         filterBy="#{item.persona.cedula}" filterMatchMode="contains">
@@ -176,27 +176,12 @@
                             </h:panelGrid>
                         </ace:tabPane>
                         <ace:tabPane label="Fotografía">
-                            <center>
-                                <ace:graphicImage value="#{salutemArchivos.archivo.archivo}" name="#{salutemArchivos.archivo.archivo.toString()}" id="resourceGraphicImage" style="height: 100px " />
-                            </center>
-                            <h:panelGrid columns="2">
-                                <ace:fileEntry 
-                                    absolutePath="/tmp/salutem"
-                                    maxFileCount="1"
-                                    maxFileCountMessage="Sólo se puede subir 1 archivo"
-                                    fileEntryListener="#{salutemArchivos.ficheroDocumento}"
-                                    maxFileSize="10485760"
-                                    maxFileSizeMessage="El archivo supera el tamaño predefinido 10 MB"                                                                                                                 
-                                    useOriginalFilename="true"
-                                    label="Subido con éxito"/>
-                                <h:commandButton  type="submit" value="Subir Archivo" />
-                            </h:panelGrid>
-
+                            <ui:include src="../cuadroUpload.xhtml"/>
                         </ace:tabPane>
 
                     </ace:tabSet>
 
-                    <h:panelGrid>
+                    <h:panelGrid columns="2" width="100%">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
                                           action="#{salutemPacientes.grabarPaciente()}"
@@ -210,6 +195,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemPacientes.cancelar()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
                     </h:panelGrid>
                 </ace:dialog>
 

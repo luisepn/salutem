@@ -37,7 +37,10 @@ public class DatosFacade extends AbstractFacade<Datos> {
     }
 
     @Override
-    protected String getJson(Datos actual, Datos objeto) {
+    protected JsonObject getJson(Datos objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("clasificador", objeto.getClasificador());
@@ -89,7 +92,7 @@ public class DatosFacade extends AbstractFacade<Datos> {
         }
 
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
     public List<Datos> traerDatos(String clasificador, String grupo, Integer identificador) throws ExcepcionDeConsulta {

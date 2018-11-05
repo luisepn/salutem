@@ -212,7 +212,7 @@
                             </ace:menuBar>
                         </h:panelGrid>
                     </h:panelGroup>
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid columns="2" width="100%">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
                                           action="#{salutemSubmenus.insertar()}"
@@ -226,6 +226,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemSubmenus.cancelar()}"/>
                         </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

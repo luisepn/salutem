@@ -44,7 +44,10 @@ public class InstitucionesFacade extends AbstractFacade<Instituciones> {
     }
 
     @Override
-    protected String getJson(Instituciones actual, Instituciones objeto) {
+    protected JsonObject getJson(Instituciones objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("nombre", objeto.getNombre());
@@ -56,7 +59,7 @@ public class InstitucionesFacade extends AbstractFacade<Instituciones> {
         json.addProperty("fotografia", objeto.getLogotipo() != null ? objeto.getLogotipo().getRuta() : "");
         json.addProperty("direccion", objeto.getDireccion() != null ? objeto.getDireccion().toString() : "");
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
 }

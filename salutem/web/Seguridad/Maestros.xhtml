@@ -31,7 +31,7 @@
                                 <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemMaestros.buscar()}"/>
                                 <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemMaestros.crear()}"/>
                             </ace:menuBar>
-                            <ace:messages style="white-space: pre-wrap" rendered="#{!salutemMaestros.formulario.mostrar}"/>
+                            <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemMaestros.formulario.mostrar}"/>
                         </h:panelGrid>
                     </h:panelGrid>
                 </ace:panel>
@@ -150,7 +150,7 @@
                             <h:selectBooleanCheckbox value="#{salutemMaestros.maestro.activo}" title="Activo"/>
                         </h:panelGrid>
                     </h:panelGroup>
-                    <h:panelGrid>
+                    <h:panelGrid columns="2" width="100%">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
                                           action="#{salutemMaestros.insertar()}"
@@ -164,7 +164,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemMaestros.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap"/>
+                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

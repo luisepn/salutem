@@ -36,7 +36,10 @@ public class CamposFacade extends AbstractFacade<Campos> {
     }
 
     @Override
-    protected String getJson(Campos actual, Campos objeto) {
+    protected JsonObject getJson(Campos objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("clasificador", objeto.getClasificador());
@@ -51,7 +54,7 @@ public class CamposFacade extends AbstractFacade<Campos> {
             }
         }
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
     public String buscarJsonb(Integer id) throws ExcepcionDeConsulta {

@@ -65,7 +65,10 @@ public class ProfesionalesFacade extends AbstractFacade<Profesionales> {
     }
 
     @Override
-    protected String getJson(Profesionales actual, Profesionales objeto) {
+    protected JsonObject getJson(Profesionales objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("persona", objeto.getPersona() != null ? objeto.getPersona().toString() : "");
@@ -73,7 +76,7 @@ public class ProfesionalesFacade extends AbstractFacade<Profesionales> {
         json.addProperty("institucion", objeto.getInstitucion() != null ? objeto.getInstitucion().toString() : "");
         json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
 }

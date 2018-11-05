@@ -16,7 +16,7 @@ public class Mensajes {
         FacesContext context = FacesContext.getCurrentInstance();
         FacesMessage message = new  FacesMessage();
         message.setSeverity(FacesMessage.SEVERITY_ERROR);
-        message.setSummary(mensaje);
+        message.setSummary("¡Error!\n");
         message.setDetail(mensaje);
         context.addMessage("¡Error!", message);
     }
@@ -24,7 +24,7 @@ public class Mensajes {
         FacesContext context = FacesContext.getCurrentInstance();
         FacesMessage message = new  FacesMessage();
         message.setSeverity(FacesMessage.SEVERITY_FATAL);
-        message.setSummary(mensaje);
+        message.setSummary("¡Fatal!\n");
         message.setDetail(mensaje);
         context.addMessage("¡Fatal!", message);
     }
@@ -32,7 +32,7 @@ public class Mensajes {
         FacesContext context = FacesContext.getCurrentInstance();
         FacesMessage message = new  FacesMessage();
         message.setSeverity(FacesMessage.SEVERITY_INFO);
-        message.setSummary(mensaje);
+        message.setSummary("¡Información!\n");
         message.setDetail(mensaje);
         context.addMessage("¡Información!", message);
     }
@@ -40,7 +40,7 @@ public class Mensajes {
         FacesContext context = FacesContext.getCurrentInstance();
         FacesMessage message = new  FacesMessage();
         message.setSeverity(FacesMessage.SEVERITY_WARN);
-        message.setSummary(mensaje);
+        message.setSummary("¡Advertencia!\n");
         message.setDetail(mensaje);
         context.addMessage("¡Advertencia!", message);
     }

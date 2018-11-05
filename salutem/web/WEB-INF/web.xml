@@ -33,7 +33,7 @@
     
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>/salutem/*</url-pattern>
+        <url-pattern>/salutem/</url-pattern>
     </servlet-mapping>
      
     <servlet-mapping>

@@ -105,7 +105,7 @@
                                         <ace:menuItem value="Ver Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.verAgenda()}" rendered="#{salutemCitas.profesional ne null and !salutemCitas.ver}"/>
                                         <ace:menuItem value="Ocultar Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.ocultarAgenda()}" rendered="#{salutemCitas.profesional ne null and salutemCitas.ver}"/>
                                     </ace:menuBar>
-                                    <ace:messages style="white-space: pre-wrap" rendered="#{!salutemCitas.formulario.mostrar}"/>
+                                    <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemCitas.formulario.mostrar}"/>
                                 </h:panelGrid>
                             </h:panelGrid>
                             <h:panelGrid width="100%">
@@ -266,7 +266,7 @@
                             <h:outputText value="Observaciones:" styleClass="bold"/>
                             <h:inputTextarea cols="50" rows="4" value="#{salutemCitas.cita.descripcion}"/>
                         </h:panelGrid>
-                        <h:panelGrid columns="1" width="100%">
+                        <h:panelGrid columns="2" width="100%">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk"
                                               action="#{salutemCitas.grabar()}"
@@ -283,7 +283,7 @@
                                 <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                               action="#{salutemCitas.cancelar()}"/>
                             </ace:menuBar>
-                            <ace:messages style="white-space: pre-wrap" />
+                            <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
                         </h:panelGrid>
                     </ace:dialog>
                     <ui:include src="../cuadroHistorial.xhtml"/>

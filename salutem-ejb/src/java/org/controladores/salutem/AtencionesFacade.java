@@ -31,19 +31,22 @@ public class AtencionesFacade extends AbstractFacade<Atenciones> {
     }
 
     @Override
-    protected String getJson(Atenciones actual, Atenciones objeto) {
+    protected JsonObject getJson(Atenciones objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
-        json.addProperty("cita", objeto.getCita() != null ? objeto.getCita().getId().toString() : "");
-        json.addProperty("motivo", objeto.getMotivo());
-        json.addProperty("diagnostico", objeto.getDiagnostico());
-        json.addProperty("observaciones", objeto.getObservaciones());
-        json.addProperty("formula", objeto.getFormula() != null ? objeto.getFormula().getId() : 0);
-        json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : "");
-        json.addProperty("especialidad", objeto.getEspecialidad() != null ? objeto.getEspecialidad().toString() : "");
+        json.addProperty("cita", objeto.getCita() != null ? objeto.getCita().getId().toString() : null);
+        json.addProperty("motivo", objeto.getMotivo() != null ? objeto.getMotivo() : null);
+        json.addProperty("diagnostico", objeto.getDiagnostico() != null ? objeto.getDiagnostico() : null);
+        json.addProperty("observaciones", objeto.getObservaciones() != null ? objeto.getObservaciones() : null);
+        json.addProperty("formula", objeto.getFormula() != null ? objeto.getFormula().getId() : null);
+        json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : null);
+        json.addProperty("especialidad", objeto.getEspecialidad() != null ? objeto.getEspecialidad().toString() : null);
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
 }

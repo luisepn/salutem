@@ -88,19 +88,10 @@
                 <h:commandLink value="Ocultar" action="#{dato.setVerSubir(false)}" rendered="#{dato.verSubir}">
                     <ace:ajax render="@all"/>
                 </h:commandLink>
-                <ace:fileEntry
-                    id="subida"
-                    absolutePath="/tmp/salutem"
-                    maxFileCount="1"
-                    maxFileCountMessage="Sólo se puede subir 1 archivo"
+
+                <ace:fileEntry 
+                    id="file-entryListener" 
                     fileEntryListener="#{salutemDatos.colocarFichero}"
-                    maxTotalSize="20971520"
-                    maxFileSize="20971520"
-                    maxFileSizeMessage="El archivo supera el tamaño predefinido 20 MB"                                                                                                                 
-                    maxTotalSizeMessage="El archivo supera el tamaño predefinido 20 MB"
-                    useOriginalFilename="true"
-                    label="Subido con éxito"
-                    useSessionSubdir="true"
                     autoUpload="true"
                     rendered="#{dato.verSubir}"/>
             </h:panelGrid>
@@ -129,7 +120,7 @@
                 <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                               action="#{salutemDatos.formularioConfirmacion.cancelar()}"/>
             </ace:menuBar>
-            <ace:messages style="white-space: pre-wrap"/>
+            <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
         </h:panelGrid>
     </ace:dialog>
 

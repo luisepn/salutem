@@ -31,7 +31,10 @@ public class UsuariosFacade extends AbstractFacade<Usuarios> {
     }
 
     @Override
-    protected String getJson(Usuarios actual, Usuarios objeto) {
+    protected JsonObject getJson(Usuarios objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("modulo", objeto.getModulo() != null ? objeto.getModulo().toString() : "");
@@ -40,6 +43,6 @@ public class UsuariosFacade extends AbstractFacade<Usuarios> {
         json.addProperty("persona", objeto.getPersona() != null ? objeto.getPersona().toString() : "");
         json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 }

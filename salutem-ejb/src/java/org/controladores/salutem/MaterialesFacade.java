@@ -62,7 +62,10 @@ public class MaterialesFacade extends AbstractFacade<Materiales> {
     }
 
     @Override
-    protected String getJson(Materiales actual, Materiales objeto) {
+    protected JsonObject getJson(Materiales objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("codigo", objeto.getCodigo());
@@ -71,7 +74,7 @@ public class MaterialesFacade extends AbstractFacade<Materiales> {
         json.addProperty("foco", objeto.getFoco() != null ? objeto.getFoco().toString() : "");
         json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : "");
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
 }

@@ -10,17 +10,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.enterprise.inject.Any;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.controladores.salutem.PersonasFacade;
 import org.controladores.salutemlogs.HistorialFacade;
 import org.entidades.salutemlogs.Historial;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutemlogs.ExcepcionDeConsulta;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.beans.CombosBean;
 import org.salutem.beans.SeguridadBean;
 import org.salutem.utilitarios.Formulario;
+import org.salutem.utilitarios.Mensajes;
 
 /**
  *
@@ -34,21 +38,26 @@ public class HistorialBean implements Serializable {
 
     @Inject
     private SeguridadBean seguridadBean;
+    @Inject
+    @Any
+    private CombosBean combosBean;
 
     private Formulario formulario = new Formulario();
     private LazyDataModel<Historial> lista;
     private Perfiles perfil;
     private String titulo;
-    private Boolean verColumnaTabla = false;
 
     private Date fechaInicio;
     private Date fechaFin;
     private String usuario;
     private Character operacion;
     private String tabla;
+    private Integer registro;
 
     @EJB
     private HistorialFacade ejbHistorial;
+    @EJB
+    private PersonasFacade ejbTransacciones;
 
     public HistorialBean() {
         lista = new LazyDataModel<Historial>() {
@@ -74,10 +83,11 @@ public class HistorialBean implements Serializable {
                 String valor = (String) e.getValue();
 
                 if (clave.contains("registro")) {
-                    Integer id = Integer.parseInt(valor);
-                    if (id != 0) {
-                        where += " and o.registro=:" + clave.replaceAll("\\.", "");
-                        parameters.put(clave.replaceAll("\\.", ""), id);
+                    try {
+                        registro = Integer.parseInt(valor);
+                    } catch (NumberFormatException ex) {
+                        Mensajes.error("En la columna ID ingrese únicamente números " + ex.getMessage());
+                        registro = null;
                     }
                 } else if (clave.contains("operacion")) {
                     if (valor.equals("A")) {
@@ -87,12 +97,7 @@ public class HistorialBean implements Serializable {
                         parameters.put("operacion", valor);
                     }
                 } else if (clave.contains("tabla")) {
-                    if (valor.equals("A")) {
-                        where += " and o.tabla is not null";
-                    } else {
-                        where += " and o.tabla=:tabla";
-                        parameters.put("tabla", valor);
-                    }
+                    tabla = valor;
                 } else if (clave.contains("anterior") || clave.contains("nuevo")) {
                     if (valor.trim().contains(" in ")) {
                         if (valor.trim().matches("'[^ ]*'\\ [><!=^like^ilike^not like^not ilike^in^not in]*\\ \\([^ŋ]*\\)")) {
@@ -106,6 +111,46 @@ public class HistorialBean implements Serializable {
                 } else {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
+                }
+            }
+
+            if (tabla != null) {
+                if (tabla.equals("A")) {
+                    where += " and o.tabla is not null";
+                } else {
+                    where += " and o.tabla=:tabla";
+                    parameters.put("tabla", tabla);
+                }
+            }
+            if (registro != null) {
+                where += " and o.registro=:registro";
+                parameters.put("registro", registro);
+            }
+
+            if (tabla != null && registro != null) {
+                try {
+                    switch (tabla) {
+                        case "Personas":
+                            Integer direccion = ejbTransacciones.buscar("id", tabla, "direccion", registro.toString());
+                            where += " or (o.tabla in ('Direcciones') and o.registro=:direccion)";
+                            parameters.put("direccion", direccion);
+                            break;
+                        case "Pacientes":
+                        case "Profesionales":
+                            Integer persona = ejbTransacciones.buscar("persona", tabla, "id", registro.toString());
+                            Integer archivo = ejbTransacciones.buscar("fotografia", tabla, "id", registro.toString());
+                            direccion = ejbTransacciones.buscar("direccion", "Personas", "id", persona.toString());
+                            where += " or (o.tabla in ('Personas', 'Direcciones', 'Archivos') and o.registro in ("
+                                    + persona
+                                    + ","
+                                    + direccion
+                                    + ","
+                                    + archivo
+                                    + "))";
+                            break;
+                    }
+                } catch (org.excepciones.salutem.ExcepcionDeConsulta ex) {
+                    Logger.getLogger(HistorialBean.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
@@ -149,7 +194,7 @@ public class HistorialBean implements Serializable {
             calendar.set(Calendar.MILLISECOND, 999);
             fechaFin = calendar.getTime();
         }
-        verColumnaTabla = true;
+        combosBean.setClasificador(null);
         lista = new LazyDataModel<Historial>() {
             @Override
             public List<Historial> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -161,14 +206,12 @@ public class HistorialBean implements Serializable {
 
     public String buscar(String tabla, Integer registro) {
         titulo = "Tabla = " + tabla + "; ID = " + registro;
-        verColumnaTabla = false;
+        this.tabla = tabla;
+        combosBean.setClasificador(tabla);
+        this.registro = registro;
         lista = new LazyDataModel<Historial>() {
             @Override
             public List<Historial> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
-                if (map.isEmpty()) {
-                    map.put("o.tabla", tabla);
-                    map.put("o.registro", registro.toString());
-                }
                 return cargar(i, pageSize, scs, map);
             }
         };
@@ -307,20 +350,6 @@ public class HistorialBean implements Serializable {
     }
 
     /**
-     * @return the verColumnaTabla
-     */
-    public Boolean getVerColumnaTabla() {
-        return verColumnaTabla;
-    }
-
-    /**
-     * @param verColumnaTabla the verColumnaTabla to set
-     */
-    public void setVerColumnaTabla(Boolean verColumnaTabla) {
-        this.verColumnaTabla = verColumnaTabla;
-    }
-
-    /**
      * @return the tabla
      */
     public String getTabla() {
@@ -332,6 +361,20 @@ public class HistorialBean implements Serializable {
      */
     public void setTabla(String tabla) {
         this.tabla = tabla;
+    }
+
+    /**
+     * @return the combosBean
+     */
+    public CombosBean getCombosBean() {
+        return combosBean;
+    }
+
+    /**
+     * @param combosBean the combosBean to set
+     */
+    public void setCombosBean(CombosBean combosBean) {
+        this.combosBean = combosBean;
     }
 
 }

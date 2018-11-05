@@ -6,16 +6,19 @@ body{
     font-weight: bolder;
 }
 .columna1{
-    text-align: -webkit-left;
-    width:40%;
+    text-align: right;
+    vertical-align: central;
+    width:1%;
 }
 .columna2{
-    text-align: -webkit-center;
-    width:20%;
+    text-align: left;
+    vertical-align: central;
+    width:98%;
 }
 .columna3{
-    text-align: -webkit-right;
-    width:40%;
+    text-align: left;
+    vertical-align: central;
+    width:1%;
 }
 .menu1{
     text-align: -webkit-left; 

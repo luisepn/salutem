@@ -31,14 +31,17 @@ public class PacientesFacade extends AbstractFacade<Pacientes> {
     }
 
     @Override
-    protected String getJson(Pacientes actual, Pacientes objeto) {
+    protected JsonObject getJson(Pacientes objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("persona", objeto.getPersona() != null ? objeto.getPersona().toString() : "");
         json.addProperty("institucion", objeto.getInstitucion() != null ? objeto.getInstitucion().toString() : "");
         json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
 }

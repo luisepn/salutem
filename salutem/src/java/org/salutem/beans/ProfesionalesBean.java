@@ -9,12 +9,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.enterprise.inject.Any;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import org.controladores.salutem.ProfesionalesFacade;
 import org.entidades.salutem.Archivos;
 import org.entidades.salutem.Instituciones;
-import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Profesionales;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
@@ -28,6 +29,10 @@ import org.salutem.utilitarios.Mensajes;
 @Named("salutemProfesionales")
 @ViewScoped
 public class ProfesionalesBean extends PersonasAbstractoBean implements Serializable {
+
+    @Inject
+    @Any
+    private ArchivosBean archivosBean;
 
     private LazyDataModel<Profesionales> profesionales;
     private Profesionales profesional;
@@ -132,6 +137,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         profesional = new Profesionales();
         profesional.setActivo(Boolean.TRUE);
         crear();
+        archivosBean.iniciar(this.getNombreTabla(), profesional.getId(), new Archivos());
         if (seguridadBean.getInstitucion() != null) {
             direccion.setCiudad(seguridadBean.getInstitucion().getDireccion() != null ? seguridadBean.getInstitucion().getDireccion().getCiudad() : null);
         }
@@ -139,8 +145,6 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
     }
 
     private void existe() throws ExcepcionDeConsulta {
-        Instituciones institucion = profesional.getInstitucion();
-        Parametros especialidad = profesional.getEspecialidad();
         String where = " o.persona=:persona and o.institucion=:institucion";
         Map parametros = new HashMap();
         parametros.put("persona", persona);
@@ -160,8 +164,8 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         }
         profesional = (Profesionales) profesionales.getRowData();
         persona = profesional.getPersona();
-        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         editar();
+        archivosBean.iniciar(this.getNombreTabla(), profesional.getId(), profesional.getFotografia() != null ? profesional.getFotografia() : new Archivos());
         formulario.editar();
         return null;
     }
@@ -172,7 +176,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         }
         profesional = ((Profesionales) profesionales.getRowData());
         persona = profesional.getPersona();
-        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.iniciar(this.getNombreTabla(), profesional.getId(), profesional.getFotografia() != null ? profesional.getFotografia() : new Archivos());
         formulario.eliminar();
         return null;
     }
@@ -200,6 +204,8 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         try {
             existe();
             profesional.setPersona(persona);
+            archivosBean.grabar();
+            profesional.setFotografia(archivosBean.getArchivo().getId() != null ? archivosBean.getArchivo() : null);
             if (profesional.getId() == null) {
                 profesional.setCreado(new Date());
                 profesional.setCreadopor(seguridadBean.getLogueado().getUserid());
@@ -211,6 +217,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
                 profesional.setActualizadopor(seguridadBean.getLogueado().getUserid());
                 ejbProfesionales.actualizar(profesional, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
+            archivosBean.actualizarIdentificador(persona.getId().toString());
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ProfesionalesBean.class.getName()).log(Level.SEVERE, null, ex);

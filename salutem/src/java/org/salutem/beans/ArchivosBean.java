@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -23,6 +26,7 @@ import org.excepciones.salutem.ExcepcionDeCreacion;
 import org.icefaces.ace.component.fileentry.FileEntry;
 import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.icefaces.ace.component.fileentry.FileEntryResults;
+import org.icefaces.ace.component.fileentry.FileEntryStatus;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
 import org.utilitarios.salutem.Recurso;
@@ -51,6 +55,8 @@ public class ArchivosBean implements Serializable {
     private List<Archivos> archivos;
     private Formulario formulario = new Formulario();
 
+    private final String absolutePath = "/tmp/salutem";
+
     @EJB
     private ArchivosFacade ejbArchivos;
 
@@ -77,22 +83,34 @@ public class ArchivosBean implements Serializable {
             this.archivo.setArchivo(archivo.getArchivo());
         } else {
             if (archivo.getRuta() != null) {
-                Mensajes.fatal("El archivo no existe en la ruta " + archivo.getRuta());
+                //Mensajes.fatal("El archivo no existe en la ruta " + archivo.getRuta());
             }
         }
         buscar();
     }
 
-    public String ficheroDocumento(FileEntryEvent e) {
-        FileEntry fe = (FileEntry) e.getComponent();
-        FileEntryResults results = fe.getResults();
+    public String ficheroListener(FileEntryEvent e) {
+        FileEntry fileEntry = (FileEntry) e.getComponent();
+        fileEntry.setAbsolutePath(absolutePath);
+        fileEntry.setMaxFileSize(4 * 1024 * 1024); //4 Mb
+        fileEntry.setUseOriginalFilename(true);
+
+        FileEntryResults results = fileEntry.getResults();
         for (FileEntryResults.FileInfo i : results.getFiles()) {
             try {
                 File file = i.getFile();
-                archivo.setNombre(i.getFileName());
-                archivo.setTipo(i.getContentType());
-                archivo.setArchivo(Files.readAllBytes(file.toPath()));
-                archivo.setIdentificador(identificador);
+                if (!i.getContentType().contains("image/")) {
+                    i.updateStatus(getfileEntryStatus(false, "¡Sólo se aceptan archivos de imágen!"), true);
+                } else if (i.getStatus().isSuccess()) {
+                    archivo.setNombre(i.getFileName());
+                    archivo.setTipo(i.getContentType());
+                    archivo.setArchivo(Files.readAllBytes(file.toPath()));
+                    archivo.setRuta(file.getAbsolutePath());
+                    archivo.setIdentificador(identificador);
+                    i.updateStatus(getfileEntryStatus(true, "¡El archivo fue subido con éxito!"), true);
+                } else {
+                    i.updateStatus(getfileEntryStatus(true, "¡El archivo supera el tamaño máximo definido (4 Mb)!"), true);
+                }
             } catch (IOException ex) {
                 Mensajes.fatal(ex.getMessage());
                 Logger.getLogger(ArchivosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -102,16 +120,25 @@ public class ArchivosBean implements Serializable {
     }
 
     public String colocarFichero(FileEntryEvent e) {
-        FileEntry fe = (FileEntry) e.getComponent();
-        FileEntryResults results = fe.getResults();
+        FileEntry fileEntry = (FileEntry) e.getComponent();
+        fileEntry.setAbsolutePath(absolutePath);
+        fileEntry.setMaxFileSize(100 * 1024 * 1024);//100 Megas
+        fileEntry.setUseOriginalFilename(true);
+
+        FileEntryResults results = fileEntry.getResults();
         for (FileEntryResults.FileInfo i : results.getFiles()) {
             try {
-                File file = i.getFile();
-                archivo.setNombre(i.getFileName());
-                archivo.setTipo(i.getContentType());
-                archivo.setArchivo(Files.readAllBytes(file.toPath()));
-                archivo.setIdentificador(identificador);
-                grabar();
+                if (i.getStatus().isSuccess()) {
+                    File file = i.getFile();
+                    archivo.setNombre(i.getFileName());
+                    archivo.setTipo(i.getContentType());
+                    archivo.setArchivo(Files.readAllBytes(file.toPath()));
+                    archivo.setIdentificador(identificador);
+                    grabar();
+                    i.updateStatus(getfileEntryStatus(true, "¡El archivo fue subido con éxito!"), true);
+                } else {
+                    i.updateStatus(getfileEntryStatus(true, "¡El archivo supera el tamaño máximo definido (100 Mb)!"), true);
+                }
             } catch (IOException ex) {
                 Mensajes.fatal(ex.getMessage());
                 Logger.getLogger(ArchivosBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -216,6 +243,30 @@ public class ArchivosBean implements Serializable {
             Mensajes.fatal("El archivo no existe en la ruta " + (archivo.getRuta() != null ? archivo.getRuta() : ""));
         }
         return null;
+    }
+
+    private FileEntryStatus getfileEntryStatus(boolean status, String mensaje) {
+
+        FileEntryStatus retorno = new FileEntryStatus() {
+            @Override
+            public boolean isSuccess() {
+                return status;
+            }
+
+            @Override
+            public FacesMessage getFacesMessage(FacesContext fc, UIComponent uic, FileEntryResults.FileInfo fi) {
+                FacesContext context = FacesContext.getCurrentInstance();
+                FacesMessage message = new FacesMessage();
+
+                message.setSeverity(status ? FacesMessage.SEVERITY_INFO : FacesMessage.SEVERITY_ERROR);
+                message.setSummary("!Atención!");
+                message.setDetail(mensaje);
+                context.addMessage(seguridadBean.getLogueado().getUserid(), message);
+
+                return message;
+            }
+        };
+        return retorno;
     }
 
     /**

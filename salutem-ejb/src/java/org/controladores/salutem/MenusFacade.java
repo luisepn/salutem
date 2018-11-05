@@ -77,7 +77,10 @@ public class MenusFacade extends AbstractFacade<Menus> {
     }
 
     @Override
-    protected String getJson(Menus actual, Menus objeto) {
+    protected JsonObject getJson(Menus objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("codigo", objeto.getCodigo());
@@ -88,6 +91,6 @@ public class MenusFacade extends AbstractFacade<Menus> {
         json.addProperty("modulo", objeto.getModulo() != null ? objeto.getModulo().toString() : "");
         json.addProperty("icono", objeto.getIcono());
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 }

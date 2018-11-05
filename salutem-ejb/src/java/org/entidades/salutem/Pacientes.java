@@ -6,9 +6,7 @@
 package org.entidades.salutem;
 
 import java.io.Serializable;
-import java.time.Period;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,13 +17,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -35,29 +32,15 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "pacientes")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Pacientes.findAll", query = "SELECT p FROM Pacientes p"),
-    @NamedQuery(name = "Pacientes.findById", query = "SELECT p FROM Pacientes p WHERE p.id = :id"),
-    @NamedQuery(name = "Pacientes.findByActivo", query = "SELECT p FROM Pacientes p WHERE p.activo = :activo"),
-    @NamedQuery(name = "Pacientes.findByDescripcion", query = "SELECT p FROM Pacientes p WHERE p.descripcion = :descripcion"),
-    @NamedQuery(name = "Pacientes.findByCreado", query = "SELECT p FROM Pacientes p WHERE p.creado = :creado"),
-    @NamedQuery(name = "Pacientes.findByCreadopor", query = "SELECT p FROM Pacientes p WHERE p.creadopor = :creadopor"),
-    @NamedQuery(name = "Pacientes.findByActualizado", query = "SELECT p FROM Pacientes p WHERE p.actualizado = :actualizado"),
-    @NamedQuery(name = "Pacientes.findByActualizadopor", query = "SELECT p FROM Pacientes p WHERE p.actualizadopor = :actualizadopor")})
+    @NamedQuery(name = "Pacientes.findAll", query = "SELECT p FROM Pacientes p")
+    , @NamedQuery(name = "Pacientes.findById", query = "SELECT p FROM Pacientes p WHERE p.id = :id")
+    , @NamedQuery(name = "Pacientes.findByActivo", query = "SELECT p FROM Pacientes p WHERE p.activo = :activo")
+    , @NamedQuery(name = "Pacientes.findByDescripcion", query = "SELECT p FROM Pacientes p WHERE p.descripcion = :descripcion")
+    , @NamedQuery(name = "Pacientes.findByCreado", query = "SELECT p FROM Pacientes p WHERE p.creado = :creado")
+    , @NamedQuery(name = "Pacientes.findByCreadopor", query = "SELECT p FROM Pacientes p WHERE p.creadopor = :creadopor")
+    , @NamedQuery(name = "Pacientes.findByActualizado", query = "SELECT p FROM Pacientes p WHERE p.actualizado = :actualizado")
+    , @NamedQuery(name = "Pacientes.findByActualizadopor", query = "SELECT p FROM Pacientes p WHERE p.actualizadopor = :actualizadopor")})
 public class Pacientes implements Serializable {
-
-    @Size(max = 2147483647)
-    @Column(name = "descripcion")
-    private String descripcion;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
-    @OneToMany(mappedBy = "paciente")
-    private List<Atenciones> atencionesList;
-    @OneToMany(mappedBy = "paciente")
-    private List<Citas> citasList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -67,12 +50,24 @@ public class Pacientes implements Serializable {
     private Integer id;
     @Column(name = "activo")
     private Boolean activo;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+    @JoinColumn(name = "fotografia", referencedColumnName = "id")
+    @OneToOne
+    private Archivos fotografia;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
     @ManyToOne
     private Instituciones institucion;
@@ -103,6 +98,14 @@ public class Pacientes implements Serializable {
         this.activo = activo;
     }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
     public Date getCreado() {
         return creado;
     }
@@ -111,12 +114,36 @@ public class Pacientes implements Serializable {
         this.creado = creado;
     }
 
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
     public Date getActualizado() {
         return actualizado;
     }
 
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
+    public Archivos getFotografia() {
+        return fotografia;
+    }
+
+    public void setFotografia(Archivos fotografia) {
+        this.fotografia = fotografia;
     }
 
     public Instituciones getInstitucion() {
@@ -133,48 +160,6 @@ public class Pacientes implements Serializable {
 
     public void setPersona(Personas persona) {
         this.persona = persona;
-    }
-
-    @XmlTransient
-    public List<Citas> getCitasList() {
-        return citasList;
-    }
-
-    public void setCitasList(List<Citas> citasList) {
-        this.citasList = citasList;
-    }
-
-    @XmlTransient
-    public List<Atenciones> getAtencionesList() {
-        return atencionesList;
-    }
-
-    public void setAtencionesList(List<Atenciones> atencionesList) {
-        this.atencionesList = atencionesList;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
-
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
     }
 
     @Override

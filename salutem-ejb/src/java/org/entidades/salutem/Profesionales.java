@@ -7,7 +7,6 @@ package org.entidades.salutem;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,17 +17,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author usuario
+ * @author fernando
  */
 @Entity
 @Table(name = "profesionales")
@@ -44,20 +42,6 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Profesionales.findByActualizadopor", query = "SELECT p FROM Profesionales p WHERE p.actualizadopor = :actualizadopor")})
 public class Profesionales implements Serializable {
 
-    @Size(max = 2147483647)
-    @Column(name = "descripcion")
-    private String descripcion;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
-    @OneToMany(mappedBy = "profesional")
-    private List<Atenciones> atencionesList;
-    @OneToMany(mappedBy = "profesional")
-    private List<Citas> citasList;
-
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,14 +50,24 @@ public class Profesionales implements Serializable {
     private Integer id;
     @Column(name = "activo")
     private Boolean activo;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
-    @OneToMany(mappedBy = "profesional")
-    private List<Horarios> horariosList;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
+    @JoinColumn(name = "fotografia", referencedColumnName = "id")
+    @OneToOne
+    private Archivos fotografia;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
     @ManyToOne
     private Instituciones institucion;
@@ -107,12 +101,28 @@ public class Profesionales implements Serializable {
         this.activo = activo;
     }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
     public Date getCreado() {
         return creado;
     }
 
     public void setCreado(Date creado) {
         this.creado = creado;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
     }
 
     public Date getActualizado() {
@@ -123,13 +133,20 @@ public class Profesionales implements Serializable {
         this.actualizado = actualizado;
     }
 
-    @XmlTransient
-    public List<Horarios> getHorariosList() {
-        return horariosList;
+    public String getActualizadopor() {
+        return actualizadopor;
     }
 
-    public void setHorariosList(List<Horarios> horariosList) {
-        this.horariosList = horariosList;
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
+    }
+
+    public Archivos getFotografia() {
+        return fotografia;
+    }
+
+    public void setFotografia(Archivos fotografia) {
+        this.fotografia = fotografia;
     }
 
     public Instituciones getInstitucion() {
@@ -178,59 +195,7 @@ public class Profesionales implements Serializable {
 
     @Override
     public String toString() {
-        return persona != null ? persona.toString() : "[" + id + "]";
+        return "org.entidades.salutem.Profesionales[ id=" + id + " ]";
     }
-
-
-    @XmlTransient
-    public List<Citas> getCitasList() {
-        return citasList;
-    }
-
-    public void setCitasList(List<Citas> citasList) {
-        this.citasList = citasList;
-    }
-    public Profesionales(String descripcion, Integer id, Boolean activo, Instituciones institucion, Parametros especialidad, Personas persona) {
-        this.descripcion = descripcion;
-        this.id = id;
-        this.activo = activo;
-        this.institucion = institucion;
-        this.especialidad = especialidad;
-        this.persona = persona;
-    }
-
-
-    @XmlTransient
-    public List<Atenciones> getAtencionesList() {
-        return atencionesList;
-    }
-
-    public void setAtencionesList(List<Atenciones> atencionesList) {
-        this.atencionesList = atencionesList;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
-
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
-    }
-
+    
 }

@@ -171,11 +171,19 @@ public class Historial implements Serializable {
     }
 
     public String getAnteriorSinFormato() {
-        return anterior != null ? anterior.replace("\":", "' =").replace("\"", "'") : "";
+        return quitarLlaves(anterior);
     }
 
     public String getNuevoSinFormato() {
-        return nuevo != null ? nuevo.replace("\":", "' =").replace("\"", "'") : "";
+        return quitarLlaves(nuevo);
+    }
+
+    private String quitarLlaves(String texto) {
+        if (texto != null && texto.length() > 3) {
+            texto = texto.substring(2, texto.length() - 2);
+            return texto.replace("\":", "' =").replace("\"", "'");
+        }
+        return null;
     }
 
 }

@@ -52,11 +52,11 @@ public class IngresoSistemaBean implements Serializable {
     public String login() {
         try {
             formulario.cancelar();
-            if ((usr == null) && (usr.isEmpty())) {
+            if ((usr == null) || (usr.isEmpty())) {
                 Mensajes.advertencia("Ingrese un usuario válido");
                 return null;
             }
-            if ((pwd == null) && (pwd.isEmpty())) {
+            if ((pwd == null) || (pwd.isEmpty())) {
                 Mensajes.advertencia("Ingrese una clave válida");
                 return null;
             }

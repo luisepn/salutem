@@ -34,7 +34,7 @@
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemMenus.buscar()}"/>
                             <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemMenus.crear()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemMenus.formulario.mostrar}"/>
+                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemMenus.formulario.mostrar}"/>
                     </h:panelGrid>
                 </ace:panel>
                 <ace:panel 
@@ -188,7 +188,7 @@
                             </ace:menuBar>
                         </h:panelGrid>
                     </h:panelGroup>
-                    <h:panelGrid>
+                    <h:panelGrid columns="2" width="100%">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk"
                                           action="#{salutemMenus.insertar()}"
@@ -202,7 +202,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemMenus.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap"/>
+                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

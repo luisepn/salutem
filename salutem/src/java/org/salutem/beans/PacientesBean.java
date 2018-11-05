@@ -40,6 +40,9 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     @Inject
     @Any
     private CombosBean combosBean;
+    @Inject
+    @Any
+    private ArchivosBean archivosBean;
 
     private LazyDataModel<Pacientes> pacientes;
     private List<Pacientes> listaPacientes;
@@ -176,6 +179,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         paciente.setActivo(Boolean.TRUE);
         paciente.setInstitucion(institucion);
         crear();
+        archivosBean.iniciar(this.getNombreTabla(), paciente.getId(), new Archivos());
         direccion.setCiudad(institucion.getDireccion() != null ? institucion.getDireccion().getCiudad() : null);
         return null;
     }
@@ -205,8 +209,8 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         paciente = (Pacientes) pacientes.getRowData();
         institucion = paciente.getInstitucion();
         persona = paciente.getPersona();
-        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         editar();
+        archivosBean.iniciar(this.getNombreTabla(), paciente.getId(), paciente.getFotografia() != null ? paciente.getFotografia() : new Archivos());
         formulario.editar();
         return null;
     }
@@ -217,7 +221,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         }
         paciente = ((Pacientes) pacientes.getRowData());
         persona = paciente.getPersona();
-        archivosBean.setArchivo(persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
+        archivosBean.iniciar(this.getNombreTabla(), paciente.getId(), paciente.getFotografia() != null ? paciente.getFotografia() : new Archivos());
         institucion = paciente.getInstitucion();
         formulario.eliminar();
         return null;
@@ -238,11 +242,14 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         existe();
         try {
             paciente.setPersona(persona);
+            archivosBean.grabar();
+            paciente.setFotografia(archivosBean.getArchivo().getId() != null ? archivosBean.getArchivo() : null);
             if (paciente.getId() == null) {
                 ejbPacientes.crear(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             } else {
                 ejbPacientes.actualizar(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
+            archivosBean.actualizarIdentificador(persona.getId().toString());
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);

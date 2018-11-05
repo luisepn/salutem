@@ -39,7 +39,7 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
             q.setParameter("maestro", maestro);
             q.setParameter("codigo", parametro);
             List<Parametros> aux = q.getResultList();
-            if(!aux.isEmpty()){
+            if (!aux.isEmpty()) {
                 return aux.get(0);
             }
         } catch (Exception e) {
@@ -74,7 +74,10 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
     }
 
     @Override
-    protected String getJson(Parametros actual, Parametros objeto) {
+    protected JsonObject getJson(Parametros objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("codigo", objeto.getCodigo());
@@ -83,6 +86,6 @@ public class ParametrosFacade extends AbstractFacade<Parametros> {
         json.addProperty("parametros", objeto.getParametros());
         json.addProperty("maestro", objeto.getMaestro() != null ? objeto.getMaestro().toString() : "");
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 }

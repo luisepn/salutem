@@ -98,7 +98,7 @@
                                         <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscar()}"/>
                                         <ace:menuItem value="Crear" icon="ui-icon ui-icon-document"  action="#{salutemAtenciones.insertar()}"/>
                                     </ace:menuBar>
-                                    <ace:messages style="white-space: pre-wrap"/>
+                                    <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
                                 </h:panelGrid>
                             </h:panelGrid>
                         </h:panelGrid>
@@ -517,6 +517,8 @@
                                 <ace:dynamicResource
                                     mimeType="application/pdf"
                                     resource="#{salutemAtenciones.generarConsulta()}"
+                                    fileName="#{salutemAtenciones.generarConsulta().resourceName}"
+                                    attachment="false"
                                     label="Imprimir"/>
 
                                 <h:panelGrid width="100%" rendered="#{!salutemAtenciones.verHistorico}"  id="imprimir">
@@ -667,7 +669,7 @@
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.ocupacion}"/>
                                                     <h:outputLabel value="Género:" styleClass="bold"/>
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.paciente.persona.genero.nombre}"/>
-                                                    <h:outputLabel value="Fecha de Atención" styleClass="bold"/>
+                                                    <h:outputLabel value="Fecha de Atención:" styleClass="bold"/>
                                                     <h:outputLabel value="#{salutemAtenciones.ultimaAtencion.fecha}">
                                                         <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>   
                                                     </h:outputLabel>
@@ -750,7 +752,7 @@
                                 </h:panelGrid>
                             </ace:tabPane>
                         </ace:tabSet>                        
-                        <h:panelGrid columns="2">
+                        <h:panelGrid columns="2" width="100%">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
                                               action="#{salutemAtenciones.grabar()}" 
@@ -762,7 +764,7 @@
                                               action="#{salutemAtenciones.cancelar()}"/>                                
                             </ace:menuBar>                           
 
-                            <ace:messages style="white-space: pre-wrap"/>
+                            <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
                         </h:panelGrid>
                     </ace:dialog>
                     <ui:include src="../cuadroHistorial.xhtml"/>

@@ -34,9 +34,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
 
     @Inject
     protected SeguridadBean seguridadBean;
-    @Inject
-    @Any
-    protected ArchivosBean archivosBean;
 
     protected Formulario formulario = new Formulario();
     protected LazyDataModel<Personas> personas;
@@ -140,7 +137,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         persona.setActivo(Boolean.TRUE);
         direccion = new Direcciones();
         direccion.setActivo(Boolean.TRUE);
-        archivosBean.iniciar(getNombreTabla(), persona.getId(), new Archivos());
         formulario.insertar();
         return null;
     }
@@ -156,7 +152,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         }
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
         direccion.setActivo(Boolean.TRUE);
-        archivosBean.iniciar(getNombreTabla(), persona.getId(), persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.editar();
         return null;
     }
@@ -168,7 +163,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         }
         persona = (Personas) personas.getRowData();
         direccion = persona.getDireccion() != null ? persona.getDireccion() : new Direcciones();
-        archivosBean.iniciar(getNombreTabla(), persona.getId(), persona.getFotografia() != null ? persona.getFotografia() : new Archivos());
         formulario.eliminar();
         return null;
     }
@@ -213,10 +207,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         try {
             ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             persona.setDireccion(direccion);
-
-            archivosBean.grabar();
-            persona.setFotografia(archivosBean.getArchivo().getId() != null ? archivosBean.getArchivo() : null);
-
             persona.setUserid(persona.getCedula());
             persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
             persona.setCreado(new Date());
@@ -224,7 +214,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             persona.setActualizado(persona.getCreado());
             persona.setActualizadopor(persona.getActualizadopor());
             ejbPersonas.crear(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            archivosBean.actualizarIdentificador(persona.getId().toString());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -249,13 +238,9 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
                 ejbDirecciones.actualizar(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
             persona.setDireccion(direccion);
-
-            archivosBean.grabar();
-            persona.setFotografia(archivosBean.getArchivo().getId() != null ? archivosBean.getArchivo() : null);
             persona.setActualizado(new Date());
             persona.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            archivosBean.actualizarIdentificador(persona.getId().toString());
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -463,20 +448,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
      */
     public void setClaveBusqueda(String claveBusqueda) {
         this.claveBusqueda = claveBusqueda;
-    }
-
-    /**
-     * @return the archivosBean
-     */
-    public ArchivosBean getArchivosBean() {
-        return archivosBean;
-    }
-
-    /**
-     * @param archivosBean the archivosBean to set
-     */
-    public void setArchivosBean(ArchivosBean archivosBean) {
-        this.archivosBean = archivosBean;
     }
 
     /**

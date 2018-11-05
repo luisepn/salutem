@@ -13,11 +13,14 @@
  */
 package org.controladores.salutem;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -36,21 +39,44 @@ import org.excepciones.salutem.ExcepcionDeEliminacion;
  */
 public abstract class AbstractFacade<T> implements Serializable {
 
-    @EJB
-    private AsincronoLogFacade ejbLogs;
-
     protected SimpleDateFormat formatoFechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm");
     protected SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
     protected SimpleDateFormat formatoHora = new SimpleDateFormat("HH:mm");
 
-    private final Class<T> entityClass;
-
     protected abstract EntityManager getEntityManager();
 
-    protected abstract String getJson(T anterior, T nuevo);
+    protected abstract JsonObject getJson(T objeto);
 
-    public AbstractFacade(Class<T> entityClass) {
+    private final Class<T> entityClass;
+
+    @EJB
+    private AsincronoLogFacade ejbLogs;
+
+    protected AbstractFacade(Class<T> entityClass) {
         this.entityClass = entityClass;
+    }
+
+    private String[] getCambios(JsonObject jsonAnterior, JsonObject jsonNuevo) {
+        if (jsonAnterior == null) {
+            return new String[]{null, jsonNuevo.toString()};
+        }
+
+        if (jsonNuevo == null) {
+            return new String[]{jsonAnterior.toString(), null};
+        }
+
+        JsonObject anterior = new JsonObject();
+        JsonObject nuevo = new JsonObject();
+
+        for (String n : jsonNuevo.keySet()) {
+            JsonElement a = jsonAnterior.get(n);
+            if (!Objects.equals(a, jsonNuevo.get(n))) {
+                anterior.add(n, a);
+                nuevo.add(n, jsonNuevo.get(n));
+            }
+        }
+
+        return new String[]{anterior.toString(), nuevo.toString()};
     }
 
     /**
@@ -61,15 +87,15 @@ public abstract class AbstractFacade<T> implements Serializable {
      * @throws org.excepciones.salutem.ExcepcionDeCreacion
      */
     public void crear(T entity, String usuario, String ip) throws ExcepcionDeCreacion {
-        T actual = getEntityManager().find(entityClass, entity.hashCode());
-        String log = getJson(actual, entity);
+        T anterior = getEntityManager().find(entityClass, entity.hashCode());
+        String cambios[] = getCambios(getJson(anterior), getJson(entity));
         try {
             getEntityManager().persist(entity);
             getEntityManager().flush();
         } catch (Exception e) {
             throw new ExcepcionDeCreacion(entity.toString(), e);
         } finally {
-            ejbLogs.log(entity.hashCode(), log, entity.getClass().getSimpleName(), 'C', usuario, ip);
+            ejbLogs.log(entity.hashCode(), cambios, entity.getClass().getSimpleName(), 'C', usuario, ip);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Creada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }
@@ -82,15 +108,16 @@ public abstract class AbstractFacade<T> implements Serializable {
      * @throws org.excepciones.salutem.ExcepcionDeActualizacion
      */
     public void actualizar(T entity, String usuario, String ip) throws ExcepcionDeActualizacion {
-        T actual = getEntityManager().find(entityClass, entity.hashCode());
-        String log = getJson(actual, entity);
+        T anterior = getEntityManager().find(entityClass, entity.hashCode());
+        String cambios[] = getCambios(getJson(anterior), getJson(entity));
         try {
             getEntityManager().merge(entity);
             getEntityManager().flush();
         } catch (Exception e) {
             throw new ExcepcionDeActualizacion(entity.toString(), e);
         } finally {
-            ejbLogs.log(entity.hashCode(), log, entity.getClass().getSimpleName(), 'U', usuario, ip);
+
+            ejbLogs.log(entity.hashCode(), cambios, entity.getClass().getSimpleName(), 'U', usuario, ip);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Actualizada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }
@@ -103,8 +130,8 @@ public abstract class AbstractFacade<T> implements Serializable {
      * @throws org.excepciones.salutem.ExcepcionDeEliminacion
      */
     public void eliminar(T entity, String usuario, String ip) throws ExcepcionDeEliminacion {
-        T actual = getEntityManager().find(entityClass, entity.hashCode());
-        String log = getJson(actual, entity);
+        T anterior = getEntityManager().find(entityClass, entity.hashCode());
+        String cambios[] = getCambios(getJson(anterior), getJson(entity));
         try {
             entity = getEntityManager().merge(entity);
             getEntityManager().remove(entity);
@@ -112,7 +139,8 @@ public abstract class AbstractFacade<T> implements Serializable {
         } catch (Exception e) {
             throw new ExcepcionDeEliminacion(entity.toString(), e);
         } finally {
-            ejbLogs.log(entity.hashCode(), log, entity.getClass().getSimpleName(), 'D', usuario, ip);
+
+            ejbLogs.log(entity.hashCode(), cambios, entity.getClass().getSimpleName(), 'D', usuario, ip);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Eliminada: {0}", entity.hashCode() + " " + entity.toString());
         }
     }
@@ -262,5 +290,18 @@ public abstract class AbstractFacade<T> implements Serializable {
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(this.entityClass.toString(), e);
         }
+    }
+
+    public Integer buscar(String campo, String tabla, String referencia, String busqueda) throws ExcepcionDeConsulta {
+        try {
+            Query q = getEntityManager().createNativeQuery("SELECT o." + campo + " from " + tabla + " o WHERE o." + referencia + "=" + busqueda);
+            List<Integer> lista = q.getResultList();
+            if (!lista.isEmpty()) {
+                return lista.get(0);
+            }
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(CamposFacade.class.getName(), e);
+        }
+        return null;
     }
 }

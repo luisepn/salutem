@@ -11,9 +11,6 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,7 +19,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -30,7 +26,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -40,24 +35,32 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "archivos")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Archivos.findAll", query = "SELECT a FROM Archivos a"),
-    @NamedQuery(name = "Archivos.findById", query = "SELECT a FROM Archivos a WHERE a.id = :id"),
-    @NamedQuery(name = "Archivos.findByClasificador", query = "SELECT a FROM Archivos a WHERE a.clasificador = :clasificador"),
-    @NamedQuery(name = "Archivos.findByIdentificador", query = "SELECT a FROM Archivos a WHERE a.identificador = :identificador"),
-    @NamedQuery(name = "Archivos.findByNombre", query = "SELECT a FROM Archivos a WHERE a.nombre = :nombre"),
-    @NamedQuery(name = "Archivos.findByTipo", query = "SELECT a FROM Archivos a WHERE a.tipo = :tipo"),
-    @NamedQuery(name = "Archivos.findByRuta", query = "SELECT a FROM Archivos a WHERE a.ruta = :ruta"),
-    @NamedQuery(name = "Archivos.findByDescripcion", query = "SELECT a FROM Archivos a WHERE a.descripcion = :descripcion"),
-    @NamedQuery(name = "Archivos.findByCreado", query = "SELECT a FROM Archivos a WHERE a.creado = :creado"),
-    @NamedQuery(name = "Archivos.findByCreadopor", query = "SELECT a FROM Archivos a WHERE a.creadopor = :creadopor"),
-    @NamedQuery(name = "Archivos.findByActualizado", query = "SELECT a FROM Archivos a WHERE a.actualizado = :actualizado"),
-    @NamedQuery(name = "Archivos.findByActualizadopor", query = "SELECT a FROM Archivos a WHERE a.actualizadopor = :actualizadopor"),
-    @NamedQuery(name = "Archivos.findByActivo", query = "SELECT a FROM Archivos a WHERE a.activo = :activo")})
+    @NamedQuery(name = "Archivos.findAll", query = "SELECT a FROM Archivos a")
+    , @NamedQuery(name = "Archivos.findById", query = "SELECT a FROM Archivos a WHERE a.id = :id")
+    , @NamedQuery(name = "Archivos.findByClasificador", query = "SELECT a FROM Archivos a WHERE a.clasificador = :clasificador")
+    , @NamedQuery(name = "Archivos.findByIdentificador", query = "SELECT a FROM Archivos a WHERE a.identificador = :identificador")
+    , @NamedQuery(name = "Archivos.findByNombre", query = "SELECT a FROM Archivos a WHERE a.nombre = :nombre")
+    , @NamedQuery(name = "Archivos.findByTipo", query = "SELECT a FROM Archivos a WHERE a.tipo = :tipo")
+    , @NamedQuery(name = "Archivos.findByRuta", query = "SELECT a FROM Archivos a WHERE a.ruta = :ruta")
+    , @NamedQuery(name = "Archivos.findByDescripcion", query = "SELECT a FROM Archivos a WHERE a.descripcion = :descripcion")
+    , @NamedQuery(name = "Archivos.findByCreado", query = "SELECT a FROM Archivos a WHERE a.creado = :creado")
+    , @NamedQuery(name = "Archivos.findByCreadopor", query = "SELECT a FROM Archivos a WHERE a.creadopor = :creadopor")
+    , @NamedQuery(name = "Archivos.findByActualizado", query = "SELECT a FROM Archivos a WHERE a.actualizado = :actualizado")
+    , @NamedQuery(name = "Archivos.findByActualizadopor", query = "SELECT a FROM Archivos a WHERE a.actualizadopor = :actualizadopor")
+    , @NamedQuery(name = "Archivos.findByActivo", query = "SELECT a FROM Archivos a WHERE a.activo = :activo")})
 public class Archivos implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "clasificador")
     private String clasificador;
+    @Column(name = "identificador")
+    private Integer identificador;
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
@@ -70,35 +73,26 @@ public class Archivos implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "descripcion")
     private String descripcion;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
-    @OneToMany(mappedBy = "archivo")
-    private List<Datos> datosList;
-
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
-    @Column(name = "identificador")
-    private Integer identificador;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @Column(name = "activo")
     private Boolean activo;
     @OneToOne(mappedBy = "logotipo")
-    private Instituciones institucion;
+    private Instituciones instituciones;
     @OneToOne(mappedBy = "fotografia")
-    private Personas persona;
+    private Pacientes pacientes;
+    @OneToOne(mappedBy = "fotografia")
+    private Profesionales profesionales;
 
     @Transient
     private byte[] archivo;
@@ -118,108 +112,20 @@ public class Archivos implements Serializable {
         this.id = id;
     }
 
-    public Integer getIdentificador() {
-        return identificador;
-    }
-
-    public void setIdentificador(Integer identificador) {
-        this.identificador = identificador;
-    }
-
-    public Date getCreado() {
-        return creado;
-    }
-
-    public void setCreado(Date creado) {
-        this.creado = creado;
-    }
-
-    public Date getActualizado() {
-        return actualizado;
-    }
-
-    public void setActualizado(Date actualizado) {
-        this.actualizado = actualizado;
-    }
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
-
-    public Instituciones getInstitucion() {
-        return institucion;
-    }
-
-    public void setInstitucion(Instituciones institucion) {
-        this.institucion = institucion;
-    }
-
-    public Personas getPersona() {
-        return persona;
-    }
-
-    public void setPersona(Personas persona) {
-        this.persona = persona;
-    }
-
-    /**
-     * @return the archivo
-     */
-    public byte[] getArchivo() {
-        return archivo;
-    }
-
-    /**
-     * @param archivo the archivo to set
-     */
-    public void setArchivo(byte[] archivo) {
-        this.archivo = archivo;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Archivos)) {
-            return false;
-        }
-        Archivos other = (Archivos) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "org.entidades.salutem.Archivos[ id=" + id + " ]";
-    }
-
-    @XmlTransient
-    public List<Datos> getDatosList() {
-        return datosList;
-    }
-
-    public void setDatosList(List<Datos> datosList) {
-        this.datosList = datosList;
-    }
-
     public String getClasificador() {
         return clasificador;
     }
 
     public void setClasificador(String clasificador) {
         this.clasificador = clasificador;
+    }
+
+    public Integer getIdentificador() {
+        return identificador;
+    }
+
+    public void setIdentificador(Integer identificador) {
+        this.identificador = identificador;
     }
 
     public String getNombre() {
@@ -254,6 +160,14 @@ public class Archivos implements Serializable {
         this.descripcion = descripcion;
     }
 
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
     public String getCreadopor() {
         return creadopor;
     }
@@ -262,12 +176,77 @@ public class Archivos implements Serializable {
         this.creadopor = creadopor;
     }
 
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
     public String getActualizadopor() {
         return actualizadopor;
     }
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Instituciones getInstituciones() {
+        return instituciones;
+    }
+
+    public void setInstituciones(Instituciones instituciones) {
+        this.instituciones = instituciones;
+    }
+
+    public Pacientes getPacientes() {
+        return pacientes;
+    }
+
+    public void setPacientes(Pacientes pacientes) {
+        this.pacientes = pacientes;
+    }
+
+    public Profesionales getProfesionales() {
+        return profesionales;
+    }
+
+    public void setProfesionales(Profesionales profesionales) {
+        this.profesionales = profesionales;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Archivos)) {
+            return false;
+        }
+        Archivos other = (Archivos) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "org.entidades.salutem.Archivos[ id=" + id + " ]";
     }
 
     public boolean existeFichero() {
@@ -294,15 +273,27 @@ public class Archivos implements Serializable {
 
     public String traerNombre() {
         if (tipo.equalsIgnoreCase("application/pdf")
-                || tipo.equalsIgnoreCase("image/jpeg")
-                || tipo.equalsIgnoreCase("image/png")
-                || tipo.equalsIgnoreCase("image/bmp")
-                || tipo.equalsIgnoreCase("audio/webm")
-                || tipo.equalsIgnoreCase("video/webm")) {
+                || tipo.contains("image/")
+                || tipo.contains("audio/")
+                || tipo.contains("video/")) {
             return null;
         } else {
             return nombre;
         }
+    }
+
+    /**
+     * @return the archivo
+     */
+    public byte[] getArchivo() {
+        return archivo;
+    }
+
+    /**
+     * @param archivo the archivo to set
+     */
+    public void setArchivo(byte[] archivo) {
+        this.archivo = archivo;
     }
 
 }

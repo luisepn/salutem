@@ -62,7 +62,7 @@
                 <ace:column headerText="Operación"                                         
                             sortBy="#{item.operacion}" 
                             filterBy="#{item.operacion}"
-                            filterOptions="#{salutemCombos.operacion}"                                          
+                            filterOptions="#{salutemCombos.operaciones}"                                          
                             filterValue="#{salutemHistorial.operacion}"
                             filterMatchMode="exact" 
                             style="text-align: left">
@@ -77,12 +77,18 @@
                 <ace:column headerText="Tabla"                                         
                             sortBy="#{item.tabla}" 
                             filterBy="#{item.tabla}"
-                            filterOptions="#{salutemCombos.tabla}"                                          
+                            filterOptions="#{salutemCombos.tablas}"                                          
                             filterValue="#{salutemHistorial.tabla}"
                             filterMatchMode="exact"
-                            rendered="#{salutemHistorial.verColumnaTabla}"
                             style="text-align: left">
                     <h:outputText  value="#{item.tabla}"/>
+                </ace:column>
+                <ace:column  headerText="ID" 
+                             sortBy="#{item.registro}" 
+                             filterBy="#{item.registro}" 
+                             filterMatchMode="exact"
+                             style="text-align: left">
+                    <h:outputText  value="#{item.registro}"/>
                 </ace:column>
                 <ace:column  headerText="Valor Anterior" filterBy="#{item.anterior}" filterMatchMode="contains" style="text-align: left">
                     <h:outputText  value="#{item.anteriorSinFormato}" style="white-space: pre-wrap"/>

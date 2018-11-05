@@ -45,7 +45,10 @@ public class FormulasFacade extends AbstractFacade<Formulas> {
     }
 
     @Override
-    protected String getJson(Formulas actual, Formulas objeto) {
+    protected JsonObject getJson(Formulas objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
 
@@ -122,7 +125,7 @@ public class FormulasFacade extends AbstractFacade<Formulas> {
         json.addProperty("tratamiento", objeto.getTratamiento() != null ? objeto.getTratamiento().toString() : "");
         json.addProperty("orden", objeto.getOrden() != null ? objeto.getOrden().getId() : 0);
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
 }

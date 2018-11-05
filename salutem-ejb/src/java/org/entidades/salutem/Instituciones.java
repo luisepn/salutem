@@ -60,6 +60,9 @@ public class Instituciones implements Serializable {
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "email")
     private String email;
@@ -131,7 +134,6 @@ public class Instituciones implements Serializable {
         this.id = id;
     }
 
-
     public Date getFecha() {
         return fecha;
     }
@@ -139,7 +141,6 @@ public class Instituciones implements Serializable {
     public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
-
 
     public Boolean getLaboratorio() {
         return laboratorio;
@@ -157,7 +158,6 @@ public class Instituciones implements Serializable {
         this.activo = activo;
     }
 
-
     public Date getCreado() {
         return creado;
     }
@@ -166,7 +166,6 @@ public class Instituciones implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
@@ -174,7 +173,6 @@ public class Instituciones implements Serializable {
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
     }
-
 
     public Archivos getLogotipo() {
         return logotipo;
@@ -244,7 +242,6 @@ public class Instituciones implements Serializable {
         return nombre;
     }
 
-
     @XmlTransient
     public List<Horas> getHorasList() {
         return horasList;
@@ -262,10 +259,12 @@ public class Instituciones implements Serializable {
     public void setProfesionalesList(List<Profesionales> profesionalesList) {
         this.profesionalesList = profesionalesList;
     }
+
     @XmlTransient
     public List<Campos> getCamposList() {
         return camposList;
     }
+
     public void setCamposList(List<Campos> camposList) {
         this.camposList = camposList;
     }
@@ -317,5 +316,5 @@ public class Instituciones implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-    
+
 }

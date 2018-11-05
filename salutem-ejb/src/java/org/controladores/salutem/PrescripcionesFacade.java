@@ -43,6 +43,7 @@ public class PrescripcionesFacade extends AbstractFacade<Prescripciones> {
             throw new ExcepcionDeConsulta(PrescripcionesFacade.class.getName(), e);
         }
     }
+
     public List<Prescripciones> traerPrescripcionesTodas(Atenciones atencion) throws ExcepcionDeConsulta {
         try {
             Query q = getEntityManager().createQuery("Select object(o) from Prescripciones as o where o.atencion=:atencion");
@@ -54,7 +55,10 @@ public class PrescripcionesFacade extends AbstractFacade<Prescripciones> {
     }
 
     @Override
-    protected String getJson(Prescripciones actual, Prescripciones objeto) {
+    protected JsonObject getJson(Prescripciones objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("atencion", objeto.getAtencion() != null ? objeto.getAtencion().getId().toString() : "");
@@ -63,7 +67,7 @@ public class PrescripcionesFacade extends AbstractFacade<Prescripciones> {
         json.addProperty("frecuencia", objeto.getFrecuencia());
         json.addProperty("duracion", objeto.getDuracion());
         json.addProperty("advertencias", objeto.getAdvertencias());
-        return json.toString();
+        return json;
     }
 
 }

@@ -24,7 +24,7 @@
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemHistorial.buscar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap" rendered="#{!salutemHistorial.formulario.mostrar}"/>
+                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemHistorial.formulario.mostrar}"/>
                     </h:panelGrid>
 
                 </ace:panel>

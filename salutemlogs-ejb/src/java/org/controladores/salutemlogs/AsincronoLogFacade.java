@@ -6,6 +6,7 @@
 package org.controladores.salutemlogs;
 
 import java.util.Date;
+import java.util.Objects;
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.ejb.LocalBean;
@@ -24,9 +25,10 @@ public class AsincronoLogFacade {
     private EntityManager em;
 
     @Asynchronous
-    public void log(Integer registro, String json, String tabla, char operacion, String userid, String ip) {
+    public void log(Integer registro, String json[], String tabla, char operacion, String userid, String ip) {
 
-        if (json.equals("{}")) {
+        if (json == null
+                || (Objects.equals(json[0], "{}") && Objects.equals(json[1], "{}"))) {
             return;
         }
 
@@ -39,6 +41,7 @@ public class AsincronoLogFacade {
                 + "registro, "
                 + "anterior, "
                 + "nuevo) "
+                + ""
                 + "VALUES ("
                 + ":fecha, "
                 + ":usuario, "
@@ -46,8 +49,8 @@ public class AsincronoLogFacade {
                 + ":operacion, "
                 + ":tabla, "
                 + ":registro, "
-                + "'" + json + "',"
-                + "'" + json + "');";
+                + (json[0] != null ? "'" + json[0] + "'," : "null,")
+                + (json[1] != null ? "'" + (operacion == 'C' ? json[1].replaceAll("\"id\":null", "\"id\":" + registro) : json[1]) + "');" : "null);");
         em.createNativeQuery(query)
                 .setParameter("fecha", new Date())
                 .setParameter("usuario", userid)
@@ -68,7 +71,15 @@ public class AsincronoLogFacade {
                 + "tabla, "
                 + "registro, "
                 + "nuevo) "
-                + "VALUES (:fecha, :usuario, :ip, :operacion, 'Logs','0', '{\"mensaje\":\"" + mensaje + "\"}');";
+                + ""
+                + "VALUES ("
+                + ":fecha, "
+                + ":usuario, "
+                + ":ip, "
+                + ":operacion, "
+                + "'Logs',"
+                + "'0', "
+                + "'{\"" + (operacion == 'I' ? "login" : "logout") + "\":\"" + mensaje + "\"}');";
         em.createNativeQuery(query)
                 .setParameter("fecha", new Date())
                 .setParameter("usuario", usuario)

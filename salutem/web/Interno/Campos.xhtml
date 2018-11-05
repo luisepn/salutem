@@ -34,7 +34,7 @@
                                 <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemCampos.buscar()}"/>
                                 <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemCampos.crear()}"/>
                             </ace:menuBar>
-                            <ace:messages style="white-space: pre-wrap" rendered="#{!salutemCampos.formulario.mostrar}"/>
+                            <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemCampos.formulario.mostrar}"/>
                         </h:panelGrid>
                     </h:panelGrid>
                 </ace:panel>
@@ -138,7 +138,7 @@
                             <ace:column  headerText="Clasificador"                                         
                                          sortBy="#{item.clasificador}" 
                                          filterBy="#{item.clasificador}"
-                                         filterOptions="#{salutemCombos.tabla}"                                          
+                                         filterOptions="#{salutemCombos.tablas}"                                          
                                          filterValue="#{salutemCampos.clasificador}"
                                          filterMatchMode="exact" 
                                          style="text-align: left">
@@ -208,7 +208,7 @@
                             </h:selectOneMenu>
                             <h:outputLabel value="Clasificador:" styleClass="bold"/>
                             <h:selectOneMenu value="#{salutemCampos.campo.clasificador}">
-                                <f:selectItems value="#{salutemCombos.tabla}"/>
+                                <f:selectItems value="#{salutemCombos.tablas}"/>
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                             <h:outputLabel value="Grupo:" styleClass="bold"/>
@@ -265,7 +265,7 @@
                         </ace:dataTable>
                     </h:panelGrid>
 
-                    <h:panelGrid columns="1" width="100%">
+                    <h:panelGrid columns="2" width="100%">
                         <ace:menuBar autoSubmenuDisplay="true" >
                             <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
                                           action="#{salutemCampos.insertar()}"
@@ -279,7 +279,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemCampos.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap" />
+                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

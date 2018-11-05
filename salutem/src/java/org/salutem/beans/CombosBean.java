@@ -634,44 +634,76 @@ public class CombosBean implements Serializable {
         return items;
     }
 
-    public SelectItem[] getOperacion() {
-        SelectItem[] items = new SelectItem[7];
+    public SelectItem[] getOperaciones() {
+        SelectItem[] items = new SelectItem[6];
         items[0] = new SelectItem("A", "--Seleccione uno--");
         items[1] = new SelectItem("C", "[C] Crear");
-        items[2] = new SelectItem("R", "[R] Leer");
-        items[3] = new SelectItem("U", "[U] Actualizar");
-        items[4] = new SelectItem("D", "[D] Borrar");
-        items[5] = new SelectItem("I", "[I] LogIN");
-        items[6] = new SelectItem("O", "[O] LogOUT");
+        items[2] = new SelectItem("U", "[U] Actualizar");
+        items[3] = new SelectItem("D", "[D] Borrar");
+        items[4] = new SelectItem("I", "[I] LogIN");
+        items[5] = new SelectItem("O", "[O] LogOUT");
         return items;
     }
 
-    public SelectItem[] getTabla() {
-        SelectItem[] items = new SelectItem[24];
-        items[0] = new SelectItem("A", "--Seleccione uno--");
-        items[1] = new SelectItem("Archivos", "Archivos");
-        items[2] = new SelectItem("Atenciones", "Atenciones");
-        items[3] = new SelectItem("Campos", "Campos");
-        items[4] = new SelectItem("Citas", "Citas");
-        items[5] = new SelectItem("Consultas", "Consultas");
-        items[6] = new SelectItem("Datos", "Datos");
-        items[7] = new SelectItem("Direcciones", "Direcciones");
-        items[8] = new SelectItem("Formulas", "Formulas");
-        items[9] = new SelectItem("Horarios", "Horarios");
-        items[10] = new SelectItem("Horas", "Horas");
-        items[11] = new SelectItem("Instituciones", "Instituciones");
-        items[12] = new SelectItem("Maestros", "Maestros");
-        items[13] = new SelectItem("Materiales", "Materiales");
-        items[14] = new SelectItem("Menus", "Menus");
-        items[15] = new SelectItem("Ordenes", "Ordenes");
-        items[16] = new SelectItem("Pacientes", "Pacientes");
-        items[17] = new SelectItem("Parametros", "Parametros");
-        items[18] = new SelectItem("Perfiles", "Perfiles");
-        items[19] = new SelectItem("Personas", "Personas");
-        items[20] = new SelectItem("Prescripciones", "Prescripciones");
-        items[21] = new SelectItem("Profesionales", "Profesionales");
-        items[22] = new SelectItem("Usuarios", "Usuarios");
-        items[23] = new SelectItem("Logs", "Logs");
+    public SelectItem[] getTablas() {
+        SelectItem[] items;
+        if (clasificador == null) {
+            items = new SelectItem[24];
+            items[0] = new SelectItem("A", "--Seleccione uno--");
+            items[1] = new SelectItem("Archivos", "Archivos");
+            items[2] = new SelectItem("Atenciones", "Atenciones");
+            items[3] = new SelectItem("Campos", "Campos");
+            items[4] = new SelectItem("Citas", "Citas");
+            items[5] = new SelectItem("Consultas", "Consultas");
+            items[6] = new SelectItem("Datos", "Datos");
+            items[7] = new SelectItem("Direcciones", "Direcciones");
+            items[8] = new SelectItem("Formulas", "Formulas");
+            items[9] = new SelectItem("Horarios", "Horarios");
+            items[10] = new SelectItem("Horas", "Horas");
+            items[11] = new SelectItem("Instituciones", "Instituciones");
+            items[12] = new SelectItem("Maestros", "Maestros");
+            items[13] = new SelectItem("Materiales", "Materiales");
+            items[14] = new SelectItem("Menus", "Menus");
+            items[15] = new SelectItem("Ordenes", "Ordenes");
+            items[16] = new SelectItem("Pacientes", "Pacientes");
+            items[17] = new SelectItem("Parametros", "Parametros");
+            items[18] = new SelectItem("Perfiles", "Perfiles");
+            items[19] = new SelectItem("Personas", "Personas");
+            items[20] = new SelectItem("Prescripciones", "Prescripciones");
+            items[21] = new SelectItem("Profesionales", "Profesionales");
+            items[22] = new SelectItem("Usuarios", "Usuarios");
+            items[23] = new SelectItem("Logs", "Logs");
+        } else {
+            switch (clasificador) {
+                case "Personas":
+                    items = new SelectItem[4];
+                    items[0] = new SelectItem("A", "--Seleccione uno--");
+                    items[1] = new SelectItem("Archivos", "Archivos");
+                    items[2] = new SelectItem("Direcciones", "Direcciones");
+                    items[3] = new SelectItem("Personas", "Personas");
+                    break;
+                case "Pacientes":
+                    items = new SelectItem[5];
+                    items[0] = new SelectItem("A", "--Seleccione uno--");
+                    items[1] = new SelectItem("Archivos", "Archivos");
+                    items[2] = new SelectItem("Direcciones", "Direcciones");
+                    items[3] = new SelectItem("Personas", "Personas");
+                    items[4] = new SelectItem("Pacientes", "Pacientes");
+                    break;
+                case "Profesionales":
+                    items = new SelectItem[5];
+                    items[0] = new SelectItem("A", "--Seleccione uno--");
+                    items[1] = new SelectItem("Archivos", "Archivos");
+                    items[2] = new SelectItem("Direcciones", "Direcciones");
+                    items[3] = new SelectItem("Personas", "Personas");
+                    items[4] = new SelectItem("Profesionales", "Profesionales");
+                    break;
+                default:
+                    items = new SelectItem[1];
+                    items[0] = new SelectItem(clasificador, clasificador);
+                    break;
+            }
+        }
         return items;
     }
 

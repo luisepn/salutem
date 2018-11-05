@@ -31,7 +31,10 @@ public class DireccionesFacade extends AbstractFacade<Direcciones> {
     }
 
     @Override
-    protected String getJson(Direcciones actual, Direcciones objeto) {
+    protected JsonObject getJson(Direcciones objeto) {
+        if (objeto == null) {
+            return null;
+        }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("primaria", objeto.getPrimaria());
@@ -43,10 +46,8 @@ public class DireccionesFacade extends AbstractFacade<Direcciones> {
         json.addProperty("movil", objeto.getMovil());
         json.addProperty("ciudad", objeto.getCiudad());
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("institucion", objeto.getInstitucion() != null ? objeto.getInstitucion().toString() : "");
-        json.addProperty("persona", objeto.getPersona() != null ? objeto.getPersona().toString() : "");
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
-        return json.toString();
+        return json;
     }
 
 }
