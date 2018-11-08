@@ -67,18 +67,17 @@
                             filterMatchMode="exact" 
                             style="text-align: left">
                     <h:outputText value="#{item.operacion eq 'C' ? '[C] Crear': 
-                                           item.operacion eq 'R' ? '[R] Leer': 
                                            item.operacion eq 'U' ? '[U] Actualizar': 
                                            item.operacion eq 'D' ? '[D] Borrar': 
-                                           item.operacion eq 'I' ? '[I] Ingreso': 
-                                           item.operacion eq 'O' ? '[O] Salida': 
+                                           item.operacion eq 'I' ? '[I] Log IN': 
+                                           item.operacion eq 'O' ? '[O] Log OUT': 
                                            ''}"/>
                 </ace:column>
                 <ace:column headerText="Tabla"                                         
                             sortBy="#{item.tabla}" 
                             filterBy="#{item.tabla}"
                             filterOptions="#{salutemCombos.tablas}"                                          
-                            filterValue="#{salutemHistorial.tabla}"
+                            filterValue="#{salutemHistorial.tablaAuxiliar}"
                             filterMatchMode="exact"
                             style="text-align: left">
                     <h:outputText  value="#{item.tabla}"/>

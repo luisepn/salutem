@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -51,8 +52,11 @@ public class HistorialBean implements Serializable {
     private Date fechaFin;
     private String usuario;
     private Character operacion;
+
     private String tabla;
     private Integer registro;
+
+    private String tablaAuxiliar = "A";
 
     @EJB
     private HistorialFacade ejbHistorial;
@@ -75,6 +79,7 @@ public class HistorialBean implements Serializable {
 
     public List<Historial> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
+            Integer registroAuxiliar = null;
             Map parameters = new HashMap();
             String where = " o.id is not null";
 
@@ -84,10 +89,10 @@ public class HistorialBean implements Serializable {
 
                 if (clave.contains("registro")) {
                     try {
-                        registro = Integer.parseInt(valor);
+                        registroAuxiliar = Integer.parseInt(valor);
                     } catch (NumberFormatException ex) {
                         Mensajes.error("En la columna ID ingrese únicamente números " + ex.getMessage());
-                        registro = null;
+                        registroAuxiliar = null;
                     }
                 } else if (clave.contains("operacion")) {
                     if (valor.equals("A")) {
@@ -97,7 +102,7 @@ public class HistorialBean implements Serializable {
                         parameters.put("operacion", valor);
                     }
                 } else if (clave.contains("tabla")) {
-                    tabla = valor;
+                    tablaAuxiliar = valor;
                 } else if (clave.contains("anterior") || clave.contains("nuevo")) {
                     if (valor.trim().contains(" in ")) {
                         if (valor.trim().matches("'[^ ]*'\\ [><!=^like^ilike^not like^not ilike^in^not in]*\\ \\([^ŋ]*\\)")) {
@@ -113,44 +118,73 @@ public class HistorialBean implements Serializable {
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
             }
-
-            if (tabla != null) {
-                if (tabla.equals("A")) {
-                    where += " and o.tabla is not null";
-                } else {
-                    where += " and o.tabla=:tabla";
-                    parameters.put("tabla", tabla);
-                }
-            }
-            if (registro != null) {
-                where += " and o.registro=:registro";
-                parameters.put("registro", registro);
-            }
-
             if (tabla != null && registro != null) {
                 try {
                     switch (tabla) {
                         case "Personas":
-                            Integer direccion = ejbTransacciones.buscar("id", tabla, "direccion", registro.toString());
-                            where += " or (o.tabla in ('Direcciones') and o.registro=:direccion)";
-                            parameters.put("direccion", direccion);
+                            Integer direccion = registro != null ? ejbTransacciones.buscar("id", tabla, "direccion", registro.toString()) : null;
+
+                            List<String> tablas = new LinkedList<>();
+
+                            if (tablaAuxiliar.equals("A")) {
+                                tablas.add(tabla);
+                                tablas.add("Direcciones");
+
+                                List<Integer> registros = new LinkedList<>();
+                                registros.add(direccion != null ? direccion : 0);
+                                registros.add(registro != null ? registro : 0);
+                                registros.add(registroAuxiliar != null ? registroAuxiliar : 0);
+                                parameters.put("registros", registros);
+                            } else {
+                                tablas.add(tablaAuxiliar);
+                            }
+                            parameters.put("tablas", tablas);
+
+                            where += " and o.tabla in :tablas and o.registro in :registros";
+
                             break;
                         case "Pacientes":
                         case "Profesionales":
-                            Integer persona = ejbTransacciones.buscar("persona", tabla, "id", registro.toString());
-                            Integer archivo = ejbTransacciones.buscar("fotografia", tabla, "id", registro.toString());
-                            direccion = ejbTransacciones.buscar("direccion", "Personas", "id", persona.toString());
-                            where += " or (o.tabla in ('Personas', 'Direcciones', 'Archivos') and o.registro in ("
-                                    + persona
-                                    + ","
-                                    + direccion
-                                    + ","
-                                    + archivo
-                                    + "))";
+                            Integer persona = registro != null ? ejbTransacciones.buscar("persona", tabla, "id", registro.toString()) : null;
+                            Integer archivo = registro != null ? ejbTransacciones.buscar("fotografia", tabla, "id", registro.toString()) : null;
+                            direccion = persona != null ? ejbTransacciones.buscar("direccion", "Personas", "id", persona.toString()) : null;
+
+                            tablas = new LinkedList<>();
+
+                            if (tablaAuxiliar.equals("A")) {
+                                tablas.add(tabla);
+                                tablas.add("Personas");
+                                tablas.add("Direcciones");
+
+                                List<Integer> registros = new LinkedList<>();
+                                registros.add(persona != null ? persona : 0);
+                                registros.add(archivo != null ? archivo : 0);
+                                registros.add(direccion != null ? direccion : 0);
+                                registros.add(registro != null ? registro : 0);
+                                registros.add(registroAuxiliar != null ? registroAuxiliar : 0);
+                                parameters.put("registros", registros);
+                            } else {
+                                tablas.add(tablaAuxiliar);
+                            }
+                            parameters.put("tablas", tablas);
+
+                            where += " and o.tabla in :tablas and o.registro in :registros";
+
                             break;
                     }
                 } catch (org.excepciones.salutem.ExcepcionDeConsulta ex) {
                     Logger.getLogger(HistorialBean.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                if (tablaAuxiliar.equals("A")) {
+                    where += " and o.tabla is not null";
+                } else {
+                    where += " and o.tabla=:tabla";
+                    parameters.put("tabla", tablaAuxiliar);
+                }
+                if (registroAuxiliar != null) {
+                    where += " and o.registro=:registro";
+                    parameters.put("registro", registroAuxiliar);
                 }
             }
 
@@ -375,6 +409,20 @@ public class HistorialBean implements Serializable {
      */
     public void setCombosBean(CombosBean combosBean) {
         this.combosBean = combosBean;
+    }
+
+    /**
+     * @return the tablaAuxiliar
+     */
+    public String getTablaAuxiliar() {
+        return tablaAuxiliar;
+    }
+
+    /**
+     * @param tablaAuxiliar the tablaAuxiliar to set
+     */
+    public void setTablaAuxiliar(String tablaAuxiliar) {
+        this.tablaAuxiliar = tablaAuxiliar;
     }
 
 }

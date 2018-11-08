@@ -640,8 +640,8 @@ public class CombosBean implements Serializable {
         items[1] = new SelectItem("C", "[C] Crear");
         items[2] = new SelectItem("U", "[U] Actualizar");
         items[3] = new SelectItem("D", "[D] Borrar");
-        items[4] = new SelectItem("I", "[I] LogIN");
-        items[5] = new SelectItem("O", "[O] LogOUT");
+        items[4] = new SelectItem("I", "[I] Log IN");
+        items[5] = new SelectItem("O", "[O] Log OUT");
         return items;
     }
 
