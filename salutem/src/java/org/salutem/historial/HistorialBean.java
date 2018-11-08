@@ -119,62 +119,80 @@ public class HistorialBean implements Serializable {
                 }
             }
             if (tabla != null && registro != null) {
-                try {
-                    switch (tabla) {
-                        case "Personas":
-                            Integer direccion = registro != null ? ejbTransacciones.buscar("id", tabla, "direccion", registro.toString()) : null;
 
-                            List<String> tablas = new LinkedList<>();
+                switch (tabla) {
+                    case "Personas":
+                        Integer direccion = ejbTransacciones.buscar("id", tabla, "direccion", registro.toString());
 
-                            if (tablaAuxiliar.equals("A")) {
-                                tablas.add(tabla);
-                                tablas.add("Direcciones");
+                        switch (tablaAuxiliar) {
+                            case "Direcciones":
+                                where += " and tabla=:tabla and o.registro=:direccion";
+                                parameters.put("tabla", tablaAuxiliar);
+                                parameters.put("direccion", direccion != null ? direccion : 0);
+                                break;
+                            case "Personas":
+                                where += " and tabla=:tabla and o.registro=:registro";
+                                parameters.put("tabla", tabla);
+                                parameters.put("registro", registro);
+                                break;
+                            case "A":
+                                where += " and ("
+                                        + "(tabla='Direcciones' and o.registro=:direccion) or"
+                                        + "(tabla=:tabla and o.registro=:registro) "
+                                        + ")";
+                                parameters.put("direccion", direccion != null ? direccion : 0);
+                                parameters.put("registro", registro);
+                                parameters.put("tabla", tabla);
 
-                                List<Integer> registros = new LinkedList<>();
-                                registros.add(direccion != null ? direccion : 0);
-                                registros.add(registro != null ? registro : 0);
-                                registros.add(registroAuxiliar != null ? registroAuxiliar : 0);
-                                parameters.put("registros", registros);
-                            } else {
-                                tablas.add(tablaAuxiliar);
-                            }
-                            parameters.put("tablas", tablas);
+                                break;
+                        }
+                        break;
+                    case "Pacientes":
+                    case "Profesionales":
+                        Integer persona = ejbTransacciones.buscar("persona", tabla, "id", registro.toString());
+                        Integer archivo = ejbTransacciones.buscar("fotografia", tabla, "id", registro.toString());
+                        direccion = persona != null ? ejbTransacciones.buscar("direccion", "Personas", "id", persona.toString()) : null;
 
-                            where += " and o.tabla in :tablas and o.registro in :registros";
+                        switch (tablaAuxiliar) {
+                            case "Pacientes":
+                            case "Profesionales":
+                                where += " and tabla=:tabla and o.registro=:registro";
+                                parameters.put("tabla", tabla);
+                                parameters.put("registro", registro);
+                                break;
+                            case "Archivos":
+                                where += " and tabla=:tabla and o.registro=:archivo";
+                                parameters.put("tabla", tablaAuxiliar);
+                                parameters.put("archivo", archivo != null ? archivo : 0);
+                                break;
+                            case "Direcciones":
+                                where += " and tabla=:tabla and o.registro=:direccion";
+                                parameters.put("tabla", tablaAuxiliar);
+                                parameters.put("direccion", direccion != null ? direccion : 0);
+                                break;
+                            case "Personas":
+                                where += " and tabla=:tabla and o.registro=:registro";
+                                parameters.put("tabla", tablaAuxiliar);
+                                parameters.put("registro", persona != null ? persona : 0);
+                                break;
+                            case "A":
+                                where += " and ("
+                                        + "(tabla=:tabla and o.registro=:registro) or "
+                                        + "(tabla='Archivos' and o.registro=:archivo) or"
+                                        + "(tabla='Direcciones' and o.registro=:direccion) or"
+                                        + "(tabla='Personas' and o.registro=:persona)"
+                                        + ")";
+                                parameters.put("tabla", tabla);
+                                parameters.put("registro", registro);
+                                parameters.put("archivo", archivo != null ? archivo : 0);
+                                parameters.put("direccion", direccion != null ? direccion : 0);
+                                parameters.put("persona", persona != null ? persona : 0);
+                                break;
+                        }
 
-                            break;
-                        case "Pacientes":
-                        case "Profesionales":
-                            Integer persona = registro != null ? ejbTransacciones.buscar("persona", tabla, "id", registro.toString()) : null;
-                            Integer archivo = registro != null ? ejbTransacciones.buscar("fotografia", tabla, "id", registro.toString()) : null;
-                            direccion = persona != null ? ejbTransacciones.buscar("direccion", "Personas", "id", persona.toString()) : null;
-
-                            tablas = new LinkedList<>();
-
-                            if (tablaAuxiliar.equals("A")) {
-                                tablas.add(tabla);
-                                tablas.add("Personas");
-                                tablas.add("Direcciones");
-
-                                List<Integer> registros = new LinkedList<>();
-                                registros.add(persona != null ? persona : 0);
-                                registros.add(archivo != null ? archivo : 0);
-                                registros.add(direccion != null ? direccion : 0);
-                                registros.add(registro != null ? registro : 0);
-                                registros.add(registroAuxiliar != null ? registroAuxiliar : 0);
-                                parameters.put("registros", registros);
-                            } else {
-                                tablas.add(tablaAuxiliar);
-                            }
-                            parameters.put("tablas", tablas);
-
-                            where += " and o.tabla in :tablas and o.registro in :registros";
-
-                            break;
-                    }
-                } catch (org.excepciones.salutem.ExcepcionDeConsulta ex) {
-                    Logger.getLogger(HistorialBean.class.getName()).log(Level.SEVERE, null, ex);
+                        break;
                 }
+
             } else {
                 if (tablaAuxiliar.equals("A")) {
                     where += " and o.tabla is not null";
@@ -182,10 +200,11 @@ public class HistorialBean implements Serializable {
                     where += " and o.tabla=:tabla";
                     parameters.put("tabla", tablaAuxiliar);
                 }
-                if (registroAuxiliar != null) {
-                    where += " and o.registro=:registro";
-                    parameters.put("registro", registroAuxiliar);
-                }
+            }
+            
+            if (registroAuxiliar != null) {
+                where += " and o.registro=:registroAuxiliar";
+                parameters.put("registroAuxiliar", registroAuxiliar);
             }
 
             if (fechaInicio != null && fechaFin != null) {
@@ -208,7 +227,7 @@ public class HistorialBean implements Serializable {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return (List<Historial>) ejbHistorial.buscar(where, parameters, order, i, endIndex, false);
-        } catch (ExcepcionDeConsulta ex) {
+        } catch (ExcepcionDeConsulta | org.excepciones.salutem.ExcepcionDeConsulta ex) {
             Logger.getLogger(HistorialBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
