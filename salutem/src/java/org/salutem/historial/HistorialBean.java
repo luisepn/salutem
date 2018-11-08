@@ -120,27 +120,89 @@ public class HistorialBean implements Serializable {
             }
             if (tabla != null && registro != null) {
 
+                Map param;
+
                 switch (tabla) {
+                    case "Atenciones":
+                        param = new HashMap();
+                        param.put("clasificador", tabla);
+                        param.put("identificador", registro);
+                        List<Integer> datos = (List<Integer>) ejbTransacciones.buscar("id", "Datos", "clasificador=:clasificador and identificador=:identificador", param, false);
+
+                        param = new HashMap();
+                        param.put("atencion", registro);
+                        Integer formula = (Integer) ejbTransacciones.buscar("id", "Formulas", "atencion=:atencion", param, true);
+                        List<Integer> prescripciones = (List<Integer>) ejbTransacciones.buscar("id", "Prescripciones", "atencion=:atencion", param, false);
+                        
+                        param = new HashMap();
+                        param.put("formula", formula);
+                        Integer orden = (Integer) ejbTransacciones.buscar("id", "Ordenes", "formula=:formula", param, true);
+
+                        switch (tablaAuxiliar) {
+                            case "Atenciones":
+                                where += " and o.tabla=:tabla and o.registro=:registro";
+                                parameters.put("tabla", tablaAuxiliar);
+                                parameters.put("registro", registro);
+                                break;
+                            case "Datos":
+                                where += " and o.tabla=:tabla and o.registro in :datos";
+                                parameters.put("tabla", tablaAuxiliar);
+                                parameters.put("datos", datos);
+                                break;
+                            case "Formulas":
+                                where += " and o.tabla=:tabla and o.registro=:formula";
+                                parameters.put("tabla", tablaAuxiliar);
+                                parameters.put("formula", formula);
+                                break;
+                            case "Ordenes":
+                                where += " and o.tabla=:tabla and o.registro=:orden";
+                                parameters.put("tabla", tablaAuxiliar);
+                                parameters.put("orden", orden);
+                                break;
+                            case "Prescripciones":
+                                where += " and o.tabla=:tabla and o.registro in :prescripciones";
+                                parameters.put("tabla", tablaAuxiliar);
+                                parameters.put("prescripciones", prescripciones);
+                                break;
+                            case "A":
+                                where += " and ("
+                                        + "(o.tabla=:tabla and o.registro=:registro) or "
+                                        + "(o.tabla='Datos' and o.registro in :datos) or "
+                                        + "(o.tabla='Formulas' and o.registro=:formula) or "
+                                        + "(o.tabla='Ordenes' and o.registro=:orden) or "
+                                        + "(o.tabla='Prescripciones' and o.registro in :prescripciones)"
+                                        + ")";
+                                parameters.put("tabla", tabla);
+                                parameters.put("registro", registro);
+                                parameters.put("datos", datos);
+                                parameters.put("formula", formula);
+                                parameters.put("orden", orden);
+                                parameters.put("prescripciones", prescripciones);
+                                break;
+                        }
+                        break;
                     case "Personas":
-                        Integer direccion = ejbTransacciones.buscar("id", tabla, "direccion", registro.toString());
+                        param = new HashMap();
+                        param.put("direccion", registro);
+                        int direccion = (Integer) ejbTransacciones.buscar("id", tabla, "direccion=:direccion", param, true);
 
                         switch (tablaAuxiliar) {
                             case "Direcciones":
-                                where += " and tabla=:tabla and o.registro=:direccion";
+                                where += " and o.tabla=:tabla and o.registro=:direccion";
                                 parameters.put("tabla", tablaAuxiliar);
-                                parameters.put("direccion", direccion != null ? direccion : 0);
+                                parameters.put("direccion", direccion);
                                 break;
                             case "Personas":
-                                where += " and tabla=:tabla and o.registro=:registro";
+                                where += " and o.tabla=:tabla and o.registro=:registro";
                                 parameters.put("tabla", tabla);
                                 parameters.put("registro", registro);
                                 break;
                             case "A":
                                 where += " and ("
-                                        + "(tabla='Direcciones' and o.registro=:direccion) or"
-                                        + "(tabla=:tabla and o.registro=:registro) "
+                                        + "(o.tabla='Direcciones' and o.registro=:direccion) or "
+                                        + "(o.tabla=:tabla and o.registro=:registro) "
                                         + ")";
-                                parameters.put("direccion", direccion != null ? direccion : 0);
+                                parameters.put("direccion", direccion);
                                 parameters.put("registro", registro);
                                 parameters.put("tabla", tabla);
 
@@ -149,47 +211,55 @@ public class HistorialBean implements Serializable {
                         break;
                     case "Pacientes":
                     case "Profesionales":
-                        Integer persona = ejbTransacciones.buscar("persona", tabla, "id", registro.toString());
-                        Integer archivo = ejbTransacciones.buscar("fotografia", tabla, "id", registro.toString());
-                        direccion = persona != null ? ejbTransacciones.buscar("direccion", "Personas", "id", persona.toString()) : null;
+                        param = new HashMap();
+                        param.put("id", registro);
+                        int persona = (Integer) ejbTransacciones.buscar("persona", tabla, "id=:id", param, true);
+                        int archivo = (Integer) ejbTransacciones.buscar("fotografia", tabla, "id=:id", param, true);
+                        param.put("id", persona);
+                        direccion = (Integer) ejbTransacciones.buscar("direccion", "Personas", "id=:id", param, true);
 
                         switch (tablaAuxiliar) {
                             case "Pacientes":
                             case "Profesionales":
-                                where += " and tabla=:tabla and o.registro=:registro";
+                                where += " and o.tabla=:tabla and o.registro=:registro";
                                 parameters.put("tabla", tabla);
                                 parameters.put("registro", registro);
                                 break;
                             case "Archivos":
-                                where += " and tabla=:tabla and o.registro=:archivo";
+                                where += " and o.tabla=:tabla and o.registro=:archivo";
                                 parameters.put("tabla", tablaAuxiliar);
-                                parameters.put("archivo", archivo != null ? archivo : 0);
+                                parameters.put("archivo", archivo);
                                 break;
                             case "Direcciones":
-                                where += " and tabla=:tabla and o.registro=:direccion";
+                                where += " and o.tabla=:tabla and o.registro=:direccion";
                                 parameters.put("tabla", tablaAuxiliar);
-                                parameters.put("direccion", direccion != null ? direccion : 0);
+                                parameters.put("direccion", direccion);
                                 break;
                             case "Personas":
-                                where += " and tabla=:tabla and o.registro=:registro";
+                                where += " and o.tabla=:tabla and o.registro=:registro";
                                 parameters.put("tabla", tablaAuxiliar);
-                                parameters.put("registro", persona != null ? persona : 0);
+                                parameters.put("registro", persona);
                                 break;
                             case "A":
                                 where += " and ("
-                                        + "(tabla=:tabla and o.registro=:registro) or "
-                                        + "(tabla='Archivos' and o.registro=:archivo) or"
-                                        + "(tabla='Direcciones' and o.registro=:direccion) or"
-                                        + "(tabla='Personas' and o.registro=:persona)"
+                                        + "(o.tabla=:tabla and o.registro=:registro) or "
+                                        + "(o.tabla='Archivos' and o.registro=:archivo) or "
+                                        + "(o.tabla='Direcciones' and o.registro=:direccion) or "
+                                        + "(o.tabla='Personas' and o.registro=:persona)"
                                         + ")";
                                 parameters.put("tabla", tabla);
                                 parameters.put("registro", registro);
-                                parameters.put("archivo", archivo != null ? archivo : 0);
-                                parameters.put("direccion", direccion != null ? direccion : 0);
-                                parameters.put("persona", persona != null ? persona : 0);
+                                parameters.put("archivo", archivo);
+                                parameters.put("direccion", direccion);
+                                parameters.put("persona", persona);
                                 break;
                         }
 
+                        break;
+                    default:
+                        where += " and o.tabla=:tabla and o.registro=:registro";
+                        parameters.put("tabla", tabla);
+                        parameters.put("registro", registro);
                         break;
                 }
 
@@ -201,7 +271,7 @@ public class HistorialBean implements Serializable {
                     parameters.put("tabla", tablaAuxiliar);
                 }
             }
-            
+
             if (registroAuxiliar != null) {
                 where += " and o.registro=:registroAuxiliar";
                 parameters.put("registroAuxiliar", registroAuxiliar);

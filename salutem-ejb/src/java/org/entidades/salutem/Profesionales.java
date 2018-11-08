@@ -32,14 +32,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "profesionales")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Profesionales.findAll", query = "SELECT p FROM Profesionales p")
-    , @NamedQuery(name = "Profesionales.findById", query = "SELECT p FROM Profesionales p WHERE p.id = :id")
-    , @NamedQuery(name = "Profesionales.findByActivo", query = "SELECT p FROM Profesionales p WHERE p.activo = :activo")
-    , @NamedQuery(name = "Profesionales.findByDescripcion", query = "SELECT p FROM Profesionales p WHERE p.descripcion = :descripcion")
-    , @NamedQuery(name = "Profesionales.findByCreado", query = "SELECT p FROM Profesionales p WHERE p.creado = :creado")
-    , @NamedQuery(name = "Profesionales.findByCreadopor", query = "SELECT p FROM Profesionales p WHERE p.creadopor = :creadopor")
-    , @NamedQuery(name = "Profesionales.findByActualizado", query = "SELECT p FROM Profesionales p WHERE p.actualizado = :actualizado")
-    , @NamedQuery(name = "Profesionales.findByActualizadopor", query = "SELECT p FROM Profesionales p WHERE p.actualizadopor = :actualizadopor")})
+    @NamedQuery(name = "Profesionales.findAll", query = "SELECT p FROM Profesionales p"),
+    @NamedQuery(name = "Profesionales.findById", query = "SELECT p FROM Profesionales p WHERE p.id = :id"),
+    @NamedQuery(name = "Profesionales.findByActivo", query = "SELECT p FROM Profesionales p WHERE p.activo = :activo"),
+    @NamedQuery(name = "Profesionales.findByDescripcion", query = "SELECT p FROM Profesionales p WHERE p.descripcion = :descripcion"),
+    @NamedQuery(name = "Profesionales.findByCreado", query = "SELECT p FROM Profesionales p WHERE p.creado = :creado"),
+    @NamedQuery(name = "Profesionales.findByCreadopor", query = "SELECT p FROM Profesionales p WHERE p.creadopor = :creadopor"),
+    @NamedQuery(name = "Profesionales.findByActualizado", query = "SELECT p FROM Profesionales p WHERE p.actualizado = :actualizado"),
+    @NamedQuery(name = "Profesionales.findByActualizadopor", query = "SELECT p FROM Profesionales p WHERE p.actualizadopor = :actualizadopor")})
 public class Profesionales implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -195,7 +195,7 @@ public class Profesionales implements Serializable {
 
     @Override
     public String toString() {
-        return "org.entidades.salutem.Profesionales[ id=" + id + " ]";
+        return persona != null ? persona.toString() : "[" + id + "]";
     }
-    
+
 }

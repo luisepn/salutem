@@ -18,6 +18,7 @@ import com.google.gson.JsonObject;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -260,10 +261,10 @@ public abstract class AbstractFacade<T> implements Serializable {
         return (List<T>) ejecutarQuery(where, parameters, null, firstResult, maxResults, false);
     }
 
-    private Object ejecutarQuery(String where, Map parameters, String order, Integer firstResult, Integer maxResults, Boolean contar) throws ExcepcionDeConsulta {
+    private Object ejecutarQuery(String where, Map parameters, String order, Integer firstResult, Integer maxResults, Boolean count) throws ExcepcionDeConsulta {
         try {
             String sql
-                    = (contar ? "Select count(o) from " : "Select object(o) from ")
+                    = (count ? "Select count(o) from " : "Select object(o) from ")
                     + this.entityClass.getSimpleName();
             if (where != null) {
                 sql += " as o where " + where;
@@ -286,22 +287,39 @@ public abstract class AbstractFacade<T> implements Serializable {
                 q.setFirstResult(firstResult);
             }
 
-            return contar ? ((Long) q.getSingleResult()).intValue() : (List<T>) q.getResultList();
+            return count ? ((Long) q.getSingleResult()).intValue() : (List<T>) q.getResultList();
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(this.entityClass.toString(), e);
         }
     }
 
-    public Integer buscar(String campo, String tabla, String referencia, String busqueda) throws ExcepcionDeConsulta {
+    public Object buscar(String field, String table, String where, Map parameters, boolean one) throws ExcepcionDeConsulta {
         try {
-            Query q = getEntityManager().createNativeQuery("SELECT o." + campo + " from " + tabla + " o WHERE o." + referencia + "=" + busqueda);
+            Query q = getEntityManager().createNativeQuery("SELECT " + field + " from " + table + " WHERE " + where);
+            if (parameters != null) {
+                Iterator it = parameters.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry e = (Map.Entry) it.next();
+                    String clave = (String) e.getKey();
+                    q.setParameter(clave, e.getValue());
+                }
+            }
             List<Integer> lista = q.getResultList();
-            if (!lista.isEmpty()) {
-                return lista.get(0);
+
+            if (one) {
+                if (!lista.isEmpty()) {
+                    return lista.get(0);
+                } else {
+                    return 0;
+                }
+            } else {
+                if (lista.isEmpty()) {
+                    lista.add(0);
+                }
+                return lista;
             }
         } catch (Exception e) {
-            throw new ExcepcionDeConsulta(CamposFacade.class.getName(), e);
+            throw new ExcepcionDeConsulta(table, e);
         }
-        return null;
     }
 }

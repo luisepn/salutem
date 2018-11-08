@@ -675,12 +675,14 @@ public class CombosBean implements Serializable {
             items[23] = new SelectItem("Logs", "Logs");
         } else {
             switch (clasificador) {
-                case "Personas":
-                    items = new SelectItem[4];
+                case "Atenciones":
+                    items = new SelectItem[6];
                     items[0] = new SelectItem("A", "--Seleccione uno--");
-                    items[1] = new SelectItem("Archivos", "Archivos");
-                    items[2] = new SelectItem("Direcciones", "Direcciones");
-                    items[3] = new SelectItem("Personas", "Personas");
+                    items[1] = new SelectItem("Atenciones", clasificador);
+                    items[2] = new SelectItem("Datos", "Datos");
+                    items[3] = new SelectItem("Formulas", "Formulas");
+                    items[4] = new SelectItem("Ordenes", "Ordenes");
+                    items[5] = new SelectItem("Prescripciones", "Prescripciones");
                     break;
                 case "Pacientes":
                     items = new SelectItem[5];
@@ -688,15 +690,23 @@ public class CombosBean implements Serializable {
                     items[1] = new SelectItem("Archivos", "Archivos");
                     items[2] = new SelectItem("Direcciones", "Direcciones");
                     items[3] = new SelectItem("Personas", "Personas");
-                    items[4] = new SelectItem("Pacientes", "Pacientes");
+                    items[4] = new SelectItem("Pacientes", clasificador);
                     break;
+                case "Personas":
+                    items = new SelectItem[4];
+                    items[0] = new SelectItem("A", "--Seleccione uno--");
+                    items[1] = new SelectItem("Archivos", "Archivos");
+                    items[2] = new SelectItem("Direcciones", "Direcciones");
+                    items[3] = new SelectItem("Personas", clasificador);
+                    break;
+
                 case "Profesionales":
                     items = new SelectItem[5];
                     items[0] = new SelectItem("A", "--Seleccione uno--");
                     items[1] = new SelectItem("Archivos", "Archivos");
                     items[2] = new SelectItem("Direcciones", "Direcciones");
                     items[3] = new SelectItem("Personas", "Personas");
-                    items[4] = new SelectItem("Profesionales", "Profesionales");
+                    items[4] = new SelectItem("Profesionales", clasificador);
                     break;
                 default:
                     items = new SelectItem[1];
