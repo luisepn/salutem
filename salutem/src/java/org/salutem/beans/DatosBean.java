@@ -104,7 +104,7 @@ public class DatosBean implements Serializable {
         d.setOrdengrupo(c.getGrupo().getId());
         d.setGrupo(c.getGrupo().getNombre());
         d.setTipo(c.getTipo());
-        d.setOpciones(c.getOpciones());
+        d.setOpciones(ejbCampos.buscarJsonb(c.getId()));
         d.setRequerido(c.getRequerido());
         d.setActivo(c.getActivo());
         if (nuevo) {
@@ -121,7 +121,7 @@ public class DatosBean implements Serializable {
         if (c.getTipo().getCodigo().equals("ONE")
                 || c.getTipo().getCodigo().equals("MANY")
                 || c.getTipo().getCodigo().equals("LIST")) {
-            ejbDatos.actualizarJsonb("opciones", ejbCampos.buscarJsonb(c.getId()), d.getId());
+            ejbDatos.actualizarJsonb("opciones", d.getOpciones(), d.getId());
         }
     }
 
