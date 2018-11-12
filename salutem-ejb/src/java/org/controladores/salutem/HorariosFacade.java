@@ -38,9 +38,9 @@ public class HorariosFacade extends AbstractFacade<Horarios> {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("hora", objeto.getHora() != null ? objeto.getHora().toString() : "");
-        json.addProperty("dia", objeto.getDia() != null ? objeto.getDia().toString() : "");
-        json.addProperty("profesional", objeto.getProfesional() != null ? objeto.getProfesional().toString() : "");
+        json.addProperty("hora", objeto.getHora() != null ? objeto.getHora().toString() : null);
+        json.addProperty("dia", objeto.getDia() != null ? objeto.getDia().toString() : null);
+        json.addProperty("profesional", objeto.getProfesional() != null ? objeto.getProfesional().toString() : null);
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json;
     }

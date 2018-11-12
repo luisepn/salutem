@@ -38,16 +38,6 @@ body{
 .mensajes{
     font-size: 22px !important;
 }
-.grupo{
-    color: white;
-    font-style: italic;
-    background: #654b24 url("images/ui-bg_fine-grain_65_654b24_60x60.png") 50% 50% repeat;
-}
-.subGrupo{
-    color: #453821;
-    font-style: italic;
-    background: #654b24 url("images/ui-bg_fine-grain_15_ffffff_60x60.png") 50% 50% repeat;
-}
 .diez{
     vertical-align: top;
     width: 10%;

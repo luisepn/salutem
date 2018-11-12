@@ -51,6 +51,13 @@ public class OrdenesFacade extends AbstractFacade<Ordenes> {
         }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
+        json.addProperty("formula", objeto.getFormula() != null ? objeto.getFormula().getId() : null);
+        json.addProperty("factura", objeto.getFactura());
+        json.addProperty("laboratorio", objeto.getLaboratorio() != null ? objeto.getLaboratorio().toString() : null);
+        json.addProperty("registro", objeto.getRegistro() != null ? formatoFechaHora.format(objeto.getRegistro()) : null);
+        json.addProperty("envio", objeto.getEnvio() != null ? formatoFechaHora.format(objeto.getEnvio()) : null);
+        json.addProperty("entrega", objeto.getEntrega() != null ? formatoFechaHora.format(objeto.getEntrega()) : null);
+        json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json;
     }

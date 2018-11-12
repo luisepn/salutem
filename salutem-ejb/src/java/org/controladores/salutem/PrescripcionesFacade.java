@@ -61,12 +61,12 @@ public class PrescripcionesFacade extends AbstractFacade<Prescripciones> {
         }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
-        json.addProperty("atencion", objeto.getAtencion() != null ? objeto.getAtencion().getId().toString() : "");
+        json.addProperty("atencion", objeto.getAtencion() != null ? objeto.getAtencion().getId().toString() : null);
         json.addProperty("medicamento", objeto.getMedicamento());
         json.addProperty("dosis", objeto.getDosis());
         json.addProperty("frecuencia", objeto.getFrecuencia());
         json.addProperty("duracion", objeto.getDuracion());
-        json.addProperty("advertencias", objeto.getAdvertencias());
+        json.addProperty("administracion", objeto.getAdministracion());
         return json;
     }
 

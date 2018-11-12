@@ -13,7 +13,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.entidades.salutem.Campos;
 import org.entidades.salutem.Parametros;
-import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
@@ -44,47 +43,18 @@ public class CamposFacade extends AbstractFacade<Campos> {
         json.addProperty("id", objeto.getId());
         json.addProperty("clasificador", objeto.getClasificador());
         json.addProperty("codigo", objeto.getCodigo());
-        json.addProperty("grupo", objeto.getGrupo() != null ? objeto.getGrupo().toString() : "");
+        json.addProperty("grupo", objeto.getGrupo() != null ? objeto.getGrupo().toString() : null);
         json.addProperty("nombre", objeto.getNombre());
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : "");
+        json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : null);
         if (objeto.getTipo().getCodigo().equals("ONE") || objeto.getTipo().getCodigo().equals("MANY") || objeto.getTipo().getCodigo().equals("LIST")) {
             if (objeto.getOpciones() != null && !objeto.getOpciones().isEmpty()) {
                 json.add("opciones", objeto.getOpcionesJson());
             }
         }
+        json.addProperty("requerido", objeto.getRequerido() ? 'S' : 'N');
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json;
-    }
-
-    public String buscarJsonb(Integer id) throws ExcepcionDeConsulta {
-        try {
-            Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o.opciones) as opciones from Campos o WHERE o.id=:id");
-            q.setParameter("id", id);
-            List<String> aux = q.getResultList();
-            if (!aux.isEmpty()) {
-                return aux.get(0);
-            }
-        } catch (Exception e) {
-            throw new ExcepcionDeConsulta(CamposFacade.class.getName(), e);
-        }
-        return null;
-    }
-
-    public void actualizarJsonb(String opciones, Integer id) throws ExcepcionDeActualizacion {
-        try {
-            if (opciones == null) {
-                em.createNativeQuery("UPDATE Campos SET opciones = null WHERE id=:id")
-                        .setParameter("id", id)
-                        .executeUpdate();
-            } else {
-                em.createNativeQuery("UPDATE Campos SET opciones = '" + opciones + "' WHERE id=:id")
-                        .setParameter("id", id)
-                        .executeUpdate();
-            }
-        } catch (Exception e) {
-            throw new ExcepcionDeActualizacion(CamposFacade.class.getName(), e);
-        }
     }
 
     public List<Campos> traerCampos(String clasificador, Parametros grupo) throws ExcepcionDeConsulta {

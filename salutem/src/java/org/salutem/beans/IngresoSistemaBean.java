@@ -35,6 +35,7 @@ public class IngresoSistemaBean implements Serializable {
     private String claveRetipeada;
     private String claveAnterior;
     private Instituciones institucion;
+    private String estilo;
     private Formulario formulario = new Formulario();
 
     @EJB
@@ -47,8 +48,13 @@ public class IngresoSistemaBean implements Serializable {
     private void iniciar() {
         seguridadBean.iniciar();
         institucion = seguridadBean.getInstitucion();
+        estilo = seguridadBean.getEstilo();
     }
 
+//    @PostConstruct
+//    private void iniciar() {
+//
+//    }
     public String login() {
         try {
             formulario.cancelar();
@@ -266,6 +272,20 @@ public class IngresoSistemaBean implements Serializable {
      */
     public void setInstitucion(Instituciones institucion) {
         this.institucion = institucion;
+    }
+
+    /**
+     * @return the estilo
+     */
+    public String getEstilo() {
+        return estilo;
+    }
+
+    /**
+     * @param estilo the estilo to set
+     */
+    public void setEstilo(String estilo) {
+        this.estilo = estilo;
     }
 
 }

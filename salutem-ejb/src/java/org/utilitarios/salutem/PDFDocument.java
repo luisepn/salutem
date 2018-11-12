@@ -147,7 +147,8 @@ public class PDFDocument {
         try {
             Recurso retorno = new Recurso(Files.readAllBytes(Paths.get(tempFile != null ? tempFile.getAbsolutePath() : "")));
             Calendar c = Calendar.getInstance();
-            retorno.setResourceName("Recurso_" + c.getTimeInMillis());
+            retorno.setResourceName("Recurso_" + c.getTimeInMillis() + ".pdf");
+            retorno.setContentType("aplication/pdf");
             return retorno;
         } catch (IOException ex) {
             Logger.getLogger(PDFDocument.class.getName()).log(Level.SEVERE, null, ex);

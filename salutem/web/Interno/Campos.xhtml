@@ -138,7 +138,7 @@
                             <ace:column  headerText="Clasificador"                                         
                                          sortBy="#{item.clasificador}" 
                                          filterBy="#{item.clasificador}"
-                                         filterOptions="#{salutemCombos.tablas}"                                          
+                                         filterOptions="#{salutemCombos.clasificadores}"                                          
                                          filterValue="#{salutemCampos.clasificador}"
                                          filterMatchMode="exact" 
                                          style="text-align: left">
@@ -208,7 +208,7 @@
                             </h:selectOneMenu>
                             <h:outputLabel value="Clasificador:" styleClass="bold"/>
                             <h:selectOneMenu value="#{salutemCampos.campo.clasificador}">
-                                <f:selectItems value="#{salutemCombos.tablas}"/>
+                                <f:selectItems value="#{salutemCombos.clasificadores}"/>
                                 <ace:ajax execute="@all"/>
                             </h:selectOneMenu>
                             <h:outputLabel value="Grupo:" styleClass="bold"/>

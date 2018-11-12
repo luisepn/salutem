@@ -15,8 +15,6 @@ public class Ojos {
     private String d;
 
     public Ojos() {
-        i = "";
-        d = "";
     }
 
     public Ojos(String izquierdo, String derecho) {

@@ -72,6 +72,7 @@ public class ProfesionalesFacade extends AbstractFacade<Profesionales> {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("persona", objeto.getPersona() != null ? objeto.getPersona().toString() : "");
+        json.addProperty("fotografia", objeto.getFotografia() != null ? objeto.getFotografia().getNombre() : null);
         json.addProperty("especialidad", objeto.getEspecialidad() != null ? objeto.getEspecialidad().toString() : "");
         json.addProperty("institucion", objeto.getInstitucion() != null ? objeto.getInstitucion().toString() : "");
         json.addProperty("descripcion", objeto.getDescripcion());

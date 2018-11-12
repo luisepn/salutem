@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Prescripciones.findByDosis", query = "SELECT p FROM Prescripciones p WHERE p.dosis = :dosis")
     , @NamedQuery(name = "Prescripciones.findByFrecuencia", query = "SELECT p FROM Prescripciones p WHERE p.frecuencia = :frecuencia")
     , @NamedQuery(name = "Prescripciones.findByDuracion", query = "SELECT p FROM Prescripciones p WHERE p.duracion = :duracion")
-    , @NamedQuery(name = "Prescripciones.findByAdvertencias", query = "SELECT p FROM Prescripciones p WHERE p.advertencias = :advertencias")
+    , @NamedQuery(name = "Prescripciones.findByAdministracion", query = "SELECT p FROM Prescripciones p WHERE p.administracion = :administracion")
     , @NamedQuery(name = "Prescripciones.findByActivo", query = "SELECT p FROM Prescripciones p WHERE p.activo = :activo")
     , @NamedQuery(name = "Prescripciones.findByCreado", query = "SELECT p FROM Prescripciones p WHERE p.creado = :creado")
     , @NamedQuery(name = "Prescripciones.findByCreadopor", query = "SELECT p FROM Prescripciones p WHERE p.creadopor = :creadopor")
@@ -58,8 +58,8 @@ public class Prescripciones implements Serializable {
     @Column(name = "duracion")
     private String duracion;
     @Size(max = 2147483647)
-    @Column(name = "advertencias")
-    private String advertencias;
+    @Column(name = "administracion")
+    private String administracion;
     @Size(max = 2147483647)
     @Column(name = "creadopor")
     private String creadopor;
@@ -192,12 +192,12 @@ public class Prescripciones implements Serializable {
         this.duracion = duracion;
     }
 
-    public String getAdvertencias() {
-        return advertencias;
+    public String getAdministracion() {
+        return administracion;
     }
 
-    public void setAdvertencias(String advertencias) {
-        this.advertencias = advertencias;
+    public void setAdministracion(String administracion) {
+        this.administracion = administracion;
     }
 
     public String getCreadopor() {

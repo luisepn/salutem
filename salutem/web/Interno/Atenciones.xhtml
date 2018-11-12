@@ -233,6 +233,10 @@
                         visible="#{salutemAtenciones.formulario.mostrar}">
                         <ace:tabSet style="width: 100%">
                             <ace:tabPane label="#{salutemSeguridad.getFechaConFormato(salutemAtenciones.atencion.fecha)}" rendered="#{salutemAtenciones.atencion ne null}">
+                                <ace:dynamicResource
+                                    mimeType="application/pdf"
+                                    resource="#{salutemAtenciones.generarPdf()}"
+                                    label="Imprimir"/>
                                 <h:panelGrid columns="2" width="100%" columnClasses="cuarenta, sesenta">
 
                                     <h:panelGrid width="100%">
@@ -356,7 +360,11 @@
                                                     binding="#{bprescripcion}">
                                                     <f:facet name="header">Prescripciones</f:facet>
                                                     <ace:column headerText="Operaciones" style="text-align: left">
-                                                        <h:commandLink value="Eliminar" action="#{salutemAtenciones.eliminarPrescripcion(bprescripcion.rowIndex)}"/>
+                                                        <ace:menuBar>
+                                                            <ace:menuItem icon="ui-icon ui-icon-trash" 
+                                                                          action="#{salutemAtenciones.eliminarPrescripcion(bprescripcion.rowIndex)}"/>
+                                                        </ace:menuBar>
+                                                        <!--<h:commandLink value="Eliminar" action="#{salutemAtenciones.eliminarPrescripcion(bprescripcion.rowIndex)}"/>-->
                                                     </ace:column>
                                                     <ace:column headerText="Medicamento" style="text-align: left">
                                                         <ace:textAreaEntry value="#{prescripcion.medicamento}" rows="1"/>
@@ -370,8 +378,8 @@
                                                     <ace:column headerText="Duración" style="text-align: left">
                                                         <ace:textAreaEntry value="#{prescripcion.duracion}" rows="1"/>
                                                     </ace:column>
-                                                    <ace:column headerText="Advertencias" style="text-align: left">
-                                                        <ace:textAreaEntry value="#{prescripcion.advertencias}" rows="1"/>
+                                                    <ace:column headerText="Administración" style="text-align: left">
+                                                        <ace:textAreaEntry value="#{prescripcion.administracion}" rows="1"/>
                                                     </ace:column>
                                                 </ace:dataTable>
                                             </h:panelGrid>
@@ -433,7 +441,13 @@
 
                                 </h:panelGrid>
                                 <ace:panel header="Atención" style="width: 100%">
-                                    <h:panelGrid columns="2" width="100%">
+                                    <h:panelGrid columns="2" width="100%" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">
+                                        <h:outputText value="Motivo:" styleClass="bold"/>
+                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.motivo}" style="width: 99%"/>
+                                        <h:outputText value="Indicaciones:" styleClass="bold"/>
+                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.indicaciones}" style="width: 99%"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2" width="100%" rendered="#{salutemAtenciones.atencion.especialidad.codigo ne 'OPT'}">
                                         <h:outputText value="Motivo:" styleClass="bold"/>
                                         <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.motivo}" style="width: 99%"/>
                                         <h:outputText value="Diagnostico:" styleClass="bold"/>
@@ -509,24 +523,18 @@
                                         </ace:dataTable>
                                     </h:panelGrid> 
                                 </h:panelGrid> 
-
-<!--                                <h:commandLink value="Imprimir" rendered="#{salutemAtenciones.formulario.imprimir}">
-                                    <ace:printer for="imprimir"/>
-                                </h:commandLink>-->
-
-                                <ace:dynamicResource
-                                    mimeType="application/pdf"
-                                    resource="#{salutemAtenciones.generarConsulta()}"
-                                    fileName="#{salutemAtenciones.generarConsulta().resourceName}"
-                                    attachment="false"
-                                    label="Imprimir"/>
-
                                 <h:panelGrid width="100%" rendered="#{!salutemAtenciones.verHistorico}"  id="imprimir">
 
                                     <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar and !salutemAtenciones.formulario.imprimir}">
                                         <ace:menuItem value="Ver Histórico" icon="ui-icon ui-icon-script"  action="#{salutemAtenciones.setVerHistorico(true)}"/>
                                         <ace:menuItem value="Ver Último" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscarUltimaAtencion()}" rendered="#{salutemAtenciones.ultimaAtencion.id ne salutemAtenciones.idUltimaAtencion}"/>
                                     </ace:menuBar>
+
+                                    <ace:dynamicResource
+                                        mimeType="application/pdf"
+                                        resource="#{salutemAtenciones.generarUltimoPdf()}"
+                                        label="Imprimir"/>
+
                                     <h:panelGrid columns="2" width="100%" columnClasses="cuarenta, sesenta" rendered="#{!salutemAtenciones.verHistorico}">
                                         <h:panelGrid width="100%">
                                             <ace:panel header="Ficha médica" rendered="#{salutemAtenciones.ultimosDatos.size() gt 0}">
@@ -698,8 +706,8 @@
                                                         <ace:column  headerText="Duración" style="text-align: right">
                                                             <h:outputText value="#{prescripciona.duracion}" style="white-space: pre-wrap"/>
                                                         </ace:column>
-                                                        <ace:column  headerText="Advertencias" style="text-align: right">
-                                                            <h:outputText value="#{prescripciona.advertencias}" style="white-space: pre-wrap"/>
+                                                        <ace:column  headerText="Administración" style="text-align: right">
+                                                            <h:outputText value="#{prescripciona.administracion}" style="white-space: pre-wrap"/>
                                                         </ace:column>
                                                     </ace:dataTable>
                                                 </h:panelGrid>
@@ -740,7 +748,13 @@
 
                                     </h:panelGrid>
                                     <ace:panel header="Atención">    
-                                        <h:panelGrid columns="2" width="100%">
+                                        <h:panelGrid columns="2" width="100%" rendered="#{salutemAtenciones.ultimaAtencion.especialidad.codigo eq 'OPT'}">
+                                            <h:outputText value="Motivo:" styleClass="bold"/>
+                                            <h:outputText value="#{salutemAtenciones.ultimaAtencion.motivo}" style="white-space: pre-wrap"/>
+                                            <h:outputText value="Indicaciones:" styleClass="bold"/>
+                                            <h:outputText value="#{salutemAtenciones.ultimaAtencion.indicaciones}" style="white-space: pre-wrap"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2" width="100%" rendered="#{salutemAtenciones.ultimaAtencion.especialidad.codigo ne 'OPT'}">
                                             <h:outputText value="Motivo:" styleClass="bold"/>
                                             <h:outputText value="#{salutemAtenciones.ultimaAtencion.motivo}" style="white-space: pre-wrap"/>
                                             <h:outputText value="Diagnostico:" styleClass="bold"/>

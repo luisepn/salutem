@@ -38,15 +38,15 @@ import org.utilitarios.salutem.RxFinal;
 @Table(name = "formulas")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Formulas.findAll", query = "SELECT f FROM Formulas f")
-    , @NamedQuery(name = "Formulas.findById", query = "SELECT f FROM Formulas f WHERE f.id = :id")
-    , @NamedQuery(name = "Formulas.findByAltura", query = "SELECT f FROM Formulas f WHERE f.altura = :altura")
-    , @NamedQuery(name = "Formulas.findByDescripcion", query = "SELECT f FROM Formulas f WHERE f.descripcion = :descripcion")
-    , @NamedQuery(name = "Formulas.findByCreado", query = "SELECT f FROM Formulas f WHERE f.creado = :creado")
-    , @NamedQuery(name = "Formulas.findByCreadopor", query = "SELECT f FROM Formulas f WHERE f.creadopor = :creadopor")
-    , @NamedQuery(name = "Formulas.findByActualizado", query = "SELECT f FROM Formulas f WHERE f.actualizado = :actualizado")
-    , @NamedQuery(name = "Formulas.findByActualizadopor", query = "SELECT f FROM Formulas f WHERE f.actualizadopor = :actualizadopor")
-    , @NamedQuery(name = "Formulas.findByActivo", query = "SELECT f FROM Formulas f WHERE f.activo = :activo")})
+    @NamedQuery(name = "Formulas.findAll", query = "SELECT f FROM Formulas f"),
+    @NamedQuery(name = "Formulas.findById", query = "SELECT f FROM Formulas f WHERE f.id = :id"),
+    @NamedQuery(name = "Formulas.findByAltura", query = "SELECT f FROM Formulas f WHERE f.altura = :altura"),
+    @NamedQuery(name = "Formulas.findByDescripcion", query = "SELECT f FROM Formulas f WHERE f.descripcion = :descripcion"),
+    @NamedQuery(name = "Formulas.findByCreado", query = "SELECT f FROM Formulas f WHERE f.creado = :creado"),
+    @NamedQuery(name = "Formulas.findByCreadopor", query = "SELECT f FROM Formulas f WHERE f.creadopor = :creadopor"),
+    @NamedQuery(name = "Formulas.findByActualizado", query = "SELECT f FROM Formulas f WHERE f.actualizado = :actualizado"),
+    @NamedQuery(name = "Formulas.findByActualizadopor", query = "SELECT f FROM Formulas f WHERE f.actualizadopor = :actualizadopor"),
+    @NamedQuery(name = "Formulas.findByActivo", query = "SELECT f FROM Formulas f WHERE f.activo = :activo")})
 public class Formulas implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -322,8 +322,20 @@ public class Formulas implements Serializable {
      */
     public List<RxFinal> getListaRxFinal() {
         listaRxFinal = new LinkedList<>();
-        listaRxFinal.add(new RxFinal("OD", esfera.getD(), cilindro.getD(), eje.getD(), adicion.getD(), distanciapupilar.getD(), agudezavisual.getD()));
-        listaRxFinal.add(new RxFinal("OI", esfera.getI(), cilindro.getI(), eje.getI(), adicion.getI(), distanciapupilar.getI(), agudezavisual.getI()));
+        listaRxFinal.add(new RxFinal("OD",
+                esfera != null ? esfera.getD() : null,
+                cilindro != null ? cilindro.getD() : null,
+                eje != null ? eje.getD() : null,
+                adicion != null ? adicion.getD() : null,
+                distanciapupilar != null ? distanciapupilar.getD() : null,
+                agudezavisual != null ? agudezavisual.getD() : null));
+        listaRxFinal.add(new RxFinal("OI",
+                esfera != null ? esfera.getI() : null,
+                cilindro != null ? cilindro.getI() : null,
+                eje != null ? eje.getI() : null,
+                adicion != null ? adicion.getI() : null,
+                distanciapupilar != null ? distanciapupilar.getI() : null,
+                agudezavisual != null ? agudezavisual.getI() : null));
         return this.listaRxFinal;
     }
 

@@ -13,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.entidades.salutem.Datos;
-import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.utilitarios.salutem.Items;
 
@@ -50,30 +49,30 @@ public class DatosFacade extends AbstractFacade<Datos> {
         json.addProperty("codigo", objeto.getCodigo());
         json.addProperty("nombre", objeto.getNombre());
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : "");
+        json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : null);
         json.addProperty("valor", "");
         if (objeto.getTipo() != null) {
             switch (objeto.getTipo().getCodigo()) {
                 case "TEXT":
-                    json.addProperty("valor", objeto.getTexto() != null ? objeto.getTexto() : "");
+                    json.addProperty("valor", objeto.getTexto());
                     break;
                 case "BOOLEAN":
-                    json.addProperty("valor", objeto.getBooleano() != null ? objeto.getBooleano() ? "S" : "N" : "");
+                    json.addProperty("valor", objeto.getBooleano() != null ? objeto.getBooleano() ? "S" : "N" : null);
                     break;
                 case "INTEGER":
-                    json.addProperty("valor", objeto.getEntero() != null ? objeto.getEntero().toString() : "");
+                    json.addProperty("valor", objeto.getEntero());
                     break;
                 case "DOUBLE":
-                    json.addProperty("valor", objeto.getDecimal() != null ? objeto.getDecimal().toString() : "");
+                    json.addProperty("valor", objeto.getDecimal());
                     break;
                 case "DATE":
-                    json.addProperty("valor", objeto.getFecha() != null ? formatoFecha.format(objeto.getFecha()) : "");
+                    json.addProperty("valor", objeto.getFecha() != null ? formatoFecha.format(objeto.getFecha()) : null);
                     break;
                 case "TIME":
-                    json.addProperty("valor", objeto.getFecha() != null ? formatoHora.format(objeto.getFecha()) : "");
+                    json.addProperty("valor", objeto.getFecha() != null ? formatoHora.format(objeto.getFecha()) : null);
                     break;
                 case "DATETIME":
-                    json.addProperty("valor", objeto.getFecha() != null ? formatoFechaHora.format(objeto.getFecha()) : "");
+                    json.addProperty("valor", objeto.getFecha() != null ? formatoFechaHora.format(objeto.getFecha()) : null);
                     break;
                 case "ONE":
                 case "MANY":
@@ -86,11 +85,12 @@ public class DatosFacade extends AbstractFacade<Datos> {
                     }
                     break;
                 case "FILE":
-                    json.addProperty("valor", objeto.getArchivo() != null ? objeto.getArchivo().getRuta() : "");
+                    json.addProperty("valor", objeto.getArchivo() != null ? objeto.getArchivo().getRuta() : null);
                     break;
             }
         }
 
+        json.addProperty("requerido", objeto.getRequerido() ? 'S' : 'N');
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json;
     }
@@ -156,35 +156,5 @@ public class DatosFacade extends AbstractFacade<Datos> {
             throw new ExcepcionDeConsulta(DatosFacade.class.getName(), e);
         }
         return null;
-    }
-
-    public String buscarJsonb(String campo, Integer id) throws ExcepcionDeConsulta {
-        try {
-            Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o." + campo + ") as opciones from Datos o WHERE o.id=:id");
-            q.setParameter("id", id);
-            List<String> aux = q.getResultList();
-            if (!aux.isEmpty()) {
-                return aux.get(0);
-            }
-        } catch (Exception e) {
-            throw new ExcepcionDeConsulta(DatosFacade.class.getName(), e);
-        }
-        return null;
-    }
-
-    public void actualizarJsonb(String campo, String valor, Integer id) throws ExcepcionDeActualizacion {
-        try {
-            if (valor == null) {
-                em.createNativeQuery("UPDATE Datos SET " + campo + " = null WHERE id=:id")
-                        .setParameter("id", id)
-                        .executeUpdate();
-            } else {
-                em.createNativeQuery("UPDATE Datos SET " + campo + " = '" + valor + "' WHERE id=:id")
-                        .setParameter("id", id)
-                        .executeUpdate();
-            }
-        } catch (Exception e) {
-            throw new ExcepcionDeActualizacion(DatosFacade.class.getName(), e);
-        }
     }
 }

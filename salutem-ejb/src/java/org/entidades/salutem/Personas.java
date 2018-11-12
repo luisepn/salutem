@@ -59,12 +59,6 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Personas.findByActualizadopor", query = "SELECT p FROM Personas p WHERE p.actualizadopor = :actualizadopor")})
 public class Personas implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "nombres")
     private String nombres;
@@ -72,46 +66,54 @@ public class Personas implements Serializable {
     @Column(name = "apellidos")
     private String apellidos;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "email")
     private String email;
     @Size(max = 2147483647)
     @Column(name = "userid")
     private String userid;
+    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "clave")
     private String clave;
     @Basic(optional = false)
-    @NotNull
+    @NotNull()
     @Size(min = 1, max = 2147483647)
     @Column(name = "cedula")
     private String cedula;
-    @Column(name = "fecha")
-    @Temporal(TemporalType.DATE)
-    private Date fecha;
     @Size(max = 2147483647)
     @Column(name = "rol")
     private String rol;
-    @Column(name = "activo")
-    private Boolean activo;
     @Size(max = 2147483647)
     @Column(name = "ocupacion")
     private String ocupacion;
     @Size(max = 2147483647)
     @Column(name = "descripcion")
     private String descripcion;
-    @Column(name = "creado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creado;
     @Size(max = 2147483647)
     @Column(name = "creadopor")
     private String creadopor;
-    @Column(name = "actualizado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date actualizado;
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "fecha")
+    @Temporal(TemporalType.DATE)
+    private Date fecha;
+    @Column(name = "activo")
+    private Boolean activo;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
     @OneToMany(mappedBy = "persona")
     private List<Pacientes> pacientesList;
     @OneToMany(mappedBy = "persona")
@@ -143,53 +145,6 @@ public class Personas implements Serializable {
         this.id = id;
     }
 
-    public String getNombres() {
-        return nombres;
-    }
-
-    public void setNombres(String nombres) {
-        this.nombres = nombres;
-    }
-
-    public String getApellidos() {
-        return apellidos;
-    }
-
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUserid() {
-        return userid;
-    }
-
-    public void setUserid(String userid) {
-        this.userid = userid;
-    }
-
-    public String getClave() {
-        return clave;
-    }
-
-    public void setClave(String clave) {
-        this.clave = clave;
-    }
-
-    public String getCedula() {
-        return cedula;
-    }
-
-    public void setCedula(String cedula) {
-        this.cedula = cedula;
-    }
 
     public Date getFecha() {
         return fecha;
@@ -199,13 +154,6 @@ public class Personas implements Serializable {
         this.fecha = fecha;
     }
 
-    public String getRol() {
-        return rol;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
-    }
 
     public Boolean getActivo() {
         return activo;
@@ -215,21 +163,6 @@ public class Personas implements Serializable {
         this.activo = activo;
     }
 
-    public String getOcupacion() {
-        return ocupacion;
-    }
-
-    public void setOcupacion(String ocupacion) {
-        this.ocupacion = ocupacion;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 
     public Date getCreado() {
         return creado;
@@ -239,13 +172,6 @@ public class Personas implements Serializable {
         this.creado = creado;
     }
 
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
 
     public Date getActualizado() {
         return actualizado;
@@ -255,13 +181,6 @@ public class Personas implements Serializable {
         this.actualizado = actualizado;
     }
 
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
-    }
 
     @XmlTransient
     public List<Pacientes> getPacientesList() {
@@ -344,6 +263,94 @@ public class Personas implements Serializable {
         LocalDate ahora = getLocalDateFromDate(fecha);
         Period periodo = Period.between(nacimiento, ahora);
         return periodo.getYears() + " años, " + periodo.getMonths() + " meses y " + periodo.getDays() + " días.";
+    }
+
+    public String getNombres() {
+        return nombres;
+    }
+
+    public void setNombres(String nombres) {
+        this.nombres = nombres;
+    }
+
+    public String getApellidos() {
+        return apellidos;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
+    }
+
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+
+    public String getOcupacion() {
+        return ocupacion;
+    }
+
+    public void setOcupacion(String ocupacion) {
+        this.ocupacion = ocupacion;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
     }
 
 }

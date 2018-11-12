@@ -82,6 +82,7 @@ public class SeguridadBean implements Serializable {
     private String formatoFecha;
     private String formatoFechaHora;
     private String directorioArchivos;
+    private String estilo;
 
     @EJB
     private UsuariosFacade ejbUsuarios;
@@ -124,6 +125,9 @@ public class SeguridadBean implements Serializable {
                         break;
                     case "DARCH":
                         directorioArchivos = p.getParametros() != null && !p.getParametros().isEmpty() ? p.getParametros().trim() : null;
+                        break;
+                    case "STYLE":
+                        estilo = p.getParametros() != null && !p.getParametros().isEmpty() ? p.getParametros().trim() : "base.css";
                         break;
                 }
             }
@@ -697,6 +701,20 @@ public class SeguridadBean implements Serializable {
      */
     public void setProfesional(Profesionales profesional) {
         this.profesional = profesional;
+    }
+
+    /**
+     * @return the estilo
+     */
+    public String getEstilo() {
+        return estilo;
+    }
+
+    /**
+     * @param estilo the estilo to set
+     */
+    public void setEstilo(String estilo) {
+        this.estilo = estilo;
     }
 
 }

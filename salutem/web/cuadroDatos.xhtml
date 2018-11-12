@@ -83,10 +83,10 @@
                     rendered="#{dato.archivo ne null and 
                                 dato.archivo.existeFichero()}"/>
                 <h:commandLink value="#{dato.archivo ne null and dato.archivo.ruta ne null ? 'Reemplazar' : 'Subir'}" action="#{dato.setVerSubir(true)}" rendered="#{!dato.verSubir}">
-                    <ace:ajax render="@all"/>
+                    <ace:ajax render="@all" execute="@all"/>
                 </h:commandLink>
                 <h:commandLink value="Ocultar" action="#{dato.setVerSubir(false)}" rendered="#{dato.verSubir}">
-                    <ace:ajax render="@all"/>
+                    <ace:ajax render="@all" execute="@all"/>
                 </h:commandLink>
 
                 <ace:fileEntry 

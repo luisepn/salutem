@@ -104,7 +104,7 @@ public class DatosBean implements Serializable {
         d.setOrdengrupo(c.getGrupo().getId());
         d.setGrupo(c.getGrupo().getNombre());
         d.setTipo(c.getTipo());
-        d.setOpciones(ejbCampos.buscarJsonb(c.getId()));
+        d.setOpciones(ejbCampos.buscarJsonb("opciones", c.getId()));
         d.setRequerido(c.getRequerido());
         d.setActivo(c.getActivo());
         if (nuevo) {

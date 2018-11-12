@@ -64,6 +64,7 @@ public class CombosBean implements Serializable {
     private Profesionales profesional;
 
     private String clasificador;
+    private String tabla;
 
     @EJB
     private InstitucionesFacade ejbInstituciones;
@@ -645,9 +646,39 @@ public class CombosBean implements Serializable {
         return items;
     }
 
+    public SelectItem[] getClasificadores() {
+        SelectItem[] items;
+        items = new SelectItem[24];
+        items[0] = new SelectItem("A", "--Seleccione uno--");
+        items[1] = new SelectItem("Archivos", "Archivos");
+        items[2] = new SelectItem("Atenciones", "Atenciones");
+        items[3] = new SelectItem("Campos", "Campos");
+        items[4] = new SelectItem("Citas", "Citas");
+        items[5] = new SelectItem("Consultas", "Consultas");
+        items[6] = new SelectItem("Datos", "Datos");
+        items[7] = new SelectItem("Direcciones", "Direcciones");
+        items[8] = new SelectItem("Formulas", "Formulas");
+        items[9] = new SelectItem("Horarios", "Horarios");
+        items[10] = new SelectItem("Horas", "Horas");
+        items[11] = new SelectItem("Instituciones", "Instituciones");
+        items[12] = new SelectItem("Maestros", "Maestros");
+        items[13] = new SelectItem("Materiales", "Materiales");
+        items[14] = new SelectItem("Menus", "Menus");
+        items[15] = new SelectItem("Ordenes", "Ordenes");
+        items[16] = new SelectItem("Pacientes", "Pacientes");
+        items[17] = new SelectItem("Parametros", "Parametros");
+        items[18] = new SelectItem("Perfiles", "Perfiles");
+        items[19] = new SelectItem("Personas", "Personas");
+        items[20] = new SelectItem("Prescripciones", "Prescripciones");
+        items[21] = new SelectItem("Profesionales", "Profesionales");
+        items[22] = new SelectItem("Usuarios", "Usuarios");
+        items[23] = new SelectItem("Logs", "Logs");
+        return items;
+    }
+
     public SelectItem[] getTablas() {
         SelectItem[] items;
-        if (clasificador == null) {
+        if (tabla == null) {
             items = new SelectItem[24];
             items[0] = new SelectItem("A", "--Seleccione uno--");
             items[1] = new SelectItem("Archivos", "Archivos");
@@ -674,11 +705,11 @@ public class CombosBean implements Serializable {
             items[22] = new SelectItem("Usuarios", "Usuarios");
             items[23] = new SelectItem("Logs", "Logs");
         } else {
-            switch (clasificador) {
+            switch (tabla) {
                 case "Atenciones":
                     items = new SelectItem[6];
                     items[0] = new SelectItem("A", "--Seleccione uno--");
-                    items[1] = new SelectItem("Atenciones", clasificador);
+                    items[1] = new SelectItem("Atenciones", tabla);
                     items[2] = new SelectItem("Datos", "Datos");
                     items[3] = new SelectItem("Formulas", "Formulas");
                     items[4] = new SelectItem("Ordenes", "Ordenes");
@@ -690,14 +721,14 @@ public class CombosBean implements Serializable {
                     items[1] = new SelectItem("Archivos", "Archivos");
                     items[2] = new SelectItem("Direcciones", "Direcciones");
                     items[3] = new SelectItem("Personas", "Personas");
-                    items[4] = new SelectItem("Pacientes", clasificador);
+                    items[4] = new SelectItem("Pacientes", tabla);
                     break;
                 case "Personas":
                     items = new SelectItem[4];
                     items[0] = new SelectItem("A", "--Seleccione uno--");
                     items[1] = new SelectItem("Archivos", "Archivos");
                     items[2] = new SelectItem("Direcciones", "Direcciones");
-                    items[3] = new SelectItem("Personas", clasificador);
+                    items[3] = new SelectItem("Personas", tabla);
                     break;
 
                 case "Profesionales":
@@ -706,11 +737,11 @@ public class CombosBean implements Serializable {
                     items[1] = new SelectItem("Archivos", "Archivos");
                     items[2] = new SelectItem("Direcciones", "Direcciones");
                     items[3] = new SelectItem("Personas", "Personas");
-                    items[4] = new SelectItem("Profesionales", clasificador);
+                    items[4] = new SelectItem("Profesionales", tabla);
                     break;
                 default:
                     items = new SelectItem[1];
-                    items[0] = new SelectItem(clasificador, clasificador);
+                    items[0] = new SelectItem(tabla, tabla);
                     break;
             }
         }
@@ -841,5 +872,19 @@ public class CombosBean implements Serializable {
      */
     public void setProfesional(Profesionales profesional) {
         this.profesional = profesional;
+    }
+
+    /**
+     * @return the tabla
+     */
+    public String getTabla() {
+        return tabla;
+    }
+
+    /**
+     * @param tabla the tabla to set
+     */
+    public void setTabla(String tabla) {
+        this.tabla = tabla;
     }
 }

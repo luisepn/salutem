@@ -35,32 +35,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "archivos")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Archivos.findAll", query = "SELECT a FROM Archivos a")
-    , @NamedQuery(name = "Archivos.findById", query = "SELECT a FROM Archivos a WHERE a.id = :id")
-    , @NamedQuery(name = "Archivos.findByClasificador", query = "SELECT a FROM Archivos a WHERE a.clasificador = :clasificador")
-    , @NamedQuery(name = "Archivos.findByIdentificador", query = "SELECT a FROM Archivos a WHERE a.identificador = :identificador")
-    , @NamedQuery(name = "Archivos.findByNombre", query = "SELECT a FROM Archivos a WHERE a.nombre = :nombre")
-    , @NamedQuery(name = "Archivos.findByTipo", query = "SELECT a FROM Archivos a WHERE a.tipo = :tipo")
-    , @NamedQuery(name = "Archivos.findByRuta", query = "SELECT a FROM Archivos a WHERE a.ruta = :ruta")
-    , @NamedQuery(name = "Archivos.findByDescripcion", query = "SELECT a FROM Archivos a WHERE a.descripcion = :descripcion")
-    , @NamedQuery(name = "Archivos.findByCreado", query = "SELECT a FROM Archivos a WHERE a.creado = :creado")
-    , @NamedQuery(name = "Archivos.findByCreadopor", query = "SELECT a FROM Archivos a WHERE a.creadopor = :creadopor")
-    , @NamedQuery(name = "Archivos.findByActualizado", query = "SELECT a FROM Archivos a WHERE a.actualizado = :actualizado")
-    , @NamedQuery(name = "Archivos.findByActualizadopor", query = "SELECT a FROM Archivos a WHERE a.actualizadopor = :actualizadopor")
-    , @NamedQuery(name = "Archivos.findByActivo", query = "SELECT a FROM Archivos a WHERE a.activo = :activo")})
+    @NamedQuery(name = "Archivos.findAll", query = "SELECT a FROM Archivos a"),
+    @NamedQuery(name = "Archivos.findById", query = "SELECT a FROM Archivos a WHERE a.id = :id"),
+    @NamedQuery(name = "Archivos.findByClasificador", query = "SELECT a FROM Archivos a WHERE a.clasificador = :clasificador"),
+    @NamedQuery(name = "Archivos.findByIdentificador", query = "SELECT a FROM Archivos a WHERE a.identificador = :identificador"),
+    @NamedQuery(name = "Archivos.findByNombre", query = "SELECT a FROM Archivos a WHERE a.nombre = :nombre"),
+    @NamedQuery(name = "Archivos.findByTipo", query = "SELECT a FROM Archivos a WHERE a.tipo = :tipo"),
+    @NamedQuery(name = "Archivos.findByRuta", query = "SELECT a FROM Archivos a WHERE a.ruta = :ruta"),
+    @NamedQuery(name = "Archivos.findByDescripcion", query = "SELECT a FROM Archivos a WHERE a.descripcion = :descripcion"),
+    @NamedQuery(name = "Archivos.findByCreado", query = "SELECT a FROM Archivos a WHERE a.creado = :creado"),
+    @NamedQuery(name = "Archivos.findByCreadopor", query = "SELECT a FROM Archivos a WHERE a.creadopor = :creadopor"),
+    @NamedQuery(name = "Archivos.findByActualizado", query = "SELECT a FROM Archivos a WHERE a.actualizado = :actualizado"),
+    @NamedQuery(name = "Archivos.findByActualizadopor", query = "SELECT a FROM Archivos a WHERE a.actualizadopor = :actualizadopor"),
+    @NamedQuery(name = "Archivos.findByActivo", query = "SELECT a FROM Archivos a WHERE a.activo = :activo")})
 public class Archivos implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
     @Size(max = 2147483647)
     @Column(name = "clasificador")
     private String clasificador;
-    @Column(name = "identificador")
-    private Integer identificador;
     @Size(max = 2147483647)
     @Column(name = "nombre")
     private String nombre;
@@ -73,18 +65,27 @@ public class Archivos implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "descripcion")
     private String descripcion;
-    @Column(name = "creado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creado;
     @Size(max = 2147483647)
     @Column(name = "creadopor")
     private String creadopor;
-    @Column(name = "actualizado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date actualizado;
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "identificador")
+    private Integer identificador;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
     @Column(name = "activo")
     private Boolean activo;
     @OneToOne(mappedBy = "logotipo")
@@ -112,13 +113,6 @@ public class Archivos implements Serializable {
         this.id = id;
     }
 
-    public String getClasificador() {
-        return clasificador;
-    }
-
-    public void setClasificador(String clasificador) {
-        this.clasificador = clasificador;
-    }
 
     public Integer getIdentificador() {
         return identificador;
@@ -128,37 +122,6 @@ public class Archivos implements Serializable {
         this.identificador = identificador;
     }
 
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public String getRuta() {
-        return ruta;
-    }
-
-    public void setRuta(String ruta) {
-        this.ruta = ruta;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
 
     public Date getCreado() {
         return creado;
@@ -168,13 +131,6 @@ public class Archivos implements Serializable {
         this.creado = creado;
     }
 
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
 
     public Date getActualizado() {
         return actualizado;
@@ -184,13 +140,6 @@ public class Archivos implements Serializable {
         this.actualizado = actualizado;
     }
 
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
-    }
 
     public Boolean getActivo() {
         return activo;
@@ -272,10 +221,7 @@ public class Archivos implements Serializable {
     }
 
     public String traerNombre() {
-        if (tipo.equalsIgnoreCase("application/pdf")
-                || tipo.contains("image/")
-                || tipo.contains("audio/")
-                || tipo.contains("video/")) {
+        if (tipo.equalsIgnoreCase("application/pdf") || tipo.contains("image/")) {
             return null;
         } else {
             return nombre;
@@ -294,6 +240,62 @@ public class Archivos implements Serializable {
      */
     public void setArchivo(byte[] archivo) {
         this.archivo = archivo;
+    }
+
+    public String getClasificador() {
+        return clasificador;
+    }
+
+    public void setClasificador(String clasificador) {
+        this.clasificador = clasificador;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getRuta() {
+        return ruta;
+    }
+
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
     }
 
 }

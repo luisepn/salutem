@@ -27,6 +27,8 @@ import javax.ejb.EJB;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import org.controladores.salutemlogs.AsincronoLogFacade;
+import org.entidades.salutem.Campos;
+import org.entidades.salutem.Datos;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.excepciones.salutem.ExcepcionDeCreacion;
@@ -79,6 +81,31 @@ public abstract class AbstractFacade<T> implements Serializable {
         return new String[]{anterior.toString(), nuevo.toString()};
     }
 
+    private T traerAnterior(Integer id) {
+        if (id == 0) {
+            return null;
+        }
+        T anterior = getEntityManager().find(entityClass, id);
+        try {
+            switch (entityClass.getSimpleName()) {
+                case "Campos":
+                    Campos c = (Campos) anterior;
+                    c.setOpciones(buscarJsonb("opciones", c.getId()));
+                    return (T) c;
+                case "Datos":
+                    Datos d = (Datos) anterior;
+                    d.setOpciones(buscarJsonb("opciones", d.getId()));
+                    d.setSeleccion(buscarJsonb("seleccion", d.getId()));
+                    return (T) d;
+                default:
+                    return anterior;
+            }
+        } catch (ExcepcionDeConsulta ex) {
+            Logger.getLogger(AbstractFacade.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     /**
      *
      * @param entity Entidad a ser creada
@@ -87,8 +114,7 @@ public abstract class AbstractFacade<T> implements Serializable {
      * @throws org.excepciones.salutem.ExcepcionDeCreacion
      */
     public void crear(T entity, String usuario, String ip) throws ExcepcionDeCreacion {
-        T anterior = getEntityManager().find(entityClass, entity.hashCode());
-        String cambios[] = getCambios(getJson(anterior), getJson(entity));
+        String cambios[] = getCambios(null, getJson(entity));
         try {
             getEntityManager().persist(entity);
             getEntityManager().flush();
@@ -108,7 +134,7 @@ public abstract class AbstractFacade<T> implements Serializable {
      * @throws org.excepciones.salutem.ExcepcionDeActualizacion
      */
     public void actualizar(T entity, String usuario, String ip) throws ExcepcionDeActualizacion {
-        T anterior = getEntityManager().find(entityClass, entity.hashCode());
+        T anterior = traerAnterior(entity.hashCode());
         String cambios[] = getCambios(getJson(anterior), getJson(entity));
         try {
             getEntityManager().merge(entity);
@@ -130,8 +156,8 @@ public abstract class AbstractFacade<T> implements Serializable {
      * @throws org.excepciones.salutem.ExcepcionDeEliminacion
      */
     public void eliminar(T entity, String usuario, String ip) throws ExcepcionDeEliminacion {
-        T anterior = getEntityManager().find(entityClass, entity.hashCode());
-        String cambios[] = getCambios(getJson(anterior), getJson(entity));
+        T anterior = traerAnterior(entity.hashCode());
+        String cambios[] = getCambios(getJson(anterior), null);
         try {
             entity = getEntityManager().merge(entity);
             getEntityManager().remove(entity);
@@ -319,6 +345,36 @@ public abstract class AbstractFacade<T> implements Serializable {
             }
         } catch (Exception e) {
             throw new ExcepcionDeConsulta(table, e);
+        }
+    }
+
+    public String buscarJsonb(String campo, Integer id) throws ExcepcionDeConsulta {
+        try {
+            Query q = getEntityManager().createNativeQuery("SELECT jsonb_pretty(o." + campo + ") as json from " + entityClass.getSimpleName() + " o WHERE o.id=:id");
+            q.setParameter("id", id);
+            List<String> aux = q.getResultList();
+            if (!aux.isEmpty()) {
+                return aux.get(0);
+            }
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(AbstractFacade.class.getName(), e);
+        }
+        return null;
+    }
+
+    public void actualizarJsonb(String campo, String opciones, Integer id) throws ExcepcionDeActualizacion {
+        try {
+            if (opciones == null) {
+                getEntityManager().createNativeQuery("UPDATE " + entityClass.getSimpleName() + " SET " + campo + " = null WHERE id=:id")
+                        .setParameter("id", id)
+                        .executeUpdate();
+            } else {
+                getEntityManager().createNativeQuery("UPDATE " + entityClass.getSimpleName() + " SET " + campo + " = '" + opciones + "' WHERE id=:id")
+                        .setParameter("id", id)
+                        .executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new ExcepcionDeActualizacion(CamposFacade.class.getName(), e);
         }
     }
 }

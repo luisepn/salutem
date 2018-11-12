@@ -60,8 +60,8 @@ public class CitasFacade extends AbstractFacade<Citas> {
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
         json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
-        json.addProperty("profesional", objeto.getProfesional() != null ? objeto.getProfesional().toString() : "");
-        json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : "");
+        json.addProperty("profesional", objeto.getProfesional() != null ? objeto.getProfesional().toString() : null);
+        json.addProperty("paciente", objeto.getPaciente() != null ? objeto.getPaciente().toString() : null);
         json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json;

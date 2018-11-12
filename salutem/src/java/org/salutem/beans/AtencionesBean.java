@@ -119,8 +119,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 if (!IMantenimiento.validarPerfil(perfil, 'R')) {
                     return null;
                 } else {
-                    if (getCombosBean().getProfesional() != null) {
-                        map.put("profesional.id", getCombosBean().getProfesional().getId().toString());
+                    if (combosBean.getProfesional() != null) {
+                        map.put("profesional.id", combosBean.getProfesional().getId().toString());
                     }
                     return cargar(i, i1, scs, map);
                 }
@@ -197,8 +197,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         atenciones = new LazyDataModel<Atenciones>() {
             @Override
             public List<Atenciones> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
-                if (getCombosBean().getProfesional() != null) {
-                    map.put("profesional.id", getCombosBean().getProfesional().getId().toString());
+                if (combosBean.getProfesional() != null) {
+                    map.put("profesional.id", combosBean.getProfesional().getId().toString());
                 }
                 return cargar(i, i1, scs, map);
             }
@@ -444,6 +444,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     }
 
     public String crearPrescripcion() {
+        grabarPrescripciones();
         Prescripciones prescripcion = new Prescripciones();
         prescripcion.setAtencion(atencion);
         prescripcion.setCreado(new Date());
@@ -465,15 +466,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         try {
             if (prescripciones != null) {
                 for (Prescripciones p : prescripciones) {
-
-                    if (p.getMedicamento() != null || !p.getMedicamento().isEmpty()
-                            || p.getDosis() != null || !p.getDosis().isEmpty()
-                            || p.getFrecuencia() != null || !p.getFrecuencia().isEmpty()
-                            || p.getDuracion() != null || !p.getDuracion().isEmpty()
-                            || p.getAdvertencias() != null || !p.getAdvertencias().isEmpty()) {
-
-                    }
-
                     p.setActualizado(new Date());
                     p.setActualizadopor(seguridadBean.getLogueado().getUserid());
                     ejbPrescripciones.actualizar(p, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
@@ -670,17 +662,21 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         return null;
     }
 
-    public Recurso generarConsulta() {
+    public Recurso generarPdf() {
         if (atencion != null) {
-            return generarConsulta(atencion, datosBean.getDatos(), prescripciones, lensometria, agudezavisualsincristal, agudezavisualconcristal, listaRxFinal);
-        }
-        if (ultimaAtencion != null) {
-            return generarConsulta(ultimaAtencion, ultimosDatos, ultimasPrescripciones, ultimaLensometria, ultimaAgudezavisualsincristal, ultimaAgudezavisualconcristal, ultimaListaRxFinal);
+            return generarPdf(atencion, datosBean.getDatos(), prescripciones, lensometria, agudezavisualsincristal, agudezavisualconcristal, listaRxFinal);
         }
         return null;
     }
 
-    private Recurso generarConsulta(Atenciones atencion, List<Datos> datos, List<Prescripciones> prescripciones, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal, List<RxFinal> listaRxFinal) {
+    public Recurso generarUltimoPdf() {
+        if (ultimaAtencion != null) {
+            return generarPdf(ultimaAtencion, ultimosDatos, ultimasPrescripciones, ultimaLensometria, ultimaAgudezavisualsincristal, ultimaAgudezavisualconcristal, ultimaListaRxFinal);
+        }
+        return null;
+    }
+
+    private Recurso generarPdf(Atenciones atencion, List<Datos> datos, List<Prescripciones> prescripciones, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal, List<RxFinal> listaRxFinal) {
 
         PDFDocument pdf = new PDFDocument(atencion.getPaciente().toString(), "A5", false);
 
@@ -712,7 +708,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             campos.add(new PDFCampo("Ocupación:", 'L', "IB"));
             campos.add(new PDFCampo(atencion.getPaciente().getPersona().getOcupacion(), 'L'));
             campos.add(new PDFCampo("Género:", 'L', "IB"));
-            campos.add(new PDFCampo(atencion.getPaciente().getPersona().getGenero().getNombre(), 'L'));
+            campos.add(new PDFCampo(atencion.getPaciente().getPersona().getGenero() != null ? atencion.getPaciente().getPersona().getGenero().getNombre() : "", 'L'));
             pdf.agregarTabla(null, campos, new float[]{10, 40, 10, 40}, 'C', new PDFCampo("Datos del Paciente", 'L', "IB", 4, 1, 8, "B"), false);
         }
         campos = new LinkedList<>();
@@ -847,21 +843,38 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 titulos.add(new PDFCampo("Dosis", "IB", "RLTB"));
                 titulos.add(new PDFCampo("Frecuencia", "IB", "RLTB"));
                 titulos.add(new PDFCampo("Duración", "IB", "RLTB"));
-                titulos.add(new PDFCampo("Advertencia", "IB", "RLTB"));
+                titulos.add(new PDFCampo("Administración", "IB", "RLTB"));
 
                 for (Prescripciones p : prescripciones) {
-                    campos.add(new PDFCampo(p.getMedicamento(), "", "RLTB"));
-                    campos.add(new PDFCampo(p.getDosis(), "", "RLTB"));
-                    campos.add(new PDFCampo(p.getFrecuencia(), "", "RLTB"));
-                    campos.add(new PDFCampo(p.getDuracion(), "", "RLTB"));
-                    campos.add(new PDFCampo(p.getAdvertencias(), "", "RLTB"));
+                    if ((p.getMedicamento() != null && !p.getMedicamento().trim().isEmpty())
+                            || (p.getDosis() != null && !p.getDosis().trim().isEmpty())
+                            || (p.getFrecuencia() != null && !p.getFrecuencia().trim().isEmpty())
+                            || (p.getDuracion() != null && !p.getDuracion().trim().isEmpty())
+                            || (p.getAdministracion() != null && !p.getAdministracion().trim().isEmpty())) {
+                        campos.add(new PDFCampo(p.getMedicamento(), "", "RLTB"));
+                        campos.add(new PDFCampo(p.getDosis(), "", "RLTB"));
+                        campos.add(new PDFCampo(p.getFrecuencia(), "", "RLTB"));
+                        campos.add(new PDFCampo(p.getDuracion(), "", "RLTB"));
+                        campos.add(new PDFCampo(p.getAdministracion(), "", "RLTB"));
+
+                    }
                 }
                 pdf.agregarTabla(titulos, campos, new float[]{20, 20, 20, 20, 20}, 'C', new PDFCampo("Prescripciones", 'L', "IB", 5, 1, 8, "B"), false);
             }
         }
         campos = new LinkedList<>();
-        campos.add(new PDFCampo("Observaciones:", 'L', "IB"));
-        campos.add(new PDFCampo(atencion.getObservaciones(), 'L'));
+
+        if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
+            campos.add(new PDFCampo("Observaciones:", 'L', "IB"));
+            campos.add(new PDFCampo(atencion.getObservaciones(), 'L'));
+            campos.add(new PDFCampo("Indicaciones:", 'L', "IB"));
+            campos.add(new PDFCampo(atencion.getIndicaciones(), 'L'));
+        } else {
+            campos.add(new PDFCampo("Diagnóstico:", 'L', "IB"));
+            campos.add(new PDFCampo(atencion.getDiagnostico(), 'L'));
+            campos.add(new PDFCampo("Observaciones:", 'L', "IB"));
+            campos.add(new PDFCampo(atencion.getObservaciones(), 'L'));
+        }
         pdf.agregarTabla(null, campos, new float[]{10, 90}, 'C', null, false);
 
         return pdf.traerRecurso();

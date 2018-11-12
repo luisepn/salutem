@@ -130,12 +130,12 @@ public class HistorialBean implements Serializable {
 
                         param = new HashMap();
                         param.put("atencion", registro);
-                        Integer formula = (Integer) ejbTransacciones.buscar("id", "Formulas", "atencion=:atencion", param, true);
+                        Integer formula = (int) ejbTransacciones.buscar("id", "Formulas", "atencion=:atencion", param, true);
                         List<Integer> prescripciones = (List<Integer>) ejbTransacciones.buscar("id", "Prescripciones", "atencion=:atencion", param, false);
                         
                         param = new HashMap();
                         param.put("formula", formula);
-                        Integer orden = (Integer) ejbTransacciones.buscar("id", "Ordenes", "formula=:formula", param, true);
+                        Integer orden = (int) ejbTransacciones.buscar("id", "Ordenes", "formula=:formula", param, true);
 
                         switch (tablaAuxiliar) {
                             case "Atenciones":
@@ -183,7 +183,7 @@ public class HistorialBean implements Serializable {
                     case "Personas":
                         param = new HashMap();
                         param.put("direccion", registro);
-                        int direccion = (Integer) ejbTransacciones.buscar("id", tabla, "direccion=:direccion", param, true);
+                        int direccion = (int) ejbTransacciones.buscar("id", tabla, "direccion=:direccion", param, true);
 
                         switch (tablaAuxiliar) {
                             case "Direcciones":
@@ -212,8 +212,8 @@ public class HistorialBean implements Serializable {
                     case "Profesionales":
                         param = new HashMap();
                         param.put("id", registro);
-                        int persona = (Integer) ejbTransacciones.buscar("persona", tabla, "id=:id", param, true);
-                        int archivo = (Integer) ejbTransacciones.buscar("fotografia", tabla, "id=:id", param, true);
+                        int persona = (int) ejbTransacciones.buscar("persona", tabla, "id=:id", param, true);
+                        int archivo = (int) ejbTransacciones.buscar("fotografia", tabla, "id=:id", param, true);
                         param.put("id", persona);
                         direccion = (Integer) ejbTransacciones.buscar("direccion", "Personas", "id=:id", param, true);
 
@@ -288,7 +288,7 @@ public class HistorialBean implements Serializable {
             if (endIndex > total) {
                 endIndex = total;
             }
-            getLista().setRowCount(total);
+            lista.setRowCount(total);
             String order;
             if (scs.length == 0) {
                 order = "o.fecha desc";
@@ -316,7 +316,7 @@ public class HistorialBean implements Serializable {
             calendar.set(Calendar.MILLISECOND, 999);
             fechaFin = calendar.getTime();
         }
-        combosBean.setClasificador(null);
+        combosBean.setTabla(null);
         lista = new LazyDataModel<Historial>() {
             @Override
             public List<Historial> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -329,7 +329,7 @@ public class HistorialBean implements Serializable {
     public String buscar(String tabla, Integer registro) {
         titulo = "Tabla = " + tabla + "; ID = " + registro;
         this.tabla = tabla;
-        combosBean.setClasificador(tabla);
+        combosBean.setTabla(tabla);
         this.registro = registro;
         lista = new LazyDataModel<Historial>() {
             @Override

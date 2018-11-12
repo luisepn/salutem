@@ -71,8 +71,8 @@ public class MaterialesFacade extends AbstractFacade<Materiales> {
         json.addProperty("codigo", objeto.getCodigo());
         json.addProperty("nombre", objeto.getNombre());
         json.addProperty("descripcion", objeto.getDescripcion());
-        json.addProperty("foco", objeto.getFoco() != null ? objeto.getFoco().toString() : "");
-        json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : "");
+        json.addProperty("foco", objeto.getFoco() != null ? objeto.getFoco().toString() : null);
+        json.addProperty("tipo", objeto.getTipo() != null ? objeto.getTipo().toString() : null);
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json;
     }
