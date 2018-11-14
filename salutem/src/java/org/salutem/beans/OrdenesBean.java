@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -282,6 +283,21 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     @Override
     public String cancelar() {
         formulario.cancelar();
+        return null;
+    }
+
+    public void seleccionar(ValueChangeEvent event) {
+        Ordenes o = (Ordenes) ordenes.getRowData();
+        o.setSeleccionado((Boolean) event.getNewValue());
+        try {
+            ejbOrdenes.actualizar(o, null, null);
+        } catch (ExcepcionDeActualizacion ex) {
+            Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public String enviar() {
+//        ejbOrdenes.
         return null;
     }
 

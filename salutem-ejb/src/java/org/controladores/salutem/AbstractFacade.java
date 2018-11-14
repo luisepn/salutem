@@ -142,7 +142,6 @@ public abstract class AbstractFacade<T> implements Serializable {
         } catch (Exception e) {
             throw new ExcepcionDeActualizacion(entity.toString(), e);
         } finally {
-
             ejbLogs.log(entity.hashCode(), cambios, entity.getClass().getSimpleName(), 'U', usuario, ip);
             Logger.getLogger(this.entityClass.getName()).log(Level.INFO, "Entidad Actualizada: {0}", entity.hashCode() + " " + entity.toString());
         }

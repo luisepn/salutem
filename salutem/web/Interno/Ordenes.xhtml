@@ -30,6 +30,9 @@
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemOrdenes.buscar()}"/>
                                 <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.crear()}"/>
+                                <ace:menuItem value="Enviar" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.enviar()}"/>
+                                <ace:menuItem value="Por Entregar" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.receptar()}"/>
+                                <ace:menuItem value="Entregar" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.entregar()}"/>
                             </ace:menuBar>
                             <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemOrdenes.formulario.mostrar}"/>
                         </h:panelGrid>
@@ -78,6 +81,11 @@
                                 modal="true"/>
                             <ace:column headerText="Registro" style="text-align: right; width: 50px;">
                                 <h:outputText value="#{row+1}"/>
+                            </ace:column>
+                            <ace:column headerText="Seleccionado" sortBy="#{item.seleccionado}" style="text-align: right; width: 50px;">
+                                <h:selectBooleanCheckbox value="#{item.seleccionado}" valueChangeListener="#{salutemOrdenes.seleccionar}">
+                                    <ace:ajax execute="@all"/>
+                                </h:selectBooleanCheckbox>
                             </ace:column>
                             <ace:column headerText="Operaciones" style="text-align: left; width: 50px;">
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
