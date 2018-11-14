@@ -86,7 +86,7 @@
                             </ace:column>
                             <ace:column headerText="Fotografía" >
                                 <ace:graphicImage value="#{item.fotografia.traerImagen()}" 
-                                                  name="#{item.id}_#{item.fotografia.nombre}" id="resourceGraphicImage" style="height: 50px;" 
+                                                  name="#{salutemArchivos.traerTextoMilisegundos()}_#{item.fotografia.nombre}" id="resourceGraphicImage" style="height: 50px;" 
                                                   rendered="#{item.fotografia ne null and item.fotografia.ruta ne null}"/>
                             </ace:column> 
                             <ace:column headerText="Cédula de Identidad" sortBy="#{item.persona.cedula}" style="text-align: left" 

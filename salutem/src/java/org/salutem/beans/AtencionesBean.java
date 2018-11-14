@@ -81,8 +81,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private Formulas formula;
     private Ordenes orden;
 
-    private Instituciones laboratorio;
-
     private Atenciones atencion;
     private Boolean conCita;
     private Citas cita;
@@ -572,7 +570,10 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
             listaRxFinal = formula.getListaRxFinal();
             orden = formula.getOrden();
-            laboratorio = orden != null ? orden.getLaboratorio() : null;
+
+            if (orden == null) {
+                crearOrden();
+            }
         }
     }
 
@@ -598,15 +599,8 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             Mensajes.advertencia("Primero debe ser generada y grabada una receta optalmológica");
             return null;
         }
-        if (laboratorio == null) {
-            Mensajes.advertencia("Seleccione un laboratorio");
-            return null;
-        }
-        if (orden == null) {
-            orden = new Ordenes();
-        }
         try {
-            orden.setLaboratorio(laboratorio);
+            orden = new Ordenes();
             orden.setFormula(formula);
             orden.setCreado(new Date());
             orden.setCreadopor(seguridadBean.getLogueado().getUserid());
@@ -631,11 +625,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         }
         if (orden.getLaboratorio() == null) {
             Mensajes.advertencia("Seleccione un laboratorio");
-            orden.setLaboratorio(laboratorio);
             return null;
         }
         try {
-            orden.setLaboratorio(laboratorio);
             orden.setFormula(formula);
             orden.setActualizado(atencion.getCreado());
             orden.setActualizadopor(atencion.getCreadopor());
@@ -664,19 +656,19 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
     public Recurso generarPdf() {
         if (atencion != null) {
-            return generarPdf(atencion, datosBean.getDatos(), prescripciones, lensometria, agudezavisualsincristal, agudezavisualconcristal, listaRxFinal);
+            return generarPdf(atencion, datosBean.getDatos(), prescripciones);
         }
         return null;
     }
 
     public Recurso generarUltimoPdf() {
         if (ultimaAtencion != null) {
-            return generarPdf(ultimaAtencion, ultimosDatos, ultimasPrescripciones, ultimaLensometria, ultimaAgudezavisualsincristal, ultimaAgudezavisualconcristal, ultimaListaRxFinal);
+            return generarPdf(ultimaAtencion, ultimosDatos, ultimasPrescripciones);
         }
         return null;
     }
 
-    private Recurso generarPdf(Atenciones atencion, List<Datos> datos, List<Prescripciones> prescripciones, Ojos lensometria, Ojos agudezavisualsincristal, Ojos agudezavisualconcristal, List<RxFinal> listaRxFinal) {
+    private Recurso generarPdf(Atenciones atencion, List<Datos> datos, List<Prescripciones> prescripciones) {
 
         PDFDocument pdf = new PDFDocument(atencion.getPaciente().toString(), "A5", false);
 
@@ -777,10 +769,16 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             pdf.agregarTabla(titulos, campos, new float[]{10, 30, 60}, 'C', new PDFCampo(atencion.getEspecialidad().getNombre(), 'L', "IB", 3, 1, 8, "TB"), false);
 
         }
-        //Receta Optometría
-        if (atencion.getEspecialidad().getCodigo().equals("OPT")) {
+        //Receta Optometría 
+        Formulas f = atencion.getFormula();
+        if (atencion.getEspecialidad().getCodigo().equals("OPT") && f != null) {
 
-            if (lensometria != null && agudezavisualsincristal != null && agudezavisualconcristal != null) {
+            Ojos l = f.getLensometria();
+            Ojos avsc = f.getAgudezavisualsincristal();
+            Ojos avcc = f.getAgudezavisualconcristal();
+            List<RxFinal> lrx = f.getListaRxFinal();
+
+            if (l != null && avsc != null && avcc != null) {
 
                 titulos = new LinkedList<>();
                 titulos.add(new PDFCampo("LENSOMETRÍA", 'C', "IB", 2, 1, 8, "RLTB"));
@@ -790,28 +788,28 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 campos = new LinkedList<>();
 
                 campos.add(new PDFCampo("OD", "IB", "L"));
-                campos.add(new PDFCampo(lensometria.getD(), "", "R"));
+                campos.add(new PDFCampo(l.getD(), "", "R"));
 
                 campos.add(new PDFCampo("OD", "IB", "L"));
-                campos.add(new PDFCampo(lensometria.getI(), "", "R"));
+                campos.add(new PDFCampo(l.getI(), "", "R"));
 
                 campos.add(new PDFCampo("OD", "IB", "L"));
-                campos.add(new PDFCampo(agudezavisualsincristal.getD(), "", "R"));
+                campos.add(new PDFCampo(avsc.getD(), "", "R"));
 
                 campos.add(new PDFCampo("OI", "IB", "LB"));
-                campos.add(new PDFCampo(agudezavisualsincristal.getI(), "", "RB"));
+                campos.add(new PDFCampo(avsc.getI(), "", "RB"));
 
                 campos.add(new PDFCampo("OI", "IB", "LB"));
-                campos.add(new PDFCampo(agudezavisualconcristal.getD(), "", "RB"));
+                campos.add(new PDFCampo(avcc.getD(), "", "RB"));
 
                 campos.add(new PDFCampo("OI", "IB", "LB"));
-                campos.add(new PDFCampo(agudezavisualconcristal.getI(), "", "RB"));
+                campos.add(new PDFCampo(avcc.getI(), "", "RB"));
 
                 pdf.agregarTabla(titulos, campos, new float[]{new Float(16.66), new Float(16.66), new Float(16.66), new Float(16.66), new Float(16.66), new Float(16.66)}, 'C', new PDFCampo("Rx", 'L', "IB", 6, 1, 8, "B"), false);
 
             }
 
-            if (listaRxFinal != null) {
+            if (lrx != null) {
                 titulos = new LinkedList<>();
                 titulos.add(new PDFCampo("", "IB", "RLTB"));
                 titulos.add(new PDFCampo("Esfera", "IB", "RLTB"));
@@ -822,7 +820,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 titulos.add(new PDFCampo("AV", "IB", "RLTB"));
 
                 campos = new LinkedList<>();
-                for (RxFinal rx : listaRxFinal) {
+                for (RxFinal rx : lrx) {
                     campos.add(new PDFCampo(rx.getOjo(), "IB", "RLTB"));
                     campos.add(new PDFCampo(rx.getEsfera(), "", "RLTB"));
                     campos.add(new PDFCampo(rx.getCilindro(), "", "RLTB"));
@@ -868,7 +866,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             campos.add(new PDFCampo("Observaciones:", 'L', "IB"));
             campos.add(new PDFCampo(atencion.getObservaciones(), 'L'));
             campos.add(new PDFCampo("Indicaciones:", 'L', "IB"));
-            campos.add(new PDFCampo(atencion.getIndicaciones(), 'L'));
+            campos.add(new PDFCampo(f != null ? atencion.getFormula().getIndicaciones() : "", 'L'));
         } else {
             campos.add(new PDFCampo("Diagnóstico:", 'L', "IB"));
             campos.add(new PDFCampo(atencion.getDiagnostico(), 'L'));
@@ -1074,20 +1072,6 @@ public class AtencionesBean implements Serializable, IMantenimiento {
      */
     public void setOrden(Ordenes orden) {
         this.orden = orden;
-    }
-
-    /**
-     * @return the laboratorio
-     */
-    public Instituciones getLaboratorio() {
-        return laboratorio;
-    }
-
-    /**
-     * @param laboratorio the laboratorio to set
-     */
-    public void setLaboratorio(Instituciones laboratorio) {
-        this.laboratorio = laboratorio;
     }
 
     /**

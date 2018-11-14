@@ -12,7 +12,7 @@
         <h:panelGrid style="text-align: center;">
             <ace:graphicImage 
                 value="#{salutemArchivos.archivo.traerImagen()}" 
-                name="#{salutemArchivos.archivo.id}_#{salutemArchivos.archivo.nombre}" 
+                name="#{salutemArchivos.traerTextoMilisegundos()}_#{salutemArchivos.archivo.nombre}" 
                 rendered="#{salutemArchivos.archivo ne null 
                             and salutemArchivos.archivo.existeFichero()}"
                 style="height: 100px;"/>

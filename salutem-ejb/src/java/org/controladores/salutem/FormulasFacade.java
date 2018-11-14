@@ -119,7 +119,7 @@ public class FormulasFacade extends AbstractFacade<Formulas> {
         }
 
         json.addProperty("altura", objeto.getAltura());
-        json.addProperty("descripcion", objeto.getDescripcion());
+        json.addProperty("indicaciones", objeto.getIndicaciones());
         json.addProperty("atencion", objeto.getAtencion() != null ? objeto.getAtencion().getId() : null);
         json.addProperty("material", objeto.getMaterial() != null ? objeto.getMaterial().toString() : null);
         json.addProperty("tratamiento", objeto.getTratamiento() != null ? objeto.getTratamiento().toString() : null);

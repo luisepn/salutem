@@ -32,18 +32,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "atenciones")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Atenciones.findAll", query = "SELECT a FROM Atenciones a")
-    , @NamedQuery(name = "Atenciones.findById", query = "SELECT a FROM Atenciones a WHERE a.id = :id")
-    , @NamedQuery(name = "Atenciones.findByFecha", query = "SELECT a FROM Atenciones a WHERE a.fecha = :fecha")
-    , @NamedQuery(name = "Atenciones.findByMotivo", query = "SELECT a FROM Atenciones a WHERE a.motivo = :motivo")
-    , @NamedQuery(name = "Atenciones.findByDiagnostico", query = "SELECT a FROM Atenciones a WHERE a.diagnostico = :diagnostico")
-    , @NamedQuery(name = "Atenciones.findByObservaciones", query = "SELECT a FROM Atenciones a WHERE a.observaciones = :observaciones")
-    , @NamedQuery(name = "Atenciones.findByActivo", query = "SELECT a FROM Atenciones a WHERE a.activo = :activo")
-    , @NamedQuery(name = "Atenciones.findByCreado", query = "SELECT a FROM Atenciones a WHERE a.creado = :creado")
-    , @NamedQuery(name = "Atenciones.findByCreadopor", query = "SELECT a FROM Atenciones a WHERE a.creadopor = :creadopor")
-    , @NamedQuery(name = "Atenciones.findByActualizado", query = "SELECT a FROM Atenciones a WHERE a.actualizado = :actualizado")
-    , @NamedQuery(name = "Atenciones.findByActualizadopor", query = "SELECT a FROM Atenciones a WHERE a.actualizadopor = :actualizadopor")
-    , @NamedQuery(name = "Atenciones.findByIndicaciones", query = "SELECT a FROM Atenciones a WHERE a.indicaciones = :indicaciones")})
+    @NamedQuery(name = "Atenciones.findAll", query = "SELECT a FROM Atenciones a"),
+    @NamedQuery(name = "Atenciones.findById", query = "SELECT a FROM Atenciones a WHERE a.id = :id"),
+    @NamedQuery(name = "Atenciones.findByFecha", query = "SELECT a FROM Atenciones a WHERE a.fecha = :fecha"),
+    @NamedQuery(name = "Atenciones.findByMotivo", query = "SELECT a FROM Atenciones a WHERE a.motivo = :motivo"),
+    @NamedQuery(name = "Atenciones.findByDiagnostico", query = "SELECT a FROM Atenciones a WHERE a.diagnostico = :diagnostico"),
+    @NamedQuery(name = "Atenciones.findByObservaciones", query = "SELECT a FROM Atenciones a WHERE a.observaciones = :observaciones"),
+    @NamedQuery(name = "Atenciones.findByActivo", query = "SELECT a FROM Atenciones a WHERE a.activo = :activo"),
+    @NamedQuery(name = "Atenciones.findByCreado", query = "SELECT a FROM Atenciones a WHERE a.creado = :creado"),
+    @NamedQuery(name = "Atenciones.findByCreadopor", query = "SELECT a FROM Atenciones a WHERE a.creadopor = :creadopor"),
+    @NamedQuery(name = "Atenciones.findByActualizado", query = "SELECT a FROM Atenciones a WHERE a.actualizado = :actualizado"),
+    @NamedQuery(name = "Atenciones.findByActualizadopor", query = "SELECT a FROM Atenciones a WHERE a.actualizadopor = :actualizadopor")})
 public class Atenciones implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -78,9 +77,6 @@ public class Atenciones implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
-    @Size(max = 2147483647)
-    @Column(name = "indicaciones")
-    private String indicaciones;
     @OneToOne(mappedBy = "atencion")
     private Formulas formula;
     @JoinColumn(name = "cita", referencedColumnName = "id")
@@ -182,15 +178,7 @@ public class Atenciones implements Serializable {
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
     }
-
-    public String getIndicaciones() {
-        return indicaciones;
-    }
-
-    public void setIndicaciones(String indicaciones) {
-        this.indicaciones = indicaciones;
-    }
-
+    
     public Formulas getFormula() {
         return formula;
     }
@@ -255,5 +243,5 @@ public class Atenciones implements Serializable {
     public String toString() {
         return "org.entidades.salutem.Atenciones[ id=" + id + " ]";
     }
-    
+
 }

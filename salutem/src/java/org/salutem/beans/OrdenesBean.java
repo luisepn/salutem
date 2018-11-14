@@ -16,7 +16,10 @@ import org.controladores.salutem.OrdenesFacade;
 import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Ordenes;
 import org.entidades.salutem.Perfiles;
+import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
+import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.excepciones.salutem.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
@@ -34,6 +37,7 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     private LazyDataModel<Ordenes> ordenes;
     private Ordenes orden;
     private int laboratorio;
+    private int estado;
     private Perfiles perfil;
 
     private Instituciones institucion;
@@ -42,6 +46,8 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     private Date finRegistro;
     private Date inicioEnvio;
     private Date finEnvio;
+    private Date inicioRecepcion;
+    private Date finRecepcion;
     private Date inicioEntrega;
     private Date finEntrega;
 
@@ -82,6 +88,9 @@ public class OrdenesBean implements Serializable, IMantenimiento {
                         where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
                         parameters.put(clave.replaceAll("\\.", ""), id);
                     }
+                } else if (clave.equals("estado")) {
+                    estado = Integer.parseInt(valor);
+                } else if (clave.contains("toString")) {
                 } else {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
@@ -101,7 +110,6 @@ public class OrdenesBean implements Serializable, IMantenimiento {
                 parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
                 parameters.put("finactualizado", seguridadBean.getFinActualizado());
             }
-
             if (inicioRegistro != null && finRegistro != null) {
                 where += " and o.registro between :inicioRegistro and :finRegistro";
                 parameters.put("inicioRegistro", inicioRegistro);
@@ -112,10 +120,30 @@ public class OrdenesBean implements Serializable, IMantenimiento {
                 parameters.put("inicioEnvio", inicioEnvio);
                 parameters.put("finEnvio", finEnvio);
             }
+            if (inicioRecepcion != null && finRecepcion != null) {
+                where += " and o.recepcion between :inicioRecepcion and :finRecepcion";
+                parameters.put("inicioRecepcion", inicioRecepcion);
+                parameters.put("finRecepcion", finRecepcion);
+            }
             if (inicioEntrega != null && finEntrega != null) {
                 where += " and o.entrega between :inicioEntrega and :finEntrega";
                 parameters.put("inicioEntrega", inicioEntrega);
                 parameters.put("finEntrega", finEntrega);
+            }
+
+            switch (estado) {
+                case 0:
+                    where += " and o.registro is not null and o.envio is null and o.recepcion is null and o.entrega is null";
+                    break;
+                case 1:
+                    where += " and o.registro is not null and o.envio is not null and o.recepcion is null and o.entrega is null";
+                    break;
+                case 2:
+                    where += " and o.registro is not null and o.envio is not null and o.recepcion is not null and o.entrega is null";
+                    break;
+                case 3:
+                    where += " and o.registro is not null and o.envio is not null and o.recepcion is not null and o.entrega is not null";
+                    break;
             }
 
             int total = ejbOrdenes.contar(where, parameters);
@@ -160,42 +188,101 @@ public class OrdenesBean implements Serializable, IMantenimiento {
 
     @Override
     public String crear() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+            return null;
+        }
+        orden = new Ordenes();
+        orden.setActivo(Boolean.TRUE);
+        formulario.insertar();
+        return null;
     }
 
     @Override
     public String editar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!IMantenimiento.validarPerfil(perfil, 'U')) {
+            return null;
+        }
+        orden = (Ordenes) ordenes.getRowData();
+        formulario.editar();
+        return null;
     }
 
     @Override
     public String eliminar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!IMantenimiento.validarPerfil(perfil, 'D')) {
+            return null;
+        }
+        orden = (Ordenes) ordenes.getRowData();
+        formulario.eliminar();
+        return null;
     }
 
     @Override
     public boolean validar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
     public String insertar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+            return null;
+        }
+        if (validar()) {
+            return null;
+        }
+        try {
+            orden.setCreado(new Date());
+            orden.setCreadopor(seguridadBean.getLogueado().getUserid());
+            orden.setActualizado(orden.getCreado());
+            orden.setActualizadopor(orden.getCreadopor());
+            ejbOrdenes.crear(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+        } catch (ExcepcionDeCreacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        formulario.cancelar();
+        return null;
     }
 
     @Override
     public String grabar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!IMantenimiento.validarPerfil(perfil, 'U')) {
+            return null;
+        }
+        if (validar()) {
+            return null;
+        }
+        try {
+            orden.setActualizado(new Date());
+            orden.setActualizadopor(seguridadBean.getLogueado().getUserid());
+            ejbOrdenes.actualizar(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+        } catch (ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        formulario.cancelar();
+        return null;
     }
 
     @Override
     public String remover() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!IMantenimiento.validarPerfil(perfil, 'D')) {
+            return null;
+        }
+        try {
+            ejbOrdenes.eliminar(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+        } catch (ExcepcionDeEliminacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        formulario.cancelar();
+        return null;
     }
 
     @Override
     public String cancelar() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        formulario.cancelar();
+        return null;
     }
 
     /**
@@ -241,34 +328,6 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @return the perfil
-     */
-    public Perfiles getPerfil() {
-        return perfil;
-    }
-
-    /**
-     * @param perfil the perfil to set
-     */
-    public void setPerfil(Perfiles perfil) {
-        this.perfil = perfil;
-    }
-
-    /**
-     * @return the institucion
-     */
-    public Instituciones getInstitucion() {
-        return institucion;
-    }
-
-    /**
-     * @param institucion the institucion to set
-     */
-    public void setInstitucion(Instituciones institucion) {
-        this.institucion = institucion;
-    }
-
-    /**
      * @return the orden
      */
     public Ordenes getOrden() {
@@ -294,6 +353,48 @@ public class OrdenesBean implements Serializable, IMantenimiento {
      */
     public void setLaboratorio(int laboratorio) {
         this.laboratorio = laboratorio;
+    }
+
+    /**
+     * @return the estado
+     */
+    public int getEstado() {
+        return estado;
+    }
+
+    /**
+     * @param estado the estado to set
+     */
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
+    /**
+     * @return the perfil
+     */
+    public Perfiles getPerfil() {
+        return perfil;
+    }
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void setPerfil(Perfiles perfil) {
+        this.perfil = perfil;
+    }
+
+    /**
+     * @return the institucion
+     */
+    public Instituciones getInstitucion() {
+        return institucion;
+    }
+
+    /**
+     * @param institucion the institucion to set
+     */
+    public void setInstitucion(Instituciones institucion) {
+        this.institucion = institucion;
     }
 
     /**
@@ -353,6 +454,34 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     }
 
     /**
+     * @return the inicioRecepcion
+     */
+    public Date getInicioRecepcion() {
+        return inicioRecepcion;
+    }
+
+    /**
+     * @param inicioRecepcion the inicioRecepcion to set
+     */
+    public void setInicioRecepcion(Date inicioRecepcion) {
+        this.inicioRecepcion = inicioRecepcion;
+    }
+
+    /**
+     * @return the finRecepcion
+     */
+    public Date getFinRecepcion() {
+        return finRecepcion;
+    }
+
+    /**
+     * @param finRecepcion the finRecepcion to set
+     */
+    public void setFinRecepcion(Date finRecepcion) {
+        this.finRecepcion = finRecepcion;
+    }
+
+    /**
      * @return the inicioEntrega
      */
     public Date getInicioEntrega() {
@@ -379,4 +508,5 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     public void setFinEntrega(Date finEntrega) {
         this.finEntrega = finEntrega;
     }
+
 }

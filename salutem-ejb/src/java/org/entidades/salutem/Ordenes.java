@@ -32,32 +32,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "ordenes")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Ordenes.findAll", query = "SELECT o FROM Ordenes o")
-    , @NamedQuery(name = "Ordenes.findById", query = "SELECT o FROM Ordenes o WHERE o.id = :id")
-    , @NamedQuery(name = "Ordenes.findByFactura", query = "SELECT o FROM Ordenes o WHERE o.factura = :factura")
-    , @NamedQuery(name = "Ordenes.findByRegistro", query = "SELECT o FROM Ordenes o WHERE o.registro = :registro")
-    , @NamedQuery(name = "Ordenes.findByEnvio", query = "SELECT o FROM Ordenes o WHERE o.envio = :envio")
-    , @NamedQuery(name = "Ordenes.findByEntrega", query = "SELECT o FROM Ordenes o WHERE o.entrega = :entrega")
-    , @NamedQuery(name = "Ordenes.findByDescripcion", query = "SELECT o FROM Ordenes o WHERE o.descripcion = :descripcion")
-    , @NamedQuery(name = "Ordenes.findByCreado", query = "SELECT o FROM Ordenes o WHERE o.creado = :creado")
-    , @NamedQuery(name = "Ordenes.findByCreadopor", query = "SELECT o FROM Ordenes o WHERE o.creadopor = :creadopor")
-    , @NamedQuery(name = "Ordenes.findByActualizado", query = "SELECT o FROM Ordenes o WHERE o.actualizado = :actualizado")
-    , @NamedQuery(name = "Ordenes.findByActualizadopor", query = "SELECT o FROM Ordenes o WHERE o.actualizadopor = :actualizadopor")
-    , @NamedQuery(name = "Ordenes.findByActivo", query = "SELECT o FROM Ordenes o WHERE o.activo = :activo")})
+    @NamedQuery(name = "Ordenes.findAll", query = "SELECT o FROM Ordenes o"),
+    @NamedQuery(name = "Ordenes.findById", query = "SELECT o FROM Ordenes o WHERE o.id = :id"),
+    @NamedQuery(name = "Ordenes.findByFactura", query = "SELECT o FROM Ordenes o WHERE o.factura = :factura"),
+    @NamedQuery(name = "Ordenes.findByRegistro", query = "SELECT o FROM Ordenes o WHERE o.registro = :registro"),
+    @NamedQuery(name = "Ordenes.findByEnvio", query = "SELECT o FROM Ordenes o WHERE o.envio = :envio"),
+    @NamedQuery(name = "Ordenes.findByRecepcion", query = "SELECT o FROM Ordenes o WHERE o.recepcion = :recepcion"),
+    @NamedQuery(name = "Ordenes.findByEntrega", query = "SELECT o FROM Ordenes o WHERE o.entrega = :entrega"),
+    @NamedQuery(name = "Ordenes.findByDescripcion", query = "SELECT o FROM Ordenes o WHERE o.descripcion = :descripcion"),
+    @NamedQuery(name = "Ordenes.findBySeleccionado", query = "SELECT o FROM Ordenes o WHERE o.seleccionado = :seleccionado"),
+    @NamedQuery(name = "Ordenes.findByCreado", query = "SELECT o FROM Ordenes o WHERE o.creado = :creado"),
+    @NamedQuery(name = "Ordenes.findByCreadopor", query = "SELECT o FROM Ordenes o WHERE o.creadopor = :creadopor"),
+    @NamedQuery(name = "Ordenes.findByActualizado", query = "SELECT o FROM Ordenes o WHERE o.actualizado = :actualizado"),
+    @NamedQuery(name = "Ordenes.findByActualizadopor", query = "SELECT o FROM Ordenes o WHERE o.actualizadopor = :actualizadopor"),
+    @NamedQuery(name = "Ordenes.findByActivo", query = "SELECT o FROM Ordenes o WHERE o.activo = :activo")})
 public class Ordenes implements Serializable {
-
-    @Size(max = 2147483647)
-    @Column(name = "factura")
-    private String factura;
-    @Size(max = 2147483647)
-    @Column(name = "descripcion")
-    private String descripcion;
-    @Size(max = 2147483647)
-    @Column(name = "creadopor")
-    private String creadopor;
-    @Size(max = 2147483647)
-    @Column(name = "actualizadopor")
-    private String actualizadopor;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -65,21 +54,38 @@ public class Ordenes implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Size(max = 2147483647)
+    @Column(name = "factura")
+    private String factura;
     @Column(name = "registro")
     @Temporal(TemporalType.TIMESTAMP)
     private Date registro;
     @Column(name = "envio")
     @Temporal(TemporalType.TIMESTAMP)
     private Date envio;
+    @Column(name = "recepcion")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date recepcion;
     @Column(name = "entrega")
     @Temporal(TemporalType.TIMESTAMP)
     private Date entrega;
+    @Size(max = 2147483647)
+    @Column(name = "descripcion")
+    private String descripcion;
+    @Column(name = "seleccionado")
+    private Boolean seleccionado;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
+    @Size(max = 2147483647)
+    @Column(name = "creadopor")
+    private String creadopor;
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
+    @Size(max = 2147483647)
+    @Column(name = "actualizadopor")
+    private String actualizadopor;
     @Column(name = "activo")
     private Boolean activo;
     @JoinColumn(name = "formula", referencedColumnName = "id")
@@ -104,6 +110,14 @@ public class Ordenes implements Serializable {
         this.id = id;
     }
 
+    public String getFactura() {
+        return factura;
+    }
+
+    public void setFactura(String factura) {
+        this.factura = factura;
+    }
+
     public Date getRegistro() {
         return registro;
     }
@@ -120,12 +134,36 @@ public class Ordenes implements Serializable {
         this.envio = envio;
     }
 
+    public Date getRecepcion() {
+        return recepcion;
+    }
+
+    public void setRecepcion(Date recepcion) {
+        this.recepcion = recepcion;
+    }
+
     public Date getEntrega() {
         return entrega;
     }
 
     public void setEntrega(Date entrega) {
         this.entrega = entrega;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Boolean getSeleccionado() {
+        return seleccionado;
+    }
+
+    public void setSeleccionado(Boolean seleccionado) {
+        this.seleccionado = seleccionado;
     }
 
     public Date getCreado() {
@@ -136,12 +174,28 @@ public class Ordenes implements Serializable {
         this.creado = creado;
     }
 
+    public String getCreadopor() {
+        return creadopor;
+    }
+
+    public void setCreadopor(String creadopor) {
+        this.creadopor = creadopor;
+    }
+
     public Date getActualizado() {
         return actualizado;
     }
 
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
+    }
+
+    public String getActualizadopor() {
+        return actualizadopor;
+    }
+
+    public void setActualizadopor(String actualizadopor) {
+        this.actualizadopor = actualizadopor;
     }
 
     public Boolean getActivo() {
@@ -190,39 +244,33 @@ public class Ordenes implements Serializable {
 
     @Override
     public String toString() {
-        return "org.entidades.salutem.Ordenes[ id=" + id + " ]";
+        switch (getEstado()) {
+            case 0:
+                return "Registrado";
+            case 1:
+                return "Enviado";
+            case 2:
+                return "Por Entregar";
+            case 3:
+                return "Entregado";
+            default:
+                return "S/E";
+        }
     }
 
-    public String getFactura() {
-        return factura;
+    public int getEstado() {
+        if (registro != null && envio == null && recepcion == null && entrega == null) {
+            return 0;
+        }
+        if (registro != null && envio != null && recepcion == null && entrega == null) {
+            return 1;
+        }
+        if (registro != null && envio != null && recepcion != null && entrega == null) {
+            return 2;
+        }
+        if (registro != null && envio != null && recepcion != null && entrega != null) {
+            return 3;
+        }
+        return -1;
     }
-
-    public void setFactura(String factura) {
-        this.factura = factura;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getCreadopor() {
-        return creadopor;
-    }
-
-    public void setCreadopor(String creadopor) {
-        this.creadopor = creadopor;
-    }
-
-    public String getActualizadopor() {
-        return actualizadopor;
-    }
-
-    public void setActualizadopor(String actualizadopor) {
-        this.actualizadopor = actualizadopor;
-    }
-
 }

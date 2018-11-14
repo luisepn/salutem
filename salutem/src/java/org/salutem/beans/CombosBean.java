@@ -748,6 +748,16 @@ public class CombosBean implements Serializable {
         return items;
     }
 
+    public SelectItem[] getEstadosOrdenes() {
+        SelectItem[] items = new SelectItem[5];
+        items[0] = new SelectItem(-1, "--Seleccione uno--");
+        items[1] = new SelectItem(0, "Registrado");
+        items[2] = new SelectItem(1, "Enviado");
+        items[3] = new SelectItem(2, "Por Entregar");
+        items[4] = new SelectItem(3, "Entregado");
+        return items;
+    }
+
     /**
      * @return the modulo
      */

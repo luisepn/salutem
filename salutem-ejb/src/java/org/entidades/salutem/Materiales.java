@@ -167,7 +167,7 @@ public class Materiales implements Serializable {
 
     @Override
     public String toString() {
-        return "org.entidades.salutem.Materiales[ id=" + id + " ]";
+        return nombre;
     }
 
     @XmlTransient

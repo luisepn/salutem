@@ -41,7 +41,7 @@ import org.utilitarios.salutem.RxFinal;
     @NamedQuery(name = "Formulas.findAll", query = "SELECT f FROM Formulas f"),
     @NamedQuery(name = "Formulas.findById", query = "SELECT f FROM Formulas f WHERE f.id = :id"),
     @NamedQuery(name = "Formulas.findByAltura", query = "SELECT f FROM Formulas f WHERE f.altura = :altura"),
-    @NamedQuery(name = "Formulas.findByDescripcion", query = "SELECT f FROM Formulas f WHERE f.descripcion = :descripcion"),
+    @NamedQuery(name = "Formulas.findByIndicaciones", query = "SELECT a FROM Formulas a WHERE a.indicaciones = :indicaciones"),
     @NamedQuery(name = "Formulas.findByCreado", query = "SELECT f FROM Formulas f WHERE f.creado = :creado"),
     @NamedQuery(name = "Formulas.findByCreadopor", query = "SELECT f FROM Formulas f WHERE f.creadopor = :creadopor"),
     @NamedQuery(name = "Formulas.findByActualizado", query = "SELECT f FROM Formulas f WHERE f.actualizado = :actualizado"),
@@ -86,8 +86,8 @@ public class Formulas implements Serializable {
     @Column(name = "altura")
     private String altura;
     @Size(max = 2147483647)
-    @Column(name = "descripcion")
-    private String descripcion;
+    @Column(name = "indicaciones")
+    private String indicaciones;
     @Column(name = "creado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date creado;
@@ -212,12 +212,12 @@ public class Formulas implements Serializable {
         this.altura = altura;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getIndicaciones() {
+        return indicaciones;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setIndicaciones(String indicaciones) {
+        this.indicaciones = indicaciones;
     }
 
     public Date getCreado() {

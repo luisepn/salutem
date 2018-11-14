@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -267,6 +268,10 @@ public class ArchivosBean implements Serializable {
             }
         };
         return retorno;
+    }
+
+    public String traerTextoMilisegundos() {
+        return String.valueOf(Calendar.getInstance().getTimeInMillis());
     }
 
     /**

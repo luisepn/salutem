@@ -302,6 +302,28 @@
                                                     </ace:column>
                                                 </ace:dataTable>
                                             </h:panelGrid>
+                                            <h:panelGrid columns="4" width="100%">
+                                                <h:outputLabel value="Foco:" styleClass="bold"/>
+                                                <h:selectOneMenu value="#{salutemCombos.foco}">
+                                                    <f:selectItems value="#{salutemCombos.focos}"/>
+                                                    <ace:ajax execute="@all"/>
+                                                </h:selectOneMenu>
+                                                <h:outputLabel value="Tipo Material:" styleClass="bold"/>
+                                                <h:selectOneMenu value="#{salutemCombos.tipo}">
+                                                    <f:selectItems value="#{salutemCombos.tipoMaterial}"/>
+                                                    <ace:ajax execute="@all"/>
+                                                </h:selectOneMenu>
+                                                <h:outputLabel value="Material:" styleClass="bold"/>
+                                                <h:selectOneMenu value="#{salutemAtenciones.formula.material}">
+                                                    <f:selectItems value="#{salutemCombos.materiales}" />
+                                                </h:selectOneMenu>
+                                                <h:outputLabel value="Tratamiento:" styleClass="bold"/>
+                                                <h:selectOneMenu value="#{salutemAtenciones.formula.tratamiento}">
+                                                    <f:selectItems value="#{salutemCombos.tratamientos}" />
+                                                </h:selectOneMenu>
+                                                <h:outputLabel value="Altura:" styleClass="bold"/>
+                                                <ace:textEntry value="#{salutemAtenciones.formula.altura}"/>
+                                            </h:panelGrid>
                                         </ace:panel>
                                         <ace:panel header="Ficha médica" rendered="#{salutemDatos.datos.size() gt 0}">
                                             <h:panelGrid width="100%">
@@ -386,13 +408,7 @@
                                         </ace:panel>
                                         <ace:panel header="Orden de Laboratorio" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">
                                             <h:panelGrid width="100%">
-                                                <h:panelGrid columns="2" rendered="#{salutemAtenciones.orden eq null or salutemAtenciones.orden.id eq null}">
-                                                    <h:outputLabel value="Laboratorio" styleClass="bold"/>
-                                                    <h:selectOneMenu value="#{salutemAtenciones.laboratorio}">
-                                                        <f:selectItems value="#{salutemCombos.laboratorios}" />
-                                                    </h:selectOneMenu>
-                                                </h:panelGrid>
-                                                <h:panelGrid columns="2" rendered="#{salutemAtenciones.orden ne null and salutemAtenciones.orden.id ne null}">
+                                                <h:panelGrid columns="2">
                                                     <h:outputLabel value="Laboratorio" styleClass="bold"/>
                                                     <h:selectOneMenu value="#{salutemAtenciones.orden.laboratorio}">
                                                         <f:selectItems value="#{salutemCombos.laboratorios}" />
@@ -445,7 +461,7 @@
                                         <h:outputText value="Motivo:" styleClass="bold"/>
                                         <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.motivo}" style="width: 99%"/>
                                         <h:outputText value="Indicaciones:" styleClass="bold"/>
-                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.atencion.indicaciones}" style="width: 99%"/>
+                                        <h:inputTextarea cols="150" rows="4" value="#{salutemAtenciones.formula.indicaciones}" style="width: 99%"/>
                                     </h:panelGrid>
                                     <h:panelGrid columns="2" width="100%" rendered="#{salutemAtenciones.atencion.especialidad.codigo ne 'OPT'}">
                                         <h:outputText value="Motivo:" styleClass="bold"/>
@@ -752,7 +768,7 @@
                                             <h:outputText value="Motivo:" styleClass="bold"/>
                                             <h:outputText value="#{salutemAtenciones.ultimaAtencion.motivo}" style="white-space: pre-wrap"/>
                                             <h:outputText value="Indicaciones:" styleClass="bold"/>
-                                            <h:outputText value="#{salutemAtenciones.ultimaAtencion.indicaciones}" style="white-space: pre-wrap"/>
+                                            <h:outputText value="#{salutemAtenciones.ultimaFormula.indicaciones}" style="white-space: pre-wrap"/>
                                         </h:panelGrid>
                                         <h:panelGrid columns="2" width="100%" rendered="#{salutemAtenciones.ultimaAtencion.especialidad.codigo ne 'OPT'}">
                                             <h:outputText value="Motivo:" styleClass="bold"/>
