@@ -607,6 +607,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             orden.setActualizado(atencion.getCreado());
             orden.setActualizadopor(atencion.getCreadopor());
             orden.setActivo(Boolean.TRUE);
+            orden.setSeleccionado(Boolean.TRUE);
             orden.setRegistro(orden.getCreado());
 
             ejbOrdenes.crear(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());

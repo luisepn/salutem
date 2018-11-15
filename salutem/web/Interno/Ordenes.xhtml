@@ -30,9 +30,18 @@
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemOrdenes.buscar()}"/>
                                 <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.crear()}"/>
-                                <ace:menuItem value="Enviar" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.enviar()}"/>
-                                <ace:menuItem value="Por Entregar" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.receptar()}"/>
-                                <ace:menuItem value="Entregar" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.entregar()}"/>
+
+                                <ace:menuItem value="#{salutemOrdenes.estado eq 1 ? 'Registrado' 
+                                                       : salutemOrdenes.estado eq 2 ? 'Enviado'
+                                                       : salutemOrdenes.estado eq 3 ? 'Por Entregar'
+                                                       :''}" icon="ui-icon ui-icon-seek-prev" action="#{salutemOrdenes.actualizar(false)}"
+                                              rendered="#{salutemOrdenes.estado gt 0 and salutemOrdenes.totalSeleccionados gt 0}"/>
+
+                                <ace:menuItem value="#{salutemOrdenes.estado eq 0 ? 'Enviar' 
+                                                       : salutemOrdenes.estado eq 1 ? 'Receptar' 
+                                                       : salutemOrdenes.estado eq 2 ? 'Entregar'
+                                                       : ''}" icon="ui-icon ui-icon-seek-next" action="#{salutemOrdenes.actualizar(true)}"
+                                              rendered="#{salutemOrdenes.estado gt -1 and salutemOrdenes.totalSeleccionados gt 0}"/>
                             </ace:menuBar>
                             <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemOrdenes.formulario.mostrar}"/>
                         </h:panelGrid>
@@ -41,8 +50,7 @@
                 <ace:panel 
                     header="Resultado Búsqueda"
                     closable="false"
-                    toggleable="true"
-                    >
+                    toggleable="true">
                     <h:panelGrid columns="3" styleClass="centeredPanelGrid">
                         <h:outputLabel  value="Exportar a:"/>
                         <h:selectOneRadio  value="#{salutemOrdenes.formulario.tipo}" required="true">
@@ -230,6 +238,35 @@
                                           rendered="#{salutemOrdenes.formulario.eliminar}"/>
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemOrdenes.cancelar()}"/>
+                        </ace:menuBar>
+                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+                    </h:panelGrid>
+                </ace:dialog>
+                <ace:dialog 
+                    header="#{salutemSeguridad.titulo}"
+                    closable="false"
+                    modal="true"
+                    draggable="false"
+                    showEffect="clip"
+                    hideEffect="fade"
+                    rendered="#{salutemOrdenes.formularioSeleccion.mostrar}"
+                    visible="#{salutemOrdenes.formularioSeleccion.mostrar}">
+                    <h:panelGroup>
+                        <h:panelGrid columns="2">
+                            <h:outputLabel value="Descripción:" for="descripcion" />
+                            <ace:textAreaEntry id="descripcion" value="#{salutemOrdenes.descripcion}" cols="30" rows="2"/>
+                        </h:panelGrid>
+                    </h:panelGroup>
+                    <h:panelGrid columns="2" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="#{salutemOrdenes.estadoSiguiente eq 0 ? 'Registrar' 
+                                                   : salutemOrdenes.estadoSiguiente eq 1 ? 'Enviar' 
+                                                   : salutemOrdenes.estadoSiguiente eq 2 ? 'Receptar'
+                                                   : salutemOrdenes.estadoSiguiente eq 3 ? 'Entregar'
+                                                   : ''}" icon="ui-icon ui-icon-disk"
+                                          action="#{salutemOrdenes.actualizar()}"/>
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemOrdenes.cancelarSeleccion()}"/>
                         </ace:menuBar>
                         <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
                     </h:panelGrid>

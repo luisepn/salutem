@@ -35,10 +35,11 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     private SeguridadBean seguridadBean;
 
     private Formulario formulario = new Formulario();
+    private Formulario formularioSeleccion = new Formulario();
     private LazyDataModel<Ordenes> ordenes;
     private Ordenes orden;
     private int laboratorio;
-    private int estado;
+    private int estado = -1;
     private Perfiles perfil;
 
     private Instituciones institucion;
@@ -51,6 +52,12 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     private Date finRecepcion;
     private Date inicioEntrega;
     private Date finEntrega;
+    private int totalSeleccionados;
+
+    private String descripcion;
+    private int estadoSiguiente = 0;
+    private Map parameters;
+    private String where;
 
     @EJB
     private OrdenesFacade ejbOrdenes;
@@ -76,8 +83,8 @@ public class OrdenesBean implements Serializable, IMantenimiento {
 
     public List<Ordenes> carga(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
-            Map parameters = new HashMap();
-            String where = " o.activo=:activo";
+            parameters = new HashMap();
+            where = " o.activo=:activo";
             parameters.put("activo", seguridadBean.getVerActivos());
 
             for (Map.Entry e : map.entrySet()) {
@@ -89,9 +96,8 @@ public class OrdenesBean implements Serializable, IMantenimiento {
                         where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
                         parameters.put(clave.replaceAll("\\.", ""), id);
                     }
-                } else if (clave.equals("estado")) {
-                    estado = Integer.parseInt(valor);
                 } else if (clave.contains("toString")) {
+                    estado = Integer.parseInt(valor);
                 } else {
                     where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
@@ -148,6 +154,13 @@ public class OrdenesBean implements Serializable, IMantenimiento {
             }
 
             int total = ejbOrdenes.contar(where, parameters);
+
+            Map p = new HashMap();
+            p.put("where", where);
+            p.put("parameters", parameters);
+
+            totalSeleccionados = ejbOrdenes.contarSeleccionados(p);
+
             formulario.setTotal(total);
             int endIndex = i + pageSize;
             if (endIndex > total) {
@@ -161,7 +174,7 @@ public class OrdenesBean implements Serializable, IMantenimiento {
                 order = (seguridadBean.getVerAgrupado() ? "o.formula.atencion.profesional.institucion.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return ejbOrdenes.buscar(where, parameters, order, i, endIndex);
-        } catch (ExcepcionDeConsulta ex) {
+        } catch (ExcepcionDeConsulta | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -286,18 +299,55 @@ public class OrdenesBean implements Serializable, IMantenimiento {
         return null;
     }
 
+    public String cancelarSeleccion() {
+        formularioSeleccion.cancelar();
+        descripcion = null;
+        return null;
+    }
+
     public void seleccionar(ValueChangeEvent event) {
         Ordenes o = (Ordenes) ordenes.getRowData();
         o.setSeleccionado((Boolean) event.getNewValue());
         try {
             ejbOrdenes.actualizar(o, null, null);
         } catch (ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
             Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public String enviar() {
-//        ejbOrdenes.
+    public String actualizar(boolean siguiente) {
+        switch (estado) {
+            case 0:
+                estadoSiguiente = 1;
+                break;
+            case 1:
+                estadoSiguiente = siguiente ? 2 : 0;
+                break;
+            case 2:
+                estadoSiguiente = siguiente ? 3 : 1;
+                break;
+        }
+        formularioSeleccion.insertar();
+        return null;
+    }
+
+    public String actualizar() {
+        Map parametros = new HashMap();
+        parametros.put("where", where);
+        parametros.put("parameters", parameters);
+        parametros.put("fecha", new Date());
+        parametros.put("descripcion", descripcion);
+        parametros.put("usuario", seguridadBean.getLogueado().getUserid());
+        parametros.put("ip", seguridadBean.getCurrentClientIpAddress());
+        parametros.put("estado", estadoSiguiente);
+        try {
+            ejbOrdenes.actualizarEstado(parametros);
+            cancelarSeleccion();
+        } catch (ExcepcionDeConsulta | ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return null;
     }
 
@@ -327,6 +377,20 @@ public class OrdenesBean implements Serializable, IMantenimiento {
      */
     public void setFormulario(Formulario formulario) {
         this.formulario = formulario;
+    }
+
+    /**
+     * @return the formularioSeleccion
+     */
+    public Formulario getFormularioSeleccion() {
+        return formularioSeleccion;
+    }
+
+    /**
+     * @param formularioSeleccion the formularioSeleccion to set
+     */
+    public void setFormularioSeleccion(Formulario formularioSeleccion) {
+        this.formularioSeleccion = formularioSeleccion;
     }
 
     /**
@@ -525,4 +589,45 @@ public class OrdenesBean implements Serializable, IMantenimiento {
         this.finEntrega = finEntrega;
     }
 
+    /**
+     * @return the descripcion
+     */
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    /**
+     * @param descripcion the descripcion to set
+     */
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    /**
+     * @return the estadoSiguiente
+     */
+    public int getEstadoSiguiente() {
+        return estadoSiguiente;
+    }
+
+    /**
+     * @param estadoSiguiente the estadoSiguiente to set
+     */
+    public void setEstadoSiguiente(int estadoSiguiente) {
+        this.estadoSiguiente = estadoSiguiente;
+    }
+
+    /**
+     * @return the totalSeleccionados
+     */
+    public int getTotalSeleccionados() {
+        return totalSeleccionados;
+    }
+
+    /**
+     * @param totalSeleccionados the totalSeleccionados to set
+     */
+    public void setTotalSeleccionados(int totalSeleccionados) {
+        this.totalSeleccionados = totalSeleccionados;
+    }
 }

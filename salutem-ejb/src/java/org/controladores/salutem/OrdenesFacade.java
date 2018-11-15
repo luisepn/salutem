@@ -8,13 +8,15 @@ package org.controladores.salutem;
 import com.google.gson.JsonObject;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.entidades.salutem.Formulas;
-import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Ordenes;
+import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 
 /**
@@ -65,24 +67,51 @@ public class OrdenesFacade extends AbstractFacade<Ordenes> {
         return json;
     }
 
-    public void actualizarEstado(Date fecha, String descripcion, int estado, String usuario) throws ExcepcionDeConsulta {
-        try {
-            String mensajes;
-            switch (estado) {
-                case 1:
-                    mensajes = "Orden enviada por: " + usuario;
-                    break;
-                case 2:
-                    mensajes = "Orden recibida por: " + usuario;
-                    break;
-                case 3:
-                    mensajes = "Orden entregada por: " + usuario;
-                    break;
+    public int contarSeleccionados(Map parameters) throws ExcepcionDeConsulta, ExcepcionDeActualizacion {
+        String where = "o.seleccionado=true and " + (String) parameters.get("where");
+        Map parametros = (Map) parameters.get("parameters");
+        return contar(where, parametros);
+    }
+
+    @Asynchronous
+    public void actualizarEstado(Map parameters) throws ExcepcionDeConsulta, ExcepcionDeActualizacion {
+        String where = "o.seleccionado=true and " + (String) parameters.get("where");
+        Map parametros = (Map) parameters.get("parameters");
+
+        Date fecha = (Date) parameters.get("fecha");
+        int estado = (int) parameters.get("estado");
+        String descripcion = (String) parameters.get("descripcion");
+        String usuario = (String) parameters.get("usuario");
+        String ip = (String) parameters.get("ip");
+
+        while (contar(where, parametros) > 0) {
+            List<Ordenes> ordenes = buscar(where, parametros, 0, 100);
+            for (Ordenes o : ordenes) {
+                o.setSeleccionado(Boolean.FALSE);
+                o.setActualizado(new Date());
+                o.setActualizadopor(usuario);
+                switch (estado) {
+                    case 0:
+                        o.setEnvio(null);
+                        o.setRecepcion(null);
+                        o.setEntrega(null);
+                        break;
+                    case 1:
+                        o.setEnvio(fecha);
+                        o.setRecepcion(null);
+                        o.setEntrega(null);
+                        break;
+                    case 2:
+                        o.setRecepcion(fecha);
+                        o.setEntrega(null);
+                        break;
+                    case 3:
+                        o.setEntrega(fecha);
+                        break;
+                }
+                o.setDescripcion(descripcion);
+                actualizar(o, usuario, ip);
             }
-            Query q = getEntityManager().createQuery("Select object(o) from Instituciones as o where o.activo = true and o.laboratorio = :tipo");
-            q.setParameter("tipo", estado);
-        } catch (Exception e) {
-            throw new ExcepcionDeConsulta(InstitucionesFacade.class.getName(), e);
         }
     }
 }
