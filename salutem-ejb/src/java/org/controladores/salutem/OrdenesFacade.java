@@ -73,7 +73,6 @@ public class OrdenesFacade extends AbstractFacade<Ordenes> {
         return contar(where, parametros);
     }
 
-    @Asynchronous
     public void actualizarEstado(Map parameters) throws ExcepcionDeConsulta, ExcepcionDeActualizacion {
         String where = "o.seleccionado=true and " + (String) parameters.get("where");
         Map parametros = (Map) parameters.get("parameters");
