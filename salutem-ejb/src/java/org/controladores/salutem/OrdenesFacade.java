@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -70,47 +69,8 @@ public class OrdenesFacade extends AbstractFacade<Ordenes> {
     public int contarSeleccionados(Map parameters) throws ExcepcionDeConsulta, ExcepcionDeActualizacion {
         String where = "o.seleccionado=true and " + (String) parameters.get("where");
         Map parametros = (Map) parameters.get("parameters");
-        return contar(where, parametros);
+        return this.contar(where, parametros);
     }
 
-    public void actualizarEstado(Map parameters) throws ExcepcionDeConsulta, ExcepcionDeActualizacion {
-        String where = "o.seleccionado=true and " + (String) parameters.get("where");
-        Map parametros = (Map) parameters.get("parameters");
-
-        Date fecha = (Date) parameters.get("fecha");
-        int estado = (int) parameters.get("estado");
-        String descripcion = (String) parameters.get("descripcion");
-        String usuario = (String) parameters.get("usuario");
-        String ip = (String) parameters.get("ip");
-
-        while (contar(where, parametros) > 0) {
-            List<Ordenes> ordenes = buscar(where, parametros, 0, 100);
-            for (Ordenes o : ordenes) {
-                o.setSeleccionado(Boolean.FALSE);
-                o.setActualizado(new Date());
-                o.setActualizadopor(usuario);
-                switch (estado) {
-                    case 0:
-                        o.setEnvio(null);
-                        o.setRecepcion(null);
-                        o.setEntrega(null);
-                        break;
-                    case 1:
-                        o.setEnvio(fecha);
-                        o.setRecepcion(null);
-                        o.setEntrega(null);
-                        break;
-                    case 2:
-                        o.setRecepcion(fecha);
-                        o.setEntrega(null);
-                        break;
-                    case 3:
-                        o.setEntrega(fecha);
-                        break;
-                }
-                o.setDescripcion(descripcion);
-                actualizar(o, usuario, ip);
-            }
-        }
-    }
+   
 }

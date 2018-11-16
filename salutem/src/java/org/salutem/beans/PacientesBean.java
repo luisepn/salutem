@@ -99,8 +99,8 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         }
         try {
             Map parameters = new HashMap();
-            String where = " o.activo=true and o.institucion=:institucion";
-            parameters.put("institucion", institucion);
+            String where = " o.activo=:activo ";
+            parameters.put("activo", seguridadBean.getVerActivos());
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();

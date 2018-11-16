@@ -333,22 +333,47 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     }
 
     public String actualizar() {
-        Map parametros = new HashMap();
-        parametros.put("where", where);
-        parametros.put("parameters", parameters);
-        parametros.put("fecha", new Date());
-        parametros.put("descripcion", descripcion);
-        parametros.put("usuario", seguridadBean.getLogueado().getUserid());
-        parametros.put("ip", seguridadBean.getCurrentClientIpAddress());
-        parametros.put("estado", estadoSiguiente);
         try {
-            ejbOrdenes.actualizarEstado(parametros);
-            cancelarSeleccion();
+            actualizarEstado();
         } catch (ExcepcionDeConsulta | ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+        cancelarSeleccion();
         return null;
+    }
+
+    private void actualizarEstado() throws ExcepcionDeConsulta, ExcepcionDeActualizacion {
+
+        while (ejbOrdenes.contar("o.seleccionado=true and " + where, parameters) > 0) {
+            List<Ordenes> lista = ejbOrdenes.buscar("o.seleccionado=true and " + where, parameters, 0, 100);
+            for (Ordenes o : lista) {
+                o.setSeleccionado(Boolean.FALSE);
+                o.setActualizado(new Date());
+                o.setActualizadopor(seguridadBean.getLogueado().getUserid());
+                switch (estadoSiguiente) {
+                    case 0:
+                        o.setEnvio(null);
+                        o.setRecepcion(null);
+                        o.setEntrega(null);
+                        break;
+                    case 1:
+                        o.setEnvio(new Date());
+                        o.setRecepcion(null);
+                        o.setEntrega(null);
+                        break;
+                    case 2:
+                        o.setRecepcion(new Date());
+                        o.setEntrega(null);
+                        break;
+                    case 3:
+                        o.setEntrega(new Date());
+                        break;
+                }
+                o.setDescripcion(descripcion);
+                ejbOrdenes.actualizar(o, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            }
+        }
     }
 
     /**
