@@ -1,6 +1,7 @@
 package org.salutem.beans;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +39,7 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     private Formulario formularioSeleccion = new Formulario();
     private LazyDataModel<Ordenes> ordenes;
     private Ordenes orden;
-    private int laboratorio;
+    private int laboratorioId;
     private int estado = -1;
     private Perfiles perfil;
 
@@ -54,6 +55,7 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     private Date finEntrega;
     private int totalSeleccionados;
 
+    private Instituciones laboratorio;
     private String descripcion;
     private int estadoSiguiente = 0;
     private Map parameters;
@@ -217,6 +219,28 @@ public class OrdenesBean implements Serializable, IMantenimiento {
             return null;
         }
         orden = (Ordenes) ordenes.getRowData();
+
+        Date fecha = new Date();
+
+        switch (orden.getEstado()) {
+            case 0:
+                fecha = orden.getRegistro();
+                break;
+            case 1:
+                fecha = orden.getEnvio();
+                break;
+            case 2:
+                fecha = orden.getRecepcion();
+                break;
+            case 3:
+                break;
+        }
+
+        if (validarFecha(fecha)) {
+            Mensajes.advertencia("No se puede editar ordenes con fechas menores a la de hoy");
+            return null;
+        }
+
         formulario.editar();
         return null;
     }
@@ -227,6 +251,28 @@ public class OrdenesBean implements Serializable, IMantenimiento {
             return null;
         }
         orden = (Ordenes) ordenes.getRowData();
+
+        Date fecha = new Date();
+
+        switch (orden.getEstado()) {
+            case 0:
+                fecha = orden.getRegistro();
+                break;
+            case 1:
+                fecha = orden.getEnvio();
+                break;
+            case 2:
+                fecha = orden.getRecepcion();
+                break;
+            case 3:
+                break;
+        }
+
+        if (validarFecha(fecha)) {
+            Mensajes.advertencia("No se puede eliminar ordenes con fechas menores a la de hoy");
+            return null;
+        }
+
         formulario.eliminar();
         return null;
     }
@@ -256,6 +302,24 @@ public class OrdenesBean implements Serializable, IMantenimiento {
         }
         formulario.cancelar();
         return null;
+    }
+
+    private boolean validarFecha(Date fecha) {
+        Calendar t = Calendar.getInstance();
+        t.setTime(new Date());
+        t.set(Calendar.HOUR_OF_DAY, 0);
+        t.set(Calendar.MINUTE, 0);
+        t.set(Calendar.SECOND, 0);
+        t.set(Calendar.MILLISECOND, 0);
+
+        Calendar f = Calendar.getInstance();
+        f.setTime(fecha);
+        f.set(Calendar.HOUR_OF_DAY, 0);
+        f.set(Calendar.MINUTE, 0);
+        f.set(Calendar.SECOND, 0);
+        f.set(Calendar.MILLISECOND, 1);
+
+        return f.getTime().before(t.getTime());
     }
 
     @Override
@@ -328,11 +392,30 @@ public class OrdenesBean implements Serializable, IMantenimiento {
                 estadoSiguiente = siguiente ? 3 : 1;
                 break;
         }
+        
+        try {
+            Map p = new HashMap();
+            p.put("where", where);
+            p.put("parameters", parameters);
+            laboratorio = ejbOrdenes.traerLaboratorio(p);
+        } catch (ExcepcionDeConsulta | ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         formularioSeleccion.insertar();
         return null;
     }
 
     public String actualizar() {
+        if (laboratorio == null) {
+            Mensajes.advertencia("Por favor, seleccione un laboratorio");
+            return null;
+        }
+        if (descripcion == null || descripcion.trim().isEmpty()) {
+            Mensajes.advertencia("Por favor, ponga una descripción para la trasacción");
+            return null;
+        }
+
         try {
             actualizarEstado();
         } catch (ExcepcionDeConsulta | ExcepcionDeActualizacion ex) {
@@ -371,6 +454,7 @@ public class OrdenesBean implements Serializable, IMantenimiento {
                         break;
                 }
                 o.setDescripcion(descripcion);
+                o.setLaboratorio(laboratorio);
                 ejbOrdenes.actualizar(o, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
         }
@@ -447,17 +531,17 @@ public class OrdenesBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @return the laboratorio
+     * @return the laboratorioId
      */
-    public int getLaboratorio() {
-        return laboratorio;
+    public int getLaboratorioId() {
+        return laboratorioId;
     }
 
     /**
-     * @param laboratorio the laboratorio to set
+     * @param laboratorioId the laboratorioId to set
      */
-    public void setLaboratorio(int laboratorio) {
-        this.laboratorio = laboratorio;
+    public void setLaboratorioId(int laboratorioId) {
+        this.laboratorioId = laboratorioId;
     }
 
     /**
@@ -612,6 +696,20 @@ public class OrdenesBean implements Serializable, IMantenimiento {
      */
     public void setFinEntrega(Date finEntrega) {
         this.finEntrega = finEntrega;
+    }
+
+    /**
+     * @return the laboratorio
+     */
+    public Instituciones getLaboratorio() {
+        return laboratorio;
+    }
+
+    /**
+     * @param laboratorio the laboratorio to set
+     */
+    public void setLaboratorio(Instituciones laboratorio) {
+        this.laboratorio = laboratorio;
     }
 
     /**

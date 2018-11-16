@@ -6,7 +6,6 @@
 package org.controladores.salutem;
 
 import com.google.gson.JsonObject;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.Stateless;
@@ -14,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.entidades.salutem.Formulas;
+import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Ordenes;
 import org.excepciones.salutem.ExcepcionDeActualizacion;
 import org.excepciones.salutem.ExcepcionDeConsulta;
@@ -72,5 +72,14 @@ public class OrdenesFacade extends AbstractFacade<Ordenes> {
         return this.contar(where, parametros);
     }
 
-   
+    public Instituciones traerLaboratorio(Map parameters) throws ExcepcionDeConsulta, ExcepcionDeActualizacion {
+        String where = "o.seleccionado=true and o.laboratorio is not null and " + (String) parameters.get("where");
+        Map parametros = (Map) parameters.get("parameters");
+        List<Ordenes> lista = this.buscar(where, parametros, 0, 1);
+        if (!lista.isEmpty()) {
+            return lista.get(0).getLaboratorio();
+        }
+        return null;
+    }
+
 }
