@@ -361,14 +361,14 @@ public abstract class AbstractFacade<T> implements Serializable {
         return null;
     }
 
-    public void actualizarJsonb(String campo, String opciones, Integer id) throws ExcepcionDeActualizacion {
+    public void actualizarJsonb(String campo, String datos, Integer id) throws ExcepcionDeActualizacion {
         try {
-            if (opciones == null) {
+            if (datos == null) {
                 getEntityManager().createNativeQuery("UPDATE " + entityClass.getSimpleName() + " SET " + campo + " = null WHERE id=:id")
                         .setParameter("id", id)
                         .executeUpdate();
             } else {
-                getEntityManager().createNativeQuery("UPDATE " + entityClass.getSimpleName() + " SET " + campo + " = '" + opciones + "' WHERE id=:id")
+                getEntityManager().createNativeQuery("UPDATE " + entityClass.getSimpleName() + " SET " + campo + " = '" + datos.replaceAll("'", "''") + "' WHERE id=:id")
                         .setParameter("id", id)
                         .executeUpdate();
             }

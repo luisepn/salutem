@@ -32,6 +32,13 @@ public class AsincronoLogFacade {
             return;
         }
 
+        String anterior = json[0] != null ? json[0].replaceAll("'", "''") : null;
+        String nuevo = json[1] != null
+                ? (operacion == 'C'
+                        ? json[1].replaceAll("'", "''")
+                                .replaceAll("\"id\":null", "\"id\":" + registro)
+                        : json[1].replaceAll("'", "''")) : null;
+
         String query = "INSERT INTO Historial("
                 + "fecha, "
                 + "usuario, "
@@ -49,8 +56,8 @@ public class AsincronoLogFacade {
                 + ":operacion, "
                 + ":tabla, "
                 + ":registro, "
-                + (json[0] != null ? "'" + json[0] + "'," : "null,")
-                + (json[1] != null ? "'" + (operacion == 'C' ? json[1].replaceAll("\"id\":null", "\"id\":" + registro) : json[1]) + "');" : "null);");
+                + "'" + anterior + "', "
+                + "'" + nuevo + "');";
         em.createNativeQuery(query)
                 .setParameter("fecha", new Date())
                 .setParameter("usuario", userid)
