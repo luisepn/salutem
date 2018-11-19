@@ -10,9 +10,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ace="http://www.icefaces.org/icefaces/components">
-
-    <h:body >
-
+    <h:body>
         <ui:composition template="../plantillas/Plantilla.xhtml">
             <ui:define name="content">
                 <ace:panel id="panel"
@@ -29,7 +27,7 @@
                         <h:panelGrid columns="2">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemOrdenes.buscar()}"/>
-                                <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.crear()}"/>
+                                <!--<ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.crear()}"/>-->
 
                                 <ace:menuItem value="#{salutemOrdenes.estado eq 1 ? 'Registrado' 
                                                        : salutemOrdenes.estado eq 2 ? 'Enviado'
@@ -93,83 +91,101 @@
                             <ace:column headerText="Operaciones" style="text-align: left; width: 50px;">
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemOrdenes.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
-                                    <ace:menuItem action="#{salutemOrdenes.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
+                                    <!--<ace:menuItem action="#{salutemOrdenes.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>-->
                                     <ace:menuItem action="#{salutemHistorial.buscar(salutemOrdenes.nombreTabla, item.id)}" rendered="#{salutemOrdenes.perfil.auditoria}"
                                                   value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column> 
-                            <ace:column  headerText="Factura" sortBy="#{item.factura}" filterBy="#{item.factura}" filterMatchMode="contains" style="text-align: left">
+                            <ace:column headerText="Factura" sortBy="#{item.factura}" filterBy="#{item.factura}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.factura}"/>
                             </ace:column>
+                            <ace:column headerText="Cédula" sortBy="#{item.formula.atencion.paciente.persona.cedula}" filterBy="#{item.formula.atencion.paciente.persona.cedula}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.formula.atencion.paciente.persona.cedula}"/>
+                            </ace:column>
+                            <ace:column headerText="Paciente" sortBy="#{item.formula.atencion.paciente.persona.apellidos}" filterBy="#{item.formula.atencion.paciente.persona.apellidos}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.formula.atencion.paciente.persona.toString()}"/>
+                            </ace:column>
+                            <ace:column headerText="Dirección" style="text-align: left">
+                                <h:outputText  value="#{item.formula.atencion.paciente.persona.direccion.toString()}"/>
+                            </ace:column>
+                            <ace:column headerText="Móvil" sortBy="#{item.formula.atencion.paciente.persona.direccion.movil}" filterBy="#{item.formula.atencion.paciente.persona.direccion.movil}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.formula.atencion.paciente.persona.direccion.movil}"/>
+                            </ace:column>
+                            <ace:column headerText="Fijo" sortBy="#{item.formula.atencion.paciente.persona.direccion.fijo}" filterBy="#{item.formula.atencion.paciente.persona.direccion.fijo}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.formula.atencion.paciente.persona.direccion.fijo}"/>
+                            </ace:column>
+                            <ace:column headerText="E-mail" sortBy="#{item.formula.atencion.paciente.persona.email}" filterBy="#{item.formula.atencion.paciente.persona.email}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.formula.atencion.paciente.persona.email}"/>
+                            </ace:column>
 
-                            <ace:column  headerText="Laboratorio"                                         
-                                         sortBy="#{item.laboratorio.nombre}" 
-                                         filterBy="#{item.laboratorio.id}"
-                                         filterOptions="#{salutemCombos.laboratoriosId}"                                          
-                                         filterValue="#{salutemOrdenes.laboratorioId}"
-                                         filterMatchMode="exact" 
-                                         style="text-align: left">
+                            <ace:column headerText="Laboratorio"                                         
+                                        sortBy="#{item.laboratorio.nombre}" 
+                                        filterBy="#{item.laboratorio.id}"
+                                        filterOptions="#{salutemCombos.laboratoriosId}"                                          
+                                        filterValue="#{salutemOrdenes.laboratorioId}"
+                                        filterMatchMode="exact" 
+                                        style="text-align: left">
                                 <h:outputText  value="#{item.laboratorio.toString()}"/>
                             </ace:column>
 
-                            <ace:column  headerText="Registro" sortBy="#{item.registro}" 
-                                         filterBy="#{item.registro}" 
-                                         filterDatePattern="dd/MM/yyyy HH:mm"
-                                         filterValueMin="#{salutemOrdenes.inicioRegistro}"
-                                         filterValueMax="#{salutemOrdenes.finRegistro}"
-                                         type="DATE"
-                                         rangedFilter="true" 
-                                         style="text-align: left">
+                            <ace:column headerText="Registro" sortBy="#{item.registro}" 
+                                        filterBy="#{item.registro}" 
+                                        filterDatePattern="dd/MM/yyyy HH:mm"
+                                        filterValueMin="#{salutemOrdenes.inicioRegistro}"
+                                        filterValueMax="#{salutemOrdenes.finRegistro}"
+                                        type="DATE"
+                                        rangedFilter="true" 
+                                        style="text-align: left">
                                 <h:outputText  value="#{item.registro}">
                                     <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                 </h:outputText>
                             </ace:column>
-                            <ace:column  headerText="Envío" sortBy="#{item.envio}" 
-                                         filterBy="#{item.envio}" 
-                                         filterDatePattern="dd/MM/yyyy HH:mm"
-                                         filterValueMin="#{salutemOrdenes.inicioEnvio}"
-                                         filterValueMax="#{salutemOrdenes.finEnvio}"
-                                         type="DATE"
-                                         rangedFilter="true" 
-                                         style="text-align: left">
+                            <ace:column headerText="Envío" sortBy="#{item.envio}" 
+                                        filterBy="#{item.envio}" 
+                                        filterDatePattern="dd/MM/yyyy HH:mm"
+                                        filterValueMin="#{salutemOrdenes.inicioEnvio}"
+                                        filterValueMax="#{salutemOrdenes.finEnvio}"
+                                        type="DATE"
+                                        rangedFilter="true" 
+                                        style="text-align: left">
                                 <h:outputText  value="#{item.envio}">
                                     <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                 </h:outputText>
                             </ace:column>
-                            <ace:column  headerText="Por Entregar" sortBy="#{item.recepcion}" 
-                                         filterBy="#{item.recepcion}" 
-                                         filterDatePattern="dd/MM/yyyy HH:mm"
-                                         filterValueMin="#{salutemOrdenes.inicioRecepcion}"
-                                         filterValueMax="#{salutemOrdenes.finRecepcion}"
-                                         type="DATE"
-                                         rangedFilter="true" 
-                                         style="text-align: left">
+                            <ace:column headerText="Por Entregar" sortBy="#{item.recepcion}" 
+                                        filterBy="#{item.recepcion}" 
+                                        filterDatePattern="dd/MM/yyyy HH:mm"
+                                        filterValueMin="#{salutemOrdenes.inicioRecepcion}"
+                                        filterValueMax="#{salutemOrdenes.finRecepcion}"
+                                        type="DATE"
+                                        rangedFilter="true" 
+                                        style="text-align: left">
                                 <h:outputText  value="#{item.envio}">
                                     <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                 </h:outputText>
                             </ace:column>
-                            <ace:column  headerText="Entrega" sortBy="#{item.entrega}" 
-                                         filterBy="#{item.entrega}" 
-                                         filterDatePattern="dd/MM/yyyy HH:mm"
-                                         filterValueMin="#{salutemOrdenes.inicioEntrega}"
-                                         filterValueMax="#{salutemOrdenes.finEntrega}"
-                                         type="DATE"
-                                         rangedFilter="true" 
-                                         style="text-align: left">
+                            <ace:column headerText="Entrega" sortBy="#{item.entrega}" 
+                                        filterBy="#{item.entrega}" 
+                                        filterDatePattern="dd/MM/yyyy HH:mm"
+                                        filterValueMin="#{salutemOrdenes.inicioEntrega}"
+                                        filterValueMax="#{salutemOrdenes.finEntrega}"
+                                        type="DATE"
+                                        rangedFilter="true" 
+                                        style="text-align: left">
                                 <h:outputText  value="#{item.entrega}">
                                     <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                 </h:outputText>
                             </ace:column>
 
-                            <ace:column  headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
+                            <ace:column headerText="Descripción" sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.descripcion}"/>
                             </ace:column>
-                            <ace:column  headerText="Estado"                                         
-                                         filterBy="#{item.toString()}"
-                                         filterOptions="#{salutemCombos.estadosOrdenes}"
-                                         filterValue="#{salutemOrdenes.estado}"
-                                         filterMatchMode="exact" 
-                                         style="text-align: left">
+                            <ace:column headerText="Estado"                                         
+                                        filterBy="#{item.toString()}"
+                                        filterOptions="#{salutemCombos.estadosOrdenes}"
+                                        filterValue="#{salutemOrdenes.estado}"
+                                        filterMatchMode="exact" 
+                                        style="text-align: left">
                                 <h:panelGrid columns="2">
                                     <h:outputText  value="#{item.toString()}"/>
                                     <h:selectBooleanCheckbox value="#{item.seleccionado}" valueChangeListener="#{salutemOrdenes.seleccionar}" rendered="#{salutemOrdenes.estado gt -1}">
@@ -177,34 +193,34 @@
                                     </h:selectBooleanCheckbox>
                                 </h:panelGrid>                                
                             </ace:column>
-                            <ace:column  headerText="Creación" sortBy="#{item.creado}" 
-                                         filterBy="#{item.creado}" 
-                                         filterDatePattern="dd/MM/yyyy HH:mm"
-                                         filterValueMin="#{salutemSeguridad.inicioCreado}"
-                                         filterValueMax="#{salutemSeguridad.finCreado}"
-                                         type="DATE"
-                                         rangedFilter="true" 
-                                         style="text-align: left" rendered="false">
+                            <ace:column headerText="Creación" sortBy="#{item.creado}" 
+                                        filterBy="#{item.creado}" 
+                                        filterDatePattern="dd/MM/yyyy HH:mm"
+                                        filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                        filterValueMax="#{salutemSeguridad.finCreado}"
+                                        type="DATE"
+                                        rangedFilter="true" 
+                                        style="text-align: left" rendered="false">
                                 <h:outputText  value="#{item.creado}">
                                     <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                 </h:outputText>
                             </ace:column>
-                            <ace:column  headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                            <ace:column headerText="Creador por" sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" filterMatchMode="contains" style="text-align: left" rendered="false">
                                 <h:outputText  value="#{item.creadopor}"/>
                             </ace:column>
-                            <ace:column  headerText="Modificado" sortBy="#{item.actualizado}" 
-                                         filterBy="#{item.actualizado}" 
-                                         filterDatePattern="dd/MM/yyyy HH:mm"
-                                         filterValueMin="#{salutemSeguridad.inicioActualizado}"
-                                         filterValueMax="#{salutemSeguridad.finActualizado}"
-                                         type="DATE"
-                                         rangedFilter="true" 
-                                         style="text-align: left" rendered="false">
+                            <ace:column headerText="Modificado" sortBy="#{item.actualizado}" 
+                                        filterBy="#{item.actualizado}" 
+                                        filterDatePattern="dd/MM/yyyy HH:mm"
+                                        filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                        filterValueMax="#{salutemSeguridad.finActualizado}"
+                                        type="DATE"
+                                        rangedFilter="true" 
+                                        style="text-align: left" rendered="false">
                                 <h:outputText  value="#{item.actualizado}">
                                     <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
                                 </h:outputText>
                             </ace:column>
-                            <ace:column  headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
+                            <ace:column headerText="Modificado por" sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" filterMatchMode="contains" style="text-align: left" rendered="false">
                                 <h:outputText  value="#{item.actualizadopor}"/>
                             </ace:column>
                         </ace:dataTable>

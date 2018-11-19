@@ -24,7 +24,7 @@ public class ValidadorEmail implements Validator {
     //  + "[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*"
     //  + "(\\.[A-Za-z]{2,})$";
     
-    //  Nuevo patron de validación, permite emails con formatos como: louis.fercho@dominio-ec.com
+    //  Nuevo patrón de validación, permite emails con formatos como: louis.fercho@dominio-ec.com
     private static final String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     
@@ -42,7 +42,7 @@ public class ValidadorEmail implements Validator {
         matcher = pattern.matcher(value.toString());
         if (!matcher.matches()) {
             FacesMessage msg =
-                    new FacesMessage("Falla en validaciòn de email.",
+                    new FacesMessage("Falla en validación de email.",
                     "Formato de email incorrecto");
             msg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw new ValidatorException(msg);

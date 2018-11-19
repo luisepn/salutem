@@ -220,27 +220,27 @@ public class OrdenesBean implements Serializable, IMantenimiento {
         }
         orden = (Ordenes) ordenes.getRowData();
 
-        Date fecha = new Date();
-
-        switch (orden.getEstado()) {
-            case 0:
-                fecha = orden.getRegistro();
-                break;
-            case 1:
-                fecha = orden.getEnvio();
-                break;
-            case 2:
-                fecha = orden.getRecepcion();
-                break;
-            case 3:
-                break;
-        }
-
-        if (validarFecha(fecha)) {
-            Mensajes.advertencia("No se puede editar ordenes con fechas menores a la de hoy");
-            return null;
-        }
-
+//        Date fecha = null;
+//
+//        switch (orden.getEstado()) {
+//            case 0:
+//                fecha = orden.getRegistro();
+//                break;
+//            case 1:
+//                fecha = orden.getEnvio();
+//                break;
+//            case 2:
+//                fecha = orden.getRecepcion();
+//                break;
+//            case 3:
+//                fecha = orden.getEntrega();
+//                break;
+//        }
+//
+//        if (fecha != null && validarFecha(fecha)) {
+//            Mensajes.advertencia("No se puede editar ordenes con fechas menores a la de hoy");
+//            return null;
+//        }
         formulario.editar();
         return null;
     }
@@ -252,7 +252,7 @@ public class OrdenesBean implements Serializable, IMantenimiento {
         }
         orden = (Ordenes) ordenes.getRowData();
 
-        Date fecha = new Date();
+        Date fecha = null;
 
         switch (orden.getEstado()) {
             case 0:
@@ -265,10 +265,11 @@ public class OrdenesBean implements Serializable, IMantenimiento {
                 fecha = orden.getRecepcion();
                 break;
             case 3:
+                fecha = orden.getEntrega();
                 break;
         }
 
-        if (validarFecha(fecha)) {
+        if (fecha != null && validarFecha(fecha)) {
             Mensajes.advertencia("No se puede eliminar ordenes con fechas menores a la de hoy");
             return null;
         }
@@ -392,7 +393,7 @@ public class OrdenesBean implements Serializable, IMantenimiento {
                 estadoSiguiente = siguiente ? 3 : 1;
                 break;
         }
-        
+
         try {
             Map p = new HashMap();
             p.put("where", where);
