@@ -386,6 +386,10 @@ public class CombosBean implements Serializable {
         return traerParametros(CombosBean.DIAS_SEMANA, "o.parametros");
     }
 
+    public List<Parametros> getListaEspecialidades() {
+        return traerParametros(ESPECIALIDADES, "o.codigo");
+    }
+
     public List<Horas> getListaHoras() {
         try {
             return ejbHoras.traerHoras(institucion);
@@ -896,5 +900,19 @@ public class CombosBean implements Serializable {
      */
     public void setTabla(String tabla) {
         this.tabla = tabla;
+    }
+
+    /**
+     * @return the institucion
+     */
+    public Instituciones getInstitucion() {
+        return institucion;
+    }
+
+    /**
+     * @param institucion the institucion to set
+     */
+    public void setInstitucion(Instituciones institucion) {
+        this.institucion = institucion;
     }
 }

@@ -8,7 +8,6 @@ package org.salutem.beans;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -17,7 +16,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.inject.Any;
 import javax.faces.view.ViewScoped;
-import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.controladores.salutem.HorariosFacade;
@@ -264,23 +262,6 @@ public class HorariosBean implements Serializable, IMantenimiento {
         formulario.cancelar();
 
         return null;
-    }
-
-    public SelectItem[] getComboHorariosPaquete() {
-        List<Horarios> li = new LinkedList<>();
-        String where = "o.activo = true and o.institucion=:institucion and o.paquete = true";
-        Map parametros = new HashMap();
-        parametros.put(";where", "o.activo = true and o.institucion=:institucion and o.paquete = true");
-        parametros.put("institucion", seguridadBean.getInstitucion());
-
-        try {
-            li = ejbHorarios.buscar(where, parametros);
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-        //return Combos.SelectItems(li, true);
     }
 
     @Override

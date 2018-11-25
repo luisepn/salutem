@@ -17,6 +17,25 @@
 
             <ui:define name="content">
 
+                <h:panelGrid width="100%">
+
+                    <ace:chart id="chart"
+                               animated="false"
+                               value="#{dashboardTransaccional.barData}"
+                               stackSeries="false"
+                               defaultAxesConfig="#{dashboardTransaccional.barDemoDefaultAxis}"
+                               xAxis="#{dashboardTransaccional.barDemoXOneAxis}"
+                               x2Axis="#{dashboardTransaccional.barDemoXTwoAxis}"
+                               yAxes="#{dashboardTransaccional.barDemoYAxes}"
+                               legend="true"
+                               legendPlacement="OUTSIDE_GRID"
+                               highlighter="true"
+                               highlighterLocation="N"
+                               highlighterShowMarker="false"
+                               highlighterBringSeriesToFront="true"/>
+
+                </h:panelGrid>
+
             </ui:define>
 
         </ui:composition>
