@@ -21,13 +21,13 @@ import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.icefaces.ace.model.chart.CartesianSeries;
 import org.icefaces.ace.model.chart.CartesianSeries.CartesianType;
-import org.icefaces.ace.model.chart.DragConstraintAxis;
 import org.salutem.beans.CombosBean;
 import org.salutem.beans.SeguridadBean;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
 import org.icefaces.ace.component.chart.Axis;
 import org.icefaces.ace.component.chart.AxisType;
+import org.icefaces.ace.model.chart.DragConstraintAxis;
 
 /**
  *
@@ -47,8 +47,15 @@ public class TransaccionalBean implements Serializable {
 
     private List<Parametros> especialidades;
     private List<Parametros> dias;
-    private List<CartesianSeries> barData;
-    private CartesianSeries modelFill;
+
+    private List<CartesianSeries> grafico; //Gráfico de lineas
+    private CartesianSeries subgraficoConfig; //Subgráfico de barras
+
+    private Axis abscisaBottom; //Nombres de las categorías de abajo del gráfico
+    private Axis abscisaTop; //Nombres de las categorías de arriba del gráfico
+
+    private Axis ordenadasGeneralConfig; //Configuración general de los nombres de las categorías de arriba y abajo del gráfico
+    private Axis[] ordenadasConfigSpecific; //Configuracion específica de los valores izquierdo y derecho del gráfico
 
     private Formulario formulario = new Formulario();
     private Perfiles perfil;
@@ -64,85 +71,96 @@ public class TransaccionalBean implements Serializable {
     public void iniciar() {
 
         dias = combosBean.getListaDias();
-        barData = new ArrayList<>();
-        CartesianSeries categoriaDias = new CartesianSeries();
-
-        categoriaDias.setType(CartesianType.LINE);
-        categoriaDias.setDragConstraintAxis(DragConstraintAxis.Y);
-        categoriaDias.setLabel("Citas");
-        categoriaDias.setYAxis(2);
-        categoriaDias.setXAxis(2);
-
-        for (Parametros d : dias) {
-            categoriaDias.add(d.getNombre(), getFrecuenciaDiaria(d.toInteger(), null));
-        }
-
-        barData.add(categoriaDias);
-
-        modelFill = new CartesianSeries();
-        modelFill.setType(CartesianType.BAR);
-        modelFill.setFillToZero(true);
-
         especialidades = combosBean.getListaEspecialidades();
-        for (Parametros esp : especialidades) {
-            CartesianSeries especialidad = new CartesianSeries();
+
+        //Inicio gráfico: configuración y primer llenado
+        grafico = new ArrayList<>();
+        CartesianSeries citasPorDia = new CartesianSeries();
+        citasPorDia.setType(CartesianType.LINE);
+        citasPorDia.setLabel("Citas");
+        citasPorDia.setYAxis(2);
+        citasPorDia.setXAxis(2);
+        for (Parametros d : dias) {
+            citasPorDia.add(d.getNombre(), getFrecuenciaDiaria(d.toInteger(), null));
+        }
+        grafico.add(citasPorDia);
+        //Fin gráfico: configuración y primer llenado
+
+        //Inicio gráfico: llenado con subgráficos
+        for (Parametros e : especialidades) {
+            CartesianSeries subgrafico = new CartesianSeries();
             for (Parametros d : dias) {
-                especialidad.add(getFrecuenciaDiaria(d.toInteger(), esp));
-                especialidad.setLabel(esp.getNombre());
-            }
+                subgrafico.add(getFrecuenciaDiaria(d.toInteger(), e));
+                subgrafico.setLabel(e.getNombre());
 
-            barData.add(especialidad);
+            }
+            subgrafico.setPointLabels(Boolean.TRUE);
+            subgrafico.setPointLabelStacked(Boolean.TRUE);
+            grafico.add(subgrafico);
+
+        }
+        //Fin gráfico: llenado con subgráficos
+
+        //Inicio configuración subgráfico
+        subgraficoConfig = new CartesianSeries();
+        subgraficoConfig.setType(CartesianType.BAR);
+        subgraficoConfig.setFillToZero(true);
+
+        String[] ticks = new String[especialidades.size() * dias.size()];
+        int i = 0;
+//        for (int j = 0; j < dias.size(); j++) {
+//            for (Parametros e : especialidades) {
+//                ticks[i++] = e.getNombre();
+//            }
+//        }
+//        subgraficoConfig.setPointLabelList(ticks);
+        //Fin configuración gráfico
+        //Inicio configuración de ordenadas arriba y abajo
+        ordenadasGeneralConfig = new Axis();
+        ordenadasGeneralConfig.setTickAngle(-10);
+        //Fin configuración de ordenadas
+
+        Axis yLeft = new Axis();
+        yLeft.setAutoscale(true);
+        yLeft.setTickInterval("2");
+        yLeft.setLabel("Citas");
+
+        Axis yRight = new Axis();
+        yRight.setAutoscale(true);
+        yRight.setTickInterval("2");
+        yRight.setLabel("Citas Por Especialidad");
+
+        ordenadasConfigSpecific = new Axis[2];
+        ordenadasConfigSpecific[0] = yLeft;
+        ordenadasConfigSpecific[1] = yRight;
+
+        ticks = new String[7];
+        i = 0;
+        for (Parametros d : dias) {
+            ticks[i++] = d.getNombre();
         }
 
+        abscisaBottom = new Axis();
+        abscisaBottom.setTicks(ticks);
+        abscisaBottom.setType(AxisType.CATEGORY);
+
+        abscisaTop = new Axis();
+        abscisaTop.setTicks(ticks);
+        abscisaTop.setType(AxisType.CATEGORY);
     }
-
-    private Axis barDemoDefaultAxis = new Axis() {
-        {
-            setTickAngle(0);
-        }
-    };
-
-    private Axis[] barDemoYAxes = new Axis[]{
-        new Axis() {
-            {
-                setAutoscale(true);
-                setTickInterval("5");
-                setLabel("Citas");
-            }
-        },
-        new Axis() {
-            {
-                setAutoscale(true);
-                setTickInterval("5");
-                setLabel("Citas Por Especialidad");
-            }
-        }
-    };
-    private Axis barDemoXOneAxis = new Axis() {
-        {
-            setTicks(new String[]{"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"});
-            setType(AxisType.CATEGORY);
-        }
-    };
-    private Axis barDemoXTwoAxis = new Axis() {
-        {
-            setTicks(new String[]{"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"});
-            setType(AxisType.CATEGORY);
-        }
-    };
 
     private int getFrecuenciaDiaria(int dia, Parametros especialidad) {
         try {
-            dia = dia < 7 ? dia + 1 : 1;
+            dia = dia == 7 ? 1 : dia + 1;
             Calendar c = Calendar.getInstance();
             c.set(Calendar.DAY_OF_WEEK, dia);
-            c.set(Calendar.HOUR, 0);
+            c.set(Calendar.HOUR_OF_DAY, 0);
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);
             c.set(Calendar.MILLISECOND, 0);
             Date inicio = c.getTime();
 
-            c.set(Calendar.HOUR, 23);
+            c.set(Calendar.HOUR_OF_DAY, 23);
             c.set(Calendar.MINUTE, 59);
             c.set(Calendar.SECOND, 59);
             c.set(Calendar.MILLISECOND, 999);
@@ -217,6 +235,104 @@ public class TransaccionalBean implements Serializable {
     }
 
     /**
+     * @return the dias
+     */
+    public List<Parametros> getDias() {
+        return dias;
+    }
+
+    /**
+     * @param dias the dias to set
+     */
+    public void setDias(List<Parametros> dias) {
+        this.dias = dias;
+    }
+
+    /**
+     * @return the grafico
+     */
+    public List<CartesianSeries> getGrafico() {
+        return grafico;
+    }
+
+    /**
+     * @param grafico the grafico to set
+     */
+    public void setGrafico(List<CartesianSeries> grafico) {
+        this.grafico = grafico;
+    }
+
+    /**
+     * @return the subgraficoConfig
+     */
+    public CartesianSeries getSubgraficoConfig() {
+        return subgraficoConfig;
+    }
+
+    /**
+     * @param subgraficoConfig the subgraficoConfig to set
+     */
+    public void setSubgraficoConfig(CartesianSeries subgraficoConfig) {
+        this.subgraficoConfig = subgraficoConfig;
+    }
+
+    /**
+     * @return the ordenadasGeneralConfig
+     */
+    public Axis getOrdenadasGeneralConfig() {
+        return ordenadasGeneralConfig;
+    }
+
+    /**
+     * @param ordenadasGeneralConfig the ordenadasGeneralConfig to set
+     */
+    public void setOrdenadasGeneralConfig(Axis ordenadasGeneralConfig) {
+        this.ordenadasGeneralConfig = ordenadasGeneralConfig;
+    }
+
+    /**
+     * @return the ordenadasConfigSpecific
+     */
+    public Axis[] getOrdenadasConfigSpecific() {
+        return ordenadasConfigSpecific;
+    }
+
+    /**
+     * @param ordenadasConfigSpecific the ordenadasConfigSpecific to set
+     */
+    public void setOrdenadasConfigSpecific(Axis[] ordenadasConfigSpecific) {
+        this.ordenadasConfigSpecific = ordenadasConfigSpecific;
+    }
+
+    /**
+     * @return the abscisaBottom
+     */
+    public Axis getAbscisaBottom() {
+        return abscisaBottom;
+    }
+
+    /**
+     * @param abscisaBottom the abscisaBottom to set
+     */
+    public void setAbscisaBottom(Axis abscisaBottom) {
+        this.abscisaBottom = abscisaBottom;
+    }
+
+    /**
+     * @return the abscisaTop
+     */
+    public Axis getAbscisaTop() {
+        return abscisaTop;
+    }
+
+    /**
+     * @param abscisaTop the abscisaTop to set
+     */
+    public void setAbscisaTop(Axis abscisaTop) {
+        this.abscisaTop = abscisaTop;
+    }
+
+    /**
      * @return the formulario
      */
     public Formulario getFormulario() {
@@ -242,90 +358,6 @@ public class TransaccionalBean implements Serializable {
      */
     public void setPerfil(Perfiles perfil) {
         this.perfil = perfil;
-    }
-
-    /**
-     * @return the barData
-     */
-    public List<CartesianSeries> getBarData() {
-        return barData;
-    }
-
-    /**
-     * @param barData the barData to set
-     */
-    public void setBarData(List<CartesianSeries> barData) {
-        this.barData = barData;
-    }
-
-    /**
-     * @return the barDemoDefaultAxis
-     */
-    public Axis getBarDemoDefaultAxis() {
-        return barDemoDefaultAxis;
-    }
-
-    /**
-     * @param barDemoDefaultAxis the barDemoDefaultAxis to set
-     */
-    public void setBarDemoDefaultAxis(Axis barDemoDefaultAxis) {
-        this.barDemoDefaultAxis = barDemoDefaultAxis;
-    }
-
-    /**
-     * @return the barDemoXOneAxis
-     */
-    public Axis getBarDemoXOneAxis() {
-        return barDemoXOneAxis;
-    }
-
-    /**
-     * @param barDemoXOneAxis the barDemoXOneAxis to set
-     */
-    public void setBarDemoXOneAxis(Axis barDemoXOneAxis) {
-        this.barDemoXOneAxis = barDemoXOneAxis;
-    }
-
-    /**
-     * @return the barDemoYAxes
-     */
-    public Axis[] getBarDemoYAxes() {
-        return barDemoYAxes;
-    }
-
-    /**
-     * @param barDemoYAxes the barDemoYAxes to set
-     */
-    public void setBarDemoYAxes(Axis[] barDemoYAxes) {
-        this.barDemoYAxes = barDemoYAxes;
-    }
-
-    /**
-     * @return the barDemoXTwoAxis
-     */
-    public Axis getBarDemoXTwoAxis() {
-        return barDemoXTwoAxis;
-    }
-
-    /**
-     * @param barDemoXTwoAxis the barDemoXTwoAxis to set
-     */
-    public void setBarDemoXTwoAxis(Axis barDemoXTwoAxis) {
-        this.barDemoXTwoAxis = barDemoXTwoAxis;
-    }
-
-    /**
-     * @return the modelFill
-     */
-    public CartesianSeries getModelFill() {
-        return modelFill;
-    }
-
-    /**
-     * @param modelFill the modelFill to set
-     */
-    public void setModelFill(CartesianSeries modelFill) {
-        this.modelFill = modelFill;
     }
 
 }
