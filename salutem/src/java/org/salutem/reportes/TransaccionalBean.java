@@ -16,7 +16,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.controladores.salutem.CitasFacade;
-import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Parametros;
 import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
@@ -47,6 +46,9 @@ public class TransaccionalBean implements Serializable {
     private CombosBean combosBean;
 
     private List<Parametros> especialidades;
+    private List<Parametros> dias;
+    private List<CartesianSeries> barData;
+    private CartesianSeries modelFill;
 
     private Formulario formulario = new Formulario();
     private Perfiles perfil;
@@ -55,85 +57,48 @@ public class TransaccionalBean implements Serializable {
     private CitasFacade ejbCitas;
 
     public TransaccionalBean() {
-//        especialidades = combosBean.getListaEspecialidades();
+//        
     }
 
+    @PostConstruct
     public void iniciar() {
 
-    }
-    private List<CartesianSeries> barData = new ArrayList<CartesianSeries>() {
-        {
-            add(new CartesianSeries() {
-                {
-                    int total = 0;
-                    int resultado = 0;
+        dias = combosBean.getListaDias();
+        barData = new ArrayList<>();
+        CartesianSeries categoriaDias = new CartesianSeries();
 
-                    resultado = getFrecuenciaDiaria(2, null);
-                    total += resultado;
-                    add("Lunes", resultado);
-                    resultado = getFrecuenciaDiaria(3, null);
-                    total += resultado;
-                    add("Martes", resultado);
-                    resultado = getFrecuenciaDiaria(4, null);
-                    total += resultado;
-                    add("Miércoles", resultado);
-                    resultado = getFrecuenciaDiaria(5, null);
-                    total += resultado;
-                    add("Jueves", resultado);
-                    resultado = getFrecuenciaDiaria(6, null);
-                    total += resultado;
-                    add("Viernes", resultado);
-                    resultado = getFrecuenciaDiaria(7, null);
-                    total += resultado;
-                    add("Sádado", resultado);
-                    resultado = getFrecuenciaDiaria(1, null);
-                    total += resultado;
-                    add("Domingo", resultado);
+        categoriaDias.setType(CartesianType.LINE);
+        categoriaDias.setDragConstraintAxis(DragConstraintAxis.Y);
+        categoriaDias.setLabel("Citas");
+        categoriaDias.setYAxis(2);
+        categoriaDias.setXAxis(2);
 
-                    add("Total", total);
-
-//                    add("Nickle", 28);
-//                    add("Aluminum", 13);
-//                    add("Xenon", 54);
-//                    add("Silver", 47);
-//                    add("Sulfur", 16);
-//                    add("Silicon", 14);
-//                    add("Vanadium", 23);
-                    setDragable(true);
-                    setDragConstraintAxis(DragConstraintAxis.Y);
-                    setLabel("Citas");
-                    setYAxis(2);
-                    setXAxis(2);
-                }
-            });
-
-            add(new CartesianSeries() {
-                {
-                    setType(CartesianType.BAR);
-
-                    add("HDTV Receiver", 15);
-                    add("Cup Holder Pinion Bob", 7);
-                    add("Generic Fog Lamp", 9);
-                    add("8 Track Control Module", 12);
-                    add("Sludge Pump Fourier Modulator", 3);
-                    add("Transceiver Spice Rack", 6);
-                    add("Hair Spray Danger Indicator", 18);
-
-                    setLabel("Product / Sales");
-                }
-            });
+        for (Parametros d : dias) {
+            categoriaDias.add(d.getNombre(), getFrecuenciaDiaria(d.toInteger(), null));
         }
-    };
+
+        barData.add(categoriaDias);
+
+        modelFill = new CartesianSeries();
+        modelFill.setType(CartesianType.BAR);
+        modelFill.setFillToZero(true);
+
+        especialidades = combosBean.getListaEspecialidades();
+        for (Parametros esp : especialidades) {
+            CartesianSeries especialidad = new CartesianSeries();
+            for (Parametros d : dias) {
+                especialidad.add(getFrecuenciaDiaria(d.toInteger(), esp));
+                especialidad.setLabel(esp.getNombre());
+            }
+
+            barData.add(especialidad);
+        }
+
+    }
 
     private Axis barDemoDefaultAxis = new Axis() {
         {
-            setTickAngle(-30);
-        }
-    };
-
-    private Axis barDemoXOneAxis = new Axis() {
-        {
-            setType(AxisType.CATEGORY);
+            setTickAngle(0);
         }
     };
 
@@ -142,27 +107,33 @@ public class TransaccionalBean implements Serializable {
             {
                 setAutoscale(true);
                 setTickInterval("5");
-                setLabel("USD Millions");
+                setLabel("Citas");
             }
         },
         new Axis() {
             {
                 setAutoscale(true);
                 setTickInterval("5");
-                setLabel("Tonnes");
+                setLabel("Citas Por Especialidad");
             }
         }
     };
-
+    private Axis barDemoXOneAxis = new Axis() {
+        {
+            setTicks(new String[]{"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"});
+            setType(AxisType.CATEGORY);
+        }
+    };
     private Axis barDemoXTwoAxis = new Axis() {
         {
-            setTicks(new String[]{"Nickle", "Aluminum", "Xenon", "Silver", "Sulfur", "Silicon", "Vanadium"});
+            setTicks(new String[]{"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"});
             setType(AxisType.CATEGORY);
         }
     };
 
     private int getFrecuenciaDiaria(int dia, Parametros especialidad) {
         try {
+            dia = dia < 7 ? dia + 1 : 1;
             Calendar c = Calendar.getInstance();
             c.set(Calendar.DAY_OF_WEEK, dia);
             c.set(Calendar.HOUR, 0);
@@ -171,10 +142,13 @@ public class TransaccionalBean implements Serializable {
             c.set(Calendar.MILLISECOND, 0);
             Date inicio = c.getTime();
 
-            c.set(Calendar.DAY_OF_WEEK, dia + 1);
+            c.set(Calendar.HOUR, 23);
+            c.set(Calendar.MINUTE, 59);
+            c.set(Calendar.SECOND, 59);
+            c.set(Calendar.MILLISECOND, 999);
             Date fin = c.getTime();
 
-            String where = " o.paciente.institucion=:institucion and o.fecha between :inicio and :fin " + (especialidad != null ? "and o.especialidad=:especialidad" : "");
+            String where = " o.paciente.institucion=:institucion and o.fecha between :inicio and :fin " + (especialidad != null ? "and o.profesional.especialidad=:especialidad" : "");
             Map parameters = new HashMap();
             parameters.put("inicio", inicio);
             parameters.put("fin", fin);
@@ -188,6 +162,16 @@ public class TransaccionalBean implements Serializable {
             Logger.getLogger(TransaccionalBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return 0;
+    }
+
+    public void exportHandler(org.icefaces.ace.event.ChartImageExportEvent e) {
+        try {
+            java.io.FileOutputStream out = new java.io.FileOutputStream("asdf1.png");
+            out.write(e.getBytes());
+            out.close();
+        } catch (Exception ex) {
+
+        }
     }
 
     /**
@@ -328,6 +312,20 @@ public class TransaccionalBean implements Serializable {
      */
     public void setBarDemoXTwoAxis(Axis barDemoXTwoAxis) {
         this.barDemoXTwoAxis = barDemoXTwoAxis;
+    }
+
+    /**
+     * @return the modelFill
+     */
+    public CartesianSeries getModelFill() {
+        return modelFill;
+    }
+
+    /**
+     * @param modelFill the modelFill to set
+     */
+    public void setModelFill(CartesianSeries modelFill) {
+        this.modelFill = modelFill;
     }
 
 }
