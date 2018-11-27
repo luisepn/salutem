@@ -27,7 +27,8 @@ import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
 import org.icefaces.ace.component.chart.Axis;
 import org.icefaces.ace.component.chart.AxisType;
-import org.icefaces.ace.model.chart.DragConstraintAxis;
+import org.icefaces.ace.event.ChartImageExportEvent;
+import org.utilitarios.salutem.Recurso;
 
 /**
  *
@@ -76,6 +77,8 @@ public class TransaccionalBean implements Serializable {
         //Inicio gráfico: configuración y primer llenado
         grafico = new ArrayList<>();
         CartesianSeries citasPorDia = new CartesianSeries();
+        citasPorDia.setPointLabels(Boolean.TRUE);
+        citasPorDia.setPointLabelStacked(Boolean.TRUE);
         citasPorDia.setType(CartesianType.LINE);
         citasPorDia.setLabel("Citas");
         citasPorDia.setYAxis(2);
@@ -92,10 +95,10 @@ public class TransaccionalBean implements Serializable {
             for (Parametros d : dias) {
                 subgrafico.add(getFrecuenciaDiaria(d.toInteger(), e));
                 subgrafico.setLabel(e.getNombre());
-
+                subgrafico.setPointLabels(Boolean.TRUE);
+                subgrafico.setPointLabelStacked(Boolean.TRUE);
             }
-            subgrafico.setPointLabels(Boolean.TRUE);
-            subgrafico.setPointLabelStacked(Boolean.TRUE);
+            // subgrafico.setPointLabelList();
             grafico.add(subgrafico);
 
         }
@@ -104,7 +107,7 @@ public class TransaccionalBean implements Serializable {
         //Inicio configuración subgráfico
         subgraficoConfig = new CartesianSeries();
         subgraficoConfig.setType(CartesianType.BAR);
-        subgraficoConfig.setFillToZero(true);
+        subgraficoConfig.setFillToZero(false);
 
         String[] ticks = new String[especialidades.size() * dias.size()];
         int i = 0;
@@ -117,17 +120,17 @@ public class TransaccionalBean implements Serializable {
         //Fin configuración gráfico
         //Inicio configuración de ordenadas arriba y abajo
         ordenadasGeneralConfig = new Axis();
-        ordenadasGeneralConfig.setTickAngle(-10);
+        ordenadasGeneralConfig.setTickAngle(0);
         //Fin configuración de ordenadas
 
         Axis yLeft = new Axis();
         yLeft.setAutoscale(true);
-        yLeft.setTickInterval("2");
+        yLeft.setTickInterval("5");
         yLeft.setLabel("Citas");
 
         Axis yRight = new Axis();
         yRight.setAutoscale(true);
-        yRight.setTickInterval("2");
+        yRight.setTickInterval("5");
         yRight.setLabel("Citas Por Especialidad");
 
         ordenadasConfigSpecific = new Axis[2];
@@ -141,7 +144,7 @@ public class TransaccionalBean implements Serializable {
         }
 
         abscisaBottom = new Axis();
-        abscisaBottom.setTicks(ticks);
+//        abscisaBottom.setTicks(ticks);
         abscisaBottom.setType(AxisType.CATEGORY);
 
         abscisaTop = new Axis();
@@ -182,14 +185,18 @@ public class TransaccionalBean implements Serializable {
         return 0;
     }
 
-    public void exportHandler(org.icefaces.ace.event.ChartImageExportEvent e) {
-        try {
-            java.io.FileOutputStream out = new java.io.FileOutputStream("asdf1.png");
-            out.write(e.getBytes());
-            out.close();
-        } catch (Exception ex) {
+    private byte[] image;
 
-        }
+    public void saveImage(ChartImageExportEvent event) {
+        image = event.getBytes();
+    }
+
+    public Recurso getSavedImage() {
+        return new Recurso(image);
+    }
+
+    public boolean isImageSaved() {
+        return image != null && image.length > 0;
     }
 
     /**

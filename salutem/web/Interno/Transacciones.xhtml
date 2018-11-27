@@ -18,25 +18,30 @@
             <ui:define name="content">
 
                 <h:panelGrid width="100%">
-
-                    <ace:chart id="chart"
-                               animated="false"
-                               value="#{dashboardTransaccional.grafico}"
-                               stackSeries="false"  
-                               defaultSeriesConfig ="#{dashboardTransaccional.subgraficoConfig}"
-                               defaultAxesConfig="#{dashboardTransaccional.ordenadasGeneralConfig}"     
-                               xAxis="#{dashboardTransaccional.abscisaBottom}"  
-                               x2Axis="#{dashboardTransaccional.abscisaTop}"
-                               yAxes="#{dashboardTransaccional.ordenadasConfigSpecific}"
-                               legend="true"
-                               legendPlacement="OUTSIDE_GRID"
-                               highlighter="true"
-                               highlighterLocation="N"
-                               highlighterShowMarker="false"
-                               highlighterBringSeriesToFront="true"/>
+                    <h:commandButton id="exportButton" value="Export as Image"
+                                     onclick="exportChart.exportToImage(ice.ace.jq('.chartExport'));
+                                             return false;" />
+                    <ace:chart 
+                        binding="#{salutemChartExport}"
+                        id="chart"
+                        animated="false"
+                        value="#{dashboardTransaccional.grafico}"
+                        stackSeries="false"  
+                        defaultSeriesConfig ="#{dashboardTransaccional.subgraficoConfig}"
+                        defaultAxesConfig="#{dashboardTransaccional.ordenadasGeneralConfig}"     
+                        xAxis="#{dashboardTransaccional.abscisaBottom}"  
+                        x2Axis="#{dashboardTransaccional.abscisaTop}"
+                        yAxes="#{dashboardTransaccional.ordenadasConfigSpecific}"
+                        legend="true"
+                        showTooltip="true"
+                        legendPlacement="INSIDE_GRID"
+                        highlighter="true"
+                        highlighterLocation="W"
+                        highlighterShowMarker="false"
+                        highlighterBringSeriesToFront="true"
+                        imageExportListener="#{dashboardTransaccional.saveImage}"/>
 
                 </h:panelGrid>
-
             </ui:define>
 
         </ui:composition>

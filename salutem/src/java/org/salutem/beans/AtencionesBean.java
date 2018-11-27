@@ -27,7 +27,6 @@ import org.entidades.salutem.Atenciones;
 import org.entidades.salutem.Citas;
 import org.entidades.salutem.Datos;
 import org.entidades.salutem.Formulas;
-import org.entidades.salutem.Instituciones;
 import org.entidades.salutem.Ordenes;
 import org.entidades.salutem.Perfiles;
 import org.entidades.salutem.Prescripciones;
