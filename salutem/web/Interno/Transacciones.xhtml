@@ -12,39 +12,47 @@
       xmlns:icecore="http://www.icefaces.org/icefaces/core"
       xmlns:ace="http://www.icefaces.org/icefaces/components">
     <h:body>
-
         <ui:composition template="../plantillas/Plantilla.xhtml">
-
             <ui:define name="content">
-
-                <h:panelGrid width="100%">
-                    <h:commandButton id="exportButton" value="Export as Image"
-                                     onclick="exportChart.exportToImage(ice.ace.jq('.chartExport'));
-                                             return false;" />
+                <ace:panel header="Citas Agendadas en la semana" style="width: 100%">
                     <ace:chart 
-                        binding="#{salutemChartExport}"
-                        id="chart"
                         animated="false"
-                        value="#{dashboardTransaccional.grafico}"
                         stackSeries="false"  
-                        defaultSeriesConfig ="#{dashboardTransaccional.subgraficoConfig}"
-                        defaultAxesConfig="#{dashboardTransaccional.ordenadasGeneralConfig}"     
-                        xAxis="#{dashboardTransaccional.abscisaBottom}"  
-                        x2Axis="#{dashboardTransaccional.abscisaTop}"
-                        yAxes="#{dashboardTransaccional.ordenadasConfigSpecific}"
+                        value="#{salutemReporteCitas.graficoCitasPorDia.grafico}"
+                        defaultSeriesConfig ="#{salutemReporteCitas.graficoCitasPorDia.subgraficoConfig}"
+                        defaultAxesConfig="#{salutemReporteCitas.graficoCitasPorDia.ordenadasGeneralConfig}"     
+                        xAxis="#{salutemReporteCitas.graficoCitasPorDia.abscisaBottom}"  
+                        x2Axis="#{salutemReporteCitas.graficoCitasPorDia.abscisaTop}"
+                        yAxes="#{salutemReporteCitas.graficoCitasPorDia.ordenadasConfigSpecific}"
                         legend="true"
                         showTooltip="true"
                         legendPlacement="INSIDE_GRID"
                         highlighter="true"
-                        highlighterLocation="W"
+                        highlighterLocation="NW"
                         highlighterShowMarker="false"
                         highlighterBringSeriesToFront="true"
-                        imageExportListener="#{dashboardTransaccional.saveImage}"/>
-
-                </h:panelGrid>
+                        zoom="true"/>
+                </ace:panel>
+                <ace:panel header="Citas Agendadas en el año" style="width: 100%">
+                    <ace:chart 
+                        animated="false"
+                        stackSeries="false"  
+                        value="#{salutemReporteCitas.graficoCitasPorMes.grafico}"
+                        defaultSeriesConfig ="#{salutemReporteCitas.graficoCitasPorMes.subgraficoConfig}"
+                        defaultAxesConfig="#{salutemReporteCitas.graficoCitasPorMes.ordenadasGeneralConfig}"     
+                        xAxis="#{salutemReporteCitas.graficoCitasPorMes.abscisaBottom}"  
+                        x2Axis="#{salutemReporteCitas.graficoCitasPorMes.abscisaTop}"
+                        yAxes="#{salutemReporteCitas.graficoCitasPorMes.ordenadasConfigSpecific}"
+                        legend="true"
+                        showTooltip="true"
+                        legendPlacement="INSIDE_GRID"
+                        highlighter="true"
+                        highlighterLocation="NW"
+                        highlighterShowMarker="false"
+                        highlighterBringSeriesToFront="true"
+                        zoom="true"/>
+                </ace:panel>
             </ui:define>
-
         </ui:composition>
     </h:body>
-
 </html>

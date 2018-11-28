@@ -34,17 +34,17 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "parametros")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Parametros.findAll", query = "SELECT p FROM Parametros p")
-    , @NamedQuery(name = "Parametros.findById", query = "SELECT p FROM Parametros p WHERE p.id = :id")
-    , @NamedQuery(name = "Parametros.findByNombre", query = "SELECT p FROM Parametros p WHERE p.nombre = :nombre")
-    , @NamedQuery(name = "Parametros.findByCodigo", query = "SELECT p FROM Parametros p WHERE p.codigo = :codigo")
-    , @NamedQuery(name = "Parametros.findByDescripcion", query = "SELECT p FROM Parametros p WHERE p.descripcion = :descripcion")
-    , @NamedQuery(name = "Parametros.findByParametros", query = "SELECT p FROM Parametros p WHERE p.parametros = :parametros")
-    , @NamedQuery(name = "Parametros.findByActivo", query = "SELECT p FROM Parametros p WHERE p.activo = :activo")
-    , @NamedQuery(name = "Parametros.findByCreado", query = "SELECT p FROM Parametros p WHERE p.creado = :creado")
-    , @NamedQuery(name = "Parametros.findByCreadopor", query = "SELECT p FROM Parametros p WHERE p.creadopor = :creadopor")
-    , @NamedQuery(name = "Parametros.findByActualizado", query = "SELECT p FROM Parametros p WHERE p.actualizado = :actualizado")
-    , @NamedQuery(name = "Parametros.findByActualizadopor", query = "SELECT p FROM Parametros p WHERE p.actualizadopor = :actualizadopor")})
+    @NamedQuery(name = "Parametros.findAll", query = "SELECT p FROM Parametros p"),
+    @NamedQuery(name = "Parametros.findById", query = "SELECT p FROM Parametros p WHERE p.id = :id"),
+    @NamedQuery(name = "Parametros.findByNombre", query = "SELECT p FROM Parametros p WHERE p.nombre = :nombre"),
+    @NamedQuery(name = "Parametros.findByCodigo", query = "SELECT p FROM Parametros p WHERE p.codigo = :codigo"),
+    @NamedQuery(name = "Parametros.findByDescripcion", query = "SELECT p FROM Parametros p WHERE p.descripcion = :descripcion"),
+    @NamedQuery(name = "Parametros.findByParametros", query = "SELECT p FROM Parametros p WHERE p.parametros = :parametros"),
+    @NamedQuery(name = "Parametros.findByActivo", query = "SELECT p FROM Parametros p WHERE p.activo = :activo"),
+    @NamedQuery(name = "Parametros.findByCreado", query = "SELECT p FROM Parametros p WHERE p.creado = :creado"),
+    @NamedQuery(name = "Parametros.findByCreadopor", query = "SELECT p FROM Parametros p WHERE p.creadopor = :creadopor"),
+    @NamedQuery(name = "Parametros.findByActualizado", query = "SELECT p FROM Parametros p WHERE p.actualizado = :actualizado"),
+    @NamedQuery(name = "Parametros.findByActualizadopor", query = "SELECT p FROM Parametros p WHERE p.actualizadopor = :actualizadopor")})
 public class Parametros implements Serializable {
 
     @Size(max = 2147483647)
@@ -111,6 +111,11 @@ public class Parametros implements Serializable {
     private List<Menus> menusList;
 
     public Parametros() {
+    }
+
+    public Parametros(String nombre, int id) {
+        this.nombre = nombre;
+        this.id = id;
     }
 
     public Parametros(Integer id) {
