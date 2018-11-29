@@ -29,8 +29,8 @@ public class IngresoSistemaBean implements Serializable {
 
     private Personas persona;
 
-    private String usr;
-    private String pwd;
+    private String usr = "root";
+    private String pwd = "luis";
     private String claveNueva;
     private String claveRetipeada;
     private String claveAnterior;

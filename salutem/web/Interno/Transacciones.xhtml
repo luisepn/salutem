@@ -15,42 +15,100 @@
         <ui:composition template="../plantillas/Plantilla.xhtml">
             <ui:define name="content">
                 <ace:panel header="Citas Agendadas en la semana" style="width: 100%">
-                    <ace:chart 
-                        animated="false"
-                        stackSeries="false"  
-                        value="#{salutemReporteCitas.graficoCitasPorDia.grafico}"
-                        defaultSeriesConfig ="#{salutemReporteCitas.graficoCitasPorDia.subgraficoConfig}"
-                        defaultAxesConfig="#{salutemReporteCitas.graficoCitasPorDia.ordenadasGeneralConfig}"     
-                        xAxis="#{salutemReporteCitas.graficoCitasPorDia.abscisaBottom}"  
-                        x2Axis="#{salutemReporteCitas.graficoCitasPorDia.abscisaTop}"
-                        yAxes="#{salutemReporteCitas.graficoCitasPorDia.ordenadasConfigSpecific}"
-                        legend="true"
-                        showTooltip="true"
-                        legendPlacement="INSIDE_GRID"
-                        highlighter="true"
-                        highlighterLocation="NW"
-                        highlighterShowMarker="false"
-                        highlighterBringSeriesToFront="true"
-                        zoom="true"/>
+                    <h:panelGrid columns="2" width="100%">
+                        <ace:chart
+                            legend="true"
+                            showTooltip="true"
+                            width="400"
+                            animated="true"
+                            legendPlacement="OUTSIDE_GRID"
+                            value="#{salutemReporteCitas.pieCitasPorSemana}"/>
+                        <ace:chart  
+                            width="1000"
+                            animated="false"
+                            stackSeries="false"  
+                            value="#{salutemReporteCitas.barrasCitasPorSemana.grafico}"
+                            defaultSeriesConfig ="#{salutemReporteCitas.barrasCitasPorSemana.subgraficoConfig}"
+                            defaultAxesConfig="#{salutemReporteCitas.barrasCitasPorSemana.ordenadasGeneralConfig}"     
+                            xAxis="#{salutemReporteCitas.barrasCitasPorSemana.abscisaBottom}"  
+                            x2Axis="#{salutemReporteCitas.barrasCitasPorSemana.abscisaTop}"
+                            yAxes="#{salutemReporteCitas.barrasCitasPorSemana.ordenadasConfigSpecific}"
+                            legend="true"
+                            showTooltip="true"
+                            legendPlacement="OUTSIDE_GRID"
+                            highlighter="true"
+                            highlighterLocation="NW"
+                            highlighterShowMarker="false"
+                            highlighterBringSeriesToFront="true"
+                            zoom="true"/>
+                    </h:panelGrid>
+                </ace:panel>
+                <ace:panel header="Citas Agendadas en el Mes" style="width: 100%">
+                    <h:panelGrid columns="3" width="100%">
+                        <ace:chart
+                            title="Citas Por Mes"
+                            legend="true"
+                            showTooltip="true"
+                            width="400"
+                            animated="true"
+                            legendPlacement="OUTSIDE_GRID"
+                            value="#{salutemReporteCitas.pieCitasPorMes}"/>
+                        <ace:chart  
+                            width="1000"
+                            animated="false"
+                            stackSeries="false"  
+                            value="#{salutemReporteCitas.barrasCitasPorMes.grafico}"
+                            defaultAxesConfig="#{salutemReporteCitas.barrasCitasPorMes.ordenadasGeneralConfig}"     
+                            xAxis="#{salutemReporteCitas.barrasCitasPorMes.abscisaBottom}"  
+                            x2Axis="#{salutemReporteCitas.barrasCitasPorMes.abscisaTop}"
+                            yAxes="#{salutemReporteCitas.barrasCitasPorMes.ordenadasConfigSpecific}"
+                            legend="true"
+                            showTooltip="true"
+                            legendPlacement="OUTSIDE_GRID"
+                            highlighter="true"
+                            highlighterLocation="NW"
+                            highlighterShowMarker="false"
+                            highlighterBringSeriesToFront="true"
+                            zoom="true"/>
+                        <ace:chart
+                            title="Atenciones Por Mes"
+                            legend="true"
+                            showTooltip="true"
+                            width="400"
+                            animated="true"
+                            legendPlacement="OUTSIDE_GRID"
+                            value="#{salutemReporteCitas.pieAtencionesMes}"
+                            defaultSeriesConfig="#{salutemReporteCitas.model}"/>
+                    </h:panelGrid>
                 </ace:panel>
                 <ace:panel header="Citas Agendadas en el año" style="width: 100%">
-                    <ace:chart 
-                        animated="false"
-                        stackSeries="false"  
-                        value="#{salutemReporteCitas.graficoCitasPorMes.grafico}"
-                        defaultSeriesConfig ="#{salutemReporteCitas.graficoCitasPorMes.subgraficoConfig}"
-                        defaultAxesConfig="#{salutemReporteCitas.graficoCitasPorMes.ordenadasGeneralConfig}"     
-                        xAxis="#{salutemReporteCitas.graficoCitasPorMes.abscisaBottom}"  
-                        x2Axis="#{salutemReporteCitas.graficoCitasPorMes.abscisaTop}"
-                        yAxes="#{salutemReporteCitas.graficoCitasPorMes.ordenadasConfigSpecific}"
-                        legend="true"
-                        showTooltip="true"
-                        legendPlacement="INSIDE_GRID"
-                        highlighter="true"
-                        highlighterLocation="NW"
-                        highlighterShowMarker="false"
-                        highlighterBringSeriesToFront="true"
-                        zoom="true"/>
+                    <h:panelGrid columns="2" width="100%">
+                        <ace:chart
+                            legend="true"
+                            showTooltip="true"
+                            width="400"
+                            animated="true"
+                            legendPlacement="OUTSIDE_GRID"
+                            value="#{salutemReporteCitas.pieCitasPorAnio}"/>
+                        <ace:chart 
+                            width="1000"
+                            animated="false"
+                            stackSeries="false"  
+                            value="#{salutemReporteCitas.barrasCitasPorAnio.grafico}"
+                            defaultSeriesConfig ="#{salutemReporteCitas.barrasCitasPorAnio.subgraficoConfig}"
+                            defaultAxesConfig="#{salutemReporteCitas.barrasCitasPorAnio.ordenadasGeneralConfig}"     
+                            xAxis="#{salutemReporteCitas.barrasCitasPorAnio.abscisaBottom}"  
+                            x2Axis="#{salutemReporteCitas.barrasCitasPorAnio.abscisaTop}"
+                            yAxes="#{salutemReporteCitas.barrasCitasPorAnio.ordenadasConfigSpecific}"
+                            legend="true"
+                            showTooltip="true"
+                            legendPlacement="OUTSIDE_GRID"
+                            highlighter="true"
+                            highlighterLocation="NW"
+                            highlighterShowMarker="false"
+                            highlighterBringSeriesToFront="true"
+                            zoom="true"/>
+                    </h:panelGrid>
                 </ace:panel>
             </ui:define>
         </ui:composition>

@@ -16,8 +16,10 @@ import javax.enterprise.inject.Any;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.controladores.salutem.AtencionesFacade;
 import org.controladores.salutem.CitasFacade;
 import org.entidades.salutem.Parametros;
+import org.entidades.salutem.Perfiles;
 import org.excepciones.salutem.ExcepcionDeConsulta;
 import org.icefaces.ace.model.chart.CartesianSeries;
 import org.icefaces.ace.model.chart.CartesianSeries.CartesianType;
@@ -27,6 +29,7 @@ import org.salutem.utilitarios.Mensajes;
 import org.icefaces.ace.component.chart.Axis;
 import org.icefaces.ace.component.chart.AxisType;
 import org.icefaces.ace.model.chart.SectorSeries;
+import org.icefaces.ace.model.chart.SectorSeries.SectorType;
 import org.salutem.utilitarios.GraficoCombinado;
 
 /**
@@ -45,30 +48,64 @@ public class CitasBean implements Serializable {
     @Any
     private CombosBean combosBean;
 
-    private List<Parametros> especialidades;
+    private Perfiles perfil;
 
-    private GraficoCombinado graficoCitasPorDia;
-    private GraficoCombinado graficoCitasPorMes;
+    private List<Parametros> especialidades;
+    private Calendar calendar;
+    private Date fecha;
+
+    private GraficoCombinado barrasCitasPorSemana;
+    private GraficoCombinado barrasCitasPorMes;
+    private GraficoCombinado barrasCitasPorAnio;
+
+    private SectorSeries model = new SectorSeries();
+
+    private List<SectorSeries> pieCitasPorSemana;
+    private List<SectorSeries> pieCitasPorMes;
+    private List<SectorSeries> pieCitasPorAnio;
+    private List<SectorSeries> pieAtencionesMes;
 
     @EJB
     private CitasFacade ejbCitas;
+    @EJB
+    private AtencionesFacade ejbAtenciones;
 
     @PostConstruct
     public void iniciar() {
+        perfil = seguridadBean.traerPerfil("DashBoard");
         especialidades = combosBean.getListaEspecialidades();
-        graficoCitasPorDia = citasPorDia();
-        graficoCitasPorMes = citasPorMes();
+        buscarTodo();
     }
 
-    private GraficoCombinado citasPorDia() {
+    private void buscarTodo() {
+        if (fecha == null) {
+            fecha = new Date();
+        }
+
+        model.setType(SectorType.DONUT);
+
+        calendar = Calendar.getInstance();
+        barrasCitasPorSemana = citasBarSemana();
+        barrasCitasPorMes = citasBarMes();
+        barrasCitasPorAnio = citasBarAnio();
+
+        pieCitasPorSemana = citasPieSemana();
+        pieCitasPorMes = citasPieMes();
+        pieCitasPorAnio = citasPieAnio();
+
+        pieAtencionesMes = atencionesPieMes();
+
+    }
+
+    private GraficoCombinado citasBarSemana() {
         List<Parametros> dias = new LinkedList<>();
-        dias.add(new Parametros("Lunes", 2));
-        dias.add(new Parametros("Martes", 3));
-        dias.add(new Parametros("Miércoles", 4));
-        dias.add(new Parametros("Jueves", 5));
-        dias.add(new Parametros("Viernes", 6));
-        dias.add(new Parametros("Sabado", 7));
-        dias.add(new Parametros("Domingo", 1));
+        dias.add(new Parametros("lun", 2));
+        dias.add(new Parametros("mar", 3));
+        dias.add(new Parametros("mié", 4));
+        dias.add(new Parametros("jue", 5));
+        dias.add(new Parametros("vie", 6));
+        dias.add(new Parametros("sab", 7));
+        dias.add(new Parametros("dom", 1));
 
         //Inicio gráfico: configuración y primer llenado
         List<CartesianSeries> grafico = new ArrayList<>();
@@ -80,7 +117,7 @@ public class CitasBean implements Serializable {
         citasPorDia.setYAxis(2);
         citasPorDia.setXAxis(2);
         for (Parametros d : dias) {
-            citasPorDia.add(d.getNombre(), getFrecuencia('D', d.getId(), null));
+            citasPorDia.add(d.getNombre(), getFrecuencia('C', 'D', d.getId(), null));
         }
         grafico.add(citasPorDia);
         //Fin gráfico: configuración y primer llenado
@@ -89,7 +126,7 @@ public class CitasBean implements Serializable {
         for (Parametros e : especialidades) {
             CartesianSeries subgrafico = new CartesianSeries();
             for (Parametros d : dias) {
-                subgrafico.add(getFrecuencia('D', d.getId(), e));
+                subgrafico.add(getFrecuencia('C', 'D', d.getId(), e));
                 subgrafico.setLabel(e.getNombre());
                 subgrafico.setPointLabels(Boolean.TRUE);
                 subgrafico.setPointLabelStacked(Boolean.TRUE);
@@ -107,7 +144,7 @@ public class CitasBean implements Serializable {
 
         //Inicio configuración de ordenadas arriba y abajo
         Axis ordenadasGeneralConfig = new Axis();
-        ordenadasGeneralConfig.setTickAngle(-45);
+        ordenadasGeneralConfig.setTickAngle(0);
         //Fin configuración de ordenadas
 
         Axis yLeft = new Axis();
@@ -118,7 +155,7 @@ public class CitasBean implements Serializable {
         Axis yRight = new Axis();
         yRight.setAutoscale(true);
         yRight.setTickInterval("5");
-        yRight.setLabel("Citas\nPor\nEspecialidad");
+        yRight.setLabel("");
 
         Axis[] ordenadasConfigSpecific = new Axis[2];
         ordenadasConfigSpecific[0] = yLeft;
@@ -141,20 +178,90 @@ public class CitasBean implements Serializable {
         return new GraficoCombinado(grafico, subgraficoConfig, abscisaBottom, abscisaTop, ordenadasGeneralConfig, ordenadasConfigSpecific);
     }
 
-    private GraficoCombinado citasPorMes() {
+    private GraficoCombinado citasBarMes() {
+        //Inicio gráfico: configuración y primer llenado
+        List<CartesianSeries> grafico = new ArrayList<>();
+        CartesianSeries citas = new CartesianSeries();
+        citas.setPointLabels(Boolean.TRUE);
+        citas.setPointLabelStacked(Boolean.TRUE);
+        citas.setType(CartesianType.LINE);
+        citas.setLabel("Citas");
+        citas.setYAxis(2);
+        citas.setXAxis(2);
+
+        calendar.setTime(fecha);
+
+        for (Parametros e : especialidades) {
+            citas.add(e.getNombre(), getFrecuencia('C', 'M', calendar.get(Calendar.MONTH), e));
+        }
+        grafico.add(citas);
+        //Fin gráfico: configuración y primer llenado
+
+        //Inicio gráfico: llenado con subgráficos
+        CartesianSeries atenciones = new CartesianSeries();
+        atenciones.setBarWidth(10);
+        atenciones.setPointLabels(Boolean.TRUE);
+        atenciones.setPointLabelStacked(Boolean.TRUE);
+        atenciones.setType(CartesianType.BAR);
+        atenciones.setLabel("Atenciones");
+
+        calendar.setTime(fecha);
+        for (Parametros e : especialidades) {
+            atenciones.add(e.getNombre(), getFrecuencia('A', 'M', calendar.get(Calendar.MONTH), e));
+        }
+        //Fin gráfico: llenado con subgráficos
+        grafico.add(atenciones);
+
+        //Inicio configuración de ordenadas arriba y abajo
+        Axis ordenadasGeneralConfig = new Axis();
+        ordenadasGeneralConfig.setTickAngle(0);
+        //Fin configuración de ordenadas
+
+        Axis yLeft = new Axis();
+        yLeft.setAutoscale(true);
+        yLeft.setTickInterval("5");
+        yLeft.setLabel("Citas");
+
+        Axis yRight = new Axis();
+        yRight.setAutoscale(true);
+        yRight.setTickInterval("5");
+        yRight.setLabel("Atenciones");
+
+        Axis[] ordenadasConfigSpecific = new Axis[2];
+        ordenadasConfigSpecific[0] = yLeft;
+        ordenadasConfigSpecific[1] = yRight;
+
+        String[] ticks = new String[especialidades.size()];
+        int i = 0;
+        for (Parametros d : especialidades) {
+            ticks[i++] = d.getNombre();
+        }
+
+        Axis abscisaBottom = new Axis();
+        //abscisaBottom.setTicks(ticks);
+        abscisaBottom.setType(AxisType.CATEGORY);
+
+        Axis abscisaTop = new Axis();
+//        abscisaTop.setTicks(ticks);
+        abscisaTop.setType(AxisType.CATEGORY);
+
+        return new GraficoCombinado(grafico, null, abscisaBottom, abscisaTop, ordenadasGeneralConfig, ordenadasConfigSpecific);
+    }
+
+    private GraficoCombinado citasBarAnio() {
         List<Parametros> meses = new LinkedList<>();
-        meses.add(new Parametros("Enero", 0));
-        meses.add(new Parametros("Febrero", 1));
-        meses.add(new Parametros("Marzo", 2));
-        meses.add(new Parametros("Abril", 3));
-        meses.add(new Parametros("Mayo", 4));
-        meses.add(new Parametros("Junio", 5));
-        meses.add(new Parametros("Julio", 6));
-        meses.add(new Parametros("Agosto", 7));
-        meses.add(new Parametros("Septiembre", 8));
-        meses.add(new Parametros("Octubre", 9));
-        meses.add(new Parametros("Noviembre", 10));
-        meses.add(new Parametros("Diciembre", 11));
+        meses.add(new Parametros("en", 0));
+        meses.add(new Parametros("feb", 1));
+        meses.add(new Parametros("mar", 2));
+        meses.add(new Parametros("abr", 3));
+        meses.add(new Parametros("may", 4));
+        meses.add(new Parametros("jun", 5));
+        meses.add(new Parametros("jul", 6));
+        meses.add(new Parametros("ago", 7));
+        meses.add(new Parametros("sep", 8));
+        meses.add(new Parametros("oct", 9));
+        meses.add(new Parametros("nov", 10));
+        meses.add(new Parametros("dic", 11));
 
         //Inicio gráfico: configuración y primer llenado
         List<CartesianSeries> grafico = new ArrayList<>();
@@ -166,7 +273,7 @@ public class CitasBean implements Serializable {
         citasPorMes.setYAxis(2);
         citasPorMes.setXAxis(2);
         for (Parametros m : meses) {
-            citasPorMes.add(m.getNombre(), getFrecuencia('M', m.getId(), null));
+            citasPorMes.add(m.getNombre(), getFrecuencia('C', 'M', m.getId(), null));
         }
         grafico.add(citasPorMes);
         //Fin gráfico: configuración y primer llenado
@@ -175,10 +282,11 @@ public class CitasBean implements Serializable {
         for (Parametros e : especialidades) {
             CartesianSeries subgrafico = new CartesianSeries();
             for (Parametros d : meses) {
-                subgrafico.add(getFrecuencia('M', d.getId(), e));
+                subgrafico.add(getFrecuencia('C', 'M', d.getId(), e));
                 subgrafico.setLabel(e.getNombre());
                 subgrafico.setPointLabels(Boolean.TRUE);
                 subgrafico.setPointLabelStacked(Boolean.TRUE);
+                subgrafico.setBarWidth(8);
             }
             grafico.add(subgrafico);
 
@@ -193,7 +301,7 @@ public class CitasBean implements Serializable {
 
         //Inicio configuración de ordenadas arriba y abajo
         Axis ordenadasGeneralConfig = new Axis();
-        ordenadasGeneralConfig.setTickAngle(-45);
+        ordenadasGeneralConfig.setTickAngle(0);
         //Fin configuración de ordenadas
 
         Axis yLeft = new Axis();
@@ -204,7 +312,7 @@ public class CitasBean implements Serializable {
         Axis yRight = new Axis();
         yRight.setAutoscale(true);
         yRight.setTickInterval("10");
-        yRight.setLabel("Citas\nPor\nEspecialidad");
+        yRight.setLabel("");
 
         Axis[] ordenadasConfigSpecific = new Axis[2];
         ordenadasConfigSpecific[0] = yLeft;
@@ -227,55 +335,145 @@ public class CitasBean implements Serializable {
         return new GraficoCombinado(grafico, subgraficoConfig, abscisaBottom, abscisaTop, ordenadasGeneralConfig, ordenadasConfigSpecific);
     }
 
-    private int getFrecuencia(char tipo, int unidad, Parametros especialidad) {
+    private List<SectorSeries> citasPieSemana() {
+        List<SectorSeries> retorno = new ArrayList<>();
+        SectorSeries sector = new SectorSeries();
+        for (Parametros e : especialidades) {
+            sector.add(e.getNombre(), getFrecuencia('C', 'S', 2, e));
+        }
+        sector.setType(SectorType.PIE);
+        sector.setShowDataLabels(true);
+        sector.setDataLabelFormatString("%.2f%%");
+        sector.setSliceMargin(4);
+        retorno.add(sector);
+        return retorno;
+    }
+
+    private List<SectorSeries> citasPieMes() {
+        List<SectorSeries> retorno = new ArrayList<>();
+        SectorSeries sector = new SectorSeries();
+        calendar.setTime(fecha);
+        for (Parametros e : especialidades) {
+            sector.add(e.getNombre(), getFrecuencia('C', 'M', calendar.get(Calendar.MONTH), e));
+        }
+        sector.setType(SectorType.PIE);
+        sector.setShowDataLabels(true);
+        sector.setDataLabelFormatString("%.2f%%");
+        sector.setSliceMargin(4);
+        retorno.add(sector);
+        return retorno;
+    }
+
+    private List<SectorSeries> atencionesPieMes() {
+        calendar.setTime(fecha);
+        List<SectorSeries> retorno = new ArrayList<>();
+        SectorSeries citas = new SectorSeries();
+
+        int totalCitas = 0;
+
+        for (Parametros e : especialidades) {
+            int c = getFrecuencia('C', 'M', calendar.get(Calendar.MONTH), e);
+            citas.add(e.getNombre(), c);
+            totalCitas += c;
+        }
+        citas.add("Citas sin atención", 0);
+
+        citas.setShowDataLabels(true);
+        citas.setDataLabelFormatString("%.2f%%");
+        citas.setSliceMargin(4);
+        retorno.add(citas);
+
+        SectorSeries atenciones = new SectorSeries();
+
+        int totalAtenciones = 0;
+
+        for (Parametros e : especialidades) {
+            int a = getFrecuencia('A', 'M', calendar.get(Calendar.MONTH), e);
+            atenciones.add(e.getNombre(), a);
+            totalAtenciones += a;
+        }
+
+        atenciones.add("Citas sin atención", totalCitas - totalAtenciones);
+
+        atenciones.setShowDataLabels(true);
+        atenciones.setDataLabelFormatString("%.2f%%");
+        atenciones.setSliceMargin(4);
+        retorno.add(atenciones);
+
+        return retorno;
+    }
+
+    private List<SectorSeries> citasPieAnio() {
+        List<SectorSeries> retorno = new ArrayList<>();
+        SectorSeries sector = new SectorSeries();
+        for (Parametros e : especialidades) {
+            sector.add(e.getNombre(), getFrecuencia('C', 'A', 0, e));
+        }
+        sector.setType(SectorType.PIE);
+        sector.setShowDataLabels(true);
+        sector.setDataLabelFormatString("%.2f%%");
+        sector.setSliceMargin(4);
+        retorno.add(sector);
+        return retorno;
+    }
+
+    private int getFrecuencia(char tabla, char tipoUnidad, int unidad, Parametros especialidad) {
         try {
+            calendar.setTime(fecha);
 
-            Date inicio = null;
-            Date fin = null;
-            Calendar c;
+            Date inicio;
+            Date fin;
 
-            switch (tipo) {
+            switch (tipoUnidad) {
                 case 'D':
-                    c = Calendar.getInstance();
-                    c.set(Calendar.DAY_OF_WEEK, unidad);
-                    c.set(Calendar.HOUR_OF_DAY, 0);
-                    c.set(Calendar.MINUTE, 0);
-                    c.set(Calendar.SECOND, 0);
-                    c.set(Calendar.MILLISECOND, 0);
-                    inicio = c.getTime();
+                    calendar.set(Calendar.DAY_OF_WEEK, unidad);
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    inicio = calendar.getTime();
 
-                    c.add(Calendar.DAY_OF_WEEK, 1);
-                    c.add(Calendar.MILLISECOND, -1);
-                    fin = c.getTime();
+                    calendar.add(Calendar.DAY_OF_WEEK, 1);
+                    calendar.add(Calendar.MILLISECOND, -1);
+                    fin = calendar.getTime();
                     break;
                 case 'S':
-                    c = Calendar.getInstance();
-                    c.set(Calendar.DAY_OF_WEEK, unidad);
-                    c.set(Calendar.HOUR_OF_DAY, 0);
-                    c.set(Calendar.MINUTE, 0);
-                    c.set(Calendar.SECOND, 0);
-                    c.set(Calendar.MILLISECOND, 0);
-                    inicio = c.getTime();
+                    calendar.set(Calendar.DAY_OF_WEEK, unidad);
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    inicio = calendar.getTime();
 
-                    c.add(Calendar.DAY_OF_WEEK, 7);
-                    c.add(Calendar.MILLISECOND, -1);
-                    fin = c.getTime();
+                    calendar.add(Calendar.DAY_OF_WEEK, 7);
+                    calendar.add(Calendar.MILLISECOND, -1);
+                    fin = calendar.getTime();
                     break;
                 case 'M':
-                    c = Calendar.getInstance();
-                    c.set(Calendar.MONTH, unidad);
-                    c.set(Calendar.DAY_OF_MONTH, 1);
-                    c.set(Calendar.HOUR_OF_DAY, 0);
-                    c.set(Calendar.MINUTE, 0);
-                    c.set(Calendar.SECOND, 0);
-                    c.set(Calendar.MILLISECOND, 0);
-                    inicio = c.getTime();
+                    calendar.set(Calendar.MONTH, unidad);
+                    calendar.set(Calendar.DAY_OF_MONTH, 1);
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    inicio = calendar.getTime();
 
-                    c.add(Calendar.MONTH, 1);
-                    c.add(Calendar.MILLISECOND, -1);
-                    fin = c.getTime();
+                    calendar.add(Calendar.MONTH, 1);
+                    calendar.add(Calendar.MILLISECOND, -1);
+                    fin = calendar.getTime();
                     break;
                 case 'A':
+                    calendar.set(Calendar.MONTH, 0);
+                    calendar.set(Calendar.DAY_OF_MONTH, 1);
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    inicio = calendar.getTime();
+
+                    calendar.add(Calendar.YEAR, 1);
+                    calendar.add(Calendar.MILLISECOND, -1);
+                    fin = calendar.getTime();
                     break;
                 default:
                     inicio = new Date();
@@ -283,63 +481,57 @@ public class CitasBean implements Serializable {
                     break;
             }
 
-            String where = " o.activo=true and o.fecha between :inicio and :fin ";
-            Map parameters = new HashMap();
-            parameters.put("inicio", inicio);
-            parameters.put("fin", fin);
-//            if (combosBean.getProfesional() != null) {
-//                where += " and o.profesional=:profesional";
-//                parameters.put("profesional", combosBean.getProfesional());
-//            }
+            String where;
+            Map parameters;
+            switch (tabla) {
+                case 'C': //Citas
+                    where = " o.activo=true and o.fecha between :inicio and :fin ";
+                    parameters = new HashMap();
+                    parameters.put("inicio", inicio);
+                    parameters.put("fin", fin);
+                    //            if (!seguridadBean.getGrupo().getCodigo().equals("GSA")
+                    //                    || !seguridadBean.getGrupo().getCodigo().equals("GA")) {
+                    //                where += " and o.profesional=:profesional";
+                    //                parameters.put("profesional", combosBean.getProfesional());
+                    //            }
+                    if (combosBean.getInstitucion() != null) {
+                        where += " and o.profesional.institucion=:institucion";
+                        parameters.put("institucion", combosBean.getInstitucion());
+                    }
+                    if (especialidad != null) {
+                        where += " and o.profesional.especialidad=:especialidad";
+                        parameters.put("especialidad", especialidad);
+                    }
+                    return ejbCitas.contar(where, parameters);
+                case 'A': //Atenciones
+                    where = " o.cita.activo=true and o.cita.fecha between :inicio and :fin ";
+                    parameters = new HashMap();
+                    parameters.put("inicio", inicio);
+                    parameters.put("fin", fin);
+                    //            if (!seguridadBean.getGrupo().getCodigo().equals("GSA")
+                    //                    || !seguridadBean.getGrupo().getCodigo().equals("GA")) {
+                    //                where += " and o.profesional=:profesional";
+                    //                parameters.put("profesional", combosBean.getProfesional());
+                    //            }
+                    if (combosBean.getInstitucion() != null) {
+                        where += " and o.profesional.institucion=:institucion";
+                        parameters.put("institucion", combosBean.getInstitucion());
+                    }
+                    if (especialidad != null) {
+                        where += " and o.profesional.especialidad=:especialidad";
+                        parameters.put("especialidad", especialidad);
+                    }
+                    return ejbAtenciones.contar(where, parameters);
+            }
 
-            if (combosBean.getInstitucion() != null) {
-                where += " and o.profesional.institucion=:institucion";
-                parameters.put("institucion", combosBean.getInstitucion());
-            }
-            if (especialidad != null) {
-                where += " and o.profesional.especialidad=:especialidad";
-                parameters.put("especialidad", especialidad);
-            }
-            return ejbCitas.contar(where, parameters);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+        calendar = Calendar.getInstance();
+        calendar.setTime(fecha);
         return 0;
     }
-
-    private List<SectorSeries> antencionesPorCita() {
-        List<SectorSeries> retorno = new ArrayList<>();
-        for (Parametros e : especialidades) {
-            SectorSeries sector = new SectorSeries();
-            sector.add(e.getNombre(), getFrecuencia('S', 0, e));
-            sector.setShowDataLabels(true);
-            sector.setDataLabelFormatString("%.2f%%");
-            sector.setSliceMargin(4);
-            sector.setFill(false);
-            retorno.add(sector);
-        }
-        return retorno;
-    }
-
-    private List<SectorSeries> pieData = new ArrayList<SectorSeries>() {
-        {
-            add(new SectorSeries() {
-                {
-                    add("Heavy Industry", 12);
-                    add("Retail", 9);
-                    add("Light Industry", 14);
-                    add("Out of Home", 16);
-                    add("Commuting", 7);
-                    add("Orientation", 9);
-                    setShowDataLabels(true);
-                    setDataLabelFormatString("%.2f%%");
-                    setSliceMargin(4);
-                    setFill(false);
-                }
-            });
-        }
-    };
 
     /**
      * @return the seguridadBean
@@ -370,6 +562,20 @@ public class CitasBean implements Serializable {
     }
 
     /**
+     * @return the perfil
+     */
+    public Perfiles getPerfil() {
+        return perfil;
+    }
+
+    /**
+     * @param perfil the perfil to set
+     */
+    public void setPerfil(Perfiles perfil) {
+        this.perfil = perfil;
+    }
+
+    /**
      * @return the especialidades
      */
     public List<Parametros> getEspecialidades() {
@@ -384,30 +590,143 @@ public class CitasBean implements Serializable {
     }
 
     /**
-     * @return the graficoCitasPorDia
+     * @return the barrasCitasPorSemana
      */
-    public GraficoCombinado getGraficoCitasPorDia() {
-        return graficoCitasPorDia;
+    public GraficoCombinado getBarrasCitasPorSemana() {
+        return barrasCitasPorSemana;
     }
 
     /**
-     * @param graficoCitasPorDia the graficoCitasPorDia to set
+     * @param barrasCitasPorSemana the barrasCitasPorSemana to set
      */
-    public void setGraficoCitasPorDia(GraficoCombinado graficoCitasPorDia) {
-        this.graficoCitasPorDia = graficoCitasPorDia;
+    public void setBarrasCitasPorSemana(GraficoCombinado barrasCitasPorSemana) {
+        this.barrasCitasPorSemana = barrasCitasPorSemana;
     }
 
     /**
-     * @return the graficoCitasPorMes
+     * @return the barrasCitasPorAnio
      */
-    public GraficoCombinado getGraficoCitasPorMes() {
-        return graficoCitasPorMes;
+    public GraficoCombinado getBarrasCitasPorAnio() {
+        return barrasCitasPorAnio;
     }
 
     /**
-     * @param graficoCitasPorMes the graficoCitasPorMes to set
+     * @param barrasCitasPorAnio the barrasCitasPorAnio to set
      */
-    public void setGraficoCitasPorMes(GraficoCombinado graficoCitasPorMes) {
-        this.graficoCitasPorMes = graficoCitasPorMes;
+    public void setBarrasCitasPorAnio(GraficoCombinado barrasCitasPorAnio) {
+        this.barrasCitasPorAnio = barrasCitasPorAnio;
     }
+
+    /**
+     * @return the pieCitasPorSemana
+     */
+    public List<SectorSeries> getPieCitasPorSemana() {
+        return pieCitasPorSemana;
+    }
+
+    /**
+     * @param pieCitasPorSemana the pieCitasPorSemana to set
+     */
+    public void setPieCitasPorSemana(List<SectorSeries> pieCitasPorSemana) {
+        this.pieCitasPorSemana = pieCitasPorSemana;
+    }
+
+    /**
+     * @return the pieCitasPorAnio
+     */
+    public List<SectorSeries> getPieCitasPorAnio() {
+        return pieCitasPorAnio;
+    }
+
+    /**
+     * @param pieCitasPorAnio the pieCitasPorAnio to set
+     */
+    public void setPieCitasPorAnio(List<SectorSeries> pieCitasPorAnio) {
+        this.pieCitasPorAnio = pieCitasPorAnio;
+    }
+
+    /**
+     * @return the calendar
+     */
+    public Calendar getCalendar() {
+        return calendar;
+    }
+
+    /**
+     * @param calendar the calendar to set
+     */
+    public void setCalendar(Calendar calendar) {
+        this.calendar = calendar;
+    }
+
+    /**
+     * @return the fecha
+     */
+    public Date getFecha() {
+        return fecha;
+    }
+
+    /**
+     * @param fecha the fecha to set
+     */
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    /**
+     * @return the barrasCitasPorMes
+     */
+    public GraficoCombinado getBarrasCitasPorMes() {
+        return barrasCitasPorMes;
+    }
+
+    /**
+     * @param barrasCitasPorMes the barrasCitasPorMes to set
+     */
+    public void setBarrasCitasPorMes(GraficoCombinado barrasCitasPorMes) {
+        this.barrasCitasPorMes = barrasCitasPorMes;
+    }
+
+    /**
+     * @return the pieCitasPorMes
+     */
+    public List<SectorSeries> getPieCitasPorMes() {
+        return pieCitasPorMes;
+    }
+
+    /**
+     * @param pieCitasPorMes the pieCitasPorMes to set
+     */
+    public void setPieCitasPorMes(List<SectorSeries> pieCitasPorMes) {
+        this.pieCitasPorMes = pieCitasPorMes;
+    }
+
+    /**
+     * @return the pieAtencionesMes
+     */
+    public List<SectorSeries> getPieAtencionesMes() {
+        return pieAtencionesMes;
+    }
+
+    /**
+     * @param pieAtencionesMes the pieAtencionesMes to set
+     */
+    public void setPieAtencionesMes(List<SectorSeries> pieAtencionesMes) {
+        this.pieAtencionesMes = pieAtencionesMes;
+    }
+
+    /**
+     * @return the model
+     */
+    public SectorSeries getModel() {
+        return model;
+    }
+
+    /**
+     * @param model the model to set
+     */
+    public void setModel(SectorSeries model) {
+        this.model = model;
+    }
+
 }

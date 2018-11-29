@@ -286,6 +286,9 @@ public class SeguridadBean implements Serializable {
             if (logueado == null) {
                 logout();
             }
+            if (formulario.equals("DashBoard")) {
+                return null;
+            }
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
             Map params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
