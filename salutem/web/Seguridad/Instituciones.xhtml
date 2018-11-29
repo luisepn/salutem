@@ -87,19 +87,19 @@
                                     <ace:column headerText="Logotipo"/>
                                     <ace:column headerText="Nombre"
                                                 sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains"/>
-                                    <ace:column  headerText="Ciudad" 
+                                    <ace:column headerText="Ciudad" 
                                                  sortBy="#{item.direccion.ciudad}" filterBy="#{item.direccion.ciudad}" filterMatchMode="contains"/>
-                                    <ace:column  headerText="Calle Primaria" 
+                                    <ace:column headerText="Calle Primaria" 
                                                  sortBy="#{item.direccion.primaria}" filterBy="#{item.direccion.primaria}" filterMatchMode="contains"/>
-                                    <ace:column  headerText="Número" 
+                                    <ace:column headerText="Número" 
                                                  sortBy="#{item.direccion.numero}" filterBy="#{item.direccion.numero}" filterMatchMode="contains"/>
-                                    <ace:column  headerText="Calle Secundaria" 
+                                    <ace:column headerText="Calle Secundaria" 
                                                  sortBy="#{item.direccion.secundaria}" filterBy="#{item.direccion.secundaria}" filterMatchMode="contains"/>
-                                    <ace:column  headerText="Edificio/Piso" 
+                                    <ace:column headerText="Edificio/Piso" 
                                                  sortBy="#{item.direccion.piso}" filterBy="#{item.direccion.piso}" filterMatchMode="contains"/>
-                                    <ace:column  headerText="Fijo"
+                                    <ace:column headerText="Fijo"
                                                  sortBy="#{item.direccion.fijo}" filterBy="#{item.direccion.fijo}" filterMatchMode="contains"/>
-                                    <ace:column  headerText="Móvil"
+                                    <ace:column headerText="Móvil"
                                                  sortBy="#{item.direccion.movil}" filterBy="#{item.direccion.movil}" filterMatchMode="contains"/>
                                     <ace:column headerText="Email"
                                                 sortBy="#{item.email}" filterBy="#{item.email}" filterMatchMode="contains"/>
@@ -109,24 +109,24 @@
                                                 sortBy="#{item.descripcion}" filterBy="#{item.descripcion}" filterMatchMode="contains"/>
                                     <ace:column headerText="¿Laboratorio?"
                                                 sortBy="#{item.descripcion}"/>
-                                    <ace:column  headerText="Creación" 
+                                    <ace:column headerText="Creación" 
                                                  sortBy="#{item.creado}" filterBy="#{item.creado}" 
                                                  filterDatePattern="dd/MM/yyyy HH:mm"
                                                  filterValueMin="#{salutemSeguridad.inicioCreado}"
                                                  filterValueMax="#{salutemSeguridad.finCreado}"
                                                  type="DATE" rangedFilter="true"
                                                  rendered="false"  style="text-align: left"/>
-                                    <ace:column  headerText="Creador por" 
+                                    <ace:column headerText="Creador por" 
                                                  sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" 
                                                  filterMatchMode="contains" rendered="false"/>
-                                    <ace:column  headerText="Modificado" 
+                                    <ace:column headerText="Modificado" 
                                                  sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" 
                                                  filterDatePattern="dd/MM/yyyy HH:mm"
                                                  filterValueMin="#{salutemSeguridad.inicioActualizado}"
                                                  filterValueMax="#{salutemSeguridad.finActualizado}"
                                                  type="DATE" rangedFilter="true"
                                                  rendered="false"  style="text-align: left"/>
-                                    <ace:column  headerText="Modificado por" 
+                                    <ace:column headerText="Modificado por" 
                                                  sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" 
                                                  filterMatchMode="contains" rendered="false"/>
                                 </ace:row>
