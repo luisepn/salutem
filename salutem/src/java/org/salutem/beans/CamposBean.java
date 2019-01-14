@@ -15,20 +15,20 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
-import org.controladores.salutem.CamposFacade;
-import org.entidades.salutem.Campos;
-import org.entidades.salutem.Instituciones;
-import org.entidades.salutem.Perfiles;
-import org.excepciones.salutem.ExcepcionDeActualizacion;
-import org.excepciones.salutem.ExcepcionDeConsulta;
-import org.excepciones.salutem.ExcepcionDeCreacion;
-import org.excepciones.salutem.ExcepcionDeEliminacion;
+import org.salutem.controladores.CamposFacade;
+import org.salutem.entidades.Campos;
+import org.salutem.entidades.Instituciones;
+import org.salutem.entidades.Perfiles;
+import org.salutem.excepciones.ExcepcionDeActualizacion;
+import org.salutem.excepciones.ExcepcionDeConsulta;
+import org.salutem.excepciones.ExcepcionDeCreacion;
+import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
-import org.utilitarios.salutem.Items;
+import org.salutem.utilitarios.Items;
 
 /**
  *

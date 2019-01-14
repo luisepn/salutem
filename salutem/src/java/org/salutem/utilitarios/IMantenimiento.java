@@ -5,7 +5,7 @@
  */
 package org.salutem.utilitarios;
 
-import org.entidades.salutem.Perfiles;
+import org.salutem.entidades.Perfiles;
 
 /**
  *

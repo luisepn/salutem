@@ -14,11 +14,11 @@ import javax.enterprise.inject.Any;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.controladores.salutem.PersonasFacade;
-import org.controladores.salutemlogs.HistorialFacade;
-import org.entidades.salutemlogs.Historial;
-import org.entidades.salutem.Perfiles;
-import org.excepciones.salutemlogs.ExcepcionDeConsulta;
+import org.salutem.controladores.PersonasFacade;
+import org.salutemlogs.controladores.HistorialFacade;
+import org.salutemlogs.entidades.Historial;
+import org.salutem.entidades.Perfiles;
+import org.salutemlogs.excepciones.ExcepcionDeConsulta;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.beans.CombosBean;
@@ -296,7 +296,7 @@ public class HistorialBean implements Serializable {
                 order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
             return (List<Historial>) ejbHistorial.buscar(where, parameters, order, i, endIndex, false);
-        } catch (ExcepcionDeConsulta | org.excepciones.salutem.ExcepcionDeConsulta ex) {
+        } catch (ExcepcionDeConsulta | org.salutem.excepciones.ExcepcionDeConsulta ex) {
             Logger.getLogger(HistorialBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;

@@ -10,8 +10,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.entidades.salutem.Usuarios;
-import org.excepciones.salutem.ExcepcionDeConsulta;
+import org.salutem.entidades.Usuarios;
+import org.salutem.excepciones.ExcepcionDeConsulta;
 import org.salutem.beans.CombosBean;
 import org.salutem.utilitarios.Mensajes;
 

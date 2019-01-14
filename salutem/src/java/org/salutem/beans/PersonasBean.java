@@ -4,7 +4,7 @@ import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import org.entidades.salutem.Personas;
+import org.salutem.entidades.Personas;
 
 /**
  *

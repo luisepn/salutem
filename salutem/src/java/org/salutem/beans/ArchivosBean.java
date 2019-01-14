@@ -21,18 +21,18 @@ import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
-import org.controladores.salutem.ArchivosFacade;
-import org.entidades.salutem.Archivos;
-import org.excepciones.salutem.ExcepcionDeActualizacion;
-import org.excepciones.salutem.ExcepcionDeConsulta;
-import org.excepciones.salutem.ExcepcionDeCreacion;
+import org.salutem.controladores.ArchivosFacade;
+import org.salutem.entidades.Archivos;
+import org.salutem.excepciones.ExcepcionDeActualizacion;
+import org.salutem.excepciones.ExcepcionDeConsulta;
+import org.salutem.excepciones.ExcepcionDeCreacion;
 import org.icefaces.ace.component.fileentry.FileEntry;
 import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.icefaces.ace.component.fileentry.FileEntryResults;
 import org.icefaces.ace.component.fileentry.FileEntryStatus;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
-import org.utilitarios.salutem.Recurso;
+import org.salutem.utilitarios.Recurso;
 
 /**
  *

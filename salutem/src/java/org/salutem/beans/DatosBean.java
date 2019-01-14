@@ -12,20 +12,20 @@ import javax.faces.view.ViewScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.controladores.salutem.CamposFacade;
-import org.controladores.salutem.DatosFacade;
-import org.entidades.salutem.Archivos;
-import org.entidades.salutem.Campos;
-import org.entidades.salutem.Datos;
-import org.entidades.salutem.Parametros;
-import org.excepciones.salutem.ExcepcionDeActualizacion;
-import org.excepciones.salutem.ExcepcionDeConsulta;
-import org.excepciones.salutem.ExcepcionDeCreacion;
-import org.excepciones.salutem.ExcepcionDeEliminacion;
+import org.salutem.controladores.CamposFacade;
+import org.salutem.controladores.DatosFacade;
+import org.salutem.entidades.Archivos;
+import org.salutem.entidades.Campos;
+import org.salutem.entidades.Datos;
+import org.salutem.entidades.Parametros;
+import org.salutem.excepciones.ExcepcionDeActualizacion;
+import org.salutem.excepciones.ExcepcionDeConsulta;
+import org.salutem.excepciones.ExcepcionDeCreacion;
+import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.icefaces.ace.component.fileentry.FileEntryEvent;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
-import org.utilitarios.salutem.Items;
+import org.salutem.utilitarios.Items;
 
 /**
  *
