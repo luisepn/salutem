@@ -234,12 +234,18 @@ public class HorariosBean implements Serializable, IMantenimiento {
                         h.setDia(horario.getDia());
                         h.setActivo(Boolean.TRUE);
                         h.setHora(hora);
+                        h.setCreado(new Date());
+                        h.setCreadopor(seguridadBean.getLogueado().getUserid());
+                        h.setActualizado(h.getCreado());
+                        h.setActualizadopor(h.getCreadopor());
                         ejbHorarios.crear(h, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                     }
                 } else {
                     h = lista.get(0);
                     if (hora.isSeleccionado()) {
                         h.setActivo(Boolean.TRUE);
+                        h.setActualizado(new Date());
+                        h.setActualizadopor(seguridadBean.getLogueado().getUserid());
                         ejbHorarios.actualizar(h, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                     } else {
                         ejbHorarios.eliminar(h, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
