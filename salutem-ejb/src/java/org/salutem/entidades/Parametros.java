@@ -285,6 +285,29 @@ public class Parametros implements Serializable {
     public void setCamposList(List<Campos> camposList) {
         this.camposList = camposList;
     }
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Parametros)) {
+            return false;
+        }
+        Parametros other = (Parametros) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+    @Override
+    public String toString() {
+        return nombre;
+    }
+    public int toInteger() {
+        try {
+            return Integer.parseInt(parametros);
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 
     public String getNombre() {
         return nombre;
@@ -332,32 +355,6 @@ public class Parametros implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Parametros)) {
-            return false;
-        }
-        Parametros other = (Parametros) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return nombre;
-    }
-
-    public int toInteger() {
-        try {
-            return Integer.parseInt(parametros);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
     }
 
 }

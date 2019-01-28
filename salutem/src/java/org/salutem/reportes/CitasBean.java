@@ -23,8 +23,8 @@ import org.salutem.entidades.Perfiles;
 import org.salutem.excepciones.ExcepcionDeConsulta;
 import org.icefaces.ace.model.chart.CartesianSeries;
 import org.icefaces.ace.model.chart.CartesianSeries.CartesianType;
-import org.salutem.beans.CombosBean;
-import org.salutem.beans.SeguridadBean;
+import org.salutem.general.CombosBean;
+import org.salutem.seguridad.SeguridadBean;
 import org.salutem.utilitarios.Mensajes;
 import org.icefaces.ace.component.chart.Axis;
 import org.icefaces.ace.component.chart.AxisType;
@@ -489,11 +489,11 @@ public class CitasBean implements Serializable {
                     parameters = new HashMap();
                     parameters.put("inicio", inicio);
                     parameters.put("fin", fin);
-                    //            if (!seguridadBean.getGrupo().getCodigo().equals("GSA")
-                    //                    || !seguridadBean.getGrupo().getCodigo().equals("GA")) {
-                    //                where += " and o.profesional=:profesional";
-                    //                parameters.put("profesional", combosBean.getProfesional());
-                    //            }
+                    if (!seguridadBean.getGrupo().getCodigo().equals("GSA")
+                            || !seguridadBean.getGrupo().getCodigo().equals("GA")) {
+                        where += " and o.profesional=:profesional";
+                        parameters.put("profesional", combosBean.getProfesional());
+                    }
                     if (combosBean.getInstitucion() != null) {
                         where += " and o.profesional.institucion=:institucion";
                         parameters.put("institucion", combosBean.getInstitucion());
@@ -508,11 +508,11 @@ public class CitasBean implements Serializable {
                     parameters = new HashMap();
                     parameters.put("inicio", inicio);
                     parameters.put("fin", fin);
-                    //            if (!seguridadBean.getGrupo().getCodigo().equals("GSA")
-                    //                    || !seguridadBean.getGrupo().getCodigo().equals("GA")) {
-                    //                where += " and o.profesional=:profesional";
-                    //                parameters.put("profesional", combosBean.getProfesional());
-                    //            }
+                    if (!seguridadBean.getGrupo().getCodigo().equals("GSA")
+                            || !seguridadBean.getGrupo().getCodigo().equals("GA")) {
+                        where += " and o.profesional=:profesional";
+                        parameters.put("profesional", combosBean.getProfesional());
+                    }
                     if (combosBean.getInstitucion() != null) {
                         where += " and o.profesional.institucion=:institucion";
                         parameters.put("institucion", combosBean.getInstitucion());

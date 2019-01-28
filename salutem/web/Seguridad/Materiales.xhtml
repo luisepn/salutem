@@ -30,7 +30,7 @@
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemMateriales.buscar()}"/>
                             <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemMateriales.crear()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemMateriales.formulario.mostrar}"/>
+                        
                     </h:panelGrid>
 
                 </ace:panel>
@@ -189,7 +189,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemMateriales.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+                        
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

@@ -93,6 +93,10 @@
                     id="file-entryListener" 
                     fileEntryListener="#{salutemDatos.colocarFichero}"
                     autoUpload="true"
+                    absolutePath="#{salutemArchivos.absolutePath}"
+                    maxFileSize="#{salutemArchivos.maxFileSize * 100}"
+                    messagePersistence="false"
+                    useOriginalFilename="true"
                     rendered="#{dato.verSubir}"/>
             </h:panelGrid>
         </ace:column>
@@ -120,7 +124,7 @@
                 <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                               action="#{salutemDatos.formularioConfirmacion.cancelar()}"/>
             </ace:menuBar>
-            <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+            
         </h:panelGrid>
     </ace:dialog>
 

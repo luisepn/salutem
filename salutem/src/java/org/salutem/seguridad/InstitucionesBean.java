@@ -1,6 +1,9 @@
-package org.salutem.beans;
+package org.salutem.seguridad;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +16,11 @@ import javax.enterprise.inject.Any;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.salutem.controladores.DireccionesFacade;
+import org.icefaces.ace.component.fileentry.FileEntry;
+import org.icefaces.ace.component.fileentry.FileEntryEvent;
+import org.icefaces.ace.component.fileentry.FileEntryResults;
 import org.salutem.controladores.InstitucionesFacade;
 import org.salutem.entidades.Archivos;
-import org.salutem.entidades.Direcciones;
 import org.salutem.entidades.Instituciones;
 import org.salutem.entidades.Perfiles;
 import org.salutem.excepciones.ExcepcionDeActualizacion;
@@ -25,6 +29,7 @@ import org.salutem.excepciones.ExcepcionDeCreacion;
 import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.general.ArchivosBean;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
@@ -40,21 +45,15 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
 
     @Inject
     private SeguridadBean seguridadBean;
-    @Inject
-    @Any
-    private ArchivosBean archivosBean;
 
     private Formulario formulario = new Formulario();
     private LazyDataModel<Instituciones> instituciones;
     private Instituciones institucion;
-    private Direcciones direccion;
     private Perfiles perfil;
     private Boolean activo = true;
 
     @EJB
     private InstitucionesFacade ejbInstituciones;
-    @EJB
-    private DireccionesFacade ejbDirecciones;
 
     public InstitucionesBean() {
         instituciones = new LazyDataModel<Instituciones>() {
@@ -128,9 +127,6 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
         institucion = new Instituciones();
         institucion.setActivo(Boolean.TRUE);
         institucion.setFecha(new Date());
-        direccion = new Direcciones();
-        direccion.setActivo(Boolean.TRUE);
-        archivosBean.iniciar(getNombreTabla(), institucion.getId(), new Archivos());
         formulario.insertar();
         return null;
     }
@@ -141,8 +137,6 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         institucion = ((Instituciones) instituciones.getRowData());
-        archivosBean.iniciar(getNombreTabla(), institucion.getId(), institucion.getLogotipo() != null ? institucion.getLogotipo() : new Archivos());
-        direccion = institucion.getDireccion() != null ? institucion.getDireccion() : new Direcciones();
         formulario.editar();
         return null;
     }
@@ -153,31 +147,33 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         institucion = ((Instituciones) instituciones.getRowData());
-        archivosBean.iniciar(getNombreTabla(), institucion.getId(), institucion.getLogotipo() != null ? institucion.getLogotipo() : new Archivos());
-        direccion = institucion.getDireccion() != null ? institucion.getDireccion() : new Direcciones();
         formulario.eliminar();
         return null;
     }
 
     @Override
     public boolean validar() {
+        if ((institucion.getRuc() == null) || (institucion.getRuc().trim().isEmpty())) {
+            Mensajes.advertencia("R.U.C. es necesario");
+            return true;
+        }
         if ((institucion.getNombre() == null) || (institucion.getNombre().trim().isEmpty())) {
             Mensajes.advertencia("Nombre de la institución es necesario");
             return true;
         }
-        if ((direccion.getPrimaria() == null) || (direccion.getPrimaria().trim().isEmpty())) {
+        if ((institucion.getPrimaria() == null) || (institucion.getPrimaria().trim().isEmpty())) {
             Mensajes.advertencia("Calle primaria es necesaria");
             return true;
         }
-        if ((direccion.getNumero() == null) || (direccion.getNumero().trim().isEmpty())) {
+        if ((institucion.getNumero() == null) || (institucion.getNumero().trim().isEmpty())) {
             Mensajes.advertencia("Número es necesario");
             return true;
         }
-        if ((direccion.getSecundaria() == null) || (direccion.getSecundaria().trim().isEmpty())) {
+        if ((institucion.getSecundaria() == null) || (institucion.getSecundaria().trim().isEmpty())) {
             Mensajes.advertencia("Calle secundaria es necesaria");
             return true;
         }
-        if ((direccion.getFijo() == null) || (direccion.getFijo().trim().isEmpty())) {
+        if ((institucion.getFijo() == null) || (institucion.getFijo().trim().isEmpty())) {
             Mensajes.advertencia("Número telefónico es necesario");
             return true;
         }
@@ -193,18 +189,14 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbDirecciones.crear(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            archivosBean.grabar();
-            institucion.setLogotipo(archivosBean.getArchivo());
-            institucion.setDireccion(direccion);
             ejbInstituciones.crear(institucion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            archivosBean.actualizarIdentificador(institucion.getId().toString());
+            formulario.cancelar();
+            Mensajes.informacion("Creación exitosa. " + institucion.toString());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
-        Mensajes.informacion("Creación exitoso.\n" + institucion.toString());
+
         return null;
     }
 
@@ -217,16 +209,14 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbDirecciones.actualizar(direccion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-            archivosBean.grabar();
-            institucion.setLogotipo(archivosBean.getArchivo());
             ejbInstituciones.actualizar(institucion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
+            Mensajes.informacion("Modificación exitosa. " + institucion.toString());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
-        Mensajes.informacion("Modificación exitosa.\n" + institucion.toString());
+
         return null;
     }
 
@@ -237,12 +227,36 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
         }
         try {
             ejbInstituciones.eliminar(institucion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
+            Mensajes.informacion("Eliminación exitosa. " + institucion.toString());
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(InstitucionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
-        Mensajes.informacion("Eliminación exitosa.\n" + institucion.toString());
+
+        return null;
+    }
+
+    public String logotipoListener(FileEntryEvent e) {
+        FileEntry fileEntry = (FileEntry) e.getComponent();
+
+        FileEntryResults results = fileEntry.getResults();
+        for (FileEntryResults.FileInfo i : results.getFiles()) {
+            try {
+                File file = i.getFile();
+                if (!i.getContentType().contains("image/")) {
+                    i.updateStatus(Mensajes.getfileEntryStatus(false, "¡Sólo se aceptan archivos de imágen!"), true);
+                } else if (i.getStatus().isSuccess()) {
+                    institucion.setLogotipo(Files.readAllBytes(file.toPath()));
+                    i.updateStatus(Mensajes.getfileEntryStatus(true, "¡El archivo fue subido con éxito!"), true);
+                } else {
+                    i.updateStatus(Mensajes.getfileEntryStatus(false, "¡Se ha rechazado el requerimiento porque su tamaño excede el rango permitido: 10 MB!"), true);
+                }
+            } catch (IOException ex) {
+                Mensajes.fatal(ex.getMessage());
+                Logger.getLogger(ArchivosBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return null;
     }
 
@@ -286,13 +300,6 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @return the direccion
-     */
-    public Direcciones getDireccion() {
-        return direccion;
-    }
-
-    /**
      * @return the perfil
      */
     public Perfiles getPerfil() {
@@ -328,31 +335,10 @@ public class InstitucionesBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @param direccion the direccion to set
-     */
-    public void setDireccion(Direcciones direccion) {
-        this.direccion = direccion;
-    }
-
-    /**
      * @param perfil the perfil to set
      */
     public void setPerfil(Perfiles perfil) {
         this.perfil = perfil;
-    }
-
-    /**
-     * @return the archivosBean
-     */
-    public ArchivosBean getArchivosBean() {
-        return archivosBean;
-    }
-
-    /**
-     * @param archivosBean the archivosBean to set
-     */
-    public void setArchivosBean(ArchivosBean archivosBean) {
-        this.archivosBean = archivosBean;
     }
 
     /**

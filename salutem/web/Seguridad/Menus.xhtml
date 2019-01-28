@@ -34,7 +34,7 @@
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemMenus.buscar()}"/>
                             <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemMenus.crear()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemMenus.formulario.mostrar}"/>
+                        
                     </h:panelGrid>
                 </ace:panel>
                 <ace:panel 
@@ -202,7 +202,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemMenus.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+                        
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.salutem.beans;
+package org.salutem.interno;
 
+import org.salutem.general.CombosBean;
+import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.inject.Any;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -29,6 +32,7 @@ import org.salutem.excepciones.ExcepcionDeCreacion;
 import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.controladores.HorasFacade;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
@@ -53,11 +57,16 @@ public class HorariosBean implements Serializable, IMantenimiento {
     private Perfiles perfil;
 
     private Formulario formulario = new Formulario();
+    private Formulario formularioAutomatico = new Formulario();
     private LazyDataModel<Horarios> horarios;
+    private List<Horas> horas;
     private Horarios horario;
     private int profesional;
     private int dia;
+    private boolean seleccionarTodo = false;
 
+    @EJB
+    private HorasFacade ejbHoras;
     @EJB
     private HorariosFacade ejbHorarios;
 
@@ -158,6 +167,94 @@ public class HorariosBean implements Serializable, IMantenimiento {
         return null;
     }
 
+    public String automatico() {
+        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+            return null;
+        }
+        horario = new Horarios();
+        formularioAutomatico.insertar();
+        return null;
+    }
+
+    public List<Horas> getHorarioProfesional() {
+        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+            return null;
+        }
+        try {
+            horas = ejbHoras.traerHoras(combosBean.getInstitucion());
+            if (horario.getProfesional() == null || horario.getDia() == null) {
+                for (Horas h : horas) {
+                    h.setSeleccionado(Boolean.FALSE);
+                }
+            } else {
+                for (Horas hora : horas) {
+                    String where = "o.dia=:dia and o.hora=:hora and o.profesional=:profesional";
+                    Map parameters = new HashMap();
+                    parameters.put("dia", horario.getDia());
+                    parameters.put("hora", hora);
+                    parameters.put("profesional", horario.getProfesional());
+                    if (ejbHorarios.contar(where, parameters) > 0) {
+                        hora.setSeleccionado(Boolean.TRUE);
+                    }
+                }
+            }
+            return horas;
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
+    public void seleccionar(ValueChangeEvent event) {
+        boolean seleccionarTodoNada = (Boolean) event.getNewValue();
+        for (Horas h : horas) {
+            h.setSeleccionado(seleccionarTodoNada);
+        }
+    }
+
+    public String grabarAutomatico() {
+        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+            return null;
+        }
+        try {
+            for (Horas hora : horas) {
+
+                String where = "o.dia=:dia and o.hora=:hora and o.profesional=:profesional";
+                Map parameters = new HashMap();
+                parameters.put("dia", horario.getDia());
+                parameters.put("hora", hora);
+                parameters.put("profesional", horario.getProfesional());
+                List<Horarios> lista = ejbHorarios.buscar(where, parameters);
+                Horarios h;
+                if (lista.isEmpty()) {
+                    if (hora.isSeleccionado()) {
+                        h = new Horarios();
+                        h.setProfesional(horario.getProfesional());
+                        h.setDia(horario.getDia());
+                        h.setActivo(Boolean.TRUE);
+                        h.setHora(hora);
+                        ejbHorarios.crear(h, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                    }
+                } else {
+                    h = lista.get(0);
+                    if (hora.isSeleccionado()) {
+                        h.setActivo(Boolean.TRUE);
+                        ejbHorarios.actualizar(h, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                    } else {
+                        ejbHorarios.eliminar(h, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+                    }
+                }
+            }
+            Mensajes.informacion("Horario generado para el día " + horario.getDia().getNombre());
+        } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta | ExcepcionDeEliminacion | ExcepcionDeCreacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
     @Override
     public String editar() {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
@@ -242,11 +339,12 @@ public class HorariosBean implements Serializable, IMantenimiento {
             horario.setActualizado(new Date());
             horario.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbHorarios.actualizar(horario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -254,12 +352,12 @@ public class HorariosBean implements Serializable, IMantenimiento {
     public String remover() {
         try {
             ejbHorarios.eliminar(horario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            buscar();
+            formulario.cancelar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        buscar();
-        formulario.cancelar();
 
         return null;
     }
@@ -425,6 +523,48 @@ public class HorariosBean implements Serializable, IMantenimiento {
      */
     public void setDia(int dia) {
         this.dia = dia;
+    }
+
+    /**
+     * @return the formularioAutomatico
+     */
+    public Formulario getFormularioAutomatico() {
+        return formularioAutomatico;
+    }
+
+    /**
+     * @param formularioAutomatico the formularioAutomatico to set
+     */
+    public void setFormularioAutomatico(Formulario formularioAutomatico) {
+        this.formularioAutomatico = formularioAutomatico;
+    }
+
+    /**
+     * @return the horas
+     */
+    public List<Horas> getHoras() {
+        return horas;
+    }
+
+    /**
+     * @param horas the horas to set
+     */
+    public void setHoras(List<Horas> horas) {
+        this.horas = horas;
+    }
+
+    /**
+     * @return the seleccionarTodo
+     */
+    public boolean isSeleccionarTodo() {
+        return seleccionarTodo;
+    }
+
+    /**
+     * @param seleccionarTodo the seleccionarTodo to set
+     */
+    public void setSeleccionarTodo(boolean seleccionarTodo) {
+        this.seleccionarTodo = seleccionarTodo;
     }
 
 }

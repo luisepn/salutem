@@ -1,4 +1,4 @@
-package org.salutem.beans;
+package org.salutem.seguridad;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -43,6 +43,7 @@ import org.icefaces.ace.component.menuitem.MenuItem;
 import org.icefaces.ace.component.submenu.Submenu;
 import org.icefaces.ace.model.DefaultMenuModel;
 import org.icefaces.ace.model.MenuModel;
+import org.salutem.general.CombosBean;
 import org.salutem.utilitarios.Codificador;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
@@ -65,7 +66,7 @@ public class SeguridadBean implements Serializable {
     private Profesionales profesional;
     private String titulo;
     private List<Usuarios> usuarios;
-    private String idPerfil;
+    private String idPerfil = "0";
 
     private String clave;
     private String claveNueva;
@@ -84,6 +85,9 @@ public class SeguridadBean implements Serializable {
     private String directorioArchivos;
     private String estilo;
 
+    private ExternalContext contexto = FacesContext.getCurrentInstance().getExternalContext();
+    private String rutaDeContexto = ((ServletContext) contexto.getContext()).getContextPath();
+
     @EJB
     private UsuariosFacade ejbUsuarios;
     @EJB
@@ -99,7 +103,7 @@ public class SeguridadBean implements Serializable {
     @EJB
     private ProfesionalesFacade ejbProfesionales;
     @EJB
-    protected AsincronoLogFacade ejbLogs;
+    private AsincronoLogFacade ejbLogs;
 
     public SeguridadBean() {
     }
@@ -184,9 +188,7 @@ public class SeguridadBean implements Serializable {
     public void cambiarUsuarioPorGrupo(ValueChangeEvent event) {
         try {
             seleccionarGrupo((Usuarios) event.getNewValue());
-            ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
-            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true");
+            contexto.redirect(rutaDeContexto + usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true");
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -196,9 +198,7 @@ public class SeguridadBean implements Serializable {
     public void cambiarUsuarioPorGrupo(ActionEvent event) {
         try {
             seleccionarGrupo(ejbUsuarios.buscar(Integer.parseInt(event.getComponent().getId().replaceAll("_", ""))));
-            ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
-            String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
-            ctx.redirect(ctxPath + usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true");
+            contexto.redirect(rutaDeContexto + usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true");
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -250,12 +250,12 @@ public class SeguridadBean implements Serializable {
         ExpressionFactory expressionFactory = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
         submenu = new Submenu();
         submenu.setId("sm_0000");
-        submenu.setLabel("Módulo");
-        submenu.setIcon("ui-icon ui-icon-home");
+        submenu.setLabel("Módulo: " + usuario.getModulo().getNombre() + " >> " + "Grupo: " + usuario.getGrupo().getNombre());
+        submenu.setIcon("ui-icon ui-icon-comment");
         for (Usuarios u : usuarios) {
             MenuItem item = new MenuItem();
             item.setId("_" + u.getId());
-            item.setValue(u.getModulo().getNombre() + " - " + u.getGrupo().getNombre());
+            item.setValue(u.getModulo().getNombre() + " >> " + u.getGrupo().getNombre());
             item.setIcon("ui-icon ui-icon-comment");
             item.addActionListener(new MethodExpressionActionListener(expressionFactory.createMethodExpression(elContext,
                     "#{salutemSeguridad.cambiarUsuarioPorGrupo}", null, new Class[]{ActionEvent.class})));
@@ -301,28 +301,31 @@ public class SeguridadBean implements Serializable {
                 return null;
             }
             idPerfil = p;
-            Perfiles perfil = ejbPerfiles.buscar(Integer.parseInt(p));
-            if (perfil == null) {
-                logout();
-                return null;
-            }
-            if (!formulario.equals("Historial")) {
-                if (!formulario.contains(perfil.getMenu().getFormulario())) {
-                    ctx.redirect(ctxPath + "?m=Perfil no valido");
-                }
-                if (!perfil.getGrupo().equals(usuario.getGrupo())) {
-                    ctx.redirect(ctxPath + "?m=Usuario logueado no esta en el grupo correcto");
-                }
-                titulo = perfil.getMenu().getNombre();
-            }
-
             verActivos = true;
             verAgrupado = true;
             inicioCreado = null;
             finCreado = null;
             inicioActualizado = null;
             finActualizado = null;
-            return perfil;
+
+            if (!p.equals("0")) {
+                Perfiles perfil = ejbPerfiles.buscar(Integer.parseInt(p));
+                if (perfil == null) {
+                    logout();
+                    return null;
+                }
+                if (!formulario.equals("Historial")) {
+                    if (!formulario.contains(perfil.getMenu().getFormulario())) {
+                        ctx.redirect(ctxPath + "?m=Perfil no valido");
+                    }
+                    if (!perfil.getGrupo().equals(usuario.getGrupo())) {
+                        ctx.redirect(ctxPath + "?m=Usuario logueado no esta en el grupo correcto");
+                    }
+                    titulo = perfil.getMenu().getNombre();
+                }
+
+                return perfil;
+            }
 
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
@@ -718,6 +721,34 @@ public class SeguridadBean implements Serializable {
      */
     public void setEstilo(String estilo) {
         this.estilo = estilo;
+    }
+
+    /**
+     * @return the contexto
+     */
+    public ExternalContext getContexto() {
+        return contexto;
+    }
+
+    /**
+     * @param contexto the contexto to set
+     */
+    public void setContexto(ExternalContext contexto) {
+        this.contexto = contexto;
+    }
+
+    /**
+     * @return the rutaDeContexto
+     */
+    public String getRutaDeContexto() {
+        return rutaDeContexto;
+    }
+
+    /**
+     * @param rutaDeContexto the rutaDeContexto to set
+     */
+    public void setRutaDeContexto(String rutaDeContexto) {
+        this.rutaDeContexto = rutaDeContexto;
     }
 
 }

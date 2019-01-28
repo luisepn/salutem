@@ -87,13 +87,7 @@ public class Archivos implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
     @Column(name = "activo")
-    private Boolean activo;
-    @OneToOne(mappedBy = "logotipo")
-    private Instituciones instituciones;
-    @OneToOne(mappedBy = "fotografia")
-    private Pacientes pacientes;
-    @OneToOne(mappedBy = "fotografia")
-    private Profesionales profesionales;
+    private Boolean activo;    
 
     @Transient
     private byte[] archivo;
@@ -147,31 +141,7 @@ public class Archivos implements Serializable {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
-    }
-
-    public Instituciones getInstituciones() {
-        return instituciones;
-    }
-
-    public void setInstituciones(Instituciones instituciones) {
-        this.instituciones = instituciones;
-    }
-
-    public Pacientes getPacientes() {
-        return pacientes;
-    }
-
-    public void setPacientes(Pacientes pacientes) {
-        this.pacientes = pacientes;
-    }
-
-    public Profesionales getProfesionales() {
-        return profesionales;
-    }
-
-    public void setProfesionales(Profesionales profesionales) {
-        this.profesionales = profesionales;
-    }
+    } 
 
     @Override
     public int hashCode() {

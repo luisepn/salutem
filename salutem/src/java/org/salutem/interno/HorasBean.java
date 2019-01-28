@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.salutem.beans;
+package org.salutem.interno;
 
+import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -230,11 +231,12 @@ public class HorasBean implements Serializable, IMantenimiento {
             hora.setActualizado(hora.getCreado());
             hora.setActualizadopor(hora.getCreadopor());
             ejbHoras.crear(hora, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -250,11 +252,12 @@ public class HorasBean implements Serializable, IMantenimiento {
             hora.setActualizado(new Date());
             hora.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbHoras.actualizar(hora, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -265,12 +268,12 @@ public class HorasBean implements Serializable, IMantenimiento {
         }
         try {
             ejbHoras.eliminar(hora, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(HorasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         buscar();
-        formulario.cancelar();
 
         return null;
     }

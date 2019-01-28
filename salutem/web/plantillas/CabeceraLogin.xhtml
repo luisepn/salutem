@@ -7,17 +7,18 @@
     <h:body>
         <ui:composition>
             <h:panelGrid width="100%" style="text-align: center;">
-                <ace:graphicImage value="#{ingresoSistema.institucion.logotipo.traerImagen()}" 
-                                  name="#{ingresoSistema.institucion.id}_#{ingresoSistema.institucion.nombre}" 
-                                  rendered="#{ingresoSistema.institucion ne null and ingresoSistema.institucion.logotipo ne null and ingresoSistema.institucion.logotipo.ruta ne null}"
+                <ace:graphicImage value="#{ingresoSistema.institucion.logotipo}" 
+                                  name="#{ingresoSistema.institucion.id}_#{ingresoSistema.institucion.logotipo}" 
+                                  rendered="#{ingresoSistema.institucion ne null and ingresoSistema.institucion.logotipo ne null}"
                                   alt="logo" height="100px" />
                 <ace:growlMessages 
                     hideEffectDuration="slow"
-                    maxVisibleMessages="5"
-                    header="¡Atención!"
                     autoHide="false"
                     messageStyleClass="mensajes"
-                    escape="false"/>
+                    escape="false"
+                    showSummary="true"
+                    showDetail="true"
+                    redisplay="false"/>
             </h:panelGrid>    
 
         </ui:composition>

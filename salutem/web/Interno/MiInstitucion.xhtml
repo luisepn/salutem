@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+  Documento  : Institución
+  Fecha    : 27 de Enero de 2019, 19:38:27 AM
+  Author   : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+    <ui:composition template="../plantillas/Plantilla.xhtml">
+
+        <ui:define name="content">
+            <h:panelGrid width="100%">
+                <ace:panel id="panel"
+                           header="Mi Institución"
+                           closable="false"
+                           toggleable="true"
+                           style="margin: 0 auto; width: 80%;">
+                    <h:panelGrid width="100%" style="text-align: center;" >
+                        <ace:panel header="#{salutemMiInstitucion.institucion.nombre}" style="margin: 0 auto;">
+                            <h:panelGrid width="100%">
+                                <ace:graphicImage 
+                                    value="#{salutemMiInstitucion.institucion.logotipo}" 
+                                    name="#{salutemArchivos.traerTextoMilisegundos()}_#{salutemMiInstitucion.institucion.logotipo}"
+                                    rendered="#{salutemMiInstitucion.institucion.logotipo ne null}"
+                                    style="height: 200px;"/>
+                                <ace:fileEntry 
+                                    id="file-entryListener"        
+                                    fileEntryListener="#{salutemMiInstitucion.logotipoListener}" 
+                                    autoUpload="true"
+                                    absolutePath="#{salutemArchivos.absolutePath}"
+                                    maxFileSize="#{salutemArchivos.maxFileSize * 10}"
+                                    messagePersistence="false"
+                                    useOriginalFilename="true"
+                                    rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                <ace:textAreaEntry value="#{salutemMiInstitucion.institucion.descripcion}" cols="40" rows="3" rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputText value="#{salutemMiInstitucion.institucion.descripcion}" rendered="#{!salutemMiInstitucion.formulario.editar}" style="white-space: pre-wrap; font-weight: bolder;"/>
+                                <h:panelGrid width="100%" columns="4" style="text-align: left;">
+                                    <h:outputLabel style="font-weight: bolder" value="R.U.C.:"/>
+                                    <ace:textEntry value="#{salutemMiInstitucion.institucion.ruc}" title="R.U.C." rendered="#{salutemMiInstitucion.formulario.editar}">
+                                        <ace:ajax execute="@all"/>
+                                        <f:validator validatorId="org.salutem.utilitarios.ValidadorRuc" />
+                                    </ace:textEntry>
+                                    <h:outputText value="#{salutemMiInstitucion.institucion.ruc}" title="Cédula" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                    <h:outputLabel style="font-weight: bolder" value="Nombres:"/>
+                                    <ace:textEntry value="#{salutemMiInstitucion.institucion.nombre}" title="Nombres" rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                    <h:outputText value="#{salutemMiInstitucion.institucion.nombre}" title="Nombres" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                    <h:outputLabel style="font-weight: bolder" value="E-mail:"/>
+                                    <ace:textEntry value="#{salutemMiInstitucion.institucion.email}" title="Email" rendered="#{salutemMiInstitucion.formulario.editar}">
+                                        <f:validator validatorId="org.salutem.utilitarios.ValidadorEmail" />
+                                    </ace:textEntry>
+                                    <h:outputText value="#{salutemMiInstitucion.institucion.email}" title="Email" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                    <h:outputLabel style="font-weight: bolder" value="Página Web:"/>
+                                    <ace:textEntry value="#{salutemMiInstitucion.institucion.web}" title="Página Web" rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                    <h:outputText value="#{salutemMiInstitucion.institucion.web}" title="Página Web" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                    <h:outputLabel style="font-weight: bolder" value="Fecha de Creación:" />
+                                    <ace:dateTimeEntry navigator="true" value="#{salutemMiInstitucion.institucion.fecha}" 
+                                                       popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                       pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield" rendered="#{salutemMiInstitucion.formulario.editar}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </ace:dateTimeEntry>
+                                    <h:outputText value="#{salutemMiInstitucion.institucion.fecha}" rendered="#{!salutemMiInstitucion.formulario.editar}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </h:outputText> 
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </ace:panel>
+                        <ace:panel header="Dirección" style="margin: 0 auto;">
+                            <h:panelGrid width="100%" columns="4" style="text-align: left;">
+                                <h:outputLabel style="font-weight: bolder" value="Ciudad:" for="ciudad" />
+                                <ace:textEntry value="#{salutemMiInstitucion.institucion.ciudad}" title="Ciudad" rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputText value="#{salutemMiInstitucion.institucion.ciudad}" title="Ciudad" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputLabel style="font-weight: bolder" value="Calle Primaria:" for="primaria" />
+                                <ace:textEntry value="#{salutemMiInstitucion.institucion.primaria}" title="Primaria" rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputText value="#{salutemMiInstitucion.institucion.primaria}" title="Primaria" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputLabel style="font-weight: bolder" value="Número:" for="numero" />
+                                <ace:textEntry value="#{salutemMiInstitucion.institucion.numero}" title="Numero" rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputText value="#{salutemMiInstitucion.institucion.numero}" title="Numero" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputLabel style="font-weight: bolder" value="Calle Secundaria:" for="secundaria" />
+                                <ace:textEntry value="#{salutemMiInstitucion.institucion.secundaria}" title="Secundaria" rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputText value="#{salutemMiInstitucion.institucion.secundaria}" title="Secundaria" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputLabel style="font-weight: bolder" value="Teléfono fijo:" />
+                                <ace:textEntry value="#{salutemMiInstitucion.institucion.fijo}" title="Teléfono fijo" rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputText value="#{salutemMiInstitucion.institucion.fijo}" title="Teléfono fijo" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputLabel style="font-weight: bolder" value="Teléfono móvil:" />
+                                <ace:textEntry value="#{salutemMiInstitucion.institucion.movil}" title="Teléfono móvil" rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputText value="#{salutemMiInstitucion.institucion.movil}" title="Teléfono móvil" rendered="#{!salutemMiInstitucion.formulario.editar}"/>
+                                <h:outputLabel style="font-weight: bolder" value="Referencia:"/>
+                                <ace:textAreaEntry value="#{salutemMiInstitucion.institucion.referencia}" cols="25" rows="3" rendered="#{salutemMiInstitucion.formulario.editar}" />
+                                <h:outputText value="#{salutemMiInstitucion.institucion.referencia}" rendered="#{!salutemMiInstitucion.formulario.editar}" style="white-space: pre-wrap"/>
+                            </h:panelGrid>
+                        </ace:panel>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" width="100%">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Editar" icon="ui-icon ui-icon-disk"
+                                          action="#{salutemMiInstitucion.editar()}"
+                                          rendered="#{!salutemMiInstitucion.formulario.mostrar}"/>
+                            <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
+                                          action="#{salutemMiInstitucion.grabar()}" 
+                                          rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                            <ace:menuItem value="Cambiar de clave" icon="ui-icon ui-icon-key" 
+                                          action="#{salutemSeguridad.cambiarClave()}"/>
+                            <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                          action="#{salutemMiInstitucion.cancelar()}"
+                                          rendered="#{salutemMiInstitucion.formulario.editar}"/>
+                            <ace:menuItem value="Historial" icon="ui-icon ui-icon-script"
+                                          action="#{salutemHistorial.buscar(salutemMiInstitucion.nombreTabla, salutemMiInstitucion.institucion.id)}"/>
+                        </ace:menuBar>
+
+                    </h:panelGrid>
+                </ace:panel>
+            </h:panelGrid>
+            <ui:include src="../cuadroHistorial.xhtml"/>
+        </ui:define>
+
+    </ui:composition>
+
+</html>

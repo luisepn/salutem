@@ -1,7 +1,10 @@
-package org.salutem.beans;
+package org.salutem.interno;
 
+import org.salutem.general.CombosBean;
+import org.salutem.general.PersonasAbstractoBean;
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +18,6 @@ import javax.faces.event.ValueChangeEvent;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.salutem.controladores.PacientesFacade;
-import org.salutem.entidades.Archivos;
 import org.salutem.entidades.Atenciones;
 import org.salutem.entidades.Formulas;
 import org.salutem.entidades.Instituciones;
@@ -28,6 +30,8 @@ import org.salutem.excepciones.ExcepcionDeCreacion;
 import org.icefaces.ace.event.TextChangeEvent;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.entidades.Personas;
+import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
@@ -40,9 +44,6 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     @Inject
     @Any
     private CombosBean combosBean;
-    @Inject
-    @Any
-    private ArchivosBean archivosBean;
 
     private LazyDataModel<Pacientes> pacientes;
     private List<Pacientes> listaPacientes;
@@ -171,46 +172,26 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
-        if (institucion == null) {
-            Mensajes.advertencia("Seleccione una institución primero");
-            return null;
-        }
+        modificarDatos = false;
         paciente = new Pacientes();
         paciente.setActivo(Boolean.TRUE);
         paciente.setInstitucion(institucion);
         crear();
-        archivosBean.iniciar(this.getNombreTabla(), paciente.getId(), new Archivos());
-        direccion.setCiudad(institucion.getDireccion() != null ? institucion.getDireccion().getCiudad() : null);
-        return null;
-    }
-
-    private void existe() {
-        String where = " o.persona=:persona and o.institucion=:institucion";
-        Map parametros = new HashMap();
-        parametros.put("persona", persona);
-        parametros.put("institucion", institucion);
-        try {
-            List<Pacientes> lista = ejbPacientes.buscar(where, parametros);
-            if (!lista.isEmpty()) {
-                paciente.setId(lista.get(0).getId());
-            } else {
-                paciente.setId(null);
-            }
-        } catch (ExcepcionDeConsulta ex) {
-            Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
+        if (institucion != null) {
+            persona.setCiudad(institucion.getCiudad());
         }
+        return null;
     }
 
     public String editarPaciente() {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
+        modificarDatos = false;
         paciente = (Pacientes) pacientes.getRowData();
         institucion = paciente.getInstitucion();
         persona = paciente.getPersona();
         editar();
-        archivosBean.iniciar(this.getNombreTabla(), paciente.getId(), paciente.getFotografia() != null ? paciente.getFotografia() : new Archivos());
         formulario.editar();
         return null;
     }
@@ -219,41 +200,75 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
         }
+        modificarDatos = false;
         paciente = ((Pacientes) pacientes.getRowData());
         persona = paciente.getPersona();
-        archivosBean.iniciar(this.getNombreTabla(), paciente.getId(), paciente.getFotografia() != null ? paciente.getFotografia() : new Archivos());
         institucion = paciente.getInstitucion();
         formulario.eliminar();
         return null;
+    }
+
+    private boolean validarPaciente() throws ExcepcionDeConsulta {
+        if (paciente.getInstitucion() == null) {
+            Mensajes.advertencia("Seleccione una institución");
+            return true;
+        }
+
+        String where = "o.persona.cedula=:cedula and o.institucion=:institucion";
+        Map parametros = new HashMap();
+        parametros.put("cedula", persona.getCedula());
+        parametros.put("institucion", paciente.getInstitucion());
+        if (paciente.getId() != null) {
+            where += " and o.id!=:id";
+            parametros.put("id", paciente.getId());
+        }
+        List<Pacientes> l = ejbPacientes.buscar(where, parametros);
+        if (!l.isEmpty()) {
+            Mensajes.error("Otra persona con la cédula " + l.get(0).getPersona().getCedula()
+                    + " ya se encuentra registrada como paciente en la Institución: "
+                    + institucion.getNombre() + "."
+                    + (l.get(0).getActivo() == null || !l.get(0).getActivo() ? " Busque en los registros inactivos." : ""));
+            return true;
+        }
+        return false;
     }
 
     public String grabarPaciente() {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        if (validar()) {
-            return null;
-        }
-        if (persona.getId() == null) {
-            insertar();
-        } else {
-            grabar();
-        }
-        existe();
+        modificarDatos = false;
         try {
+            if (validarPaciente()) {
+                return null;
+            }
+            if (validar()) {
+                return null;
+            }
+            if (persona.getId() == null) {
+                crear();
+            } else {
+                paciente.setActivo(Boolean.TRUE);
+                grabar();
+            }
             paciente.setPersona(persona);
-            archivosBean.grabar();
-            paciente.setFotografia(archivosBean.getArchivo().getId() != null ? archivosBean.getArchivo() : null);
             if (paciente.getId() == null) {
+                paciente.setCreado(new Date());
+                paciente.setCreadopor(seguridadBean.getLogueado().getUserid());
+                paciente.setActualizado(paciente.getCreado());
+                paciente.setActualizadopor(paciente.getCreadopor());
                 ejbPacientes.crear(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             } else {
+                paciente.setActualizado(new Date());
+                paciente.setActualizadopor(seguridadBean.getLogueado().getUserid());
                 ejbPacientes.actualizar(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
-            archivosBean.actualizarIdentificador(persona.getId().toString());
-        } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion ex) {
+            formulario.cancelar();
+        } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         return null;
     }
 
@@ -261,14 +276,14 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
         }
-        paciente.setActivo(Boolean.FALSE);
         try {
-            ejbPacientes.actualizar(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
-        } catch (ExcepcionDeActualizacion ex) {
+            ejbPacientes.eliminar(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
+        } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -325,6 +340,33 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     @Override
     public String getNombreTabla() {
         return Pacientes.class.getSimpleName();
+    }
+
+    @Override
+    public void cambiaCedula(ValueChangeEvent event) {
+        modificarDatos = false;
+        String nuevaCedula = (String) event.getNewValue();
+        try {
+
+            String where = "o.cedula=:cedula";
+            Map parametros = new HashMap();
+            parametros.put("cedula", nuevaCedula);
+            if (persona.getId() != null) {
+                where += " and o.id!=:id";
+                parametros.put("id", persona.getId());
+            }
+            List<Personas> lp = ejbPersonas.buscar(where, parametros);
+            if (!lp.isEmpty()) {
+                persona = lp.get(0);
+            } else {
+                modificarDatos = true;
+            }
+
+            validarPaciente();
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -522,5 +564,4 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     public void setListaPacientes(List<Pacientes> listaPacientes) {
         this.listaPacientes = listaPacientes;
     }
-
 }

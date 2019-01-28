@@ -6,6 +6,7 @@
 package org.salutem.controladores;
 
 import com.google.gson.JsonObject;
+import java.util.Arrays;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -50,14 +51,22 @@ public class InstitucionesFacade extends AbstractFacade<Instituciones> {
         }
         JsonObject json = new JsonObject();
         json.addProperty("id", objeto.getId());
+        json.addProperty("ruc", objeto.getRuc());
         json.addProperty("nombre", objeto.getNombre());
         json.addProperty("email", objeto.getEmail());
         json.addProperty("web", objeto.getWeb());
         json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("fecha", formatoFechaHora.format(objeto.getFecha()));
         json.addProperty("laboratorio", objeto.getLaboratorio() ? 'S' : 'N');
-        json.addProperty("fotografia", objeto.getLogotipo() != null ? objeto.getLogotipo().getNombre() : null);
-        json.addProperty("direccion", objeto.getDireccion() != null ? objeto.getDireccion().toString() : null);
+        json.addProperty("fotografia", objeto.getLogotipo() != null ? Arrays.hashCode(objeto.getLogotipo()) : null);
+        json.addProperty("primaria", objeto.getPrimaria());
+        json.addProperty("numero", objeto.getNumero());
+        json.addProperty("secundaria", objeto.getSecundaria());
+        json.addProperty("referencia", objeto.getReferencia());
+        json.addProperty("fijo", objeto.getFijo());
+        json.addProperty("movil", objeto.getMovil());
+        json.addProperty("ciudad", objeto.getCiudad());
+        json.addProperty("descripcion", objeto.getDescripcion());
         json.addProperty("activo", objeto.getActivo() ? 'S' : 'N');
         return json;
     }

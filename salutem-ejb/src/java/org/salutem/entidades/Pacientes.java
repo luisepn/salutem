@@ -19,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -35,19 +34,15 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "pacientes")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Pacientes.findAll", query = "SELECT p FROM Pacientes p")
-    , @NamedQuery(name = "Pacientes.findById", query = "SELECT p FROM Pacientes p WHERE p.id = :id")
-    , @NamedQuery(name = "Pacientes.findByActivo", query = "SELECT p FROM Pacientes p WHERE p.activo = :activo")
-    , @NamedQuery(name = "Pacientes.findByDescripcion", query = "SELECT p FROM Pacientes p WHERE p.descripcion = :descripcion")
-    , @NamedQuery(name = "Pacientes.findByCreado", query = "SELECT p FROM Pacientes p WHERE p.creado = :creado")
-    , @NamedQuery(name = "Pacientes.findByCreadopor", query = "SELECT p FROM Pacientes p WHERE p.creadopor = :creadopor")
-    , @NamedQuery(name = "Pacientes.findByActualizado", query = "SELECT p FROM Pacientes p WHERE p.actualizado = :actualizado")
-    , @NamedQuery(name = "Pacientes.findByActualizadopor", query = "SELECT p FROM Pacientes p WHERE p.actualizadopor = :actualizadopor")})
+    @NamedQuery(name = "Pacientes.findAll", query = "SELECT p FROM Pacientes p"),
+    @NamedQuery(name = "Pacientes.findById", query = "SELECT p FROM Pacientes p WHERE p.id = :id"),
+    @NamedQuery(name = "Pacientes.findByActivo", query = "SELECT p FROM Pacientes p WHERE p.activo = :activo"),
+    @NamedQuery(name = "Pacientes.findByCreado", query = "SELECT p FROM Pacientes p WHERE p.creado = :creado"),
+    @NamedQuery(name = "Pacientes.findByCreadopor", query = "SELECT p FROM Pacientes p WHERE p.creadopor = :creadopor"),
+    @NamedQuery(name = "Pacientes.findByActualizado", query = "SELECT p FROM Pacientes p WHERE p.actualizado = :actualizado"),
+    @NamedQuery(name = "Pacientes.findByActualizadopor", query = "SELECT p FROM Pacientes p WHERE p.actualizadopor = :actualizadopor")})
 public class Pacientes implements Serializable {
 
-    @Size(max = 2147483647)
-    @Column(name = "descripcion")
-    private String descripcion;
     @Size(max = 2147483647)
     @Column(name = "creadopor")
     private String creadopor;
@@ -73,9 +68,6 @@ public class Pacientes implements Serializable {
     @Column(name = "actualizado")
     @Temporal(TemporalType.TIMESTAMP)
     private Date actualizado;
-    @JoinColumn(name = "fotografia", referencedColumnName = "id")
-    @OneToOne
-    private Archivos fotografia;
     @JoinColumn(name = "institucion", referencedColumnName = "id")
     @ManyToOne
     private Instituciones institucion;
@@ -106,7 +98,6 @@ public class Pacientes implements Serializable {
         this.activo = activo;
     }
 
-
     public Date getCreado() {
         return creado;
     }
@@ -115,22 +106,12 @@ public class Pacientes implements Serializable {
         this.creado = creado;
     }
 
-
     public Date getActualizado() {
         return actualizado;
     }
 
     public void setActualizado(Date actualizado) {
         this.actualizado = actualizado;
-    }
-
-
-    public Archivos getFotografia() {
-        return fotografia;
-    }
-
-    public void setFotografia(Archivos fotografia) {
-        this.fotografia = fotografia;
     }
 
     public Instituciones getInstitucion() {
@@ -186,7 +167,6 @@ public class Pacientes implements Serializable {
         return persona != null ? persona.getCedula() + " " + persona.getNombres() + " " + persona.getApellidos() : "";
     }
 
-
     @XmlTransient
     public List<Citas> getCitasList() {
         return citasList;
@@ -203,14 +183,6 @@ public class Pacientes implements Serializable {
 
     public void setAtencionesList(List<Atenciones> atencionesList) {
         this.atencionesList = atencionesList;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 
     public String getCreadopor() {

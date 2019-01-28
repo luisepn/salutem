@@ -1,5 +1,6 @@
-package org.salutem.beans;
+package org.salutem.interno;
 
+import org.salutem.general.PersonasAbstractoBean;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,12 +10,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.enterprise.inject.Any;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 import org.salutem.controladores.ProfesionalesFacade;
-import org.salutem.entidades.Archivos;
 import org.salutem.entidades.Instituciones;
 import org.salutem.entidades.Profesionales;
 import org.salutem.excepciones.ExcepcionDeActualizacion;
@@ -23,16 +22,13 @@ import org.salutem.excepciones.ExcepcionDeCreacion;
 import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.entidades.Personas;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
 @Named("salutemProfesionales")
 @ViewScoped
 public class ProfesionalesBean extends PersonasAbstractoBean implements Serializable {
-
-    @Inject
-    @Any
-    private ArchivosBean archivosBean;
 
     private LazyDataModel<Profesionales> profesionales;
     private Profesionales profesional;
@@ -134,38 +130,26 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
+        modificarDatos = false;
         profesional = new Profesionales();
         profesional.setActivo(Boolean.TRUE);
+        profesional.setInstitucion(institucion);
         crear();
-        archivosBean.iniciar(this.getNombreTabla(), profesional.getId(), new Archivos());
-        if (seguridadBean.getInstitucion() != null) {
-            direccion.setCiudad(seguridadBean.getInstitucion().getDireccion() != null ? seguridadBean.getInstitucion().getDireccion().getCiudad() : null);
+        if (institucion != null) {
+            persona.setCiudad(institucion.getCiudad());
         }
         return null;
-    }
-
-    private void existe() throws ExcepcionDeConsulta {
-        String where = " o.persona=:persona and o.institucion=:institucion";
-        Map parametros = new HashMap();
-        parametros.put("persona", persona);
-        parametros.put("institucion", institucion);
-
-        List<Profesionales> lista = ejbProfesionales.buscar(where, parametros);
-        if (!lista.isEmpty()) {
-            profesional.setId(lista.get(0).getId());
-        } else {
-            profesional.setId(null);
-        }
     }
 
     public String editarProfesional() {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
+        modificarDatos = false;
         profesional = (Profesionales) profesionales.getRowData();
+        institucion = profesional.getInstitucion();
         persona = profesional.getPersona();
         editar();
-        archivosBean.iniciar(this.getNombreTabla(), profesional.getId(), profesional.getFotografia() != null ? profesional.getFotografia() : new Archivos());
         formulario.editar();
         return null;
     }
@@ -174,38 +158,66 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
         }
+        modificarDatos = false;
         profesional = ((Profesionales) profesionales.getRowData());
         persona = profesional.getPersona();
-        archivosBean.iniciar(this.getNombreTabla(), profesional.getId(), profesional.getFotografia() != null ? profesional.getFotografia() : new Archivos());
         formulario.eliminar();
         return null;
+    }
+
+    private boolean validarProfesional() throws ExcepcionDeConsulta {
+        if (profesional.getInstitucion() == null) {
+            Mensajes.advertencia("Seleccione una institución");
+            return true;
+        }
+
+        String where = "o.persona.cedula=:cedula and o.institucion=:institucion";
+        Map parametros = new HashMap();
+        parametros.put("cedula", persona.getCedula());
+        parametros.put("institucion", profesional.getInstitucion());
+        if (profesional.getId() != null) {
+            where += " and o.id!=:id";
+            parametros.put("id", profesional.getId());
+        }
+        List<Profesionales> l = ejbProfesionales.buscar(where, parametros);
+        if (!l.isEmpty()) {
+            Mensajes.error("Otra persona con la cédula " + l.get(0).getPersona().getCedula()
+                    + " ya se encuentra registrada como profesional en la Institución: "
+                    + institucion.getNombre() + "."
+                    + (l.get(0).getActivo() == null || !l.get(0).getActivo() ? " Busque en los registros inactivos." : ""));
+            return true;
+        }
+
+        if (profesional.getEspecialidad() == null) {
+            Mensajes.advertencia("Seleccione una especialidad");
+            return true;
+        }
+        return false;
     }
 
     public String grabarProfesional() {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
+        modificarDatos = false;
+
         if (validar()) {
             return null;
         }
-        if (profesional.getInstitucion() == null) {
-            Mensajes.advertencia("Seleccione una institución");
-            return null;
-        }
-        if (profesional.getEspecialidad() == null) {
-            Mensajes.advertencia("Seleccione una especialidad");
-            return null;
-        }
-        if (persona.getId() == null) {
-            insertar();
-        } else {
-            grabar();
-        }
         try {
-            existe();
+            if (validarProfesional()) {
+                return null;
+            }
+            if (validar()) {
+                return null;
+            }
+            if (persona.getId() == null) {
+                crear();
+            } else {
+                profesional.setActivo(Boolean.TRUE);
+                grabar();
+            }
             profesional.setPersona(persona);
-            archivosBean.grabar();
-            profesional.setFotografia(archivosBean.getArchivo().getId() != null ? archivosBean.getArchivo() : null);
             if (profesional.getId() == null) {
                 profesional.setCreado(new Date());
                 profesional.setCreadopor(seguridadBean.getLogueado().getUserid());
@@ -217,7 +229,6 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
                 profesional.setActualizadopor(seguridadBean.getLogueado().getUserid());
                 ejbProfesionales.actualizar(profesional, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
-            archivosBean.actualizarIdentificador(persona.getId().toString());
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ProfesionalesBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -242,6 +253,33 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
     @Override
     public String getNombreTabla() {
         return Profesionales.class.getSimpleName();
+    }
+
+    @Override
+    public void cambiaCedula(ValueChangeEvent event) {
+        modificarDatos = false;
+        String nuevaCedula = (String) event.getNewValue();
+        try {
+
+            String where = "o.cedula=:cedula";
+            Map parametros = new HashMap();
+            parametros.put("cedula", nuevaCedula);
+            if (persona.getId() != null) {
+                where += " and o.id!=:id";
+                parametros.put("id", persona.getId());
+            }
+            List<Personas> lp = ejbPersonas.buscar(where, parametros);
+            if (!lp.isEmpty()) {
+                persona = lp.get(0);
+            } else {
+                modificarDatos = true;
+            }
+
+            validarProfesional();
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(PacientesBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

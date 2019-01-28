@@ -23,7 +23,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -40,40 +39,54 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "personas")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Personas.findAll", query = "SELECT p FROM Personas p")
-    , @NamedQuery(name = "Personas.findById", query = "SELECT p FROM Personas p WHERE p.id = :id")
-    , @NamedQuery(name = "Personas.findByNombres", query = "SELECT p FROM Personas p WHERE p.nombres = :nombres")
-    , @NamedQuery(name = "Personas.findByApellidos", query = "SELECT p FROM Personas p WHERE p.apellidos = :apellidos")
-    , @NamedQuery(name = "Personas.findByEmail", query = "SELECT p FROM Personas p WHERE p.email = :email")
-    , @NamedQuery(name = "Personas.findByUserid", query = "SELECT p FROM Personas p WHERE p.userid = :userid")
-    , @NamedQuery(name = "Personas.findByClave", query = "SELECT p FROM Personas p WHERE p.clave = :clave")
-    , @NamedQuery(name = "Personas.findByCedula", query = "SELECT p FROM Personas p WHERE p.cedula = :cedula")
-    , @NamedQuery(name = "Personas.findByFecha", query = "SELECT p FROM Personas p WHERE p.fecha = :fecha")
-    , @NamedQuery(name = "Personas.findByRol", query = "SELECT p FROM Personas p WHERE p.rol = :rol")
-    , @NamedQuery(name = "Personas.findByActivo", query = "SELECT p FROM Personas p WHERE p.activo = :activo")
-    , @NamedQuery(name = "Personas.findByOcupacion", query = "SELECT p FROM Personas p WHERE p.ocupacion = :ocupacion")
-    , @NamedQuery(name = "Personas.findByDescripcion", query = "SELECT p FROM Personas p WHERE p.descripcion = :descripcion")
-    , @NamedQuery(name = "Personas.findByCreado", query = "SELECT p FROM Personas p WHERE p.creado = :creado")
-    , @NamedQuery(name = "Personas.findByCreadopor", query = "SELECT p FROM Personas p WHERE p.creadopor = :creadopor")
-    , @NamedQuery(name = "Personas.findByActualizado", query = "SELECT p FROM Personas p WHERE p.actualizado = :actualizado")
-    , @NamedQuery(name = "Personas.findByActualizadopor", query = "SELECT p FROM Personas p WHERE p.actualizadopor = :actualizadopor")})
+    @NamedQuery(name = "Personas.findAll", query = "SELECT p FROM Personas p"),
+    @NamedQuery(name = "Personas.findById", query = "SELECT p FROM Personas p WHERE p.id = :id"),
+    @NamedQuery(name = "Personas.findByNombres", query = "SELECT p FROM Personas p WHERE p.nombres = :nombres"),
+    @NamedQuery(name = "Personas.findByApellidos", query = "SELECT p FROM Personas p WHERE p.apellidos = :apellidos"),
+    @NamedQuery(name = "Personas.findByEmail", query = "SELECT p FROM Personas p WHERE p.email = :email"),
+    @NamedQuery(name = "Personas.findByUserid", query = "SELECT p FROM Personas p WHERE p.userid = :userid"),
+    @NamedQuery(name = "Personas.findByClave", query = "SELECT p FROM Personas p WHERE p.clave = :clave"),
+    @NamedQuery(name = "Personas.findByCedula", query = "SELECT p FROM Personas p WHERE p.cedula = :cedula"),
+    @NamedQuery(name = "Personas.findByFecha", query = "SELECT p FROM Personas p WHERE p.fecha = :fecha"),
+    @NamedQuery(name = "Personas.findByRol", query = "SELECT p FROM Personas p WHERE p.rol = :rol"),
+    @NamedQuery(name = "Personas.findByActivo", query = "SELECT p FROM Personas p WHERE p.activo = :activo"),
+    @NamedQuery(name = "Personas.findByOcupacion", query = "SELECT p FROM Personas p WHERE p.ocupacion = :ocupacion"),
+    @NamedQuery(name = "Personas.findByDescripcion", query = "SELECT p FROM Personas p WHERE p.descripcion = :descripcion"),
+    @NamedQuery(name = "Personas.findByCreado", query = "SELECT p FROM Personas p WHERE p.creado = :creado"),
+    @NamedQuery(name = "Personas.findByCreadopor", query = "SELECT p FROM Personas p WHERE p.creadopor = :creadopor"),
+    @NamedQuery(name = "Personas.findByActualizado", query = "SELECT p FROM Personas p WHERE p.actualizado = :actualizado"),
+    @NamedQuery(name = "Personas.findByActualizadopor", query = "SELECT p FROM Personas p WHERE p.actualizadopor = :actualizadopor")})
 public class Personas implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "fecha")
+    @Temporal(TemporalType.DATE)
+    private Date fecha;
+    @Column(name = "activo")
+    private Boolean activo;
+    @Column(name = "creado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date creado;
+    @Column(name = "actualizado")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actualizado;
     @Size(max = 2147483647)
     @Column(name = "nombres")
     private String nombres;
     @Size(max = 2147483647)
     @Column(name = "apellidos")
     private String apellidos;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "email")
     private String email;
     @Size(max = 2147483647)
     @Column(name = "userid")
     private String userid;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Correo electrónico no válido")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 2147483647)
     @Column(name = "clave")
     private String clave;
@@ -97,30 +110,33 @@ public class Personas implements Serializable {
     @Size(max = 2147483647)
     @Column(name = "actualizadopor")
     private String actualizadopor;
-    private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
-    @Column(name = "fecha")
-    @Temporal(TemporalType.DATE)
-    private Date fecha;
-    @Column(name = "activo")
-    private Boolean activo;
-    @Column(name = "creado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date creado;
-    @Column(name = "actualizado")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date actualizado;
+    @Column(name = "fotografia")
+    private byte[] fotografia;
+    @Size(max = 2147483647)
+    @Column(name = "primaria")
+    private String primaria;
+    @Size(max = 2147483647)
+    @Column(name = "numero")
+    private String numero;
+    @Size(max = 2147483647)
+    @Column(name = "secundaria")
+    private String secundaria;
+    @Size(max = 2147483647)
+    @Column(name = "referencia")
+    private String referencia;
+    @Size(max = 2147483647)
+    @Column(name = "fijo")
+    private String fijo;
+    @Size(max = 2147483647)
+    @Column(name = "movil")
+    private String movil;
+    @Size(max = 2147483647)
+    @Column(name = "ciudad")
+    private String ciudad;
     @OneToMany(mappedBy = "persona")
     private List<Pacientes> pacientesList;
     @OneToMany(mappedBy = "persona")
     private List<Profesionales> profesionalesList;
-    @JoinColumn(name = "direccion", referencedColumnName = "id")
-    @OneToOne
-    private Direcciones direccion;
     @JoinColumn(name = "genero", referencedColumnName = "id")
     @ManyToOne
     private Parametros genero;
@@ -145,124 +161,12 @@ public class Personas implements Serializable {
         this.id = id;
     }
 
-
-    public Date getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = fecha;
-    }
-
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
-
-
-    public Date getCreado() {
-        return creado;
-    }
-
-    public void setCreado(Date creado) {
-        this.creado = creado;
-    }
-
-
-    public Date getActualizado() {
-        return actualizado;
-    }
-
-    public void setActualizado(Date actualizado) {
-        this.actualizado = actualizado;
-    }
-
-
-    @XmlTransient
-    public List<Pacientes> getPacientesList() {
-        return pacientesList;
-    }
-
-    public void setPacientesList(List<Pacientes> pacientesList) {
-        this.pacientesList = pacientesList;
-    }
-
-    @XmlTransient
-    public List<Profesionales> getProfesionalesList() {
-        return profesionalesList;
-    }
-
-    public void setProfesionalesList(List<Profesionales> profesionalesList) {
-        this.profesionalesList = profesionalesList;
-    }
-
-    public Direcciones getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(Direcciones direccion) {
-        this.direccion = direccion;
-    }
-
     public Parametros getGenero() {
         return genero;
     }
 
     public void setGenero(Parametros genero) {
         this.genero = genero;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Personas)) {
-            return false;
-        }
-        Personas other = (Personas) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return (apellidos != null ? apellidos : "") + " " + (nombres != null ? nombres : "");
-    }
-
-    public static LocalDate getLocalDateFromDate(Date date) {
-        return LocalDate.from(Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()));
-    }
-
-    public String getEdad() {
-        if (this.fecha == null) {
-            return "";
-        }
-        LocalDate nacimiento = getLocalDateFromDate(this.fecha);
-        LocalDate ahora = LocalDate.now();
-        Period periodo = Period.between(nacimiento, ahora);
-        return periodo.getYears() + " años, " + periodo.getMonths() + " meses y " + periodo.getDays() + " días.";
-    }
-
-    public String getEdad(Date fecha) {
-        if (this.fecha == null) {
-            return "";
-        }
-        LocalDate nacimiento = getLocalDateFromDate(this.fecha);
-        LocalDate ahora = getLocalDateFromDate(fecha);
-        Period periodo = Period.between(nacimiento, ahora);
-        return periodo.getYears() + " años, " + periodo.getMonths() + " meses y " + periodo.getDays() + " días.";
     }
 
     public String getNombres() {
@@ -351,6 +255,185 @@ public class Personas implements Serializable {
 
     public void setActualizadopor(String actualizadopor) {
         this.actualizadopor = actualizadopor;
+    }
+
+    public byte[] getFotografia() {
+        return fotografia;
+    }
+
+    public void setFotografia(byte[] fotografia) {
+        this.fotografia = fotografia;
+    }
+
+    public String getPrimaria() {
+        return primaria;
+    }
+
+    public void setPrimaria(String primaria) {
+        this.primaria = primaria;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public String getSecundaria() {
+        return secundaria;
+    }
+
+    public void setSecundaria(String secundaria) {
+        this.secundaria = secundaria;
+    }
+
+    public String getReferencia() {
+        return referencia;
+    }
+
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
+    }
+
+    public String getFijo() {
+        return fijo;
+    }
+
+    public void setFijo(String fijo) {
+        this.fijo = fijo;
+    }
+
+    public String getMovil() {
+        return movil;
+    }
+
+    public void setMovil(String movil) {
+        this.movil = movil;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+
+    public Date getCreado() {
+        return creado;
+    }
+
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
+    public Date getActualizado() {
+        return actualizado;
+    }
+
+    public void setActualizado(Date actualizado) {
+        this.actualizado = actualizado;
+    }
+
+    @XmlTransient
+    public List<Pacientes> getPacientesList() {
+        return pacientesList;
+    }
+
+    public void setPacientesList(List<Pacientes> pacientesList) {
+        this.pacientesList = pacientesList;
+    }
+
+    @XmlTransient
+    public List<Profesionales> getProfesionalesList() {
+        return profesionalesList;
+    }
+
+    public void setProfesionalesList(List<Profesionales> profesionalesList) {
+        this.profesionalesList = profesionalesList;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Personas)) {
+            return false;
+        }
+        Personas other = (Personas) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return (apellidos != null ? apellidos : "") + " " + (nombres != null ? nombres : "");
+    }
+
+    public static LocalDate getLocalDateFromDate(Date date) {
+        return LocalDate.from(Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()));
+    }
+
+    public String getEdad() {
+        if (this.fecha == null) {
+            return "";
+        }
+        LocalDate nacimiento = getLocalDateFromDate(this.fecha);
+        LocalDate ahora = LocalDate.now();
+        Period periodo = Period.between(nacimiento, ahora);
+        return periodo.getYears() + " años, " + periodo.getMonths() + " meses y " + periodo.getDays() + " días.";
+    }
+
+    public String getEdad(Date fecha) {
+        if (this.fecha == null) {
+            return "";
+        }
+        LocalDate nacimiento = getLocalDateFromDate(this.fecha);
+        LocalDate ahora = getLocalDateFromDate(fecha);
+        Period periodo = Period.between(nacimiento, ahora);
+        return periodo.getYears() + " años, " + periodo.getMonths() + " meses y " + periodo.getDays() + " días.";
+    }
+
+    public String getDireccion() {
+        return (primaria != null && !primaria.isEmpty() && numero != null && secundaria != null && !secundaria.isEmpty())
+                ? primaria + " " + numero + " y " + secundaria
+                : (primaria != null ? primaria : "") + " "
+                + (numero != null ? numero : "")
+                + (secundaria != null ? secundaria : "");
+    }
+
+    public String getTelefonos() {
+        return ((fijo != null && movil != null)
+                ? (fijo + " - " + movil)
+                : fijo != null
+                        ? fijo
+                        : movil != null ? movil : "");
     }
 
 }

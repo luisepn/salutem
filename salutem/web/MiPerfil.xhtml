@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+  Documento  : Mi Perfil
+  Fecha    : 27 de Enero de 2019, 06:31:07 AM
+  Author   : Luis Fernando Ordóñez Armijos
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ace="http://www.icefaces.org/icefaces/components">
+
+    <h:panelGrid width="100%">
+        <ace:panel id="panel"
+                   header="Mi perfil"
+                   closable="false"
+                   toggleable="true"
+                   style="margin: 0 auto; width: 80%;">
+            <h:panelGrid width="100%" style="text-align: center;" >
+                <ace:panel header="#{salutemMiPerfil.persona.nombres}" style="margin: 0 auto;">
+                    <h:panelGrid width="100%">
+                        <ace:graphicImage 
+                            value="#{salutemMiPerfil.persona.fotografia}" 
+                            name="#{salutemArchivos.traerTextoMilisegundos()}_#{salutemMiPerfil.persona.fotografia}"
+                            rendered="#{salutemMiPerfil.persona.fotografia ne null}"
+                            style="height: 200px;"/>
+                        <ace:fileEntry 
+                            id="file-entryListener"        
+                            fileEntryListener="#{salutemMiPerfil.fotografiaListener}" 
+                            autoUpload="true"
+                            absolutePath="#{salutemArchivos.absolutePath}"
+                            maxFileSize="#{salutemArchivos.maxFileSize * 10}"
+                            messagePersistence="false"
+                            useOriginalFilename="true"
+                            rendered="#{salutemMiPerfil.formulario.editar}"/>
+                        <ace:textAreaEntry value="#{salutemMiPerfil.persona.descripcion}" cols="40" rows="3" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                        <h:outputText value="#{salutemMiPerfil.persona.descripcion}" rendered="#{!salutemMiPerfil.formulario.editar}" style="white-space: pre-wrap; font-weight: bolder;"/>
+                        <h:panelGrid width="100%" columns="4" style="text-align: left;">
+                            <h:outputLabel style="font-weight: bolder" value="C.I.:"/>
+                            <ace:textEntry value="#{salutemMiPerfil.persona.cedula}" title="Cédula" rendered="#{salutemMiPerfil.formulario.editar}">
+                                <ace:ajax execute="@all"/>
+                                <f:validator validatorId="org.salutem.utilitarios.ValidadorRuc" />
+                            </ace:textEntry>
+                            <h:outputText value="#{salutemMiPerfil.persona.cedula}" title="Cédula" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                            <h:outputLabel style="font-weight: bolder" value="Nombres:"/>
+                            <ace:textEntry value="#{salutemMiPerfil.persona.nombres}" title="Nombres" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                            <h:outputText value="#{salutemMiPerfil.persona.nombres}" title="Nombres" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                            <h:outputLabel style="font-weight: bolder" value="Apellidos:"/>
+                            <ace:textEntry value="#{salutemMiPerfil.persona.apellidos}" title="Apellidos" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                            <h:outputText value="#{salutemMiPerfil.persona.apellidos}" title="Apellidos" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                            <h:outputLabel style="font-weight: bolder" value="E-mail:"/>
+                            <ace:textEntry value="#{salutemMiPerfil.persona.email}" title="Email" rendered="#{salutemMiPerfil.formulario.editar}">
+                                <f:validator validatorId="org.salutem.utilitarios.ValidadorEmail" />
+                            </ace:textEntry>
+                            <h:outputText value="#{salutemMiPerfil.persona.email}" title="Email" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                            <h:outputLabel style="font-weight: bolder" value="Nombre de Usuario:"/>
+                            <ace:textEntry value="#{salutemMiPerfil.persona.userid}" title="Nombre de Usuario" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                            <h:outputText value="#{salutemMiPerfil.persona.userid}" title="Nombre de Usuario" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                            <h:outputLabel style="font-weight: bolder" value="Fecha de Nacimiento:" />
+                            <ace:dateTimeEntry navigator="true" value="#{salutemMiPerfil.persona.fecha}" 
+                                               popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                               pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield" rendered="#{salutemMiPerfil.formulario.editar}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </ace:dateTimeEntry>
+                            <h:outputText value="#{salutemMiPerfil.persona.fecha}" rendered="#{!salutemMiPerfil.formulario.editar}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText> 
+                            <h:outputLabel style="font-weight: bolder" value="Ocupación:"/>
+                            <ace:textEntry value="#{salutemMiPerfil.persona.ocupacion}" title="Ocupación" rendered="#{salutemMiPerfil.formulario.editar}"/>    
+                            <h:outputText value="#{salutemMiPerfil.persona.ocupacion}" title="Ocupación" rendered="#{!salutemMiPerfil.formulario.editar}"/>    
+                            <h:outputLabel style="font-weight: bolder" value="Género:"/>
+                            <h:selectOneMenu value="#{salutemMiPerfil.persona.genero}" rendered="#{salutemMiPerfil.formulario.editar}">
+                                <f:selectItems value="#{salutemCombos.genero}" />
+                            </h:selectOneMenu>
+                            <h:outputText value="#{salutemMiPerfil.persona.genero}" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </ace:panel>
+                <ace:panel header="Dirección" style="margin: 0 auto;">
+                    <h:panelGrid width="100%" columns="4" style="text-align: left;">
+                        <h:outputLabel style="font-weight: bolder" value="Ciudad:" for="ciudad" />
+                        <ace:textEntry value="#{salutemMiPerfil.persona.ciudad}" title="Ciudad" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                        <h:outputText value="#{salutemMiPerfil.persona.ciudad}" title="Ciudad" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                        <h:outputLabel style="font-weight: bolder" value="Calle Primaria:" for="primaria" />
+                        <ace:textEntry value="#{salutemMiPerfil.persona.primaria}" title="Primaria" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                        <h:outputText value="#{salutemMiPerfil.persona.primaria}" title="Primaria" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                        <h:outputLabel style="font-weight: bolder" value="Número:" for="numero" />
+                        <ace:textEntry value="#{salutemMiPerfil.persona.numero}" title="Numero" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                        <h:outputText value="#{salutemMiPerfil.persona.numero}" title="Numero" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                        <h:outputLabel style="font-weight: bolder" value="Calle Secundaria:" for="secundaria" />
+                        <ace:textEntry value="#{salutemMiPerfil.persona.secundaria}" title="Secundaria" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                        <h:outputText value="#{salutemMiPerfil.persona.secundaria}" title="Secundaria" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                        <h:outputLabel style="font-weight: bolder" value="Teléfono fijo:" />
+                        <ace:textEntry value="#{salutemMiPerfil.persona.fijo}" title="Teléfono fijo" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                        <h:outputText value="#{salutemMiPerfil.persona.fijo}" title="Teléfono fijo" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                        <h:outputLabel style="font-weight: bolder" value="Teléfono móvil:" />
+                        <ace:textEntry value="#{salutemMiPerfil.persona.movil}" title="Teléfono móvil" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                        <h:outputText value="#{salutemMiPerfil.persona.movil}" title="Teléfono móvil" rendered="#{!salutemMiPerfil.formulario.editar}"/>
+                        <h:outputLabel style="font-weight: bolder" value="Referencia:"/>
+                        <ace:textAreaEntry value="#{salutemMiPerfil.persona.referencia}" cols="25" rows="3" rendered="#{salutemMiPerfil.formulario.editar}" />
+                        <h:outputText value="#{salutemMiPerfil.persona.referencia}" rendered="#{!salutemMiPerfil.formulario.editar}" style="white-space: pre-wrap"/>
+                    </h:panelGrid>
+                </ace:panel>
+            </h:panelGrid>
+            <h:panelGrid columns="2" width="100%">
+                <ace:menuBar autoSubmenuDisplay="true" >
+                    <ace:menuItem value="Editar" icon="ui-icon ui-icon-disk"
+                                  action="#{salutemMiPerfil.editar()}"
+                                  rendered="#{!salutemMiPerfil.formulario.mostrar}"/>
+                    <ace:menuItem value="Guardar" icon="ui-icon ui-icon-disk" 
+                                  action="#{salutemMiPerfil.grabar()}" 
+                                  rendered="#{salutemMiPerfil.formulario.editar}"/>
+                    <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
+                                  action="#{salutemMiPerfil.cancelar()}"
+                                  rendered="#{salutemMiPerfil.formulario.editar}"/>
+                    <ace:menuItem value="Cambiar de clave" icon="ui-icon ui-icon-key" 
+                                  action="#{salutemSeguridad.cambiarClave()}"/>
+                    <ace:menuItem value="Historial" icon="ui-icon ui-icon-script"
+                                  action="#{salutemHistorial.buscar(salutemMiPerfil.nombreTabla, salutemMiPerfil.persona.id)}"/>
+                </ace:menuBar>
+
+            </h:panelGrid>
+        </ace:panel>
+    </h:panelGrid>
+</html>

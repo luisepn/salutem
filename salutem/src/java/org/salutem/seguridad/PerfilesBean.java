@@ -1,4 +1,4 @@
-package org.salutem.beans;
+package org.salutem.seguridad;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,6 +23,7 @@ import org.salutem.excepciones.ExcepcionDeConsulta;
 import org.salutem.excepciones.ExcepcionDeCreacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.general.CombosBean;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
@@ -230,11 +231,12 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             perfil.setActualizado(perfil.getCreado());
             perfil.setActualizadopor(perfil.getCreadopor());
             ejbPerfiles.crear(perfil, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -250,11 +252,12 @@ public class PerfilesBean implements Serializable, IMantenimiento {
             perfil.setActualizado(new Date());
             perfil.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbPerfiles.actualizar(perfil, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -265,11 +268,12 @@ public class PerfilesBean implements Serializable, IMantenimiento {
         }
         try {
             ejbPerfiles.eliminar(perfil, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PerfilesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 

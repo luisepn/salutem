@@ -27,7 +27,7 @@
                         <h:panelGrid columns="2">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemOrdenes.buscar()}"/>
-                                <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.crear()}"/>
+                                <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemOrdenes.crear()}"/>
 
                                 <ace:menuItem value="#{salutemOrdenes.estado eq 1 ? 'Registrado' 
                                                        : salutemOrdenes.estado eq 2 ? 'Enviado'
@@ -41,7 +41,7 @@
                                                        : ''}" icon="ui-icon ui-icon-seek-next" action="#{salutemOrdenes.actualizar(true)}"
                                               rendered="#{salutemOrdenes.estado gt -1 and salutemOrdenes.totalSeleccionados gt 0}"/>
                             </ace:menuBar>
-                            <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemOrdenes.formulario.mostrar and !salutemOrdenes.formularioSeleccion.mostrar}"/>
+                            
                         </h:panelGrid>
                     </h:panelGrid>
                 </ace:panel>
@@ -108,11 +108,11 @@
                             <ace:column headerText="Dirección" style="text-align: left">
                                 <h:outputText  value="#{item.formula.atencion.paciente.persona.direccion.toString()}"/>
                             </ace:column>
-                            <ace:column headerText="Móvil" sortBy="#{item.formula.atencion.paciente.persona.direccion.movil}" filterBy="#{item.formula.atencion.paciente.persona.direccion.movil}" filterMatchMode="contains" style="text-align: left">
-                                <h:outputText  value="#{item.formula.atencion.paciente.persona.direccion.movil}"/>
+                            <ace:column headerText="Móvil" sortBy="#{item.formula.atencion.paciente.persona.movil}" filterBy="#{item.formula.atencion.paciente.persona.movil}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.formula.atencion.paciente.persona.movil}"/>
                             </ace:column>
-                            <ace:column headerText="Fijo" sortBy="#{item.formula.atencion.paciente.persona.direccion.fijo}" filterBy="#{item.formula.atencion.paciente.persona.direccion.fijo}" filterMatchMode="contains" style="text-align: left">
-                                <h:outputText  value="#{item.formula.atencion.paciente.persona.direccion.fijo}"/>
+                            <ace:column headerText="Fijo" sortBy="#{item.formula.atencion.paciente.persona.fijo}" filterBy="#{item.formula.atencion.paciente.persona.fijo}" filterMatchMode="contains" style="text-align: left">
+                                <h:outputText  value="#{item.formula.atencion.paciente.persona.fijo}"/>
                             </ace:column>
                             <ace:column headerText="E-mail" sortBy="#{item.formula.atencion.paciente.persona.email}" filterBy="#{item.formula.atencion.paciente.persona.email}" filterMatchMode="contains" style="text-align: left">
                                 <h:outputText  value="#{item.formula.atencion.paciente.persona.email}"/>
@@ -287,7 +287,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemOrdenes.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+                        
                     </h:panelGrid>
                 </ace:dialog>
                 <ace:dialog 
@@ -320,7 +320,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemOrdenes.cancelarSeleccion()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+                        
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

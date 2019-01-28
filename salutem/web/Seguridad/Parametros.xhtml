@@ -35,7 +35,7 @@
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemParametros.buscar()}"/>
                             <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemParametros.crear()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemParametros.formulario.mostrar}"/>
+                        
                     </h:panelGrid>
 
                 </ace:panel>
@@ -169,9 +169,9 @@
                             <h:outputLabel value="Nombre:" for="nombre" />
                             <ace:textEntry id="nombre" value="#{salutemParametros.parametro.nombre}" title="Nombre" />
                             <h:outputLabel value="Descripción:" for="descripcion" />
-                            <ace:textAreaEntry id="descripcion" value="#{salutemParametros.parametro.descripcion}" cols="22" rows="2"/>
+                            <ace:textAreaEntry id="descripcion" value="#{salutemParametros.parametro.descripcion}" cols="22" rows="5"/>
                             <h:outputLabel value="Parámetros:" for="parametros" />
-                            <ace:textAreaEntry id="parametros" value="#{salutemParametros.parametro.parametros}" cols="22" rows="2"/>
+                            <ace:textAreaEntry id="parametros" value="#{salutemParametros.parametro.parametros}" cols="22" rows="5"/>
                             <h:outputLabel value="Activo:" />
                             <h:selectBooleanCheckbox value="#{salutemParametros.parametro.activo}" title="Activo"/>
                         </h:panelGrid>
@@ -190,7 +190,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemParametros.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+                        
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

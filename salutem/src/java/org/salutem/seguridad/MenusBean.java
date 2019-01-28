@@ -1,4 +1,4 @@
-package org.salutem.beans;
+package org.salutem.seguridad;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,45 +10,50 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
-import org.salutem.controladores.UsuariosFacade;
-import org.salutem.entidades.Usuarios;
+import org.salutem.controladores.MenusFacade;
+import org.salutem.entidades.Menus;
+import org.salutem.entidades.Perfiles;
 import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.salutem.excepciones.ExcepcionDeActualizacion;
 import org.salutem.excepciones.ExcepcionDeConsulta;
 import org.salutem.excepciones.ExcepcionDeCreacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
 
 /**
  *
  * @author Luis Fernando Ordóñez Armijos
- * @since 21 de Noviembre de 2017, 09:36:18 AM
+ * @since 19 de Noviembre de 2017, 04:49:59 AM
  */
-@Named("salutemUsuarios")
+@Named("salutemMenus")
 @ViewScoped
-public class UsuariosBean extends PersonasAbstractoBean implements Serializable {
+public class MenusBean implements Serializable, IMantenimiento {
 
-    private Usuarios usuario;
-    private LazyDataModel<Usuarios> usuarios;
+    @Inject
+    private SeguridadBean seguridadBean;
 
+    private Formulario formulario = new Formulario();
+    private LazyDataModel<Menus> menus;
+    private Menus menu;
     private int modulo;
-    private int grupo;
-    private int institucion;
+    private Perfiles perfil;
 
     @EJB
-    private UsuariosFacade ejbUsuarios;
+    private MenusFacade ejbMenus;
 
-    public UsuariosBean() {
-        usuarios = new LazyDataModel<Usuarios>() {
+    public MenusBean() {
+        menus = new LazyDataModel<Menus>() {
             @Override
-            public List<Usuarios> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+            public List<Menus> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
                 if (!IMantenimiento.validarPerfil(perfil, 'R')) {
                     return null;
                 }
-                return cargar(i, i1, scs, map);
+                return cargar(i, pageSize, scs, map);
             }
         };
     }
@@ -56,14 +61,15 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
     @PostConstruct
     @Override
     public void activar() {
-        perfil = seguridadBean.traerPerfil("Usuarios");
+        perfil = seguridadBean.traerPerfil("Menus");
     }
 
-    private List<Usuarios> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+    private List<Menus> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
+            String where = " o.activo=:activo and o.menupadre is null and o.modulo.activo=true";
             Map parameters = new HashMap();
-            String where = " o.activo=:activo ";
             parameters.put("activo", seguridadBean.getVerActivos());
+
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
@@ -90,28 +96,23 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
                 parameters.put("finactualizado", seguridadBean.getFinActualizado());
             }
 
-            if (seguridadBean.getInstitucion() != null) {
-                where += " and o.institucion=:institucion";
-                parameters.put("institucion", seguridadBean.getInstitucion());
-            }
-
-            int total = ejbUsuarios.contar(where, parameters);
+            int total = ejbMenus.contar(where, parameters);
             formulario.setTotal(total);
             int endIndex = i + pageSize;
             if (endIndex > total) {
                 endIndex = total;
             }
-            usuarios.setRowCount(total);
+            menus.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.modulo.nombre";
+                order = "o.modulo.nombre, o.codigo";
             } else {
-                order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+                order = (seguridadBean.getVerAgrupado() ? "o.modulo.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
-            return ejbUsuarios.buscar(where, parameters, order, i, endIndex);
+            return ejbMenus.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MenusBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -121,9 +122,9 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'R')) {
             return null;
         }
-        usuarios = new LazyDataModel<Usuarios>() {
+        menus = new LazyDataModel<Menus>() {
             @Override
-            public List<Usuarios> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+            public List<Menus> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
                 return cargar(i, i1, scs, map);
             }
         };
@@ -135,10 +136,8 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
-        claveBusqueda = null;
-        persona = null;
-        usuario = new Usuarios();
-        usuario.setActivo(Boolean.TRUE);
+        menu = new Menus();
+        menu.setActivo(Boolean.TRUE);
         formulario.insertar();
         return null;
     }
@@ -148,9 +147,7 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        usuario = (Usuarios) usuarios.getRowData();
-        persona = usuario.getPersona();
-        claveBusqueda = usuario.getPersona().toString();
+        menu = (Menus) menus.getRowData();
         formulario.editar();
         return null;
     }
@@ -160,42 +157,41 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
         }
-        usuario = (Usuarios) usuarios.getRowData();
-        persona = usuario.getPersona();
-        claveBusqueda = usuario.getPersona().toString();
+        menu = (Menus) menus.getRowData();
         formulario.eliminar();
         return null;
     }
 
     @Override
     public boolean validar() {
-        if (usuario.getPersona() == null) {
-            Mensajes.advertencia("Seleccione un usuario");
+        if (menu.getModulo() == null) {
+            Mensajes.advertencia("Es necesario módulo");
             return true;
         }
-        if (usuario.getGrupo() == null) {
-            Mensajes.advertencia("Seleccione un grupo");
+        if ((menu.getCodigo() == null) || (menu.getCodigo().isEmpty())) {
+            Mensajes.advertencia("Es necesario código");
             return true;
         }
-        Map parameters = new HashMap();
-        String where = "o.persona=:persona and o.grupo=:grupo and o.modulo=:modulo";
-        parameters.put("persona", usuario.getPersona());
-        parameters.put("grupo", usuario.getGrupo());
-        parameters.put("modulo", usuario.getModulo());
-
-        if (usuario.getId() != null) {
-            where += " and o.id!=:id";
-            parameters.put("id", usuario.getId());
+        if ((menu.getNombre() == null) || (menu.getNombre().isEmpty())) {
+            Mensajes.advertencia("Es necesario nombre");
+            return true;
         }
-
         try {
-            if (ejbUsuarios.contar(where, parameters) > 0) {
-                Mensajes.advertencia("Ya existe un registro con los mismos datos");
+            String where = "o.codigo=:codigo and o.modulo=:modulo";
+            Map parametros = new HashMap();
+            parametros.put("codigo", menu.getCodigo());
+            parametros.put("modulo", menu.getModulo());
+            if (menu.getId() != null) {
+                where += " and o.id!=:id";
+                parametros.put("id", menu.getId());
+            }
+            if (ejbMenus.contar(where, parametros) > 0) {
+                Mensajes.advertencia("No se permiten menús con código duplicado");
                 return true;
             }
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MenusBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -205,23 +201,21 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
-        usuario.setPersona(persona);
         if (validar()) {
             return null;
         }
         try {
-
-            usuario.setCreado(new Date());
-            usuario.setCreadopor(seguridadBean.getLogueado().getUserid());
-            usuario.setActualizado(usuario.getCreado());
-            usuario.setActualizadopor(usuario.getCreadopor());
-            ejbUsuarios.crear(usuario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            menu.setCreado(new Date());
+            menu.setCreadopor(seguridadBean.getLogueado().getUserid());
+            menu.setActualizado(menu.getCreado());
+            menu.setActualizadopor(menu.getCreadopor());
+            ejbMenus.crear(menu, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MenusBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
-        Mensajes.informacion("Creación exitosa.\n" + persona.toString());
+
         return null;
     }
 
@@ -230,20 +224,19 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
+        if (validar()) {
+            return null;
+        }
         try {
-            usuario.setPersona(persona);
-            if (validar()) {
-                return null;
-            }
-            usuario.setActualizado(new Date());
-            usuario.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbUsuarios.actualizar(usuario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            menu.setActualizado(new Date());
+            menu.setActualizadopor(seguridadBean.getLogueado().getUserid());
+            ejbMenus.actualizar(menu, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MenusBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
-        Mensajes.informacion("Modificación exitosa.\n" + persona.toString());
+
         return null;
     }
 
@@ -253,53 +246,52 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
             return null;
         }
         try {
-            ejbUsuarios.eliminar(usuario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            ejbMenus.eliminar(menu, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(UsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MenusBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
-        Mensajes.informacion("Eliminación exitosa.\n" + persona.toString());
+
         return null;
     }
 
     @Override
     public String cancelar() {
         formulario.cancelar();
-        buscar();
         return null;
     }
 
     public String getNombreTabla() {
-        return Usuarios.class.getSimpleName();
+        return Menus.class.getSimpleName();
     }
 
     /**
-     * @return the usuario
+     * @return the seguridadBean
      */
-    public Usuarios getUsuario() {
-        return usuario;
+    public SeguridadBean getSeguridadBean() {
+        return seguridadBean;
     }
 
     /**
-     * @param usuario the usuario to set
+     * @return the formulario
      */
-    public void setUsuario(Usuarios usuario) {
-        this.usuario = usuario;
+    public Formulario getFormulario() {
+        return formulario;
     }
 
     /**
-     * @return the usuarios
+     * @return the menus
      */
-    public LazyDataModel<Usuarios> getUsuarios() {
-        return usuarios;
+    public LazyDataModel<Menus> getMenus() {
+        return menus;
     }
 
     /**
-     * @param usuarios the usuarios to set
+     * @return the menu
      */
-    public void setUsuarios(LazyDataModel<Usuarios> usuarios) {
-        this.usuarios = usuarios;
+    public Menus getMenu() {
+        return menu;
     }
 
     /**
@@ -310,6 +302,41 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
     }
 
     /**
+     * @return the perfil
+     */
+    public Perfiles getPerfil() {
+        return perfil;
+    }
+
+    /**
+     * @param seguridadBean the seguridadBean to set
+     */
+    public void setSeguridadBean(SeguridadBean seguridadBean) {
+        this.seguridadBean = seguridadBean;
+    }
+
+    /**
+     * @param formulario the formulario to set
+     */
+    public void setFormulario(Formulario formulario) {
+        this.formulario = formulario;
+    }
+
+    /**
+     * @param menus the menus to set
+     */
+    public void setMenus(LazyDataModel<Menus> menus) {
+        this.menus = menus;
+    }
+
+    /**
+     * @param menu the menu to set
+     */
+    public void setMenu(Menus menu) {
+        this.menu = menu;
+    }
+
+    /**
      * @param modulo the modulo to set
      */
     public void setModulo(int modulo) {
@@ -317,31 +344,9 @@ public class UsuariosBean extends PersonasAbstractoBean implements Serializable 
     }
 
     /**
-     * @return the grupo
+     * @param perfil the perfil to set
      */
-    public int getGrupo() {
-        return grupo;
+    public void setPerfil(Perfiles perfil) {
+        this.perfil = perfil;
     }
-
-    /**
-     * @param grupo the grupo to set
-     */
-    public void setGrupo(int grupo) {
-        this.grupo = grupo;
-    }
-
-    /**
-     * @return the institucion
-     */
-    public int getInstitucion() {
-        return institucion;
-    }
-
-    /**
-     * @param institucion the institucion to set
-     */
-    public void setInstitucion(int institucion) {
-        this.institucion = institucion;
-    }
-
 }

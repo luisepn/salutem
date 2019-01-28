@@ -1,5 +1,7 @@
-package org.salutem.beans;
+package org.salutem.interno;
 
+import org.salutem.seguridad.InstitucionesBean;
+import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -203,11 +205,12 @@ public class MaterialesBean implements Serializable, IMantenimiento {
             material.setActualizado(material.getCreado());
             material.setActualizadopor(material.getCreadopor());
             ejbMateriales.crear(material, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -223,11 +226,12 @@ public class MaterialesBean implements Serializable, IMantenimiento {
             material.setActualizado(new Date());
             material.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbMateriales.actualizar(material, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -241,11 +245,12 @@ public class MaterialesBean implements Serializable, IMantenimiento {
         }
         try {
             ejbMateriales.eliminar(material, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(MaterialesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 

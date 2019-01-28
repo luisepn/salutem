@@ -1,4 +1,4 @@
-package org.salutem.beans;
+package org.salutem.seguridad;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -19,6 +19,7 @@ import org.salutem.excepciones.ExcepcionDeActualizacion;
 import org.salutem.utilitarios.Codificador;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
+import org.salutemlogs.controladores.AsincronoLogFacade;
 
 @Named("ingresoSistema")
 @ViewScoped
@@ -40,6 +41,8 @@ public class IngresoSistemaBean implements Serializable {
 
     @EJB
     private PersonasFacade ejbPersonas;
+    @EJB
+    protected AsincronoLogFacade ejbLogs;
 
     public IngresoSistemaBean() {
     }
@@ -71,13 +74,13 @@ public class IngresoSistemaBean implements Serializable {
             if (persona == null) {
                 String mensajeLog = "Usuario no registrado, o clave inválida";
                 Mensajes.advertencia(mensajeLog);
-                seguridadBean.ejbLogs.log(mensajeLog, 'I', usr, seguridadBean.getCurrentClientIpAddress());
+                ejbLogs.log(mensajeLog, 'I', usr, seguridadBean.getCurrentClientIpAddress());
                 return null;
             }
             if (!persona.getActivo()) {
                 String mensajeLog = "Usuario no activo";
                 Mensajes.advertencia(mensajeLog);
-                seguridadBean.ejbLogs.log(mensajeLog, 'I', persona.getUserid(), seguridadBean.getCurrentClientIpAddress());
+                ejbLogs.log(mensajeLog, 'I', persona.getUserid(), seguridadBean.getCurrentClientIpAddress());
                 persona = null;
                 return null;
             }
@@ -140,11 +143,12 @@ public class IngresoSistemaBean implements Serializable {
             }
             persona.setClave(cnCodificada);
             ejbPersonas.actualizar(persona, persona.getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 

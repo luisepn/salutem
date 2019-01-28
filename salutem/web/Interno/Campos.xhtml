@@ -31,9 +31,9 @@
                         <h:panelGrid columns="2">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemCampos.buscar()}"/>
-                                <ace:menuItem value="Crear" icon="ui-icon ui-icon-document" action="#{salutemCampos.crear()}"/>
+                                <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemCampos.crear()}"/>
                             </ace:menuBar>
-                            <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemCampos.formulario.mostrar}"/>
+                            
                         </h:panelGrid>
                     </h:panelGrid>
                 </ace:panel>
@@ -94,7 +94,7 @@
                             <ace:column headerText="Operaciones" style="text-align: left" >
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemCampos.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
-                                    <ace:menuItem action="#{salutemCampos.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                    <ace:menuItem action="#{salutemCampos.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                     <ace:menuItem action="#{salutemHistorial.buscar(salutemCampos.nombreTabla, item.id)}" rendered="#{salutemCampos.perfil.auditoria}"
                                                   value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
@@ -278,7 +278,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemCampos.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+                        
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

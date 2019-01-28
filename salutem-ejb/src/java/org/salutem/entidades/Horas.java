@@ -23,6 +23,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -35,18 +36,18 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "horas")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Horas.findAll", query = "SELECT h FROM Horas h")
-    , @NamedQuery(name = "Horas.findById", query = "SELECT h FROM Horas h WHERE h.id = :id")
-    , @NamedQuery(name = "Horas.findByNombre", query = "SELECT h FROM Horas h WHERE h.nombre = :nombre")
-    , @NamedQuery(name = "Horas.findByHorainicio", query = "SELECT h FROM Horas h WHERE h.horainicio = :horainicio")
-    , @NamedQuery(name = "Horas.findByHorafin", query = "SELECT h FROM Horas h WHERE h.horafin = :horafin")
-    , @NamedQuery(name = "Horas.findByActivo", query = "SELECT h FROM Horas h WHERE h.activo = :activo")
-    , @NamedQuery(name = "Horas.findByDescripcion", query = "SELECT h FROM Horas h WHERE h.descripcion = :descripcion")
-    , @NamedQuery(name = "Horas.findByCreado", query = "SELECT h FROM Horas h WHERE h.creado = :creado")
-    , @NamedQuery(name = "Horas.findByCreadopor", query = "SELECT h FROM Horas h WHERE h.creadopor = :creadopor")
-    , @NamedQuery(name = "Horas.findByActualizado", query = "SELECT h FROM Horas h WHERE h.actualizado = :actualizado")
-    , @NamedQuery(name = "Horas.findByActualizadopor", query = "SELECT h FROM Horas h WHERE h.actualizadopor = :actualizadopor")
-    , @NamedQuery(name = "Horas.findByCodigo", query = "SELECT h FROM Horas h WHERE h.codigo = :codigo")})
+    @NamedQuery(name = "Horas.findAll", query = "SELECT h FROM Horas h"),
+    @NamedQuery(name = "Horas.findById", query = "SELECT h FROM Horas h WHERE h.id = :id"),
+    @NamedQuery(name = "Horas.findByNombre", query = "SELECT h FROM Horas h WHERE h.nombre = :nombre"),
+    @NamedQuery(name = "Horas.findByHorainicio", query = "SELECT h FROM Horas h WHERE h.horainicio = :horainicio"),
+    @NamedQuery(name = "Horas.findByHorafin", query = "SELECT h FROM Horas h WHERE h.horafin = :horafin"),
+    @NamedQuery(name = "Horas.findByActivo", query = "SELECT h FROM Horas h WHERE h.activo = :activo"),
+    @NamedQuery(name = "Horas.findByDescripcion", query = "SELECT h FROM Horas h WHERE h.descripcion = :descripcion"),
+    @NamedQuery(name = "Horas.findByCreado", query = "SELECT h FROM Horas h WHERE h.creado = :creado"),
+    @NamedQuery(name = "Horas.findByCreadopor", query = "SELECT h FROM Horas h WHERE h.creadopor = :creadopor"),
+    @NamedQuery(name = "Horas.findByActualizado", query = "SELECT h FROM Horas h WHERE h.actualizado = :actualizado"),
+    @NamedQuery(name = "Horas.findByActualizadopor", query = "SELECT h FROM Horas h WHERE h.actualizadopor = :actualizadopor"),
+    @NamedQuery(name = "Horas.findByCodigo", query = "SELECT h FROM Horas h WHERE h.codigo = :codigo")})
 public class Horas implements Serializable {
 
     @Size(max = 2147483647)
@@ -90,6 +91,9 @@ public class Horas implements Serializable {
     @JoinColumn(name = "institucion", referencedColumnName = "id")
     @ManyToOne
     private Instituciones institucion;
+
+    @Transient
+    private boolean seleccionado;
 
     public Horas() {
     }
@@ -179,14 +183,17 @@ public class Horas implements Serializable {
         SimpleDateFormat sdfh = new SimpleDateFormat("kk:mm");
         return nombre + " [" + sdfh.format(horainicio) + " - " + sdfh.format(horafin) + "]";
     }
+
     public String traerHoras() {
         SimpleDateFormat sdfh = new SimpleDateFormat("kk:mm");
         return "[" + sdfh.format(horainicio) + " - " + sdfh.format(horafin) + "]";
     }
+
     @XmlTransient
     public List<Horarios> getHorariosList() {
         return horariosList;
     }
+
     public void setHorariosList(List<Horarios> horariosList) {
         this.horariosList = horariosList;
     }
@@ -229,6 +236,20 @@ public class Horas implements Serializable {
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
+    }
+
+    /**
+     * @return the seleccionado
+     */
+    public boolean isSeleccionado() {
+        return seleccionado;
+    }
+
+    /**
+     * @param seleccionado the seleccionado to set
+     */
+    public void setSeleccionado(boolean seleccionado) {
+        this.seleccionado = seleccionado;
     }
 
 }

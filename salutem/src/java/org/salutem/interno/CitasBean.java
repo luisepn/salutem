@@ -2,8 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.salutem.beans;
+package org.salutem.interno;
 
+import org.salutem.general.CombosBean;
+import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -276,11 +278,12 @@ public class CitasBean implements Serializable, IMantenimiento {
 
         try {
             ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            observaciones = null;
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        observaciones = null;
+
         return null;
     }
 
@@ -311,11 +314,11 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
         try {
             ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
         return null;
     }
 
@@ -333,11 +336,12 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setDescripcion("Cita cancelada. " + cita.getDescripcion());
         try {
             ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -355,11 +359,12 @@ public class CitasBean implements Serializable, IMantenimiento {
         cita.setDescripcion("Cita reagendada. " + cita.getDescripcion());
         try {
             ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -370,11 +375,12 @@ public class CitasBean implements Serializable, IMantenimiento {
         }
         try {
             ejbCitas.eliminar(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 

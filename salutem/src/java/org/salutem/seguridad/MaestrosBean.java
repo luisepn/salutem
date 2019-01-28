@@ -1,4 +1,4 @@
-package org.salutem.beans;
+package org.salutem.seguridad;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,8 +12,8 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.salutem.controladores.ParametrosFacade;
-import org.salutem.entidades.Parametros;
+import org.salutem.controladores.MaestrosFacade;
+import org.salutem.entidades.Maestros;
 import org.salutem.entidades.Perfiles;
 import org.salutem.excepciones.ExcepcionDeActualizacion;
 import org.salutem.excepciones.ExcepcionDeConsulta;
@@ -28,32 +28,32 @@ import org.salutem.utilitarios.Mensajes;
 /**
  *
  * @author Luis Fernando Ordóñez Armijos
- * @since 19 de Noviembre de 2017, 07:08:01 AM
+ * @since 18 de Noviembre de 2017, 07:23:04 AM
+ *
  */
-@Named("salutemParametros")
+@Named("salutemMaestros")
 @ViewScoped
-public class ParametrosBean implements Serializable, IMantenimiento {
+public class MaestrosBean implements Serializable, IMantenimiento {
 
     @Inject
     private SeguridadBean seguridadBean;
 
     private Formulario formulario = new Formulario();
-    private LazyDataModel<Parametros> parametros;
-    private Parametros parametro;
-    private int maestro;
+    private LazyDataModel<Maestros> maestros;
+    private Maestros maestro;
     private Perfiles perfil;
 
     @EJB
-    private ParametrosFacade ejbParametros;
+    private MaestrosFacade ejbMaestros;
 
-    public ParametrosBean() {
-        parametros = new LazyDataModel<Parametros>() {
+    public MaestrosBean() {
+        maestros = new LazyDataModel<Maestros>() {
             @Override
-            public List<Parametros> load(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+            public List<Maestros> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
                 if (!IMantenimiento.validarPerfil(perfil, 'R')) {
                     return null;
                 }
-                return cargar(i, pageSize, scs, map);
+                return cargar(i, i1, scs, map);
             }
         };
     }
@@ -61,29 +61,21 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     @PostConstruct
     @Override
     public void activar() {
-        perfil = seguridadBean.traerPerfil("Parametros");
+        perfil = seguridadBean.traerPerfil("Maestros");
     }
 
-    private List<Parametros> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
+    private List<Maestros> cargar(int i, int pageSize, SortCriteria[] scs, Map<String, String> map) {
         try {
             Map parameters = new HashMap();
-            String where = " o.activo=:activo and o.maestro.activo=true";
+            String where = " o.activo=:activo ";
             parameters.put("activo", seguridadBean.getVerActivos());
-
             for (Map.Entry e : map.entrySet()) {
                 String clave = (String) e.getKey();
                 String valor = (String) e.getValue();
-                if (clave.contains(".id")) {
-                    Integer id = Integer.parseInt(valor);
-                    if (id != 0) {
-                        where += " and o." + clave + "=:" + clave.replaceAll("\\.", "");
-                        parameters.put(clave.replaceAll("\\.", ""), id);
-                    }
-                } else {
-                    where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
-                    parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
-                }
+                where += " and upper(o." + clave + ") like :" + clave.replaceAll("\\.", "");
+                parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
             }
+
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
                 where += " and o.creado between :iniciocreado and :fincreado";
                 parameters.put("iniciocreado", seguridadBean.getInicioCreado());
@@ -94,25 +86,26 @@ public class ParametrosBean implements Serializable, IMantenimiento {
                 parameters.put("inicioactualizado", seguridadBean.getInicioActualizado());
                 parameters.put("finactualizado", seguridadBean.getFinActualizado());
             }
-            int total = ejbParametros.contar(where, parameters);
+
+            int total = ejbMaestros.contar(where, parameters);
             formulario.setTotal(total);
             int endIndex = i + pageSize;
             if (endIndex > total) {
                 endIndex = total;
             }
-            parametros.setRowCount(total);
+            maestros.setRowCount(total);
             String order;
             if (scs.length == 0) {
-                order = "o.maestro.nombre, o.codigo";
+                order = "o.codigo";
             } else {
-                order = (seguridadBean.getVerAgrupado() ? "o.maestro.nombre," : "") + "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
+                order = "o." + scs[0].getPropertyName() + (scs[0].isAscending() ? " ASC" : " DESC");
             }
-            return ejbParametros.buscar(where, parameters, order, i, endIndex);
+            return ejbMaestros.buscar(where, parameters, order, i, endIndex);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -120,9 +113,10 @@ public class ParametrosBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'R')) {
             return null;
         }
-        parametros = new LazyDataModel<Parametros>() {
+
+        maestros = new LazyDataModel<Maestros>() {
             @Override
-            public List<Parametros> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
+            public List<Maestros> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
                 return cargar(i, i1, scs, map);
             }
         };
@@ -134,8 +128,8 @@ public class ParametrosBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'C')) {
             return null;
         }
-        parametro = new Parametros();
-        parametro.setActivo(Boolean.TRUE);
+        maestro = new Maestros();
+        maestro.setActivo(Boolean.TRUE);
         formulario.insertar();
         return null;
     }
@@ -145,7 +139,7 @@ public class ParametrosBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
-        parametro = (Parametros) parametros.getRowData();
+        maestro = (Maestros) maestros.getRowData();
         formulario.editar();
         return null;
     }
@@ -155,47 +149,36 @@ public class ParametrosBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
             return null;
         }
-        parametro = (Parametros) parametros.getRowData();
+        maestro = (Maestros) maestros.getRowData();
         formulario.eliminar();
         return null;
     }
 
     @Override
     public boolean validar() {
+        if ((maestro.getCodigo() == null) || (maestro.getCodigo().isEmpty())) {
+            Mensajes.advertencia("Es necesario código");
+            return true;
+        }
+        if ((maestro.getNombre() == null) || (maestro.getNombre().isEmpty())) {
+            Mensajes.advertencia("Es necesario nombre");
+            return true;
+        }
         try {
-            if (parametro.getMaestro() == null) {
-                Mensajes.advertencia("Es necesario maestro");
-                return true;
-            }
-            if ((parametro.getCodigo() == null) || (parametro.getCodigo().isEmpty())) {
-                Mensajes.advertencia("Es necesario código");
-                return true;
-            }
-            if ((parametro.getNombre() == null) || (parametro.getNombre().isEmpty())) {
-                Mensajes.advertencia("Es necesario nombre");
-                return true;
-            }
-            if ((parametro.getDescripcion() == null) || (parametro.getDescripcion().isEmpty())) {
-                Mensajes.advertencia("Es necesario descripción");
-                return true;
-            }
-
-            String where = " o.maestro=:maestro and o.codigo=:codigo";
-            Map parameters = new HashMap();
-            parameters.put("maestro", parametro.getMaestro());
-            parameters.put("codigo", parametro.getCodigo());
-            if (parametro.getId() != null) {
+            String where = "o.codigo=:codigo";
+            Map parametros = new HashMap();
+            parametros.put("codigo", maestro.getCodigo());
+            if (maestro.getId() != null) {
                 where += " and o.id!=:id";
-                parameters.put("id", parametro.getId());
+                parametros.put("id", maestro.getId());
             }
-            if (ejbParametros.contar(where, parameters) > 0) {
+            if (ejbMaestros.contar(where, parametros) > 0) {
                 Mensajes.advertencia("No se permiten maestros con código duplicado");
                 return true;
             }
-
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
@@ -209,16 +192,16 @@ public class ParametrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            parametro.setCreado(new Date());
-            parametro.setCreadopor(seguridadBean.getLogueado().getUserid());
-            parametro.setActualizado(parametro.getCreado());
-            parametro.setActualizadopor(parametro.getCreadopor());
-            ejbParametros.crear(parametro, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            maestro.setCreado(new Date());
+            maestro.setCreadopor(seguridadBean.getLogueado().getUserid());
+            maestro.setActualizado(maestro.getCreado());
+            maestro.setActualizadopor(maestro.getCreadopor());
+            ejbMaestros.crear(maestro, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
         return null;
     }
 
@@ -231,14 +214,15 @@ public class ParametrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            parametro.setActualizado(new Date());
-            parametro.setActualizadopor(seguridadBean.getLogueado().getUserid());
-            ejbParametros.actualizar(parametro, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            maestro.setActualizado(new Date());
+            maestro.setActualizadopor(seguridadBean.getLogueado().getUserid());
+            ejbMaestros.actualizar(maestro, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -248,12 +232,13 @@ public class ParametrosBean implements Serializable, IMantenimiento {
             return null;
         }
         try {
-            ejbParametros.eliminar(parametro, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            ejbMaestros.eliminar(maestro, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(ParametrosBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MaestrosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -264,7 +249,7 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     }
 
     public String getNombreTabla() {
-        return Parametros.class.getSimpleName();
+        return Maestros.class.getSimpleName();
     }
 
     /**
@@ -282,23 +267,16 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @return the codigos
+     * @return the maestros
      */
-    public LazyDataModel<Parametros> getParametros() {
-        return parametros;
-    }
-
-    /**
-     * @return the parametro
-     */
-    public Parametros getParametro() {
-        return parametro;
+    public LazyDataModel<Maestros> getMaestros() {
+        return maestros;
     }
 
     /**
      * @return the maestro
      */
-    public int getMaestro() {
+    public Maestros getMaestro() {
         return maestro;
     }
 
@@ -324,23 +302,16 @@ public class ParametrosBean implements Serializable, IMantenimiento {
     }
 
     /**
-     * @param codigos the codigos to set
+     * @param maestros the maestros to set
      */
-    public void setParametros(LazyDataModel<Parametros> codigos) {
-        this.parametros = codigos;
-    }
-
-    /**
-     * @param parametro the parametro to set
-     */
-    public void setParametro(Parametros parametro) {
-        this.parametro = parametro;
+    public void setMaestros(LazyDataModel<Maestros> maestros) {
+        this.maestros = maestros;
     }
 
     /**
      * @param maestro the maestro to set
      */
-    public void setMaestro(int maestro) {
+    public void setMaestro(Maestros maestro) {
         this.maestro = maestro;
     }
 

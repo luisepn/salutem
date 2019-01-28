@@ -1,5 +1,6 @@
-package org.salutem.beans;
+package org.salutem.general;
 
+import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
@@ -319,8 +320,8 @@ public class DatosBean implements Serializable {
     }
 
     public String getMensajeActualizacion() {
-        return "Seleccione una opción cuidadosamente.\n"
-                + "Si desea sincronizar la lista de datos actual con los campos parametrizados presione 'Copiar nuevos'.\n"
+        return "Seleccione una opción cuidadosamente. "
+                + "Si desea sincronizar la lista de datos actual con los campos parametrizados presione 'Copiar nuevos'. "
                 + "Si desea eliminar la lista de datos y volver a copiar los campos parametrizados presione 'Eliminar y copiar'.";
     }
 

@@ -12,7 +12,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.salutem.entidades.Usuarios;
 import org.salutem.excepciones.ExcepcionDeConsulta;
-import org.salutem.beans.CombosBean;
+import org.salutem.general.CombosBean;
 import org.salutem.utilitarios.Mensajes;
 
 /**

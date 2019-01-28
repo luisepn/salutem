@@ -1,5 +1,7 @@
-package org.salutem.beans;
+package org.salutem.interno;
 
+import org.salutem.general.CombosBean;
+import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -302,11 +304,11 @@ public class CamposBean implements Serializable, IMantenimiento {
             if (campo.getTipo().getCodigo().equals("ONE") || campo.getTipo().getCodigo().equals("MANY")) {
                 ejbCampos.actualizarJsonb("opciones", campo.getOpciones(), campo.getId());
             }
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
         return null;
     }
 
@@ -317,11 +319,11 @@ public class CamposBean implements Serializable, IMantenimiento {
         }
         try {
             ejbCampos.eliminar(campo, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CamposBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
         return null;
     }
 

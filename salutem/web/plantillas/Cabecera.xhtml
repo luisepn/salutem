@@ -11,11 +11,10 @@
 
             <h:panelGrid columns="3" columnClasses="columna1, columna2, columna3" style="margin-left: 10%; margin-right: 10%; margin-top: -24px;">
                 <ace:graphicImage 
-                    value="#{salutemSeguridad.institucion.logotipo.traerImagen()}" 
-                    name="#{salutemSeguridad.institucion.id}_#{salutemSeguridad.institucion.nombre}" 
+                    value="#{salutemSeguridad.institucion.logotipo}" 
+                    name="#{salutemSeguridad.institucion.id}_#{salutemSeguridad.institucion.logotipo}" 
                     rendered="#{salutemSeguridad.institucion ne null 
-                                and salutemSeguridad.institucion.logotipo ne null 
-                                and salutemSeguridad.institucion.logotipo.ruta ne null}"
+                                and salutemSeguridad.institucion.logotipo ne null}"
                     alt="logo" height="45px"/>
                 <ace:graphicImage 
                     url="../recursos/icon.png" 
@@ -24,27 +23,28 @@
                 <ace:menuBar model="#{salutemSeguridad.menu}" rendered="#{salutemSeguridad.menu ne null}" style="width: 100%"/>
                 <h:panelGrid width="100%" style="margin: 5%">
                     <ace:menuButton id="menuButton100" effect="slide" value="Sistema">                        
-                        <ace:menuItem value="#{salutemSeguridad.usuario.institucion.nombre}" icon="ui-icon ui-icon-home" rendered="#{salutemSeguridad.institucion ne null}"/>
+                        <ace:menuItem value="Editar #{salutemSeguridad.usuario.institucion.nombre}" icon="ui-icon ui-icon-home" action="#{salutemMiInstitucion.ingresar()}" rendered="#{salutemSeguridad.institucion ne null}"/>
+                        <ace:menuItem value="Editar #{salutemSeguridad.logueado.userid}" icon="ui-icon ui-icon-person" action="#{salutemMiPerfil.ingresar()}"/>
                         <ace:menuItem value="#{salutemSeguridad.usuario.grupo.nombre}" icon="ui-icon ui-icon-comment"/>
-                        <ace:menuItem value="#{salutemSeguridad.logueado.userid}" icon="ui-icon ui-icon-person"/>
                         <!--<ace:menuItem value="Jueves 11 de Enero de 2018 [21:47]" icon="ui-icon ui-icon-info"/>-->
                         <!--<ace:menuItem value="12AG2018 22:32" icon="ui-icon ui-icon-info"/>-->
                         <!--<ace:menuItem value="03NOV2018 11:18" icon="ui-icon ui-icon-info"/>-->
                         <ace:menuItem value="11nov2018 23:03" icon="ui-icon ui-icon-info"/>
-                        <ace:menuItem value="Cambiar de clave" icon="ui-icon ui-icon-key" action="#{salutemSeguridad.cambiarClave()}"/>
                         <ace:menuItem value="Salir del Sistema" icon="ui-icon ui-icon-close" action="#{salutemSeguridad.logout()}" />
                     </ace:menuButton>
                 </h:panelGrid>
             </h:panelGrid>
-            <!--            <ace:growlMessages 
-                            hideEffectDuration="slow"
-                            maxVisibleMessages="5"
-                            header="¡Atención!"
-                            autoHide="false"
-                            messageStyleClass="mensajes"
-                            escape="false"
-                            showSummary="true"
-                            showDetail="true"/>-->
+            <ace:growlMessages 
+                position="top-left"
+                hideEffectDuration="slow"
+                maxVisibleMessages="5"
+                autoHide="false"
+                messageStyleClass="mensajes"
+                escape="false"
+                showSummary="true"
+                showDetail="true"
+                redisplay="false"
+                useNativeNotifications="f"/>
         </ui:composition>
     </h:body>
 </html>

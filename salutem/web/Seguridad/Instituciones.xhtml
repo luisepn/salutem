@@ -30,7 +30,7 @@
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemInstituciones.buscar()}"/>
                             <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemInstituciones.crear()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemInstituciones.formulario.mostrar}"/>
+
                     </h:panelGrid>
                 </ace:panel>
 
@@ -76,7 +76,7 @@
                             <ace:columnGroup type="header">
                                 <ace:row>
                                     <ace:column colspan="4"/>
-                                    <ace:column headerText="Dirección" colspan="5"/>
+                                    <ace:column headerText="Dirección" colspan="4"/>
                                     <ace:column headerText="Teléfonos" colspan="2"/>
                                     <ace:column colspan="4"/>
                                     <ace:column colspan="4"/>
@@ -88,19 +88,17 @@
                                     <ace:column headerText="Nombre"
                                                 sortBy="#{item.nombre}" filterBy="#{item.nombre}" filterMatchMode="contains"/>
                                     <ace:column headerText="Ciudad" 
-                                                 sortBy="#{item.direccion.ciudad}" filterBy="#{item.direccion.ciudad}" filterMatchMode="contains"/>
+                                                sortBy="#{item.ciudad}" filterBy="#{item.ciudad}" filterMatchMode="contains"/>
                                     <ace:column headerText="Calle Primaria" 
-                                                 sortBy="#{item.direccion.primaria}" filterBy="#{item.direccion.primaria}" filterMatchMode="contains"/>
+                                                sortBy="#{item.primaria}" filterBy="#{item.primaria}" filterMatchMode="contains"/>
                                     <ace:column headerText="Número" 
-                                                 sortBy="#{item.direccion.numero}" filterBy="#{item.direccion.numero}" filterMatchMode="contains"/>
+                                                sortBy="#{item.numero}" filterBy="#{item.numero}" filterMatchMode="contains"/>
                                     <ace:column headerText="Calle Secundaria" 
-                                                 sortBy="#{item.direccion.secundaria}" filterBy="#{item.direccion.secundaria}" filterMatchMode="contains"/>
-                                    <ace:column headerText="Edificio/Piso" 
-                                                 sortBy="#{item.direccion.piso}" filterBy="#{item.direccion.piso}" filterMatchMode="contains"/>
+                                                sortBy="#{item.secundaria}" filterBy="#{item.secundaria}" filterMatchMode="contains"/>
                                     <ace:column headerText="Fijo"
-                                                 sortBy="#{item.direccion.fijo}" filterBy="#{item.direccion.fijo}" filterMatchMode="contains"/>
+                                                sortBy="#{item.fijo}" filterBy="#{item.fijo}" filterMatchMode="contains"/>
                                     <ace:column headerText="Móvil"
-                                                 sortBy="#{item.direccion.movil}" filterBy="#{item.direccion.movil}" filterMatchMode="contains"/>
+                                                sortBy="#{item.movil}" filterBy="#{item.movil}" filterMatchMode="contains"/>
                                     <ace:column headerText="Email"
                                                 sortBy="#{item.email}" filterBy="#{item.email}" filterMatchMode="contains"/>
                                     <ace:column headerText="Página Web"
@@ -110,25 +108,25 @@
                                     <ace:column headerText="¿Laboratorio?"
                                                 sortBy="#{item.descripcion}"/>
                                     <ace:column headerText="Creación" 
-                                                 sortBy="#{item.creado}" filterBy="#{item.creado}" 
-                                                 filterDatePattern="dd/MM/yyyy HH:mm"
-                                                 filterValueMin="#{salutemSeguridad.inicioCreado}"
-                                                 filterValueMax="#{salutemSeguridad.finCreado}"
-                                                 type="DATE" rangedFilter="true"
-                                                 rendered="false"  style="text-align: left"/>
+                                                sortBy="#{item.creado}" filterBy="#{item.creado}" 
+                                                filterDatePattern="dd/MM/yyyy HH:mm"
+                                                filterValueMin="#{salutemSeguridad.inicioCreado}"
+                                                filterValueMax="#{salutemSeguridad.finCreado}"
+                                                type="DATE" rangedFilter="true"
+                                                rendered="false"  style="text-align: left"/>
                                     <ace:column headerText="Creador por" 
-                                                 sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" 
-                                                 filterMatchMode="contains" rendered="false"/>
+                                                sortBy="#{item.creadopor}" filterBy="#{item.creadopor}" 
+                                                filterMatchMode="contains" rendered="false"/>
                                     <ace:column headerText="Modificado" 
-                                                 sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" 
-                                                 filterDatePattern="dd/MM/yyyy HH:mm"
-                                                 filterValueMin="#{salutemSeguridad.inicioActualizado}"
-                                                 filterValueMax="#{salutemSeguridad.finActualizado}"
-                                                 type="DATE" rangedFilter="true"
-                                                 rendered="false"  style="text-align: left"/>
+                                                sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" 
+                                                filterDatePattern="dd/MM/yyyy HH:mm"
+                                                filterValueMin="#{salutemSeguridad.inicioActualizado}"
+                                                filterValueMax="#{salutemSeguridad.finActualizado}"
+                                                type="DATE" rangedFilter="true"
+                                                rendered="false"  style="text-align: left"/>
                                     <ace:column headerText="Modificado por" 
-                                                 sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" 
-                                                 filterMatchMode="contains" rendered="false"/>
+                                                sortBy="#{item.actualizado}" filterBy="#{item.actualizado}" 
+                                                filterMatchMode="contains" rendered="false"/>
                                 </ace:row>
                             </ace:columnGroup>
                             <ace:column style="text-align: right">
@@ -137,37 +135,34 @@
                             <ace:column style="text-align: left">
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemInstituciones.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
-                                    <ace:menuItem action="#{salutemInstituciones.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                    <ace:menuItem action="#{salutemInstituciones.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                     <ace:menuItem action="#{salutemHistorial.buscar(salutemInstituciones.nombreTabla, item.id)}" rendered="#{salutemInstituciones.perfil.auditoria}"
                                                   value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column>
                             <ace:column style="text-align: center;">
-                                <ace:graphicImage value="#{item.logotipo.traerImagen()}" name="#{item.id}_#{item.logotipo.nombre}" id="resourceGraphicImage" style="height: 50px " rendered="#{item.logotipo ne null and item.logotipo.ruta ne null}"/>
+                                <ace:graphicImage value="#{item.logotipo}" name="#{item.id}_#{item.logotipo}" id="resourceGraphicImage" style="height: 50px " rendered="#{item.logotipo ne null}"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
                                 <h:outputText  value="#{item.nombre} [#{item.id}]"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
-                                <h:outputText  value="#{item.direccion.ciudad}"/>
+                                <h:outputText  value="#{item.ciudad}"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
-                                <h:outputText  value="#{item.direccion.primaria}"/>
+                                <h:outputText  value="#{item.primaria}"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
-                                <h:outputText  value="#{item.direccion.numero}"/>
+                                <h:outputText  value="#{item.numero}"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
-                                <h:outputText  value="#{item.direccion.secundaria}"/>
+                                <h:outputText  value="#{item.secundaria}"/>
                             </ace:column>
                             <ace:column style="text-align: left;">
-                                <h:outputText  value="#{item.direccion.piso}" />
+                                <h:outputText  value="#{item.fijo}" />
                             </ace:column>
                             <ace:column style="text-align: left;">
-                                <h:outputText  value="#{item.direccion.fijo}" />
-                            </ace:column>
-                            <ace:column style="text-align: left;">
-                                <h:outputText  value="#{item.direccion.movil} " />
+                                <h:outputText  value="#{item.movil} " />
                             </ace:column>
                             <ace:column style="text-align: left;">
                                 <h:outputText  value="#{item.email} " />
@@ -213,6 +208,11 @@
                     <ace:tabSet>
                         <ace:tabPane label="Inf. General">
                             <h:panelGrid columns="2">
+                                <h:outputLabel value="R.U.C.:"/>
+                                <ace:textEntry value="#{salutemInstituciones.institucion.ruc}" title="R.U.C.">
+                                    <ace:ajax execute="@all"/>
+                                    <f:validator validatorId="org.salutem.utilitarios.ValidadorRuc" />
+                                </ace:textEntry>
                                 <h:outputLabel value="Nombre:"/>
                                 <ace:textEntry value="#{salutemInstituciones.institucion.nombre}" title="Nombre" style="width: 300px;"/>
                                 <h:outputLabel value="E-mail:"/>
@@ -238,27 +238,38 @@
                         <ace:tabPane label="Dirección">
                             <h:panelGrid columns="4">
                                 <h:outputLabel value="Ciudad:" for="ciudad"/>
-                                <ace:textEntry id="ciudad" value="#{salutemInstituciones.direccion.ciudad}" title="Ciudad" />
+                                <ace:textEntry id="ciudad" value="#{salutemInstituciones.institucion.ciudad}" title="Ciudad" />
                                 <h:outputLabel value="Calle Primaria:" for="primaria" />
-                                <ace:textEntry id="primaria" value="#{salutemInstituciones.direccion.primaria}" title="Primaria" />
+                                <ace:textEntry id="primaria" value="#{salutemInstituciones.institucion.primaria}" title="Primaria" />
                                 <h:outputLabel value="Número:" for="numero" />
-                                <ace:textEntry id="numero" value="#{salutemInstituciones.direccion.numero}" title="Numero" />
+                                <ace:textEntry id="numero" value="#{salutemInstituciones.institucion.numero}" title="Numero" />
                                 <h:outputLabel value="Calle Secundaria:" for="secundaria" />
-                                <ace:textEntry id="secundaria" value="#{salutemInstituciones.direccion.secundaria}" title="Secundaria" />
+                                <ace:textEntry id="secundaria" value="#{salutemInstituciones.institucion.secundaria}" title="Secundaria" />
                                 <h:outputLabel value="Teléfono fijo:" />
-                                <ace:textEntry value="#{salutemInstituciones.direccion.fijo}" title="Teléfono fijo" />
+                                <ace:textEntry value="#{salutemInstituciones.institucion.fijo}" title="Teléfono fijo" />
                                 <h:outputLabel value="Teléfono móvil:" />
-                                <ace:textEntry value="#{salutemInstituciones.direccion.movil}" title="Teléfono móvil" />
-                                <h:outputLabel value="Edificio/Piso:" />
-                                <ace:textAreaEntry value="#{salutemInstituciones.direccion.piso}"
-                                                   rows="2" cols="22"/>
+                                <ace:textEntry value="#{salutemInstituciones.institucion.movil}" title="Teléfono móvil" />
                                 <h:outputLabel value="Referencia:"/>
-                                <ace:textAreaEntry value="#{salutemInstituciones.direccion.referencia}" 
+                                <ace:textAreaEntry value="#{salutemInstituciones.institucion.referencia}" 
                                                    rows="2" cols="22"/>
                             </h:panelGrid>
                         </ace:tabPane>
                         <ace:tabPane label="Logotipo">
-                            <ui:include src="../cuadroUpload.xhtml"/>
+                            <h:panelGrid style="text-align: center;">
+                                <ace:graphicImage 
+                                    value="#{salutemInstituciones.institucion.logotipo}" 
+                                    name="#{salutemInstituciones.institucion.id}_#{salutemInstituciones.institucion.logotipo}" 
+                                    rendered="#{salutemInstituciones.institucion.logotipo ne null}"
+                                    style="height: 100px;"/>
+                                <ace:fileEntry 
+                                    id="file-entryListener"                
+                                    fileEntryListener="#{salutemInstituciones.logotipoListener}" 
+                                    autoUpload="true"
+                                    absolutePath="#{salutemArchivos.absolutePath}"
+                                    maxFileSize="#{salutemArchivos.maxFileSize * 10}"
+                                    messagePersistence="false"
+                                    useOriginalFilename="true"/>
+                            </h:panelGrid>
                         </ace:tabPane>
 
                     </ace:tabSet>
@@ -276,7 +287,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemInstituciones.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

@@ -30,7 +30,7 @@
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemHoras.buscar()}"/>
                             <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemHoras.crear()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemHoras.formulario.mostrar}"/>
+                        
                     </h:panelGrid>
                 </ace:panel>
 
@@ -79,7 +79,7 @@
                             <ace:column headerText="Operaciones" style="text-align: left" >
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemHoras.editar()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
-                                    <ace:menuItem action="#{salutemHoras.eliminar()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                    <ace:menuItem action="#{salutemHoras.eliminar()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                     <ace:menuItem action="#{salutemHistorial.buscar(salutemHoras.nombreTabla, item.id)}" rendered="#{salutemHoras.perfil.auditoria}"
                                                   value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
@@ -190,7 +190,7 @@
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemHoras.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+                        
                     </h:panelGrid>
                 </ace:dialog>
                 <ui:include src="../cuadroHistorial.xhtml"/>

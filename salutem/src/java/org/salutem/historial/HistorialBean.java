@@ -21,8 +21,8 @@ import org.salutem.entidades.Perfiles;
 import org.salutemlogs.excepciones.ExcepcionDeConsulta;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
-import org.salutem.beans.CombosBean;
-import org.salutem.beans.SeguridadBean;
+import org.salutem.general.CombosBean;
+import org.salutem.seguridad.SeguridadBean;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
 
@@ -132,7 +132,7 @@ public class HistorialBean implements Serializable {
                         param.put("atencion", registro);
                         Integer formula = (int) ejbTransacciones.buscar("id", "Formulas", "atencion=:atencion", param, true);
                         List<Integer> prescripciones = (List<Integer>) ejbTransacciones.buscar("id", "Prescripciones", "atencion=:atencion", param, false);
-                        
+
                         param = new HashMap();
                         param.put("formula", formula);
                         Integer orden = (int) ejbTransacciones.buscar("id", "Ordenes", "formula=:formula", param, true);
@@ -180,42 +180,12 @@ public class HistorialBean implements Serializable {
                                 break;
                         }
                         break;
-                    case "Personas":
-                        param = new HashMap();
-                        param.put("direccion", registro);
-                        int direccion = (int) ejbTransacciones.buscar("id", tabla, "direccion=:direccion", param, true);
-
-                        switch (tablaAuxiliar) {
-                            case "Direcciones":
-                                where += " and o.tabla=:tabla and o.registro=:direccion";
-                                parameters.put("tabla", tablaAuxiliar);
-                                parameters.put("direccion", direccion);
-                                break;
-                            case "Personas":
-                                where += " and o.tabla=:tabla and o.registro=:registro";
-                                parameters.put("tabla", tabla);
-                                parameters.put("registro", registro);
-                                break;
-                            case "A":
-                                where += " and ("
-                                        + "(o.tabla='Direcciones' and o.registro=:direccion) or "
-                                        + "(o.tabla=:tabla and o.registro=:registro) "
-                                        + ")";
-                                parameters.put("direccion", direccion);
-                                parameters.put("registro", registro);
-                                parameters.put("tabla", tabla);
-
-                                break;
-                        }
-                        break;
                     case "Pacientes":
                     case "Profesionales":
                         param = new HashMap();
                         param.put("id", registro);
                         int persona = (int) ejbTransacciones.buscar("persona", tabla, "id=:id", param, true);
-                        int archivo = (int) ejbTransacciones.buscar("fotografia", tabla, "id=:id", param, true);
                         param.put("id", persona);
-                        direccion = (Integer) ejbTransacciones.buscar("direccion", "Personas", "id=:id", param, true);
 
                         switch (tablaAuxiliar) {
                             case "Pacientes":
@@ -223,16 +193,6 @@ public class HistorialBean implements Serializable {
                                 where += " and o.tabla=:tabla and o.registro=:registro";
                                 parameters.put("tabla", tabla);
                                 parameters.put("registro", registro);
-                                break;
-                            case "Archivos":
-                                where += " and o.tabla=:tabla and o.registro=:archivo";
-                                parameters.put("tabla", tablaAuxiliar);
-                                parameters.put("archivo", archivo);
-                                break;
-                            case "Direcciones":
-                                where += " and o.tabla=:tabla and o.registro=:direccion";
-                                parameters.put("tabla", tablaAuxiliar);
-                                parameters.put("direccion", direccion);
                                 break;
                             case "Personas":
                                 where += " and o.tabla=:tabla and o.registro=:registro";
@@ -242,14 +202,10 @@ public class HistorialBean implements Serializable {
                             case "A":
                                 where += " and ("
                                         + "(o.tabla=:tabla and o.registro=:registro) or "
-                                        + "(o.tabla='Archivos' and o.registro=:archivo) or "
-                                        + "(o.tabla='Direcciones' and o.registro=:direccion) or "
                                         + "(o.tabla='Personas' and o.registro=:persona)"
                                         + ")";
                                 parameters.put("tabla", tabla);
                                 parameters.put("registro", registro);
-                                parameters.put("archivo", archivo);
-                                parameters.put("direccion", direccion);
                                 parameters.put("persona", persona);
                                 break;
                         }

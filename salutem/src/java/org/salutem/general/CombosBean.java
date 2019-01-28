@@ -1,5 +1,6 @@
-package org.salutem.beans;
+package org.salutem.general;
 
+import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,6 +95,7 @@ public class CombosBean implements Serializable {
     private void iniciar() {
         institucion = seguridadBean.getInstitucion();
         profesional = seguridadBean.getProfesional();
+        especialidad = profesional != null ? profesional.getEspecialidad() : null;
     }
 
     public static SelectItem[] getSelectItems(List<?> entities, String clave, boolean selectOne) {
@@ -652,7 +654,7 @@ public class CombosBean implements Serializable {
 
     public SelectItem[] getClasificadores() {
         SelectItem[] items;
-        items = new SelectItem[24];
+        items = new SelectItem[23];
         items[0] = new SelectItem("A", "--Seleccione uno--");
         items[1] = new SelectItem("Archivos", "Archivos");
         items[2] = new SelectItem("Atenciones", "Atenciones");
@@ -660,30 +662,29 @@ public class CombosBean implements Serializable {
         items[4] = new SelectItem("Citas", "Citas");
         items[5] = new SelectItem("Consultas", "Consultas");
         items[6] = new SelectItem("Datos", "Datos");
-        items[7] = new SelectItem("Direcciones", "Direcciones");
-        items[8] = new SelectItem("Formulas", "Formulas");
-        items[9] = new SelectItem("Horarios", "Horarios");
-        items[10] = new SelectItem("Horas", "Horas");
-        items[11] = new SelectItem("Instituciones", "Instituciones");
-        items[12] = new SelectItem("Maestros", "Maestros");
-        items[13] = new SelectItem("Materiales", "Materiales");
-        items[14] = new SelectItem("Menus", "Menus");
-        items[15] = new SelectItem("Ordenes", "Ordenes");
-        items[16] = new SelectItem("Pacientes", "Pacientes");
-        items[17] = new SelectItem("Parametros", "Parametros");
-        items[18] = new SelectItem("Perfiles", "Perfiles");
-        items[19] = new SelectItem("Personas", "Personas");
-        items[20] = new SelectItem("Prescripciones", "Prescripciones");
-        items[21] = new SelectItem("Profesionales", "Profesionales");
-        items[22] = new SelectItem("Usuarios", "Usuarios");
-        items[23] = new SelectItem("Logs", "Logs");
+        items[7] = new SelectItem("Formulas", "Formulas");
+        items[8] = new SelectItem("Horarios", "Horarios");
+        items[9] = new SelectItem("Horas", "Horas");
+        items[10] = new SelectItem("Instituciones", "Instituciones");
+        items[11] = new SelectItem("Maestros", "Maestros");
+        items[12] = new SelectItem("Materiales", "Materiales");
+        items[13] = new SelectItem("Menus", "Menus");
+        items[14] = new SelectItem("Ordenes", "Ordenes");
+        items[15] = new SelectItem("Pacientes", "Pacientes");
+        items[16] = new SelectItem("Parametros", "Parametros");
+        items[17] = new SelectItem("Perfiles", "Perfiles");
+        items[18] = new SelectItem("Personas", "Personas");
+        items[19] = new SelectItem("Prescripciones", "Prescripciones");
+        items[20] = new SelectItem("Profesionales", "Profesionales");
+        items[21] = new SelectItem("Usuarios", "Usuarios");
+        items[22] = new SelectItem("Logs", "Logs");
         return items;
     }
 
     public SelectItem[] getTablas() {
         SelectItem[] items;
         if (tabla == null) {
-            items = new SelectItem[24];
+            items = new SelectItem[23];
             items[0] = new SelectItem("A", "--Seleccione uno--");
             items[1] = new SelectItem("Archivos", "Archivos");
             items[2] = new SelectItem("Atenciones", "Atenciones");
@@ -691,23 +692,22 @@ public class CombosBean implements Serializable {
             items[4] = new SelectItem("Citas", "Citas");
             items[5] = new SelectItem("Consultas", "Consultas");
             items[6] = new SelectItem("Datos", "Datos");
-            items[7] = new SelectItem("Direcciones", "Direcciones");
-            items[8] = new SelectItem("Formulas", "Formulas");
-            items[9] = new SelectItem("Horarios", "Horarios");
-            items[10] = new SelectItem("Horas", "Horas");
-            items[11] = new SelectItem("Instituciones", "Instituciones");
-            items[12] = new SelectItem("Maestros", "Maestros");
-            items[13] = new SelectItem("Materiales", "Materiales");
-            items[14] = new SelectItem("Menus", "Menus");
-            items[15] = new SelectItem("Ordenes", "Ordenes");
-            items[16] = new SelectItem("Pacientes", "Pacientes");
-            items[17] = new SelectItem("Parametros", "Parametros");
-            items[18] = new SelectItem("Perfiles", "Perfiles");
-            items[19] = new SelectItem("Personas", "Personas");
-            items[20] = new SelectItem("Prescripciones", "Prescripciones");
-            items[21] = new SelectItem("Profesionales", "Profesionales");
-            items[22] = new SelectItem("Usuarios", "Usuarios");
-            items[23] = new SelectItem("Logs", "Logs");
+            items[7] = new SelectItem("Formulas", "Formulas");
+            items[8] = new SelectItem("Horarios", "Horarios");
+            items[9] = new SelectItem("Horas", "Horas");
+            items[10] = new SelectItem("Instituciones", "Instituciones");
+            items[11] = new SelectItem("Maestros", "Maestros");
+            items[12] = new SelectItem("Materiales", "Materiales");
+            items[13] = new SelectItem("Menus", "Menus");
+            items[14] = new SelectItem("Ordenes", "Ordenes");
+            items[15] = new SelectItem("Pacientes", "Pacientes");
+            items[16] = new SelectItem("Parametros", "Parametros");
+            items[17] = new SelectItem("Perfiles", "Perfiles");
+            items[18] = new SelectItem("Personas", "Personas");
+            items[19] = new SelectItem("Prescripciones", "Prescripciones");
+            items[20] = new SelectItem("Profesionales", "Profesionales");
+            items[21] = new SelectItem("Usuarios", "Usuarios");
+            items[22] = new SelectItem("Logs", "Logs");
         } else {
             switch (tabla) {
                 case "Atenciones":
@@ -720,28 +720,16 @@ public class CombosBean implements Serializable {
                     items[5] = new SelectItem("Prescripciones", "Prescripciones");
                     break;
                 case "Pacientes":
-                    items = new SelectItem[5];
+                    items = new SelectItem[3];
                     items[0] = new SelectItem("A", "--Seleccione uno--");
-                    items[1] = new SelectItem("Archivos", "Archivos");
-                    items[2] = new SelectItem("Direcciones", "Direcciones");
-                    items[3] = new SelectItem("Personas", "Personas");
-                    items[4] = new SelectItem("Pacientes", tabla);
+                    items[1] = new SelectItem("Personas", "Personas");
+                    items[2] = new SelectItem("Pacientes", tabla);
                     break;
-                case "Personas":
-                    items = new SelectItem[4];
-                    items[0] = new SelectItem("A", "--Seleccione uno--");
-                    items[1] = new SelectItem("Archivos", "Archivos");
-                    items[2] = new SelectItem("Direcciones", "Direcciones");
-                    items[3] = new SelectItem("Personas", tabla);
-                    break;
-
                 case "Profesionales":
-                    items = new SelectItem[5];
+                    items = new SelectItem[3];
                     items[0] = new SelectItem("A", "--Seleccione uno--");
-                    items[1] = new SelectItem("Archivos", "Archivos");
-                    items[2] = new SelectItem("Direcciones", "Direcciones");
-                    items[3] = new SelectItem("Personas", "Personas");
-                    items[4] = new SelectItem("Profesionales", tabla);
+                    items[1] = new SelectItem("Personas", "Personas");
+                    items[2] = new SelectItem("Profesionales", tabla);
                     break;
                 default:
                     items = new SelectItem[1];

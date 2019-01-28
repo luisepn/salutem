@@ -1,5 +1,6 @@
-package org.salutem.beans;
+package org.salutem.seguridad;
 
+import org.salutem.general.PersonasAbstractoBean;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;

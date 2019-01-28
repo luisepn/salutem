@@ -2,8 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.salutem.beans;
+package org.salutem.interno;
 
+import org.salutem.general.DatosBean;
+import org.salutem.general.CombosBean;
+import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -197,6 +200,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 if (combosBean.getProfesional() != null) {
                     map.put("profesional.id", combosBean.getProfesional().getId().toString());
                 }
+                if (combosBean.getEspecialidad() != null) {
+                    map.put("especialidad.id", combosBean.getEspecialidad().getId().toString());
+                }
                 return cargar(i, i1, scs, map);
             }
         };
@@ -238,14 +244,14 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         try {
             crearFormula();
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
-
+            formulario.editar();
+            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
+            buscarUltimaAtencion();
         } catch (ExcepcionDeConsulta | ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.editar();
-        datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
-        buscarUltimaAtencion();
+
         return null;
     }
 
@@ -262,13 +268,13 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         try {
             crearFormula();
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
+            formulario.eliminar();
+            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
+            buscarUltimaAtencion();
         } catch (ExcepcionDeConsulta | ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.eliminar();
-        datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
-        buscarUltimaAtencion();
         return null;
     }
 
@@ -347,14 +353,13 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             ejbAtenciones.crear(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
 
             crearFormula();
-
+            formulario.editar();
+            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
+            buscarUltimaAtencion();
         } catch (ExcepcionDeCreacion | ExcepcionDeConsulta ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.editar();
-        datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
-        buscarUltimaAtencion();
         return null;
     }
 
@@ -390,11 +395,11 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             grabarPrescripciones();
             ejbAtenciones.actualizar(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             grabarFormula();
+            cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        cancelar();
         return null;
     }
 
@@ -419,11 +424,12 @@ public class AtencionesBean implements Serializable, IMantenimiento {
 
             ejbAtenciones.eliminar(atencion, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             datosBean.borrar();
+            cancelar();
+
         } catch (ExcepcionDeConsulta | ExcepcionDeEliminacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(AtencionesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        cancelar();
         return null;
     }
 
@@ -673,7 +679,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
         PDFDocument pdf = new PDFDocument(atencion.getPaciente().toString(), "A5", false);
 
         if (atencion.getProfesional().getInstitucion().getLogotipo() != null) {
-            pdf.agregarImagen(atencion.getProfesional().getInstitucion().getLogotipo().traerImagen(), 40, 'C');
+            pdf.agregarImagen(atencion.getProfesional().getInstitucion().getLogotipo(), 40, 'C');
         }
 
         List<PDFCampo> titulos;
@@ -688,9 +694,9 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             campos.add(new PDFCampo("C.I.:", 'L', "IB"));
             campos.add(new PDFCampo(atencion.getPaciente().getPersona().getCedula(), 'L'));
             campos.add(new PDFCampo("Dirección:", 'L', "IB"));
-            campos.add(new PDFCampo(atencion.getPaciente().getPersona().getDireccion() != null ? atencion.getPaciente().getPersona().getDireccion().toString() : "", 'L'));
+            campos.add(new PDFCampo(atencion.getPaciente().getPersona().getDireccion(), 'L'));
             campos.add(new PDFCampo("Teléfono:", 'L', "IB"));
-            campos.add(new PDFCampo(atencion.getPaciente().getPersona().getDireccion() != null ? atencion.getPaciente().getPersona().getDireccion().getTelefonos() : "", 'L'));
+            campos.add(new PDFCampo(atencion.getPaciente().getPersona().getTelefonos(), 'L'));
             campos.add(new PDFCampo("E-mail:", 'L', "IB"));
             campos.add(new PDFCampo(atencion.getPaciente().getPersona().getEmail(), 'L'));
             campos.add(new PDFCampo("Fecha de nacimiento:", 'L', "IB"));

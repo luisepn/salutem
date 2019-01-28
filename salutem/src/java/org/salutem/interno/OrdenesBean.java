@@ -1,5 +1,6 @@
-package org.salutem.beans;
+package org.salutem.interno;
 
+import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -297,11 +298,12 @@ public class OrdenesBean implements Serializable, IMantenimiento {
             orden.setActualizado(orden.getCreado());
             orden.setActualizadopor(orden.getCreadopor());
             ejbOrdenes.crear(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -335,11 +337,12 @@ public class OrdenesBean implements Serializable, IMantenimiento {
             orden.setActualizado(new Date());
             orden.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbOrdenes.actualizar(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 
@@ -350,11 +353,12 @@ public class OrdenesBean implements Serializable, IMantenimiento {
         }
         try {
             ejbOrdenes.eliminar(orden, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
         } catch (ExcepcionDeEliminacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(OrdenesBean.class.getName()).log(Level.SEVERE, null, ex);
         }
-        formulario.cancelar();
+
         return null;
     }
 

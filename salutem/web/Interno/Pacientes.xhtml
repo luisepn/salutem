@@ -28,7 +28,7 @@
                             <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemPacientes.buscarPacientes()}"/>
                             <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document" action="#{salutemPacientes.crearPaciente()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true" rendered="#{!salutemPacientes.formulario.mostrar}"/>
+
                     </h:panelGrid>
                 </ace:panel>
 
@@ -76,15 +76,15 @@
                             <ace:column headerText="Operaciones" style="text-align: left" >
                                 <ace:menuButton id="menuButton" effect="slide" effectDuration="200" value="..." >
                                     <ace:menuItem action="#{salutemPacientes.editarPaciente()}" value="Editar" icon="ui-icon ui-icon-pencil"/>
-                                    <ace:menuItem action="#{salutemPacientes.borrarPaciente()}" value="Borrar" icon="ui-icon ui-icon-trash"/>
+                                    <ace:menuItem action="#{salutemPacientes.borrarPaciente()}" value="Eliminar" icon="ui-icon ui-icon-trash"/>
                                     <ace:menuItem action="#{salutemHistorial.buscar(salutemPacientes.nombreTabla, item.id)}" rendered="#{salutemPacientes.perfil.auditoria}"
                                                   value="Historial" icon="ui-icon ui-icon-script"/>
                                 </ace:menuButton>
                             </ace:column>
                             <ace:column headerText="Fotografía" >
-                                <ace:graphicImage value="#{item.fotografia.traerImagen()}" 
-                                                  name="#{salutemArchivos.traerTextoMilisegundos()}_#{item.fotografia.nombre}" id="resourceGraphicImage" style="height: 50px;" 
-                                                  rendered="#{item.fotografia ne null and item.fotografia.ruta ne null}"/>
+                                <ace:graphicImage value="#{item.persona.fotografia}" 
+                                                  name="#{item.persona.id}_#{item.persona.fotografia}" id="resourceGraphicImage" style="height: 50px;" 
+                                                  rendered="#{item.persona.fotografia ne null}"/>
                             </ace:column> 
                             <ace:column headerText="Cédula de Identidad" sortBy="#{item.persona.cedula}" style="text-align: left" 
                                         filterBy="#{item.persona.cedula}" filterMatchMode="contains">
@@ -110,24 +110,20 @@
                                     <f:convertDateTime pattern="#{salutemSeguridad.formatoFecha}"/>
                                 </h:outputText>
                             </ace:column>
-                            <ace:column headerText="Teléfono fijo" sortBy="#{item.persona.direccion.fijo}" style="text-align: left" 
-                                        filterBy="#{item.persona.direccion.fijo}" filterMatchMode="contains">
-                                <h:outputText  value="#{item.persona.direccion.fijo}"/>
+                            <ace:column headerText="Teléfono fijo" sortBy="#{item.persona.fijo}" style="text-align: left" 
+                                        filterBy="#{item.persona.fijo}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.fijo}"/>
                             </ace:column>
-                            <ace:column headerText="Teléfono movil" sortBy="#{item.persona.direccion.movil}" style="text-align: left" 
-                                        filterBy="#{item.persona.direccion.movil}" filterMatchMode="contains">
-                                <h:outputText  value="#{item.persona.direccion.movil}"/>
+                            <ace:column headerText="Teléfono movil" sortBy="#{item.persona.movil}" style="text-align: left" 
+                                        filterBy="#{item.persona.movil}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.movil}"/>
                             </ace:column>
-                            <ace:column headerText="Ciudad" style="text-align: left" sortBy="#{item.persona.direccion.ciudad}"
-                                        filterBy="#{item.persona.direccion.ciudad}" filterMatchMode="contains">
-                                <h:outputText  value="#{item.persona.direccion.ciudad}"/>
+                            <ace:column headerText="Ciudad" style="text-align: left" sortBy="#{item.persona.ciudad}"
+                                        filterBy="#{item.persona.ciudad}" filterMatchMode="contains">
+                                <h:outputText  value="#{item.persona.ciudad}"/>
                             </ace:column>
                             <ace:column headerText="Dirección" style="text-align: left">
-                                <h:outputText  value="#{item.persona.direccion.toString()}"/>
-                            </ace:column>
-                            <ace:column headerText="Edificio/Piso" style="text-align: left" sortBy="#{item.persona.direccion.piso}"
-                                        filterBy="#{item.persona.direccion.piso}" filterMatchMode="contains">
-                                <h:outputText  value="#{item.persona.direccion.piso}"/>
+                                <h:outputText  value="#{item.persona.direccion}"/>
                             </ace:column>
                         </ace:dataTable>
                     </h:panelGrid>
@@ -144,39 +140,104 @@
                     visible="#{salutemPacientes.formulario.mostrar}"
                     zindex="1000">
                     <ace:tabSet style="width: 100%">
-                        <ace:tabPane label="Paciente" rendered="#{salutemPacientes.formulario.crear}">
-                            <ui:include src="cuadroPacientes.xhtml" />
-                        </ace:tabPane>
-                        <ace:tabPane label="Paciente" rendered="#{salutemPacientes.formulario.editar}">
-                            <ui:include src="cuadroPacientes.xhtml"/>
-                        </ace:tabPane>
-                        <ace:tabPane label="Paciente" rendered="#{salutemPacientes.formulario.eliminar}">
-                            <ui:include src="cuadroPacientes.xhtml"/>
+                        <ace:tabPane label="Paciente">
+                            <h:panelGrid columns="4" columnClasses="veinte, treinta, veinte, treinta">
+                                <h:outputLabel value="Institución:" styleClass="bold"/>
+                                <h:selectOneMenu value="#{salutemPacientes.paciente.institucion}">
+                                    <f:selectItems value="#{salutemCombos.instituciones}" />
+                                </h:selectOneMenu>
+                                <h:outputLabel value="C.I.:"/>
+                                <ace:textEntry value="#{salutemPacientes.persona.cedula}" title="Cédula"
+                                               valueChangeListener="#{salutemPacientes.cambiaCedula}"
+                                               disabled="#{salutemPacientes.formulario.eliminar}">
+                                    <ace:ajax execute="@all"/>
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorRuc" />
+                                </ace:textEntry>                      
+                                <h:outputLabel value="Activo:" styleClass="bold" />
+                                <h:selectBooleanCheckbox value="#{salutemPacientes.paciente.activo}"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="4" columnClasses="veinteycinco, veinteycinco, veinteycinco, veinteycinco" rendered="#{salutemPacientes.modificarDatos}">
+                                <h:outputLabel value="Nombres:" styleClass="bold"/>
+                                <ace:textEntry value="#{salutemPacientes.persona.nombres}" title="Nombres" />
+                                <h:outputLabel value="Apellidos:" styleClass="bold"/>
+                                <ace:textEntry value="#{salutemPacientes.persona.apellidos}" title="Apellidos" />
+                                <h:outputLabel value="E-mail:" styleClass="bold"/>
+                                <ace:textEntry value="#{salutemPacientes.persona.email}" title="Email">
+                                    <f:validator  validatorId="org.salutem.utilitarios.ValidadorEmail" />
+                                </ace:textEntry>
+                                <h:outputLabel value="Nombre de Usuario:" styleClass="bold"/>
+                                <ace:textEntry value="#{salutemPacientes.persona.userid}" title="Nombre de Usuario"/>
+                                <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
+                                <ace:dateTimeEntry navigator="true" value="#{salutemPacientes.persona.fecha}" 
+                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                   pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </ace:dateTimeEntry>
+                                <h:outputLabel value="Ocupación:" styleClass="bold"/>
+                                <ace:textEntry value="#{salutemPacientes.persona.ocupacion}" title="Ocupación"/>    
+                                <h:outputLabel value="Descripción:" styleClass="bold"/>
+                                <ace:textAreaEntry value="#{salutemPacientes.persona.descripcion}" cols="22" rows="2"/>
+                                <h:outputLabel value="Género:"/>
+                                <h:selectOneMenu value="#{salutemPacientes.persona.genero}">
+                                    <f:selectItems value="#{salutemCombos.genero}" />
+                                </h:selectOneMenu>
+                            </h:panelGrid>
+                            <h:panelGrid columns="4" columnClasses="veinteycinco, veinteycinco, veinteycinco, veinteycinco" rendered="#{!salutemPacientes.modificarDatos}">
+                                <h:outputLabel value="Nombres:" styleClass="bold"/>
+                                <h:outputLabel value="#{salutemPacientes.persona.nombres}"/>
+                                <h:outputLabel value="Apellidos:" styleClass="bold"/>
+                                <h:outputLabel value="#{salutemPacientes.persona.apellidos}"/>
+                                <h:outputLabel value="E-mail:" styleClass="bold"/>
+                                <h:outputLabel value="#{salutemPacientes.persona.email}"/>
+                                <h:outputLabel value="User ID:" styleClass="bold"/>
+                                <h:outputLabel value="#{salutemPacientes.persona.userid}"/>
+                                <h:outputLabel value="Fecha de Nacimiento:" styleClass="bold"/>
+                                <h:outputLabel value="#{salutemPacientes.persona.fecha}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy" />
+                                </h:outputLabel>
+                                <h:outputLabel value="Ocupación:" styleClass="bold"/>
+                                <h:outputLabel value="#{salutemPacientes.persona.ocupacion}"/>
+                                <h:outputLabel value="Descripción:" styleClass="bold"/>
+                                <h:outputLabel value="#{salutemPacientes.persona.descripcion}" style="white-space: pre-wrap;"/>
+                                <h:outputLabel value="Género:" styleClass="bold"/>
+                                <h:outputLabel value="#{salutemPacientes.persona.genero.nombre}"/>
+                            </h:panelGrid>
                         </ace:tabPane>
                         <ace:tabPane label="Dirección">
                             <h:panelGrid columns="4">
                                 <h:outputLabel value="Ciudad:" for="ciudad" />
-                                <ace:textEntry id="ciudad" value="#{salutemPacientes.direccion.ciudad}" title="Ciudad" />
+                                <ace:textEntry id="ciudad" value="#{salutemPacientes.persona.ciudad}" title="Ciudad" />
                                 <h:outputLabel value="Calle Primaria:" for="primaria" />
-                                <ace:textEntry id="primaria" value="#{salutemPacientes.direccion.primaria}" title="Primaria" />
+                                <ace:textEntry id="primaria" value="#{salutemPacientes.persona.primaria}" title="Primaria" />
                                 <h:outputLabel value="Número:" for="numero" />
-                                <ace:textEntry id="numero" value="#{salutemPacientes.direccion.numero}" title="Numero" />
+                                <ace:textEntry id="numero" value="#{salutemPacientes.persona.numero}" title="Numero" />
                                 <h:outputLabel value="Calle Secundaria:" for="secundaria" />
-                                <ace:textEntry id="secundaria" value="#{salutemPacientes.direccion.secundaria}" title="Secundaria" />
+                                <ace:textEntry id="secundaria" value="#{salutemPacientes.persona.secundaria}" title="Secundaria" />
                                 <h:outputLabel value="Teléfono fijo:" />
-                                <ace:textEntry value="#{salutemPacientes.direccion.fijo}" title="Teléfono fijo" />
+                                <ace:textEntry value="#{salutemPacientes.persona.fijo}" title="Teléfono fijo" />
                                 <h:outputLabel value="Teléfono móvil:" />
-                                <ace:textEntry value="#{salutemPacientes.direccion.movil}" title="Teléfono móvil" />
-                                <h:outputLabel value="Edificio/Piso:"/>
-                                <ace:textAreaEntry value="#{salutemPacientes.direccion.piso}"
-                                                   rows="2" cols="22"/>
+                                <ace:textEntry value="#{salutemPacientes.persona.movil}" title="Teléfono móvil" />
                                 <h:outputLabel value="Referencia:"/>
-                                <ace:textAreaEntry value="#{salutemPacientes.direccion.referencia}" 
+                                <ace:textAreaEntry value="#{salutemPacientes.persona.referencia}" 
                                                    rows="2" cols="22"/>
                             </h:panelGrid>
                         </ace:tabPane>
                         <ace:tabPane label="Fotografía">
-                            <ui:include src="../cuadroUpload.xhtml"/>
+                            <h:panelGrid style="text-align: center;">
+                                <ace:graphicImage 
+                                    value="#{salutemPacientes.persona.fotografia}" 
+                                    name="#{salutemArchivos.traerTextoMilisegundos()}_#{salutemPacientes.persona.fotografia}" 
+                                    rendered="#{salutemPacientes.persona.fotografia ne null}"
+                                    style="height: 100px;"/>
+                                <ace:fileEntry 
+                                    id="file-entryListener"                
+                                    fileEntryListener="#{salutemPacientes.fotografiaListener}" 
+                                    autoUpload="true"
+                                    absolutePath="#{salutemArchivos.absolutePath}"
+                                    maxFileSize="#{salutemArchivos.maxFileSize * 10}"
+                                    messagePersistence="false"
+                                    useOriginalFilename="true"/>
+                            </h:panelGrid>
                         </ace:tabPane>
 
                     </ace:tabSet>
@@ -189,13 +250,16 @@
                             <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" 
                                           action="#{salutemPacientes.grabarPaciente()}"
                                           rendered="#{salutemPacientes.formulario.editar}"/>
+                            <ace:menuItem value="Editar" icon="ui-icon ui-icon-pencil" 
+                                          action="#{salutemPacientes.setModificarDatos(true)}"
+                                          rendered="#{!salutemPacientes.formulario.eliminar}"/>
                             <ace:menuItem value="Eliminar" icon="ui-icon ui-icon-trash" 
                                           action="#{salutemPacientes.removerPaciente()}" 
                                           rendered="#{salutemPacientes.formulario.eliminar}" />
                             <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                           action="#{salutemPacientes.cancelar()}"/>
                         </ace:menuBar>
-                        <ace:messages style="white-space: pre-wrap;" redisplay="false" showSummary="true" showDetail="true"/>
+
                     </h:panelGrid>
                 </ace:dialog>
 

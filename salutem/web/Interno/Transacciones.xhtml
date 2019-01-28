@@ -16,13 +16,15 @@
             <ui:define name="content">
                 <ace:panel header="Citas Agendadas en la semana" style="width: 100%">
                     <h:panelGrid columns="2" width="100%">
-                        <ace:chart
-                            legend="true"
-                            showTooltip="true"
-                            width="400"
-                            animated="true"
-                            legendPlacement="OUTSIDE_GRID"
-                            value="#{salutemReporteCitas.pieCitasPorSemana}"/>
+                        <h:panelGrid>
+                            <ace:chart
+                                legend="true"
+                                showTooltip="true"
+                                width="400"
+                                animated="true"
+                                legendPlacement="OUTSIDE_GRID"
+                                value="#{salutemReporteCitas.pieCitasPorSemana}"/>
+                        </h:panelGrid>
                         <ace:chart  
                             width="1000"
                             animated="false"
@@ -44,17 +46,28 @@
                     </h:panelGrid>
                 </ace:panel>
                 <ace:panel header="Citas Agendadas en el Mes" style="width: 100%">
-                    <h:panelGrid columns="3" width="100%">
-                        <ace:chart
-                            title="Citas Por Mes"
-                            legend="true"
-                            showTooltip="true"
-                            width="400"
-                            animated="true"
-                            legendPlacement="OUTSIDE_GRID"
-                            value="#{salutemReporteCitas.pieCitasPorMes}"/>
+                    <h:panelGrid columns="2" width="100%">
+                        <h:panelGrid>
+                            <ace:chart
+                                title="Citas Por Mes"
+                                legend="true"
+                                showTooltip="true"
+                                width="400"
+                                animated="true"
+                                legendPlacement="OUTSIDE_GRID"
+                                value="#{salutemReporteCitas.pieCitasPorMes}"/>
+                            <ace:chart
+                                title="Atenciones Por Mes"
+                                legend="true"
+                                showTooltip="true"
+                                width="400"
+                                animated="true"
+                                legendPlacement="OUTSIDE_GRID"
+                                value="#{salutemReporteCitas.pieAtencionesMes}"
+                                defaultSeriesConfig="#{salutemReporteCitas.model}"/>
+                        </h:panelGrid> 
                         <ace:chart  
-                            width="1000"
+                            width="800"
                             animated="false"
                             stackSeries="false"  
                             value="#{salutemReporteCitas.barrasCitasPorMes.grafico}"
@@ -69,16 +82,7 @@
                             highlighterLocation="NW"
                             highlighterShowMarker="false"
                             highlighterBringSeriesToFront="true"
-                            zoom="true"/>
-                        <ace:chart
-                            title="Atenciones Por Mes"
-                            legend="true"
-                            showTooltip="true"
-                            width="400"
-                            animated="true"
-                            legendPlacement="OUTSIDE_GRID"
-                            value="#{salutemReporteCitas.pieAtencionesMes}"
-                            defaultSeriesConfig="#{salutemReporteCitas.model}"/>
+                            zoom="true"/>  
                     </h:panelGrid>
                 </ace:panel>
                 <ace:panel header="Citas Agendadas en el año" style="width: 100%">
