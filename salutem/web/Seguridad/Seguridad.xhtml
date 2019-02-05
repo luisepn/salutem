@@ -17,7 +17,51 @@
         <ui:composition template="../plantillas/Plantilla.xhtml">
 
             <ui:define name="content">
+                <ace:panel header="Logs en la semana" style="width: 100%">
+                    <h:panelGrid columns="1" width="100%" style="text-align: center;">
+                        <ace:chart  
+                            width="700"
+                            animated="false"
+                            stackSeries="false"  
+                            value="#{salutemReporteUsuarios.barrasLogsSemana.grafico}"
+                            defaultSeriesConfig="#{salutemReporteUsuarios.barrasLogsSemana.subgraficoConfig}"
+                            defaultAxesConfig="#{salutemReporteUsuarios.barrasLogsSemana.ordenadasGeneralConfig}"     
+                            xAxis="#{salutemReporteUsuarios.barrasLogsSemana.abscisaBottom}"  
+                            x2Axis="#{salutemReporteUsuarios.barrasLogsSemana.abscisaTop}"
+                            yAxes="#{salutemReporteUsuarios.barrasLogsSemana.ordenadasConfigSpecific}"
+                            legend="true"
+                            showTooltip="true"
+                            legendPlacement="OUTSIDE_GRID"
+                            highlighter="true"
+                            highlighterLocation="NW"
+                            highlighterShowMarker="false"
+                            highlighterBringSeriesToFront="true"
+                            zoom="true"/>
+                    </h:panelGrid>
+                </ace:panel>
 
+                <ace:panel header="Logs en el año" style="width: 100%">
+                    <h:panelGrid columns="1" width="100%" style="text-align: center;">
+                        <ace:chart  
+                            width="700"
+                            animated="false"
+                            stackSeries="false"  
+                            value="#{salutemReporteUsuarios.barrasLogsPorAnio.grafico}"
+                            defaultSeriesConfig="#{salutemReporteUsuarios.barrasLogsPorAnio.subgraficoConfig}"
+                            defaultAxesConfig="#{salutemReporteUsuarios.barrasLogsPorAnio.ordenadasGeneralConfig}"     
+                            xAxis="#{salutemReporteUsuarios.barrasLogsPorAnio.abscisaBottom}"  
+                            x2Axis="#{salutemReporteUsuarios.barrasLogsPorAnio.abscisaTop}"
+                            yAxes="#{salutemReporteUsuarios.barrasLogsPorAnio.ordenadasConfigSpecific}"
+                            legend="true"
+                            showTooltip="true"
+                            legendPlacement="OUTSIDE_GRID"
+                            highlighter="true"
+                            highlighterLocation="NW"
+                            highlighterShowMarker="false"
+                            highlighterBringSeriesToFront="true"
+                            zoom="true"/>
+                    </h:panelGrid>
+                </ace:panel>
             </ui:define>
 
         </ui:composition>

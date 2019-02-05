@@ -40,7 +40,7 @@ import org.salutem.utilitarios.GraficoCombinado;
  */
 @Named("salutemReporteCitas")
 @ViewScoped
-public class CitasBean implements Serializable {
+public class AtencionesCitasBean implements Serializable {
 
     @Inject
     private SeguridadBean seguridadBean;
@@ -526,7 +526,7 @@ public class CitasBean implements Serializable {
 
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AtencionesCitasBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         calendar = Calendar.getInstance();
         calendar.setTime(fecha);

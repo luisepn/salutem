@@ -19,7 +19,7 @@ public class Formulario {
     private boolean imprimir;
 
     //exportar
-    private String tipo = "xls";
+    private String tipo = "xlsx";
     private Integer total;
 
     //bindig

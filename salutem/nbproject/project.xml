@@ -13,11 +13,11 @@
                     <file>${reference.salutemlogs-ejb.dist}</file>
                 </library>
                 <library dirs="200">
-                    <file>${libs.Poi.classpath}</file>
+                    <file>${libs.ICEfaces.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${libs.ICEfaces.classpath}</file>
+                    <file>${libs.Excel.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
