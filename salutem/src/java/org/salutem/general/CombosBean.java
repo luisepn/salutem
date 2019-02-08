@@ -30,6 +30,7 @@ import org.salutem.entidades.Parametros;
 import org.salutem.entidades.Maestros;
 import org.salutem.entidades.Materiales;
 import org.salutem.entidades.Menus;
+import org.salutem.entidades.Pacientes;
 import org.salutem.entidades.Profesionales;
 import org.salutem.entidades.Usuarios;
 import org.salutem.excepciones.ExcepcionDeConsulta;
@@ -414,7 +415,7 @@ public class CombosBean implements Serializable {
 
     private List<Citas> traerCitas() {
         try {
-            return ejbCitas.traerCitas(profesional);
+            return ejbCitas.traerCitas(profesional, seguridadBean.getGrupo().getCodigo().equals("GP") ? seguridadBean.getPaciente() : null);
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(CombosBean.class.getName()).log(Level.SEVERE, null, ex);

@@ -135,6 +135,10 @@ public class CitasBean implements Serializable, IMantenimiento {
                 parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
             }
 
+            if (pacientesBean.getPaciente() != null) {
+                where += " and o.paciente=:paciente";
+                parameters.put("paciente", pacientesBean.getPaciente());
+            }
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
                 where += " and o.creado between :iniciocreado and :fincreado";
                 parameters.put("iniciocreado", seguridadBean.getInicioCreado());
@@ -293,7 +297,7 @@ public class CitasBean implements Serializable, IMantenimiento {
                     body += "</br>";
                     body += "<p>Estimado/a <b>" + pacientesBean.getPaciente() + ":</b></p>";
                     body += "<p>Se ha agendado una cita para el día <b>" + formatString.format(cita.getFecha()) + "</b> ";
-                    body += "con el médico: " + cita.getProfesional().toString() + " de especialidad <b>" + cita.getProfesional().getEspecialidad()+"</b>.</p>";
+                    body += "con el médico: " + cita.getProfesional().toString() + " de especialidad <b>" + cita.getProfesional().getEspecialidad() + "</b>.</p>";
                     body += "<p>Se solicita puntualidad.</p>";
                     body += "</br></br>";
                     body += "<p>Atentamente:</p>";

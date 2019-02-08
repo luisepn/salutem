@@ -6,10 +6,15 @@
 package org.salutem.controladores;
 
 import com.google.gson.JsonObject;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import org.salutem.entidades.Instituciones;
 import org.salutem.entidades.Pacientes;
+import org.salutem.entidades.Personas;
+import org.salutem.excepciones.ExcepcionDeConsulta;
 
 /**
  *
@@ -43,4 +48,18 @@ public class PacientesFacade extends AbstractFacade<Pacientes> {
         return json;
     }
 
+    public Pacientes traerPaciente(Personas persona, Instituciones institucion) throws ExcepcionDeConsulta {
+        try {
+            Query q = em.createQuery("Select object(o) from Pacientes as o where o.activo = true and o.persona=:persona and o.institucion=:institucion");
+            q.setParameter("persona", persona);
+            q.setParameter("institucion", institucion);
+            List<Pacientes> aux = q.getResultList();
+            if (!aux.isEmpty()) {
+                return aux.get(0);
+            }
+            return null;
+        } catch (Exception e) {
+            throw new ExcepcionDeConsulta(PacientesFacade.class.getName(), e);
+        }
+    }
 }

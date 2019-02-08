@@ -20,7 +20,7 @@
                                closable="false"
                                toggleable="true">
                         <h:panelGrid columns="2">    
-                            <h:panelGrid>
+                            <h:panelGrid rendered="#{salutemSeguridad.grupo.codigo ne 'GP'}">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Especialidad: " styleClass="bold"/>
                                     <h:selectOneMenu value="#{salutemCombos.especialidad}" disabled="#{salutemSeguridad.profesional ne null}">
@@ -90,16 +90,27 @@
                                             <h:outputLabel id="emailidca" value="#{salutemPacientes.paciente.persona.email}"/>
                                         </h:panelGrid>
                                     </ace:panel>
+                                </h:panelGrid>                                
+                            </h:panelGrid>
+                            <ace:panel rendered="#{salutemSeguridad.grupo.codigo eq 'GP'}">
+                                <h:panelGrid columns="4" width="300">
+                                    <h:outputLabel value="Nombres:" styleClass="bold" />
+                                    <h:outputLabel value="#{salutemPacientes.paciente.persona.nombres}" />
+                                    <h:outputLabel value="Apellidos:" styleClass="bold" />
+                                    <h:outputLabel value="#{salutemPacientes.paciente.persona.apellidos}"  />
+                                    <h:outputLabel value="CI:" styleClass="bold"  />
+                                    <h:outputLabel value="#{salutemPacientes.paciente.persona.cedula}"/>
+                                    <h:outputLabel value="Email:" styleClass="bold"  />
+                                    <h:outputLabel  value="#{salutemPacientes.paciente.persona.email}"/>
                                 </h:panelGrid>
+                            </ace:panel>
+                            <h:outputLabel/>
+                            <h:panelGrid columns="2" rendered="#{!salutemAtenciones.formulario.mostrar}" >
+                                <ace:menuBar autoSubmenuDisplay="true" >
+                                    <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscar()}"/>
+                                    <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document"  action="#{salutemAtenciones.insertar()}"/>
+                                </ace:menuBar>
 
-
-                                <h:panelGrid columns="2" rendered="#{!salutemAtenciones.formulario.mostrar}" >
-                                    <ace:menuBar autoSubmenuDisplay="true" >
-                                        <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemAtenciones.buscar()}"/>
-                                        <ace:menuItem value="Nuevo" icon="ui-icon ui-icon-document"  action="#{salutemAtenciones.insertar()}"/>
-                                    </ace:menuBar>
-                                    
-                                </h:panelGrid>
                             </h:panelGrid>
                         </h:panelGrid>
                     </ace:panel>
@@ -792,7 +803,7 @@
                                               action="#{salutemAtenciones.cancelar()}"/>                                
                             </ace:menuBar>                           
 
-                            
+
                         </h:panelGrid>
                     </ace:dialog>
                     <ui:include src="../cuadroHistorial.xhtml"/>

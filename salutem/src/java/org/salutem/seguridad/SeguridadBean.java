@@ -43,6 +43,8 @@ import org.icefaces.ace.component.menuitem.MenuItem;
 import org.icefaces.ace.component.submenu.Submenu;
 import org.icefaces.ace.model.DefaultMenuModel;
 import org.icefaces.ace.model.MenuModel;
+import org.salutem.controladores.PacientesFacade;
+import org.salutem.entidades.Pacientes;
 import org.salutem.general.CombosBean;
 import org.salutem.utilitarios.Codificador;
 import org.salutem.utilitarios.Formulario;
@@ -64,6 +66,7 @@ public class SeguridadBean implements Serializable {
     private Parametros grupo;
     private Instituciones institucion;
     private Profesionales profesional;
+    private Pacientes paciente;
     private String titulo;
     private List<Usuarios> usuarios;
     private String idPerfil = "0";
@@ -102,6 +105,8 @@ public class SeguridadBean implements Serializable {
     private InstitucionesFacade ejbInstituciones;
     @EJB
     private ProfesionalesFacade ejbProfesionales;
+    @EJB
+    private PacientesFacade ejbPacientesFacade;
     @EJB
     private AsincronoLogFacade ejbLogs;
 
@@ -212,11 +217,14 @@ public class SeguridadBean implements Serializable {
         this.institucion = usuario.getInstitucion();
 
         this.profesional = ejbProfesionales.traerProfesional(logueado, institucion);
+        this.paciente = ejbPacientesFacade.traerPaciente(logueado, institucion);
 
         String where = " o.modulo=:modulo";
         String order = " o.codigo";
         Map parameters = new HashMap();
-        parameters.put("modulo", usuario.getModulo());
+
+        parameters.put(
+                "modulo", usuario.getModulo());
         List<Menus> ml = ejbMenus.buscar(where, parameters, order);
 
         menu = new DefaultMenuModel();
@@ -249,9 +257,13 @@ public class SeguridadBean implements Serializable {
         ELContext elContext = FacesContext.getCurrentInstance().getELContext();
         ExpressionFactory expressionFactory = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
         submenu = new Submenu();
-        submenu.setId("sm_0000");
-        submenu.setLabel("Módulo: " + usuario.getModulo().getNombre() + " >> " + "Grupo: " + usuario.getGrupo().getNombre());
-        submenu.setIcon("ui-icon ui-icon-comment");
+
+        submenu.setId(
+                "sm_0000");
+        submenu.setLabel(
+                "Módulo: " + usuario.getModulo().getNombre() + " >> " + "Grupo: " + usuario.getGrupo().getNombre());
+        submenu.setIcon(
+                "ui-icon ui-icon-comment");
         for (Usuarios u : usuarios) {
             MenuItem item = new MenuItem();
             item.setId("_" + u.getId());
@@ -261,6 +273,7 @@ public class SeguridadBean implements Serializable {
                     "#{salutemSeguridad.cambiarUsuarioPorGrupo}", null, new Class[]{ActionEvent.class})));
             submenu.getChildren().add(item);
         }
+
         menu.addSubmenu(submenu);
 
     }
@@ -277,7 +290,8 @@ public class SeguridadBean implements Serializable {
 
         } catch (IOException ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SeguridadBean.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -329,7 +343,8 @@ public class SeguridadBean implements Serializable {
 
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SeguridadBean.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -376,7 +391,8 @@ public class SeguridadBean implements Serializable {
             ejbPersonas.actualizar(logueado, logueado.getUserid(), getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SeguridadBean.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         Mensajes.advertencia("Clave se cambio correctamente");
@@ -696,7 +712,8 @@ public class SeguridadBean implements Serializable {
             }
         } catch (ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SeguridadBean.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         return profesional;
@@ -749,6 +766,20 @@ public class SeguridadBean implements Serializable {
      */
     public void setRutaDeContexto(String rutaDeContexto) {
         this.rutaDeContexto = rutaDeContexto;
+    }
+
+    /**
+     * @return the paciente
+     */
+    public Pacientes getPaciente() {
+        return paciente;
+    }
+
+    /**
+     * @param paciente the paciente to set
+     */
+    public void setPaciente(Pacientes paciente) {
+        this.paciente = paciente;
     }
 
 }

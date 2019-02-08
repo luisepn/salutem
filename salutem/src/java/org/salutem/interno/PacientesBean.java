@@ -69,6 +69,8 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
     public void activar() {
         perfil = seguridadBean.traerPerfil("CitasAtencionesPacientes");
         institucion = seguridadBean.getInstitucion();
+        paciente = seguridadBean.getPaciente();
+        claveBusqueda = paciente != null ? paciente.toStringApellidos() : null;
     }
 
     public void cambiaMaterial(ValueChangeEvent event) {

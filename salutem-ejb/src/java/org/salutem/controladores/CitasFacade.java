@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.salutem.entidades.Citas;
+import org.salutem.entidades.Pacientes;
 import org.salutem.entidades.Profesionales;
 import org.salutem.excepciones.ExcepcionDeConsulta;
 
@@ -35,9 +36,16 @@ public class CitasFacade extends AbstractFacade<Citas> {
         super(Citas.class);
     }
 
-    public List<Citas> traerCitas(Profesionales profesional) throws ExcepcionDeConsulta {
-        Query q = getEntityManager().createQuery("Select object(o) from Citas as o where o.activo = true and o.profesional=:profesional and o.fecha between :inicio and :fin");
+    public List<Citas> traerCitas(Profesionales profesional, Pacientes paciente) throws ExcepcionDeConsulta {
+        String where = "";
+        if (paciente != null) {
+            where += " and o.paciente=:paciente";
+        }
+        Query q = getEntityManager().createQuery("Select object(o) from Citas as o where o.activo = true and o.profesional=:profesional and o.fecha between :inicio and :fin" + where);
         q.setParameter("profesional", profesional);
+        if (paciente != null) {
+            q.setParameter("paciente", paciente);
+        }
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);

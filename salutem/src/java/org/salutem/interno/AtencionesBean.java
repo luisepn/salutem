@@ -153,6 +153,14 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                     parameters.put(clave.replaceAll("\\.", ""), valor.toUpperCase() + "%");
                 }
             }
+            if (seguridadBean.getGrupo().getCodigo().equals("GP") && seguridadBean.getPaciente() != null) {
+                where += " and o.paciente=:paciente";
+                parameters.put("paciente", seguridadBean.getPaciente());
+            }
+            if (conCita && cita != null) {
+                where += " and o.cita=:cita";
+                parameters.put("cita", cita);
+            }
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
                 where += " and o.creado between :iniciocreado and :fincreado";
                 parameters.put("iniciocreado", seguridadBean.getInicioCreado());

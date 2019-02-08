@@ -26,7 +26,6 @@ import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.icefaces.ace.event.TextChangeEvent;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
-import org.salutem.general.ArchivosBean;
 import org.salutem.seguridad.SeguridadBean;
 import org.salutem.utilitarios.Codificador;
 import org.salutem.utilitarios.Formulario;
@@ -39,6 +38,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
     protected SeguridadBean seguridadBean;
 
     protected Formulario formulario = new Formulario();
+    private Formulario formularioClave = new Formulario();
     protected LazyDataModel<Personas> personas;
     protected Personas persona;
     protected Perfiles perfil;
@@ -154,6 +154,16 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         return null;
     }
 
+    public String editarClave() {
+        if (!IMantenimiento.validarPerfil(perfil, 'U')) {
+            return null;
+        }
+        persona = (Personas) personas.getRowData();
+        persona.setClave(null);
+        formularioClave.editar();
+        return null;
+    }
+
     @Override
     public String eliminar() {
         if (!IMantenimiento.validarPerfil(perfil, 'D')) {
@@ -186,7 +196,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
                 return true;
             }
 
-            if ((persona.getUserid()== null) || (persona.getUserid().trim().isEmpty())) {
+            if ((persona.getUserid() == null) || (persona.getUserid().trim().isEmpty())) {
                 Mensajes.advertencia("CI o RUC es obligatorio");
                 return true;
             }
@@ -256,11 +266,41 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return null;
         }
         try {
+
+            if (persona.getClave() == null) {
+                persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
+            }
+
             persona.setActualizado(new Date());
             persona.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             formulario.cancelar();
+            formularioClave.cancelar();
             Mensajes.informacion("Modificación exitosa. " + persona.toString());
+        } catch (ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    public String grabarClave() {
+        if (!IMantenimiento.validarPerfil(perfil, 'U')) {
+            return null;
+        }
+        try {
+
+            if (persona.getClave() == null) {
+                persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
+            }
+            persona.setClave(Codificador.getEncoded(persona.getClave(), "MD5"));
+            persona.setActualizado(new Date());
+            persona.setActualizadopor(seguridadBean.getLogueado().getUserid());
+            ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            formulario.cancelar();
+            formularioClave.cancelar();
+            Mensajes.informacion("Clave atualizada" + persona.toString());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -543,5 +583,19 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
      */
     public void setModificarDatos(boolean modificarDatos) {
         this.modificarDatos = modificarDatos;
+    }
+
+    /**
+     * @return the formularioClave
+     */
+    public Formulario getFormularioClave() {
+        return formularioClave;
+    }
+
+    /**
+     * @param formularioClave the formularioClave to set
+     */
+    public void setFormularioClave(Formulario formularioClave) {
+        this.formularioClave = formularioClave;
     }
 }

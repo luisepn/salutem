@@ -27,7 +27,7 @@
                                         <ace:ajax execute="@all"/>
                                     </h:selectBooleanCheckbox>
                                 </h:panelGrid>
-                                <h:panelGrid columns="3">
+                                <h:panelGrid columns="3" rendered="#{salutemSeguridad.grupo.codigo ne 'GP'}">
                                     <h:outputLabel value="Paciente:" />
                                     <h:selectOneMenu value="#{salutemPacientes.parametroBusqueda}">
                                         <f:selectItem itemLabel="Nombres" itemValue="o.persona.nombres"/>
@@ -72,6 +72,18 @@
                                         </h:panelGrid>
                                     </ace:panel>
                                 </h:panelGrid>
+                                <ace:panel rendered="#{salutemSeguridad.grupo.codigo eq 'GP'}">
+                                    <h:panelGrid columns="4" width="300">
+                                        <h:outputLabel value="Nombres:" styleClass="bold" />
+                                        <h:outputLabel value="#{salutemPacientes.paciente.persona.nombres}" />
+                                        <h:outputLabel value="Apellidos:" styleClass="bold" />
+                                        <h:outputLabel value="#{salutemPacientes.paciente.persona.apellidos}"  />
+                                        <h:outputLabel value="CI:" styleClass="bold"  />
+                                        <h:outputLabel value="#{salutemPacientes.paciente.persona.cedula}"/>
+                                        <h:outputLabel value="Email:" styleClass="bold"  />
+                                        <h:outputLabel value="#{salutemPacientes.paciente.persona.email}"/>
+                                    </h:panelGrid>
+                                </ace:panel>
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Fecha:" styleClass="bold"/>
                                     <ace:dateTimeEntry navigator="true" value="#{salutemCitas.fecha}" 
@@ -105,7 +117,7 @@
                                         <ace:menuItem value="Ver Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.verAgenda()}" rendered="#{salutemCitas.profesional ne null and !salutemCitas.ver}"/>
                                         <ace:menuItem value="Ocultar Agenda" icon="ui-icon ui-icon-calendar"  action="#{salutemCitas.ocultarAgenda()}" rendered="#{salutemCitas.profesional ne null and salutemCitas.ver}"/>
                                     </ace:menuBar>
-                                    
+
                                 </h:panelGrid>
                             </h:panelGrid>
                             <h:panelGrid width="100%">
@@ -287,7 +299,7 @@
                                 <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" 
                                               action="#{salutemCitas.cancelar()}"/>
                             </ace:menuBar>
-                            
+
                         </h:panelGrid>
                     </ace:dialog>
                     <ui:include src="../cuadroHistorial.xhtml"/>
