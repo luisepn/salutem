@@ -7,6 +7,7 @@ package org.salutem.interno;
 import org.salutem.general.CombosBean;
 import org.salutem.seguridad.SeguridadBean;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -24,6 +25,7 @@ import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.faces.model.SelectItem;
 import javax.inject.Inject;
+import javax.mail.MessagingException;
 import org.salutem.controladores.CitasFacade;
 import org.salutem.controladores.HorariosFacade;
 import org.salutem.entidades.Citas;
@@ -39,6 +41,7 @@ import org.salutem.excepciones.ExcepcionDeCreacion;
 import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.utilitarios.CorreosFacade;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.IMantenimiento;
 import org.salutem.utilitarios.Mensajes;
@@ -79,12 +82,15 @@ public class CitasBean implements Serializable, IMantenimiento {
     private Date fechaInicio;
     private Date fechaFin;
 
-    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+    private SimpleDateFormat formatString = new SimpleDateFormat("EEEE, dd 'de' MMMMM 'de' yyyy HH:mm:ss");
 
     @EJB
     private HorariosFacade ejbHorarios;
     @EJB
     private CitasFacade ejbCitas;
+    @EJB
+    private CorreosFacade ejbCorreos;
 
     public CitasBean() {
         fecha = new Date();
@@ -279,6 +285,29 @@ public class CitasBean implements Serializable, IMantenimiento {
         try {
             ejbCitas.crear(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             observaciones = null;
+
+            try {
+                if (pacientesBean.getPaciente().getPersona().getEmail() != null) {
+                    String body = "";
+                    body += "<html>";
+                    body += "</br>";
+                    body += "<p>Estimado/a <b>" + pacientesBean.getPaciente() + ":</b></p>";
+                    body += "<p>Se ha agendado una cita para el día <b>" + formatString.format(cita.getFecha()) + "</b> ";
+                    body += "con el médico: " + cita.getProfesional().toString() + " de especialidad <b>" + cita.getProfesional().getEspecialidad()+"</b>.</p>";
+                    body += "<p>Se solicita puntualidad.</p>";
+                    body += "</br></br>";
+                    body += "<p>Atentamente:</p>";
+                    body += pacientesBean.getInstitucion().getNombre();
+                    body += "<html>";
+                    ejbCorreos.enviarCorreo(pacientesBean.getPaciente().getPersona().getEmail(), "Cita Agendada - " + pacientesBean.getInstitucion().getNombre(), body);
+                    Mensajes.informacion("Se enviará una notificación a " + pacientesBean.getPaciente().getPersona().getEmail());
+                } else {
+                    Mensajes.informacion(pacientesBean.getPaciente().getPersona() + " no tiene registrado un correo electrónico");
+                }
+            } catch (MessagingException | UnsupportedEncodingException ex) {
+                Mensajes.fatal(ex.getMessage());
+                Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);

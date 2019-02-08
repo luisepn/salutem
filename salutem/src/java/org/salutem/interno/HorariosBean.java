@@ -252,6 +252,8 @@ public class HorariosBean implements Serializable, IMantenimiento {
                     }
                 }
             }
+            profesional = horario.getProfesional().getId();
+            formularioAutomatico.cancelar();
             Mensajes.informacion("Horario generado para el día " + horario.getDia().getNombre());
         } catch (ExcepcionDeActualizacion | ExcepcionDeConsulta | ExcepcionDeEliminacion | ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
@@ -375,6 +377,10 @@ public class HorariosBean implements Serializable, IMantenimiento {
     }
 
     public String getProfesionales(Horas hora, Parametros dia) {
+        if (profesional == 0) {
+            return null;
+        }
+
         String retorno = "";
         Map parametros = new HashMap();
         String where = "o.hora=:hora and o.dia=:dia";

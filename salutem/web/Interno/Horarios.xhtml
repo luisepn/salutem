@@ -127,7 +127,7 @@
                                          filterMatchMode="exact" 
                                          style="text-align: left">
                                 <h:outputText  value="#{item.profesional.toString()} "/>
-                                <!--<h:commandLink value="[Ver Horario]" action="#{salutemHorarios.setProfesional(item.profesional.id)}"/>-->
+                                <h:commandLink value="[Ver Horario]" action="#{salutemHorarios.setProfesional(item.profesional.id)}"/>
                             </ace:column>
                             <ace:column  headerText="Creación" sortBy="#{item.creado}" 
                                          filterBy="#{item.creado}" 
@@ -181,7 +181,8 @@
                             id="tablaHorario"
                             value="#{salutemCombos.listaHoras}"
                             resizableColumns="true"
-                            var="hora">
+                            var="hora"
+                            rendered="#{!salutemHorarios.formulario.mostrar and !salutemHorarios.formularioAutomatico.mostrar and salutemHorarios.profesional ne 0}">
                             <f:facet name="header">Horario - #{salutemCombos.traerProfesional(salutemHorarios.profesional)} -</f:facet>
                             <ace:column  headerText="Horas" style="text-align: right">
                                 <h:outputText value="#{hora.traerHoras()}"/>
