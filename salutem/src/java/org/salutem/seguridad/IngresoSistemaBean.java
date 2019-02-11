@@ -1,6 +1,7 @@
 package org.salutem.seguridad;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +12,14 @@ import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.mail.MessagingException;
 import org.salutem.controladores.PersonasFacade;
 import org.salutem.entidades.Instituciones;
 import org.salutem.entidades.Personas;
 import org.salutem.excepciones.ExcepcionDeConsulta;
 import org.salutem.excepciones.ExcepcionDeActualizacion;
 import org.salutem.utilitarios.Codificador;
+import org.salutem.utilitarios.CorreosFacade;
 import org.salutem.utilitarios.Formulario;
 import org.salutem.utilitarios.Mensajes;
 import org.salutemlogs.controladores.AsincronoLogFacade;
@@ -37,12 +40,19 @@ public class IngresoSistemaBean implements Serializable {
     private String claveAnterior;
     private Instituciones institucion;
     private String estilo;
+
+    private String cedula;
+    private String email;
+
     private Formulario formulario = new Formulario();
+    private Formulario formularioRestablecer = new Formulario();
 
     @EJB
     private PersonasFacade ejbPersonas;
     @EJB
     protected AsincronoLogFacade ejbLogs;
+    @EJB
+    protected CorreosFacade ejbCorreos;
 
     public IngresoSistemaBean() {
     }
@@ -54,10 +64,6 @@ public class IngresoSistemaBean implements Serializable {
         estilo = seguridadBean.getEstilo();
     }
 
-//    @PostConstruct
-//    private void iniciar() {
-//
-//    }
     public String login() {
         try {
             formulario.cancelar();
@@ -147,6 +153,50 @@ public class IngresoSistemaBean implements Serializable {
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    public String restablecerClave() {
+        cedula = null;
+        email = null;
+        formularioRestablecer.insertar();
+        return null;
+    }
+
+    public String enviar() {
+        try {
+            String where = "o.cedula=:cedula and o.email=:email";
+            Map parameters = new HashMap();
+            parameters.put("cedula", cedula);
+            parameters.put("email", email);
+
+            List<Personas> personas = ejbPersonas.buscar(where, parameters);
+            if (personas.isEmpty()) {
+                Mensajes.advertencia("Sus datos no fueron encontrados en nuestra base de datos, revise los datos que proporciona.");
+                return null;
+            } else {
+                Personas p = personas.get(0);
+                p.setClave(Codificador.getEncoded(p.getCedula(), "MD5"));
+                ejbPersonas.actualizar(p, "salutem", seguridadBean.getCurrentClientIpAddress());
+                String body = "";
+                body += "<html>";
+                body += "</br>";
+                body += "<p>Estimado/a <b>" + p.toString() + ":</b></p>";
+                body += "<p>Su contraseña para acceder al Sistema Médico Salutem ha sido restablecida. Su usuario es <b><i>" + p.getUserid() + "</i></b> y su contraseña ahora es su número de cédula.</p>";
+                body += "<p>Si usted no ha solicitado la recuperación de su contraseña, por favor ignore éste correo electrónico y cambie inmediatamente sus credenciales.</p>";
+                body += "</br></br>";
+                body += "<p>Atentamente:</p>";
+                body += "Salutem, Sistema Médico";
+                body += "<html>";
+                ejbCorreos.enviarCorreo(p.getEmail(), "Recuperación de Contraseña Salutem", body);
+                Mensajes.informacion("Se enviará una notificación a " + p.getEmail());
+                formularioRestablecer.cancelar();
+            }
+        } catch (MessagingException | UnsupportedEncodingException | ExcepcionDeConsulta | ExcepcionDeActualizacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(IngresoSistemaBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;
@@ -290,6 +340,48 @@ public class IngresoSistemaBean implements Serializable {
      */
     public void setEstilo(String estilo) {
         this.estilo = estilo;
+    }
+
+    /**
+     * @return the formularioRestablecer
+     */
+    public Formulario getFormularioRestablecer() {
+        return formularioRestablecer;
+    }
+
+    /**
+     * @param formularioRestablecer the formularioRestablecer to set
+     */
+    public void setFormularioRestablecer(Formulario formularioRestablecer) {
+        this.formularioRestablecer = formularioRestablecer;
+    }
+
+    /**
+     * @return the cedula
+     */
+    public String getCedula() {
+        return cedula;
+    }
+
+    /**
+     * @param cedula the cedula to set
+     */
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @param email the email to set
+     */
+    public void setEmail(String email) {
+        this.email = email;
     }
 
 }

@@ -19,7 +19,7 @@
                                header="#{salutemCitas.perfil.menu.nombre}"
                                closable="false"
                                toggleable="true">
-                        <h:panelGrid columns="2">    
+                        <h:panelGrid columns="2" columnClasses="cincuenta, cincuenta">    
                             <h:panelGrid>
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Sólo activos:" />
@@ -141,11 +141,11 @@
                                                     resizableColumns="true"
                                                     var="hora">
                                         <f:facet name="header">#{salutemCitas.header()}</f:facet>
-                                        <ace:column headerText="Horas" style="text-align: right">
+                                        <ace:column headerText="Horas" style="text-align: right; width: 120px;">
                                             <h:outputText value="#{hora.toString()}"/>
                                         </ace:column>
                                         <c:forEach items="#{salutemCombos.listaDias}" var="dia">
-                                            <ace:column headerText="#{dia.toString()}">
+                                            <ace:column headerText="#{dia.codigo}">
                                                 <!--<span style="background-color: #{salutemCitas.getColor(hora, dia)}; padding:  2px;">-->
                                                 <h:outputText value="#{salutemCitas.getReservado(hora, dia)}" style="color: #195f88 !important"/>
                                                 <!--</span>-->
@@ -279,6 +279,10 @@
                         rendered="#{salutemCitas.formulario.mostrar}"
                         visible="#{salutemCitas.formulario.mostrar}">
                         <h:panelGrid columns="2">
+                            <h:outputLabel value="Reagendar: " styleClass="bold"/>
+                            <h:selectOneMenu value="#{salutemCitas.horario}">
+                                <f:selectItems value="#{salutemCitas.horasDisponibles}"/>
+                            </h:selectOneMenu>
                             <h:outputText value="Observaciones:" styleClass="bold"/>
                             <h:inputTextarea cols="50" rows="4" value="#{salutemCitas.cita.descripcion}"/>
                         </h:panelGrid>

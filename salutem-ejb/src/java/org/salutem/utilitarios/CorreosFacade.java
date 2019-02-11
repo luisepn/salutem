@@ -31,18 +31,14 @@ import javax.naming.NamingException;
 
 /**
  *
- * @author sigi-iepi
+ * @author luis
  */
 @Singleton
 @LocalBean
 public class CorreosFacade {
 
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
     @Resource(name = "java:/mail/Salutemail")
     private Session jmscorreo;
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
 
     @Asynchronous
     public void enviarCorreo(String correo, String motivo, String cuerpo, File pdf, File xml) throws MessagingException, UnsupportedEncodingException {
@@ -67,25 +63,16 @@ public class CorreosFacade {
         MimeMessage message = new MimeMessage(jmscorreo);
         message.setSubject(subject);
 
-        message.setFrom(new InternetAddress(
-                "lordonez.ar@gmail.com",
-                //                "documnetos@emseguridad.gob.ec",
-                subject));
+        message.setFrom(new InternetAddress("lordonez.ar@gmail.com", subject));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, false));
-//        message.setText(body);
         Multipart multipart = new MimeMultipart();
-
-        String textContent = "Bienvenid@";
-
         BodyPart htmlPart = new MimeBodyPart();
-//        String htmlContent = body;
         htmlPart.setContent(body, "text/html ; charset = UTF-8");
         multipart.addBodyPart(htmlPart);
-
-//        Archivos
+        // Archivos
         DataSource dsXml = new FileDataSource(xml);
         DataSource dsPdf = new FileDataSource(pdf);
-        // esto es para el pdf 
+        // para el pdf 
         htmlPart = new MimeBodyPart();
         htmlPart.setDataHandler(new DataHandler(dsPdf));
         htmlPart.setFileName(pdf.getName());
@@ -97,7 +84,7 @@ public class CorreosFacade {
         multipart.addBodyPart(htmlPart);
         // Fin archivos
 
-//        multipart.addBodyPart(parteXml);
+        //  multipart.addBodyPart(parteXml);
         message.setContent(multipart);
         Transport.send(message);
     }
@@ -107,11 +94,8 @@ public class CorreosFacade {
         MimeMessage message = new MimeMessage(jmscorreo);
         message.setSubject(subject);
 
-        message.setFrom(new InternetAddress(
-                "lordonez.ar@gmail.com",
-                subject));
+        message.setFrom(new InternetAddress("lordonez.ar@gmail.com", subject));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, false));
-//        message.setText(body);
         Multipart multipart = new MimeMultipart("alternative");
         MimeBodyPart textPart = new MimeBodyPart();
         String textContent = "Bienvenid@";
@@ -131,12 +115,8 @@ public class CorreosFacade {
         MimeMessage message = new MimeMessage(jmscorreo);
         message.setSubject(subject);
 
-        message.setFrom(new InternetAddress(
-                "lordonez.ar@gmail.com",
-                //                "documnetos@emseguridad.gob.ec",
-                subject));
+        message.setFrom(new InternetAddress("lordonez.ar@gmail.com", subject));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, false));
-//        message.setText(body);
         Multipart multipart = new MimeMultipart("alternative");
         //part 1,
         MimeBodyPart messageBodyPart = new MimeBodyPart();

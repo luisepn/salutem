@@ -66,7 +66,7 @@ public class Mensajes {
                 FacesMessage message = new FacesMessage();
 
                 message.setSeverity(status ? FacesMessage.SEVERITY_INFO : FacesMessage.SEVERITY_ERROR);
-                message.setSummary(status ? "!Información!" : "¡Error!");
+                message.setSummary(status ? "¡Información!" : "¡Error!");
                 message.setDetail(mensaje.replaceAll("\n", " ").replaceAll("\\.", "\\. "));
                 context.addMessage(message.getSummary(), message);
 

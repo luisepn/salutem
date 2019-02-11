@@ -265,6 +265,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
                 paciente.setActualizadopor(seguridadBean.getLogueado().getUserid());
                 ejbPacientes.actualizar(paciente, getSeguridadBean().getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
+            crearUsuarios(persona, institucion, "GP", "MTI");
             formulario.cancelar();
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());

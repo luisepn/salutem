@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!--
-    Document   : LoginVista
-    Created on : 27/08/2011, 07:34:58 PM
-    Author     : luisfernando
+  Document  : LoginVista
+  Created on : 27/08/2011, 07:34:58 PM
+  Author   : luisfernando
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -15,18 +15,18 @@
         <h:form id="form">
             <ui:composition template="./plantillas/PlantillaLogin.xhtml">
                 <ui:define name="content">
-                    <ace:panel header="¡Bienvenido!" style="margin: 0 auto; width: 275px;">
+                    <ace:panel header="¡Bienvenido!" style="margin: 0 auto; width: 300px;">
                         <h:panelGrid columns="2" width="100%" style="text-align: center;">
-                            <h:outputLabel value="Usuario:"/>
-                            <h:inputText value="#{ingresoSistema.usr}" title="Usuario"/>
-                            <h:outputLabel  value="Contraseña:"/>
-                            <h:inputSecret value="#{ingresoSistema.pwd}" title="Constraseña"/>
+                            <h:outputLabel value="Usuario:" styleClass="bold"/>
+                            <ace:textEntry id="usuario" value="#{ingresoSistema.usr}" title="Usuario"/>
+                            <h:outputLabel value="Contraseña:" styleClass="bold"/>
+                            <ace:textEntry id="clave" value="#{ingresoSistema.pwd}" title="Constraseña" secret="true"/>
                         </h:panelGrid>
                         <h:panelGrid width="100%" style="text-align: center;">
                             <ace:menuBar autoSubmenuDisplay="true" >
                                 <ace:menuItem value="Ingresar" icon="ui-icon ui-icon-key" action="#{ingresoSistema.login()}"/>
+                                <ace:menuItem value="¡Olvidé mi Clave!" icon="ui-icon ui-icon-lightbulb" action="#{ingresoSistema.restablecerClave()}"/>
                             </ace:menuBar>
-                            <icecore:defaultAction action="#{ingresoSistema.login()}" key="Enter"/>                                 
                         </h:panelGrid>
                     </ace:panel>
 
@@ -41,17 +41,43 @@
                         visible="#{ingresoSistema.formulario.mostrar}">
                         <h:panelGroup>
                             <h:panelGrid columns="2">
-                                <h:outputLabel  value="Contraseña Anterior:"/>
+                                <h:outputLabel value="Contraseña Anterior:"/>
                                 <ace:textEntry value="#{ingresoSistema.claveAnterior}" secret="true"/>
-                                <h:outputLabel  value="Contraseña Nueva:"/>
+                                <h:outputLabel value="Contraseña Nueva:"/>
                                 <ace:textEntry value="#{ingresoSistema.claveNueva}" secret="true"/>
-                                <h:outputLabel  value="Digite otra vez su Constraseña Nueva:"/>
+                                <h:outputLabel value="Digite otra vez su Constraseña Nueva:"/>
                                 <ace:textEntry value="#{ingresoSistema.claveRetipeada}" secret="true"/>
                             </h:panelGrid>
                             <h:panelGrid columns="1" width="100%">
                                 <ace:menuBar autoSubmenuDisplay="true" >
                                     <ace:menuItem value="Grabar" icon="ui-icon ui-icon-disk" action="#{ingresoSistema.cambio()}"/>
-                                </ace:menuBar>                                 
+                                    <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" action="#{ingresoSistema.formulario.cancelar()}"/>
+                                </ace:menuBar> 
+                            </h:panelGrid>
+                            <icecore:defaultAction action="#{ingresoSistema.login()}" key="Enter"/> 
+                        </h:panelGroup>
+                    </ace:dialog>
+                    <ace:dialog 
+                        header="Restablecer Clave"
+                        closable="false"
+                        modal="true"
+                        draggable="false"
+                        showEffect="clip"
+                        hideEffect="fade"
+                        rendered="#{ingresoSistema.formularioRestablecer.mostrar}"
+                        visible="#{ingresoSistema.formularioRestablecer.mostrar}">
+                        <h:panelGroup>
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="C.I.:"/>
+                                <ace:textEntry value="#{ingresoSistema.cedula}"/>
+                                <h:outputLabel value="E-mail:"/>
+                                <ace:textEntry value="#{ingresoSistema.email}"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="1" width="100%">
+                                <ace:menuBar autoSubmenuDisplay="true" >
+                                    <ace:menuItem value="Enviar" icon="ui-icon ui-icon-mail-closed" action="#{ingresoSistema.enviar()}"/>
+                                    <ace:menuItem value="Cancelar" icon="ui-icon ui-icon-power" action="#{ingresoSistema.formularioRestablecer.cancelar()}"/>
+                                </ace:menuBar>                 
                             </h:panelGrid>
                         </h:panelGroup>
                     </ace:dialog>

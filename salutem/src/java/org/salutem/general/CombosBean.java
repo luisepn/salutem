@@ -22,6 +22,7 @@ import org.salutem.controladores.MenusFacade;
 import org.salutem.controladores.ParametrosFacade;
 import org.salutem.controladores.ProfesionalesFacade;
 import org.salutem.controladores.UsuariosFacade;
+import org.salutem.controladores.UsuariosactivosFacade;
 import org.salutem.entidades.Citas;
 import org.salutem.entidades.Horarios;
 import org.salutem.entidades.Horas;
@@ -30,9 +31,9 @@ import org.salutem.entidades.Parametros;
 import org.salutem.entidades.Maestros;
 import org.salutem.entidades.Materiales;
 import org.salutem.entidades.Menus;
-import org.salutem.entidades.Pacientes;
 import org.salutem.entidades.Profesionales;
 import org.salutem.entidades.Usuarios;
+import org.salutem.entidades.Usuariosactivos;
 import org.salutem.excepciones.ExcepcionDeConsulta;
 import org.salutem.utilitarios.Mensajes;
 
@@ -81,6 +82,8 @@ public class CombosBean implements Serializable {
     @EJB
     private UsuariosFacade ejbUsuarios;
     @EJB
+    private UsuariosactivosFacade ejbUsuariosactivos;
+    @EJB
     private HorasFacade ejbHoras;
     @EJB
     private HorariosFacade ejbhHorarios;
@@ -111,6 +114,7 @@ public class CombosBean implements Serializable {
             switch (clave) {
                 case "object":
                 case "op":
+                case "users":
                     items[i++] = new SelectItem(null, "--Seleccione uno--");
                     break;
                 case "id":
@@ -138,9 +142,21 @@ public class CombosBean implements Serializable {
                 case "parameters":
                     items[i++] = new SelectItem(((Parametros) x).getParametros(), x.toString());
                     break;
+                case "users":
+                    items[i++] = new SelectItem(((Usuariosactivos) x).getUserid(), ((Usuariosactivos) x).getNombres() + " (" + ((Usuariosactivos) x).getUserid() + ")");
+                    break;
             }
         }
         return items;
+    }
+
+    public SelectItem[] getUsuariosActivos() {
+        if (seguridadBean.getGrupo().getCodigo().equals("GSA")
+                || seguridadBean.getGrupo().getCodigo().equals("GA")) {
+            return getSelectItems(traerUsuarios(seguridadBean.getInstitucion() != null ? seguridadBean.getInstitucion().getId() : null, null), "users", true);
+        } else {
+            return getSelectItems(traerUsuarios(seguridadBean.getInstitucion() != null ? seguridadBean.getInstitucion().getId() : null, seguridadBean.getLogueado().getUserid()), "users", true);
+        }
     }
 
     public SelectItem[] getInstituciones() {
@@ -303,6 +319,25 @@ public class CombosBean implements Serializable {
 
     public SelectItem[] getCitas() {
         return getSelectItems(traerCitas(), "object", true);
+    }
+
+    private List<Usuariosactivos> traerUsuarios(Integer institucion, String userid) {
+        try {
+            List<Usuariosactivos> retorno = new LinkedList<>();
+            List<Usuariosactivos> lista = ejbUsuariosactivos.traerUsuariosActivos(institucion, userid);
+            int i = 0;
+            for (Usuariosactivos u : lista) {
+                if (i != u.getId()) {
+                    retorno.add(u);
+                }
+                i = u.getId();
+            }
+            return retorno;
+        } catch (ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(CombosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     private List<Instituciones> traerInstituciones(Boolean tipo) {

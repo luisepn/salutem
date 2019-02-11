@@ -83,7 +83,7 @@ public class CitasBean implements Serializable, IMantenimiento {
     private Date fechaFin;
 
     private SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-    private SimpleDateFormat formatString = new SimpleDateFormat("EEEE, dd 'de' MMMMM 'de' yyyy HH:mm:ss");
+    private SimpleDateFormat formatString = new SimpleDateFormat("EEEE, dd 'de' MMMMM 'de' yyyy HH:mm");
 
     @EJB
     private HorariosFacade ejbHorarios;
@@ -138,6 +138,10 @@ public class CitasBean implements Serializable, IMantenimiento {
             if (pacientesBean.getPaciente() != null) {
                 where += " and o.paciente=:paciente";
                 parameters.put("paciente", pacientesBean.getPaciente());
+            }
+            if (profesional != null) {
+                where += " and o.profesional=:profesional";
+                parameters.put("profesional", profesional);
             }
             if (seguridadBean.getInicioCreado() != null && seguridadBean.getFinCreado() != null) {
                 where += " and o.creado between :iniciocreado and :fincreado";
@@ -206,6 +210,8 @@ public class CitasBean implements Serializable, IMantenimiento {
             return null;
         }
         cita = (Citas) citas.getRowData();
+        pacientesBean.setPaciente(cita.getPaciente());
+        profesional = cita.getProfesional();
         if (validarFecha(cita.getFecha())) {
             Mensajes.advertencia("No se puede editar citas con fechas menores a la de hoy");
             return null;
@@ -343,6 +349,36 @@ public class CitasBean implements Serializable, IMantenimiento {
         if (!IMantenimiento.validarPerfil(perfil, 'U')) {
             return null;
         }
+
+        if (horario != null) {
+//            try {
+                Calendar h = Calendar.getInstance(); //Hora de la cita
+                h.setTime(horario.getHora().getHorainicio());
+
+                Calendar c = Calendar.getInstance(); //Fecha de la cita
+                c.setTime(fecha);
+                c.set(Calendar.HOUR_OF_DAY, h.get(Calendar.HOUR_OF_DAY)); //Hora de la cita a la fecha
+                c.set(Calendar.MINUTE, h.get(Calendar.MINUTE));//Minuto de la cita a la fecha
+
+                cita.setFecha(c.getTime());
+
+//                String where = "o.fecha=:fecha and o.paciente=:paciente and o.profesional=:profesional and o.activo=true";
+//                Map parameters = new HashMap();
+//                parameters.put("fecha", cita.getFecha());
+//                parameters.put("paciente", cita.getPaciente());
+//                parameters.put("profesional", cita.getProfesional());
+//
+//                if (ejbCitas.contar(where, parameters) > 0) {
+//                    Mensajes.advertencia("No se puede reagendar la cita en esa fecha, ya no se encuentra disponible");
+//                    return null;
+//                }
+//            } catch (ExcepcionDeConsulta ex) {
+//                Mensajes.fatal(ex.getMessage());
+//                Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+
+        }
+
         cita.setActualizado(new Date());
         cita.setActualizadopor(seguridadBean.getLogueado().getUserid());
         try {
@@ -553,27 +589,28 @@ public class CitasBean implements Serializable, IMantenimiento {
             Map parametros = new HashMap();
             parametros.put("profesional", profesional);
 
-            Calendar calendar = Calendar.getInstance();
             Calendar calendarHora = Calendar.getInstance();
-            int diaActual = calendar.get(Calendar.DAY_OF_WEEK); //Día de la fecha actual
-            int diaReferencia = Integer.parseInt(dia.getParametros()) + 1; //Día del que se quiere averiguar si tuvo citas
+            int diaReferencia
+                    = Integer.parseInt(dia.getParametros()) == 7 ? 1
+                    : Integer.parseInt(dia.getParametros()) + 1; //Día del que se quiere averiguar si tuvo citas
 
+            Calendar calendar;
             calendar = Calendar.getInstance();
             calendarHora.setTime(hora.getHorainicio());
-            calendar.add(Calendar.DAY_OF_YEAR, (diaActual - diaReferencia) * -1);
+            calendar.set(Calendar.DAY_OF_WEEK, diaReferencia);
             calendar.set(Calendar.HOUR_OF_DAY, calendarHora.get(Calendar.HOUR_OF_DAY));
             calendar.set(Calendar.MINUTE, calendarHora.get(Calendar.MINUTE));
             calendar.set(Calendar.SECOND, calendarHora.get(Calendar.SECOND));
-            calendar.set(Calendar.MILLISECOND, calendarHora.get(Calendar.MILLISECOND));
+            calendar.add(Calendar.MILLISECOND, calendarHora.get(Calendar.MILLISECOND) + 1);
             parametros.put("inicio", calendar.getTime());
 
             calendar = Calendar.getInstance();
             calendarHora.setTime(hora.getHorafin());
-            calendar.add(Calendar.DAY_OF_YEAR, (diaActual - diaReferencia) * -1);
+            calendar.set(Calendar.DAY_OF_WEEK, diaReferencia);
             calendar.set(Calendar.HOUR_OF_DAY, calendarHora.get(Calendar.HOUR_OF_DAY));
             calendar.set(Calendar.MINUTE, calendarHora.get(Calendar.MINUTE));
             calendar.set(Calendar.SECOND, calendarHora.get(Calendar.SECOND));
-            calendar.set(Calendar.MILLISECOND, calendarHora.get(Calendar.MILLISECOND));
+            calendar.add(Calendar.MILLISECOND, calendarHora.get(Calendar.MILLISECOND) - 1);
             parametros.put("fin", calendar.getTime());
 
             List<Citas> auxcitas = ejbCitas.buscar(where, parametros);

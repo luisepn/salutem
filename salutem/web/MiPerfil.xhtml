@@ -55,7 +55,7 @@
                             </ace:textEntry>
                             <h:outputText value="#{salutemMiPerfil.persona.email}" title="Email" rendered="#{!salutemMiPerfil.formulario.editar}"/>
                             <h:outputLabel style="font-weight: bolder" value="Nombre de Usuario:"/>
-                            <ace:textEntry value="#{salutemMiPerfil.persona.userid}" title="Nombre de Usuario" rendered="#{salutemMiPerfil.formulario.editar}"/>
+                            <h:outputText value="#{salutemMiPerfil.persona.userid}" title="Nombre de Usuario" rendered="#{salutemMiPerfil.formulario.editar}"/>
                             <h:outputText value="#{salutemMiPerfil.persona.userid}" title="Nombre de Usuario" rendered="#{!salutemMiPerfil.formulario.editar}"/>
                             <h:outputLabel style="font-weight: bolder" value="Fecha de Nacimiento:" />
                             <ace:dateTimeEntry navigator="true" value="#{salutemMiPerfil.persona.fecha}" 

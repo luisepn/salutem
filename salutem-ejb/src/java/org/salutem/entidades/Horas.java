@@ -180,7 +180,8 @@ public class Horas implements Serializable {
 
     @Override
     public String toString() {
-        SimpleDateFormat sdfh = new SimpleDateFormat("kk:mm");
+        //SimpleDateFormat sdfh = new SimpleDateFormat("kk:mm");//En vez de 00:00 sale 24:00
+        SimpleDateFormat sdfh = new SimpleDateFormat("HH:mm");
         return nombre + " [" + sdfh.format(horainicio) + " - " + sdfh.format(horafin) + "]";
     }
 

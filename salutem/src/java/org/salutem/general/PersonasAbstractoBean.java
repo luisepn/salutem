@@ -26,6 +26,11 @@ import org.salutem.excepciones.ExcepcionDeEliminacion;
 import org.icefaces.ace.event.TextChangeEvent;
 import org.icefaces.ace.model.table.LazyDataModel;
 import org.icefaces.ace.model.table.SortCriteria;
+import org.salutem.controladores.ParametrosFacade;
+import org.salutem.controladores.UsuariosFacade;
+import org.salutem.entidades.Instituciones;
+import org.salutem.entidades.Parametros;
+import org.salutem.entidades.Usuarios;
 import org.salutem.seguridad.SeguridadBean;
 import org.salutem.utilitarios.Codificador;
 import org.salutem.utilitarios.Formulario;
@@ -54,6 +59,10 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
 
     @EJB
     protected PersonasFacade ejbPersonas;
+    @EJB
+    protected ParametrosFacade ejbParametros;
+    @EJB
+    protected UsuariosFacade ejbUsuarios;
 
     public PersonasAbstractoBean() {
         personas = new LazyDataModel<Personas>() {
@@ -429,6 +438,40 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             }
         }
         return null;
+    }
+
+    public void crearUsuarios(Personas persona, Instituciones institucion, String grupo, String modulo) {
+        try {
+
+            if (persona == null || institucion == null) {
+                return;
+            }
+
+            Usuarios usuario = new Usuarios();
+            usuario.setActivo(Boolean.TRUE);
+            usuario.setCreado(new Date());
+            usuario.setActualizado(usuario.getCreado());
+            usuario.setCreadopor(seguridadBean.getLogueado().getUserid());
+            usuario.setInstitucion(institucion);
+            usuario.setPersona(persona);
+            usuario.setGrupo(ejbParametros.traerParametro(CombosBean.GRUPO_DE_USUARIO, grupo));
+            usuario.setModulo(ejbParametros.traerParametro(CombosBean.MODULOS_DE_SISTEMA, modulo));
+            usuario.setDescripcion(grupo.equals("GP") ? "Paciente" : "Profesional");
+
+            Map parameters = new HashMap();
+            String where = "o.persona=:persona and o.grupo=:grupo and o.modulo=:modulo and o.institucion=:institucion";
+            parameters.put("persona", usuario.getPersona());
+            parameters.put("grupo", usuario.getGrupo());
+            parameters.put("modulo", usuario.getModulo());
+            parameters.put("institucion", usuario.getInstitucion());
+
+            if (ejbUsuarios.contar(where, parameters) == 0) {
+                ejbUsuarios.crear(usuario, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
+            }
+        } catch (ExcepcionDeConsulta | ExcepcionDeCreacion ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

@@ -17,49 +17,92 @@
         <ui:composition template="../plantillas/Plantilla.xhtml">
 
             <ui:define name="content">
-                <ace:panel header="Logs en la semana" style="width: 100%">
-                    <h:panelGrid columns="1" width="100%" style="text-align: center;">
-                        <ace:chart  
-                            width="700"
-                            animated="false"
-                            stackSeries="false"  
-                            value="#{salutemReporteUsuarios.barrasLogsSemana.grafico}"
-                            defaultSeriesConfig="#{salutemReporteUsuarios.barrasLogsSemana.subgraficoConfig}"
-                            defaultAxesConfig="#{salutemReporteUsuarios.barrasLogsSemana.ordenadasGeneralConfig}"     
-                            xAxis="#{salutemReporteUsuarios.barrasLogsSemana.abscisaBottom}"  
-                            x2Axis="#{salutemReporteUsuarios.barrasLogsSemana.abscisaTop}"
-                            yAxes="#{salutemReporteUsuarios.barrasLogsSemana.ordenadasConfigSpecific}"
-                            legend="true"
-                            showTooltip="true"
-                            legendPlacement="OUTSIDE_GRID"
-                            highlighter="true"
-                            highlighterLocation="NW"
-                            highlighterShowMarker="false"
-                            highlighterBringSeriesToFront="true"
-                            zoom="true"/>
+                <ace:panel 
+                    header="Parámetros de búsqueda"
+                    closable="false"
+                    toggleable="true">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="Usuario:" styleClass="bold"/>
+                        <ace:comboBox value="#{salutemReporteUsuarios.usuario}">
+                            <f:selectItems value="#{salutemCombos.usuariosActivos}"/>
+                        </ace:comboBox>
+                        <h:outputLabel value="Fecha:" styleClass="bold"/>
+                        <ace:dateTimeEntry navigator="true" value="#{salutemReporteUsuarios.fecha}" 
+                                           popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                           pattern="dd/MM/yyyy" label="dd/MM/yyyy" labelPosition="infield"
+                                           style="width: 200px;">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </ace:dateTimeEntry>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <ace:menuBar autoSubmenuDisplay="true" >
+                            <ace:menuItem value="Buscar" icon="ui-icon ui-icon-search"  action="#{salutemReporteUsuarios.buscarTodo()}"/>
+                        </ace:menuBar>
+                    </h:panelGrid>
+
+                </ace:panel>
+                <ace:panel header="Ingresos al Sistema" style="width: 100%">
+                    <h:panelGrid columns="2" width="100%">                        
+                        <h:panelGrid columns="1" width="100%" style="text-align: center;">
+                            <ace:chart  
+                                width="700"
+                                animated="false"
+                                stackSeries="false"  
+                                value="#{salutemReporteUsuarios.barrasLogsSemana.grafico}"
+                                defaultSeriesConfig="#{salutemReporteUsuarios.barrasLogsSemana.subgraficoConfig}"
+                                defaultAxesConfig="#{salutemReporteUsuarios.barrasLogsSemana.ordenadasGeneralConfig}"     
+                                xAxis="#{salutemReporteUsuarios.barrasLogsSemana.abscisaBottom}"  
+                                x2Axis="#{salutemReporteUsuarios.barrasLogsSemana.abscisaTop}"
+                                yAxes="#{salutemReporteUsuarios.barrasLogsSemana.ordenadasConfigSpecific}"
+                                legend="true"
+                                title="Semana #{salutemReporteUsuarios.semana}"
+                                showTooltip="false"
+                                legendPlacement="OUTSIDE_GRID"
+                                highlighter="true"
+                                highlighterLocation="NW"
+                                highlighterShowMarker="false"
+                                highlighterBringSeriesToFront="true"
+                                zoom="true"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" width="100%">
+                            <ace:chart  
+                                width="700"
+                                animated="false"
+                                stackSeries="false"  
+                                value="#{salutemReporteUsuarios.barrasLogsPorAnio.grafico}"
+                                defaultSeriesConfig="#{salutemReporteUsuarios.barrasLogsPorAnio.subgraficoConfig}"
+                                defaultAxesConfig="#{salutemReporteUsuarios.barrasLogsPorAnio.ordenadasGeneralConfig}"     
+                                xAxis="#{salutemReporteUsuarios.barrasLogsPorAnio.abscisaBottom}"  
+                                x2Axis="#{salutemReporteUsuarios.barrasLogsPorAnio.abscisaTop}"
+                                yAxes="#{salutemReporteUsuarios.barrasLogsPorAnio.ordenadasConfigSpecific}"
+                                legend="false"
+                                title="Año  #{salutemReporteUsuarios.anio}"
+                                showTooltip="false"
+                                legendPlacement="OUTSIDE_GRID"
+                                highlighter="true"
+                                highlighterLocation="NW"
+                                highlighterShowMarker="false"
+                                highlighterBringSeriesToFront="true"
+                                zoom="true"/>
+                        </h:panelGrid>
                     </h:panelGrid>
                 </ace:panel>
-
-                <ace:panel header="Logs en el año" style="width: 100%">
-                    <h:panelGrid columns="1" width="100%" style="text-align: center;">
-                        <ace:chart  
+                <ace:panel header="Usuarios por grupo" style="width: 100%">
+                    <h:panelGrid columns="2" width="100%">
+                        <ace:chart
                             width="700"
                             animated="false"
-                            stackSeries="false"  
-                            value="#{salutemReporteUsuarios.barrasLogsPorAnio.grafico}"
-                            defaultSeriesConfig="#{salutemReporteUsuarios.barrasLogsPorAnio.subgraficoConfig}"
-                            defaultAxesConfig="#{salutemReporteUsuarios.barrasLogsPorAnio.ordenadasGeneralConfig}"     
-                            xAxis="#{salutemReporteUsuarios.barrasLogsPorAnio.abscisaBottom}"  
-                            x2Axis="#{salutemReporteUsuarios.barrasLogsPorAnio.abscisaTop}"
-                            yAxes="#{salutemReporteUsuarios.barrasLogsPorAnio.ordenadasConfigSpecific}"
+                            value="#{salutemReporteUsuarios.barrasUsuariosPorGrupo.grafico}"
+                            stackSeries="false"
+                            defaultAxesConfig="#{salutemReporteUsuarios.barrasUsuariosPorGrupo.barDefaultAxis}"
+                            xAxis="#{salutemReporteUsuarios.barrasUsuariosPorGrupo.barXAxis}"
+                            yAxes="#{salutemReporteUsuarios.barrasUsuariosPorGrupo.barYAxes}"
                             legend="true"
-                            showTooltip="true"
                             legendPlacement="OUTSIDE_GRID"
                             highlighter="true"
-                            highlighterLocation="NW"
+                            highlighterLocation="N"
                             highlighterShowMarker="false"
-                            highlighterBringSeriesToFront="true"
-                            zoom="true"/>
+                            highlighterBringSeriesToFront="true"/>
                     </h:panelGrid>
                 </ace:panel>
             </ui:define>

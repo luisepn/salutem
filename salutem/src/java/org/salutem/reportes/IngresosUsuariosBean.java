@@ -1,6 +1,7 @@
 package org.salutem.reportes;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.enterprise.inject.Any;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,6 +25,10 @@ import org.salutem.seguridad.SeguridadBean;
 import org.salutem.utilitarios.Mensajes;
 import org.icefaces.ace.component.chart.Axis;
 import org.icefaces.ace.component.chart.AxisType;
+import org.salutem.controladores.ParametrosFacade;
+import org.salutem.controladores.UsuariosFacade;
+import org.salutem.general.CombosBean;
+import org.salutem.utilitarios.GraficoBarras;
 import org.salutem.utilitarios.GraficoCombinado;
 import org.salutemlogs.controladores.HistorialFacade;
 import org.salutemlogs.excepciones.ExcepcionDeConsulta;
@@ -44,12 +50,23 @@ public class IngresosUsuariosBean implements Serializable {
 
     private Calendar calendar;
     private Date fecha;
+    private String semana;
+    private Integer anio;
+    private String usuario;
+    private List<Parametros> grupos;
 
     private GraficoCombinado barrasLogsSemana;
     private GraficoCombinado barrasLogsPorAnio;
+    private GraficoBarras barrasUsuariosPorGrupo;
+
+    private final SimpleDateFormat formatString = new SimpleDateFormat("EEEE, dd 'de' MMMMM 'de' yyyy");
 
     @EJB
     private HistorialFacade ejbHistorial;
+    @EJB
+    private ParametrosFacade ejbParametros;
+    @EJB
+    private UsuariosFacade ejbUsuarios;
 
     @PostConstruct
     public void iniciar() {
@@ -57,14 +74,39 @@ public class IngresosUsuariosBean implements Serializable {
         buscarTodo();
     }
 
-    private void buscarTodo() {
+    public String buscarTodo() {
         if (fecha == null) {
             fecha = new Date();
+        }
+
+        semana = "del ";
+        calendar = Calendar.getInstance();
+        calendar.setTime(fecha);
+        calendar.set(Calendar.DAY_OF_WEEK, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        semana += formatString.format(calendar.getTime());
+
+        calendar.add(Calendar.DAY_OF_WEEK, 7);
+        calendar.add(Calendar.MILLISECOND, -1);
+        semana += " al " + formatString.format(calendar.getTime());
+
+        anio = calendar.get(Calendar.YEAR);
+
+        try {
+            grupos = ejbParametros.traerParametros(CombosBean.GRUPO_DE_USUARIO, "o.codigo");
+        } catch (org.salutem.excepciones.ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(IngresosUsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         calendar = Calendar.getInstance();
         barrasLogsSemana = logsSemanal();
         barrasLogsPorAnio = logsAnio();
+        barrasUsuariosPorGrupo = usuariosPorGrupo();
+        return null;
     }
 
     private GraficoCombinado logsSemanal() {
@@ -80,7 +122,7 @@ public class IngresosUsuariosBean implements Serializable {
         //Inicio gráfico: configuración y primer llenado
         List<CartesianSeries> grafico = new ArrayList<>();
         CartesianSeries logsInOut = new CartesianSeries();
-        logsInOut.setPointLabels(Boolean.TRUE);
+//        logsInOut.setPointLabels(Boolean.TRUE);
         logsInOut.setPointLabelStacked(Boolean.TRUE);
         logsInOut.setType(CartesianType.BAR);
         logsInOut.setLabel("Log Out");
@@ -117,7 +159,7 @@ public class IngresosUsuariosBean implements Serializable {
         Axis yLeft = new Axis();
         yLeft.setAutoscale(true);
         yLeft.setTickInterval("2");
-        yLeft.setLabel("Logs");
+        yLeft.setLabel("");
 
         Axis yRight = new Axis();
         yRight.setAutoscale(true);
@@ -163,7 +205,7 @@ public class IngresosUsuariosBean implements Serializable {
         //Inicio gráfico: configuración y primer llenado
         List<CartesianSeries> grafico = new ArrayList<>();
         CartesianSeries logsInOut = new CartesianSeries();
-        logsInOut.setPointLabels(Boolean.TRUE);
+//        logsInOut.setPointLabels(Boolean.TRUE);
         logsInOut.setPointLabelStacked(Boolean.TRUE);
         logsInOut.setType(CartesianType.BAR);
         logsInOut.setLabel("Log Out");
@@ -200,7 +242,7 @@ public class IngresosUsuariosBean implements Serializable {
         Axis yLeft = new Axis();
         yLeft.setAutoscale(true);
         yLeft.setTickInterval("2");
-        yLeft.setLabel("Logs");
+        yLeft.setLabel("");
 
         Axis yRight = new Axis();
         yRight.setAutoscale(true);
@@ -248,18 +290,6 @@ public class IngresosUsuariosBean implements Serializable {
                     calendar.add(Calendar.MILLISECOND, -1);
                     fin = calendar.getTime();
                     break;
-                case 'S'://Semanal
-                    calendar.set(Calendar.DAY_OF_WEEK, unidad);
-                    calendar.set(Calendar.HOUR_OF_DAY, 0);
-                    calendar.set(Calendar.MINUTE, 0);
-                    calendar.set(Calendar.SECOND, 0);
-                    calendar.set(Calendar.MILLISECOND, 0);
-                    inicio = calendar.getTime();
-
-                    calendar.add(Calendar.DAY_OF_WEEK, 7);
-                    calendar.add(Calendar.MILLISECOND, -1);
-                    fin = calendar.getTime();
-                    break;
                 case 'M'://Mensual
                     calendar.set(Calendar.MONTH, unidad);
                     calendar.set(Calendar.DAY_OF_MONTH, 1);
@@ -273,19 +303,6 @@ public class IngresosUsuariosBean implements Serializable {
                     calendar.add(Calendar.MILLISECOND, -1);
                     fin = calendar.getTime();
                     break;
-                case 'A'://Anual
-                    calendar.set(Calendar.MONTH, 0);
-                    calendar.set(Calendar.DAY_OF_MONTH, 1);
-                    calendar.set(Calendar.HOUR_OF_DAY, 0);
-                    calendar.set(Calendar.MINUTE, 0);
-                    calendar.set(Calendar.SECOND, 0);
-                    calendar.set(Calendar.MILLISECOND, 0);
-                    inicio = calendar.getTime();
-
-                    calendar.add(Calendar.YEAR, 1);
-                    calendar.add(Calendar.MILLISECOND, -1);
-                    fin = calendar.getTime();
-                    break;
                 default:
                     inicio = new Date();
                     fin = new Date();
@@ -296,6 +313,12 @@ public class IngresosUsuariosBean implements Serializable {
             Map parameters = new HashMap();
             parameters.put("inicio", inicio);
             parameters.put("fin", fin);
+
+            if (usuario != null) {
+                where += " and usuario=:usuario";
+                parameters.put("usuario", usuario);
+            }
+
             return (int) ejbHistorial.buscar(where, parameters, null, null, null, true);
 
         } catch (ExcepcionDeConsulta ex) {
@@ -304,6 +327,29 @@ public class IngresosUsuariosBean implements Serializable {
         }
         calendar = Calendar.getInstance();
         calendar.setTime(fecha);
+        return 0;
+    }
+
+    private GraficoBarras usuariosPorGrupo() {
+        GraficoBarras retorno = new GraficoBarras("Usuarios por Grupo");
+
+        for (Parametros g : grupos) {
+            retorno.getGrafico().add(g.getNombre(), getFrecuencia(g));
+        }
+
+        return retorno;
+    }
+
+    private int getFrecuencia(Parametros grupo) {
+        try {
+            String where = " o.activo=true and o.persona.activo=true and o.grupo=:grupo";
+            Map parameters = new HashMap();
+            parameters.put("grupo", grupo);
+            return ejbUsuarios.contar(where, parameters);
+        } catch (org.salutem.excepciones.ExcepcionDeConsulta ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(IngresosUsuariosBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return 0;
     }
 
@@ -389,5 +435,61 @@ public class IngresosUsuariosBean implements Serializable {
      */
     public void setBarrasLogsPorAnio(GraficoCombinado barrasLogsPorAnio) {
         this.barrasLogsPorAnio = barrasLogsPorAnio;
+    }
+
+    /**
+     * @return the barrasUsuariosPorGrupo
+     */
+    public GraficoBarras getBarrasUsuariosPorGrupo() {
+        return barrasUsuariosPorGrupo;
+    }
+
+    /**
+     * @param barrasUsuariosPorGrupo the barrasUsuariosPorGrupo to set
+     */
+    public void setBarrasUsuariosPorGrupo(GraficoBarras barrasUsuariosPorGrupo) {
+        this.barrasUsuariosPorGrupo = barrasUsuariosPorGrupo;
+    }
+
+    /**
+     * @return the semana
+     */
+    public String getSemana() {
+        return semana;
+    }
+
+    /**
+     * @param semana the semana to set
+     */
+    public void setSemana(String semana) {
+        this.semana = semana;
+    }
+
+    /**
+     * @return the anio
+     */
+    public Integer getAnio() {
+        return anio;
+    }
+
+    /**
+     * @param anio the anio to set
+     */
+    public void setAnio(Integer anio) {
+        this.anio = anio;
+    }
+
+    /**
+     * @return the usuario
+     */
+    public String getUsuario() {
+        return usuario;
+    }
+
+    /**
+     * @param usuario the usuario to set
+     */
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 }

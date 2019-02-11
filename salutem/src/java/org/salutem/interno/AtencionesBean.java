@@ -656,14 +656,14 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     }
 
     public String imprimir() {
-        if (!IMantenimiento.validarPerfil(perfil, 'C')) {
+        if (!IMantenimiento.validarPerfil(perfil, 'R')) {
             return null;
         }
 
         atencion = null;
         colocarUltimaAtencion((Atenciones) atenciones.getRowData());
         formulario.imprimir();
-        datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), ultimaAtencion.getId(), formulario);
+        datosBean.iniciar(getNombreTabla(), ((Atenciones) atenciones.getRowData()).getEspecialidad(), ultimaAtencion.getId(), formulario);
 
         return null;
     }

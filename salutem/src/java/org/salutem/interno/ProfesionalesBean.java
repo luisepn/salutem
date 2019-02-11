@@ -229,6 +229,8 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
                 profesional.setActualizadopor(seguridadBean.getLogueado().getUserid());
                 ejbProfesionales.actualizar(profesional, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             }
+            crearUsuarios(persona, institucion, "GM", "MTI");
+            formulario.cancelar();
         } catch (ExcepcionDeCreacion | ExcepcionDeActualizacion | ExcepcionDeConsulta ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(ProfesionalesBean.class.getName()).log(Level.SEVERE, null, ex);

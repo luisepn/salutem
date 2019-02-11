@@ -1,6 +1,7 @@
 package org.salutem.reportes;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,6 +55,10 @@ public class AtencionesCitasBean implements Serializable {
     private Calendar calendar;
     private Date fecha;
 
+    private String semana;
+    private String mes;
+    private Integer anio;
+
     private GraficoCombinado barrasCitasPorSemana;
     private GraficoCombinado barrasCitasPorMes;
     private GraficoCombinado barrasCitasPorAnio;
@@ -64,6 +69,8 @@ public class AtencionesCitasBean implements Serializable {
     private List<SectorSeries> pieCitasPorMes;
     private List<SectorSeries> pieCitasPorAnio;
     private List<SectorSeries> pieAtencionesMes;
+
+    private final SimpleDateFormat formatString = new SimpleDateFormat("EEEE, dd 'de' MMMMM 'de' yyyy");
 
     @EJB
     private CitasFacade ejbCitas;
@@ -77,7 +84,7 @@ public class AtencionesCitasBean implements Serializable {
         buscarTodo();
     }
 
-    private void buscarTodo() {
+    public void buscarTodo() {
         if (fecha == null) {
             fecha = new Date();
         }
@@ -420,12 +427,11 @@ public class AtencionesCitasBean implements Serializable {
     private int getFrecuencia(char tabla, char tipoUnidad, int unidad, Parametros especialidad) {
         try {
             calendar.setTime(fecha);
-
             Date inicio;
             Date fin;
 
             switch (tipoUnidad) {
-                case 'D':
+                case 'D'://Día
                     calendar.set(Calendar.DAY_OF_WEEK, unidad);
                     calendar.set(Calendar.HOUR_OF_DAY, 0);
                     calendar.set(Calendar.MINUTE, 0);
@@ -437,19 +443,26 @@ public class AtencionesCitasBean implements Serializable {
                     calendar.add(Calendar.MILLISECOND, -1);
                     fin = calendar.getTime();
                     break;
-                case 'S':
+                case 'S'://Semana
+                    semana = "del ";
+
                     calendar.set(Calendar.DAY_OF_WEEK, unidad);
                     calendar.set(Calendar.HOUR_OF_DAY, 0);
                     calendar.set(Calendar.MINUTE, 0);
                     calendar.set(Calendar.SECOND, 0);
                     calendar.set(Calendar.MILLISECOND, 0);
                     inicio = calendar.getTime();
+                    semana += formatString.format(inicio);
 
                     calendar.add(Calendar.DAY_OF_WEEK, 7);
                     calendar.add(Calendar.MILLISECOND, -1);
                     fin = calendar.getTime();
+                    semana += " al " + formatString.format(fin);
+
                     break;
-                case 'M':
+                case 'M'://Mes
+                    mes = "de ";
+
                     calendar.set(Calendar.MONTH, unidad);
                     calendar.set(Calendar.DAY_OF_MONTH, 1);
                     calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -458,11 +471,52 @@ public class AtencionesCitasBean implements Serializable {
                     calendar.set(Calendar.MILLISECOND, 0);
                     inicio = calendar.getTime();
 
+                    switch (unidad) {
+                        case 0:
+                            mes += "enero";
+                            break;
+                        case 1:
+                            mes += "febrero";
+                            break;
+                        case 2:
+                            mes += "marzo";
+                            break;
+                        case 3:
+                            mes += "abril";
+                            break;
+                        case 4:
+                            mes += "mayo";
+                            break;
+                        case 5:
+                            mes += "junio";
+                            break;
+                        case 6:
+                            mes += "julio";
+                            break;
+                        case 7:
+                            mes += "agosto";
+                            break;
+                        case 8:
+                            mes += "septiembre";
+                            break;
+                        case 9:
+                            mes += "octubre";
+                            break;
+                        case 10:
+                            mes += "noviembre";
+                            break;
+                        case 11:
+                            mes += "diciembre";
+                            break;
+                    }
+
+                    mes += " de " + anio;
+
                     calendar.add(Calendar.MONTH, 1);
                     calendar.add(Calendar.MILLISECOND, -1);
                     fin = calendar.getTime();
                     break;
-                case 'A':
+                case 'A'://Año
                     calendar.set(Calendar.MONTH, 0);
                     calendar.set(Calendar.DAY_OF_MONTH, 1);
                     calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -470,6 +524,7 @@ public class AtencionesCitasBean implements Serializable {
                     calendar.set(Calendar.SECOND, 0);
                     calendar.set(Calendar.MILLISECOND, 0);
                     inicio = calendar.getTime();
+                    anio = calendar.get(Calendar.YEAR);
 
                     calendar.add(Calendar.YEAR, 1);
                     calendar.add(Calendar.MILLISECOND, -1);
@@ -489,10 +544,13 @@ public class AtencionesCitasBean implements Serializable {
                     parameters = new HashMap();
                     parameters.put("inicio", inicio);
                     parameters.put("fin", fin);
-                    if (!seguridadBean.getGrupo().getCodigo().equals("GSA")
-                            || !seguridadBean.getGrupo().getCodigo().equals("GA")) {
+                    if (combosBean.getProfesional() != null) {
                         where += " and o.profesional=:profesional";
                         parameters.put("profesional", combosBean.getProfesional());
+                    }
+                    if (seguridadBean.getGrupo().getCodigo().equals("GP")) {
+                        where += " and o.paciente=:paciente";
+                        parameters.put("paciente", seguridadBean.getPaciente());
                     }
                     if (combosBean.getInstitucion() != null) {
                         where += " and o.profesional.institucion=:institucion";
@@ -508,10 +566,13 @@ public class AtencionesCitasBean implements Serializable {
                     parameters = new HashMap();
                     parameters.put("inicio", inicio);
                     parameters.put("fin", fin);
-                    if (!seguridadBean.getGrupo().getCodigo().equals("GSA")
-                            || !seguridadBean.getGrupo().getCodigo().equals("GA")) {
+                    if (combosBean.getProfesional() != null) {
                         where += " and o.profesional=:profesional";
                         parameters.put("profesional", combosBean.getProfesional());
+                    }
+                    if (seguridadBean.getGrupo().getCodigo().equals("GP")) {
+                        where += " and o.paciente=:paciente";
+                        parameters.put("paciente", seguridadBean.getPaciente());
                     }
                     if (combosBean.getInstitucion() != null) {
                         where += " and o.profesional.institucion=:institucion";
@@ -729,4 +790,45 @@ public class AtencionesCitasBean implements Serializable {
         this.model = model;
     }
 
+    /**
+     * @return the semana
+     */
+    public String getSemana() {
+        return semana;
+    }
+
+    /**
+     * @param semana the semana to set
+     */
+    public void setSemana(String semana) {
+        this.semana = semana;
+    }
+
+    /**
+     * @return the mes
+     */
+    public String getMes() {
+        return mes;
+    }
+
+    /**
+     * @param mes the mes to set
+     */
+    public void setMes(String mes) {
+        this.mes = mes;
+    }
+
+    /**
+     * @return the anio
+     */
+    public Integer getAnio() {
+        return anio;
+    }
+
+    /**
+     * @param anio the anio to set
+     */
+    public void setAnio(Integer anio) {
+        this.anio = anio;
+    }
 }
