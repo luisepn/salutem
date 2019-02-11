@@ -352,15 +352,15 @@ public class CitasBean implements Serializable, IMantenimiento {
 
         if (horario != null) {
 //            try {
-                Calendar h = Calendar.getInstance(); //Hora de la cita
-                h.setTime(horario.getHora().getHorainicio());
+            Calendar h = Calendar.getInstance(); //Hora de la cita
+            h.setTime(horario.getHora().getHorainicio());
 
-                Calendar c = Calendar.getInstance(); //Fecha de la cita
-                c.setTime(fecha);
-                c.set(Calendar.HOUR_OF_DAY, h.get(Calendar.HOUR_OF_DAY)); //Hora de la cita a la fecha
-                c.set(Calendar.MINUTE, h.get(Calendar.MINUTE));//Minuto de la cita a la fecha
+            Calendar c = Calendar.getInstance(); //Fecha de la cita
+            c.setTime(fecha);
+            c.set(Calendar.HOUR_OF_DAY, h.get(Calendar.HOUR_OF_DAY)); //Hora de la cita a la fecha
+            c.set(Calendar.MINUTE, h.get(Calendar.MINUTE));//Minuto de la cita a la fecha
 
-                cita.setFecha(c.getTime());
+            cita.setFecha(c.getTime());
 
 //                String where = "o.fecha=:fecha and o.paciente=:paciente and o.profesional=:profesional and o.activo=true";
 //                Map parameters = new HashMap();
@@ -376,7 +376,6 @@ public class CitasBean implements Serializable, IMantenimiento {
 //                Mensajes.fatal(ex.getMessage());
 //                Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
 //            }
-
         }
 
         cita.setActualizado(new Date());
@@ -384,6 +383,30 @@ public class CitasBean implements Serializable, IMantenimiento {
         try {
             ejbCitas.actualizar(cita, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             formulario.cancelar();
+
+            try {
+                if (pacientesBean.getPaciente().getPersona().getEmail() != null) {
+                    String body = "";
+                    body += "<html>";
+                    body += "</br>";
+                    body += "<p>Estimado/a <b>" + pacientesBean.getPaciente() + ":</b></p>";
+                    body += "<p>Se ha reagendado una cita para el día <b>" + formatString.format(cita.getFecha()) + "</b> ";
+                    body += "con el médico: " + cita.getProfesional().toString() + " de especialidad <b>" + cita.getProfesional().getEspecialidad() + "</b>.</p>";
+                    body += "<p>Se solicita puntualidad.</p>";
+                    body += "</br></br>";
+                    body += "<p>Atentamente:</p>";
+                    body += pacientesBean.getInstitucion().getNombre();
+                    body += "<html>";
+                    ejbCorreos.enviarCorreo(pacientesBean.getPaciente().getPersona().getEmail(), "Cita Reagendada - " + pacientesBean.getInstitucion().getNombre(), body);
+                    Mensajes.informacion("Se enviará una notificación a " + pacientesBean.getPaciente().getPersona().getEmail());
+                } else {
+                    Mensajes.informacion(pacientesBean.getPaciente().getPersona() + " no tiene registrado un correo electrónico");
+                }
+            } catch (MessagingException | UnsupportedEncodingException ex) {
+                Mensajes.fatal(ex.getMessage());
+                Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.error(ex.getMessage());
             Logger.getLogger(CitasBean.class.getName()).log(Level.SEVERE, null, ex);

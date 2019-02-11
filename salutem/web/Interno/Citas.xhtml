@@ -279,6 +279,10 @@
                         rendered="#{salutemCitas.formulario.mostrar}"
                         visible="#{salutemCitas.formulario.mostrar}">
                         <h:panelGrid columns="2">
+                            <h:outputLabel value="Agendada: " styleClass="bold"/>
+                            <h:outputText  value="#{salutemCitas.cita.fecha}">
+                                <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>
+                            </h:outputText>
                             <h:outputLabel value="Reagendar: " styleClass="bold"/>
                             <h:selectOneMenu value="#{salutemCitas.horario}">
                                 <f:selectItems value="#{salutemCitas.horasDisponibles}"/>
