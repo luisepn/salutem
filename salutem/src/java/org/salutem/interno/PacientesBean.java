@@ -248,7 +248,7 @@ public class PacientesBean extends PersonasAbstractoBean implements Serializable
                 return null;
             }
             if (persona.getId() == null) {
-                crear();
+                insertar();
             } else {
                 paciente.setActivo(Boolean.TRUE);
                 grabar();

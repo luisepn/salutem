@@ -206,7 +206,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             }
 
             if ((persona.getUserid() == null) || (persona.getUserid().trim().isEmpty())) {
-                Mensajes.advertencia("CI o RUC es obligatorio");
+                Mensajes.advertencia("Nombre de usuario es obligatorio");
                 return true;
             }
             where = "o.userid=:userid";
@@ -250,7 +250,6 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return null;
         }
         try {
-            persona.setUserid(persona.getCedula());
             persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
             persona.setCreado(new Date());
             persona.setCreadopor(seguridadBean.getLogueado().getUserid());
@@ -258,7 +257,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             persona.setActualizadopor(persona.getActualizadopor());
             ejbPersonas.crear(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
             formulario.cancelar();
-            Mensajes.informacion("Creación exitoso. " + persona.toString());
+            Mensajes.informacion("Creación exitosa. " + persona.toString());
         } catch (ExcepcionDeCreacion ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);

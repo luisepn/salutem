@@ -212,7 +212,7 @@ public class ProfesionalesBean extends PersonasAbstractoBean implements Serializ
                 return null;
             }
             if (persona.getId() == null) {
-                crear();
+                insertar();
             } else {
                 profesional.setActivo(Boolean.TRUE);
                 grabar();
