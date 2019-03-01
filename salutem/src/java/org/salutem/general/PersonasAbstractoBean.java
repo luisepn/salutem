@@ -250,7 +250,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return null;
         }
         try {
-            persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
+            persona.setClave(Codificador.getEncoded(persona.getCedula(), "SHA-256"));
             persona.setCreado(new Date());
             persona.setCreadopor(seguridadBean.getLogueado().getUserid());
             persona.setActualizado(persona.getCreado());
@@ -276,7 +276,7 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         try {
 
             if (persona.getClave() == null) {
-                persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
+                persona.setClave(Codificador.getEncoded(persona.getCedula(), "SHA-256"));
             }
 
             persona.setActualizado(new Date());
@@ -299,10 +299,14 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         }
         try {
 
-            if (persona.getClave() == null) {
-                persona.setClave(Codificador.getEncoded(persona.getCedula(), "MD5"));
+            if (seguridadBean.validarClave(persona.getClave())) {
+                return null;
             }
-            persona.setClave(Codificador.getEncoded(persona.getClave(), "MD5"));
+
+            if (persona.getClave() == null) {
+                persona.setClave(Codificador.getEncoded(persona.getCedula(), "SHA-256"));
+            }
+            persona.setClave(Codificador.getEncoded(persona.getClave(), "SHA-256"));
             persona.setActualizado(new Date());
             persona.setActualizadopor(seguridadBean.getLogueado().getUserid());
             ejbPersonas.actualizar(persona, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());

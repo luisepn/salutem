@@ -362,6 +362,51 @@ public class SeguridadBean implements Serializable {
         return null;
     }
 
+    public boolean validarClave(String password) {
+
+        if (password.length() < 8) {
+            Mensajes.error("La contraseña debe tener al menos 8 caracteres");
+            return true;
+        }
+
+        char clave;
+        byte contNumero = 0;
+        byte contLetraMay = 0;
+        byte contLetraMin = 0;
+        byte contCaracEsp = 0;
+        for (byte i = 0; i < password.length(); i++) {
+            clave = password.charAt(i);
+            String passValue = String.valueOf(clave);
+            if (passValue.matches("[A-Z]")) {
+                contLetraMay++;
+            } else if (passValue.matches("[a-z]")) {
+                contLetraMin++;
+            } else if (passValue.matches("[0-9]")) {
+                contNumero++;
+            } else if (passValue.matches("[@#$%^&+=]")) {
+                contCaracEsp++;
+            }
+        }
+
+        if (contLetraMay == 0) {
+            Mensajes.error("La contraseña debe tener al menos una letra mayúscula");
+            return true;
+        }
+        if (contLetraMin == 0) {
+            Mensajes.error("La contraseña debe tener al menos una letra minúscula");
+            return true;
+        }
+        if (contNumero == 0) {
+            Mensajes.error("La contraseña debe tener al menos un número");
+            return true;
+        }
+        if (contCaracEsp == 0) {
+            Mensajes.error("La contraseña debe tener al menos uno de los siguientes caracteres especiales: @ # $ % ^ & + =");
+            return true;
+        }
+        return false;
+    }
+
     public String grabarClave() {
         if ((clave == null) || (clave.trim().isEmpty())) {
             Mensajes.advertencia("Ingrese la clave actual");
@@ -379,12 +424,15 @@ public class SeguridadBean implements Serializable {
             Mensajes.advertencia("Clave nueva debe ser igual a la clave retipeada");
             return null;
         }
-        String claveCodificada = Codificador.getEncoded(clave, "MD5");
+        String claveCodificada = Codificador.getEncoded(clave, "SHA-256");
         if (!logueado.getClave().equals(claveCodificada)) {
             Mensajes.advertencia("Clave anterior no es la correcta");
             return null;
         }
-        claveCodificada = Codificador.getEncoded(claveNueva, "MD5");
+        if (validarClave(claveNueva)) {
+            return null;
+        }
+        claveCodificada = Codificador.getEncoded(claveNueva, "SHA-256");
         logueado.setClave(claveCodificada);
 
         try {

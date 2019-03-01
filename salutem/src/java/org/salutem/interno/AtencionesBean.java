@@ -112,7 +112,7 @@ public class AtencionesBean implements Serializable, IMantenimiento {
     private OrdenesFacade ejbOrdenes;
 
     public AtencionesBean() {
-        conCita = true;
+        conCita = false;
         atenciones = new LazyDataModel<Atenciones>() {
             @Override
             public List<Atenciones> load(int i, int i1, SortCriteria[] scs, Map<String, String> map) {
@@ -245,15 +245,15 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             return null;
         }
         atencion = (Atenciones) atenciones.getRowData();
-        if (validarFecha(atencion.getFecha())) {
-            Mensajes.advertencia("No se puede editar atenciones con fechas menores a la de hoy");
-            return null;
-        }
+//        if (validarFecha(atencion.getFecha())) {
+//            Mensajes.advertencia("No se puede editar atenciones con fechas menores a la de hoy");
+//            return null;
+//        }
         try {
             crearFormula();
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
             formulario.editar();
-            datosBean.iniciar(getNombreTabla(), combosBean.getProfesional().getEspecialidad(), atencion.getId(), formulario);
+            datosBean.iniciar(getNombreTabla(), atencion.getEspecialidad(), atencion.getId(), formulario);
             buscarUltimaAtencion();
         } catch (ExcepcionDeConsulta | ExcepcionDeCreacion ex) {
             Mensajes.error(ex.getMessage());
@@ -269,10 +269,10 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             return null;
         }
         atencion = (Atenciones) atenciones.getRowData();
-        if (validarFecha(atencion.getFecha())) {
-            Mensajes.advertencia("No se puede eliminar atenciones con fechas menores a la de hoy");
-            return null;
-        }
+//        if (validarFecha(atencion.getFecha())) {
+//            Mensajes.advertencia("No se puede eliminar atenciones con fechas menores a la de hoy");
+//            return null;
+//        }
         try {
             crearFormula();
             prescripciones = ejbPrescripciones.traerPrescripciones(atencion);
@@ -343,10 +343,10 @@ public class AtencionesBean implements Serializable, IMantenimiento {
                 calendar.set(Calendar.SECOND, 59);
                 calendar.set(Calendar.MILLISECOND, 999);
                 parameters.put("fin", calendar.getTime());
-                if (ejbAtenciones.contar("o.profesional=:profesional and o.paciente=:paciente and o.especialidad=:especialidad and o.fecha between :inicio and :fin", parameters) > 0) {
-                    Mensajes.advertencia("Ya existe una atención generada para el paciente seleccionado");
-                    return null;
-                }
+//                if (ejbAtenciones.contar("o.profesional=:profesional and o.paciente=:paciente and o.especialidad=:especialidad and o.fecha between :inicio and :fin", parameters) > 0) {
+//                    Mensajes.advertencia("Ya existe una atención generada para el paciente seleccionado");
+//                    return null;
+//                }
                 atencion.setPaciente(pacientesBean.getPaciente());
                 atencion.setProfesional(combosBean.getProfesional());
             }
@@ -708,7 +708,12 @@ public class AtencionesBean implements Serializable, IMantenimiento {
             campos.add(new PDFCampo("E-mail:", 'L', "IB"));
             campos.add(new PDFCampo(atencion.getPaciente().getPersona().getEmail(), 'L'));
             campos.add(new PDFCampo("Fecha de nacimiento:", 'L', "IB"));
-            campos.add(new PDFCampo(PDFDocument.formatoFecha.format(atencion.getPaciente().getPersona().getFecha()), 'L'));
+            if (atencion.getPaciente().getPersona().getFecha() != null) {
+                campos.add(new PDFCampo(PDFDocument.formatoFecha.format(atencion.getPaciente().getPersona().getFecha()), 'L'));
+            } else {
+                campos.add(new PDFCampo("", 'L'));
+            }
+
             campos.add(new PDFCampo("Edad:", 'L', "IB"));
             campos.add(new PDFCampo(atencion.getPaciente().getPersona().getEdad(atencion.getFecha()), 'L'));
             campos.add(new PDFCampo("Ocupación:", 'L', "IB"));

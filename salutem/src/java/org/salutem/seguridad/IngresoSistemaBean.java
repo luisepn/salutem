@@ -75,7 +75,7 @@ public class IngresoSistemaBean implements Serializable {
                 Mensajes.advertencia("Ingrese una clave válida");
                 return null;
             }
-            persona = ejbPersonas.login(usr, Codificador.getEncoded(pwd, "MD5"));
+            persona = ejbPersonas.login(usr, Codificador.getEncoded(pwd, "SHA-256"));
 
             if (persona == null) {
                 String mensajeLog = "Usuario no registrado, o clave inválida";
@@ -91,7 +91,7 @@ public class IngresoSistemaBean implements Serializable {
                 return null;
             }
 
-            if (persona.getClave().equals(Codificador.getEncoded(persona.getCedula(), "MD5"))) {
+            if (persona.getClave().equals(Codificador.getEncoded(persona.getCedula(), "SHA-256"))) {
                 formulario.editar();
                 return null;
             }
@@ -122,15 +122,19 @@ public class IngresoSistemaBean implements Serializable {
                 Mensajes.advertencia("Ingrese una clave válida");
                 return null;
             }
-            String cnCodificada = Codificador.getEncoded(claveNueva, "MD5");
-            String caCodificada = Codificador.getEncoded(claveAnterior, "MD5");
-            String cnrCodificada = Codificador.getEncoded(claveRetipeada, "MD5");
+            String cnCodificada = Codificador.getEncoded(claveNueva, "SHA-256");
+            String caCodificada = Codificador.getEncoded(claveAnterior, "SHA-256");
+            String cnrCodificada = Codificador.getEncoded(claveRetipeada, "SHA-256");
             if (!caCodificada.equals(persona.getClave())) {
                 Mensajes.advertencia("Ingrese una clave anterior válida");
                 return null;
             }
             if (!cnCodificada.equals(cnrCodificada)) {
                 Mensajes.advertencia("Ingrese una clave retipeada igual a la nueva clave");
+                return null;
+            }
+
+            if (seguridadBean.validarClave(claveNueva)) {
                 return null;
             }
             String where = " o.activo = true and o.userid=:userid and o.clave=:clave";
@@ -178,7 +182,7 @@ public class IngresoSistemaBean implements Serializable {
                 return null;
             } else {
                 Personas p = personas.get(0);
-                p.setClave(Codificador.getEncoded(p.getCedula(), "MD5"));
+                p.setClave(Codificador.getEncoded(p.getCedula(), "SHA-256"));
                 ejbPersonas.actualizar(p, "salutem", seguridadBean.getCurrentClientIpAddress());
                 String body = "";
                 body += "<html>";

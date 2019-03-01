@@ -369,9 +369,14 @@
                                                 <h:outputLabel value="Género:" styleClass="bold"/>
                                                 <h:outputLabel value="#{salutemAtenciones.atencion.paciente.persona.genero.nombre}"/>
                                                 <h:outputLabel value="Fecha de Atención" styleClass="bold"/>
-                                                <h:outputLabel value="#{salutemAtenciones.atencion.fecha}">
+<!--                                                <h:outputLabel value="#{salutemAtenciones.atencion.fecha}">
                                                     <f:convertDateTime pattern="#{salutemSeguridad.formatoFechaHora}"/>   
-                                                </h:outputLabel>
+                                                </h:outputLabel>-->
+                                                <ace:dateTimeEntry navigator="true" value="#{salutemAtenciones.atencion.fecha}" 
+                                                                   popupIcon="ui-icon ui-icon-calendar" renderAsPopup="true" 
+                                                                   pattern="dd/MM/yyyy HH:mm" label="dd/MM/yyyy HH:mm" labelPosition="infield">
+                                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                                </ace:dateTimeEntry>
                                             </h:panelGrid>
                                         </ace:panel>
 
@@ -422,7 +427,7 @@
                                                     <h:selectOneMenu value="#{salutemAtenciones.orden.laboratorio}">
                                                         <f:selectItems value="#{salutemCombos.laboratorios}" />
                                                     </h:selectOneMenu>
-                                                    <h:outputLabel value="Fcatura:" styleClass="bold"/>
+                                                    <h:outputLabel value="Factura:" styleClass="bold"/>
                                                     <ace:textEntry value="#{salutemAtenciones.orden.factura}"/>  
                                                 </h:panelGrid>
                                                 <ace:menuBar autoSubmenuDisplay="true" rendered="#{!salutemAtenciones.formulario.eliminar}">
