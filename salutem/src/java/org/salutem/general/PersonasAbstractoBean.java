@@ -29,7 +29,6 @@ import org.icefaces.ace.model.table.SortCriteria;
 import org.salutem.controladores.ParametrosFacade;
 import org.salutem.controladores.UsuariosFacade;
 import org.salutem.entidades.Instituciones;
-import org.salutem.entidades.Parametros;
 import org.salutem.entidades.Usuarios;
 import org.salutem.seguridad.SeguridadBean;
 import org.salutem.utilitarios.Codificador;
@@ -475,6 +474,22 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(PersonasAbstractoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public String ponerMayusculas(String valor) {
+        if (valor == null || valor.isEmpty()) {
+            return null;
+        }
+
+        String[] nuevo = valor.split("\\ ");
+
+        for (int i = 0; i < nuevo.length; i++) {
+            String letraUno = nuevo[i].substring(0).toUpperCase();
+            String resto = nuevo[i].substring(1, nuevo[i].charAt(0));
+            nuevo[i] = "";
+        }
+
+        return null;
     }
 
     /**
