@@ -183,16 +183,17 @@ public class IngresoSistemaBean implements Serializable {
                 return null;
             } else {
                 Random rand = new Random();
-                int random = rand.nextInt(0x10) + 0x10;
+                int random = rand.nextInt();
+                String Hex = Integer.toHexString(random);
                 Personas p = personas.get(0);
 //                p.setClave(Codificador.getEncoded(p.getCedula(), "SHA-256"));
-                p.setClave(Codificador.getEncoded(random + "", "SHA-256"));
+                p.setClave(Codificador.getEncoded(Hex + "", "SHA-256"));
                 ejbPersonas.actualizar(p, "salutem", seguridadBean.getCurrentClientIpAddress());
                 String body = "";
                 body += "<html>";
                 body += "</br>";
                 body += "<p>Estimado/a <b>" + p.toString() + ":</b></p>";
-                body += "<p>Su contraseña para acceder al Sistema Médico Salutem ha sido restablecida. Su usuario es <b><i>" + p.getUserid() + "</i></b> y su contraseña ahora es " + random + "</i></b>.</p>";
+                body += "<p>Su contraseña para acceder al Sistema Médico Salutem ha sido restablecida. Su usuario es <b><i>" + p.getUserid() + "</i></b> y su contraseña ahora es " + Hex + "</i></b>.</p>";
                 body += "<p>Si usted no ha solicitado la recuperación de su contraseña, por favor ignore éste correo electrónico y cambie inmediatamente sus credenciales.</p>";
                 body += "</br></br>";
                 body += "<p>Atentamente:</p>";
