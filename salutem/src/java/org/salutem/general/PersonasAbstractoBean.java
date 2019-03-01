@@ -249,6 +249,8 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             return null;
         }
         try {
+            persona.setNombres(ponerMayusculas(persona.getNombres()));
+            persona.setApellidos(ponerMayusculas(persona.getApellidos()));
             persona.setClave(Codificador.getEncoded(persona.getCedula(), "SHA-256"));
             persona.setCreado(new Date());
             persona.setCreadopor(seguridadBean.getLogueado().getUserid());
@@ -277,6 +279,9 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
             if (persona.getClave() == null) {
                 persona.setClave(Codificador.getEncoded(persona.getCedula(), "SHA-256"));
             }
+
+            persona.setNombres(ponerMayusculas(persona.getNombres()));
+            persona.setApellidos(ponerMayusculas(persona.getApellidos()));
 
             persona.setActualizado(new Date());
             persona.setActualizadopor(seguridadBean.getLogueado().getUserid());
@@ -484,12 +489,24 @@ public abstract class PersonasAbstractoBean implements Serializable, IMantenimie
         String[] nuevo = valor.split("\\ ");
 
         for (int i = 0; i < nuevo.length; i++) {
-            String letraUno = nuevo[i].substring(0).toUpperCase();
-            String resto = nuevo[i].substring(1, nuevo[i].charAt(0));
-            nuevo[i] = "";
+            String letraUno = "";
+            String resto = "";
+            if (nuevo[i].length() < 2) {
+                letraUno = nuevo[i].toUpperCase();
+            } else {
+                letraUno = nuevo[i].substring(0, 1).toUpperCase();
+                resto = nuevo[i].trim().substring(1, nuevo[i].length()).toLowerCase();
+            }
+            nuevo[i] = letraUno + resto + " ";
         }
 
-        return null;
+        String retorno = "";
+
+        for (String s : nuevo) {
+            retorno += s;
+        }
+
+        return retorno.trim();
     }
 
     /**

@@ -309,7 +309,7 @@ public class CitasBean implements Serializable, IMantenimiento {
                     body += "<p>Atentamente:</p>";
                     body += pacientesBean.getInstitucion().getNombre();
                     body += "<html>";
-                    ejbCorreos.enviarCorreo(pacientesBean.getPaciente().getPersona().getEmail(), "Cita Agendada - " + pacientesBean.getInstitucion().getNombre(), body);
+                    ejbCorreos.enviarCorreo(pacientesBean.getPaciente().getPersona().getEmail(), "Cita Agendada - " + pacientesBean.getInstitucion().getNombre(), body, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                     Mensajes.informacion("Se enviará una notificación a " + pacientesBean.getPaciente().getPersona().getEmail());
                 } else {
                     Mensajes.informacion(pacientesBean.getPaciente().getPersona() + " no tiene registrado un correo electrónico");
@@ -397,7 +397,7 @@ public class CitasBean implements Serializable, IMantenimiento {
                     body += "<p>Atentamente:</p>";
                     body += pacientesBean.getInstitucion().getNombre();
                     body += "<html>";
-                    ejbCorreos.enviarCorreo(pacientesBean.getPaciente().getPersona().getEmail(), "Cita Reagendada - " + pacientesBean.getInstitucion().getNombre(), body);
+                    ejbCorreos.enviarCorreo(pacientesBean.getPaciente().getPersona().getEmail(), "Cita Reagendada - " + pacientesBean.getInstitucion().getNombre(), body, seguridadBean.getLogueado().getUserid(), seguridadBean.getCurrentClientIpAddress());
                     Mensajes.informacion("Se enviará una notificación a " + pacientesBean.getPaciente().getPersona().getEmail());
                 } else {
                     Mensajes.informacion(pacientesBean.getPaciente().getPersona() + " no tiene registrado un correo electrónico");

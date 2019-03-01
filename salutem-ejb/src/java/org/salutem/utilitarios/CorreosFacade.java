@@ -15,6 +15,7 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.annotation.Resource;
 import javax.ejb.Asynchronous;
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.LocalBean;
 import javax.mail.BodyPart;
@@ -28,6 +29,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.naming.NamingException;
+import org.salutemlogs.controladores.AsincronoLogFacade;
 
 /**
  *
@@ -36,6 +38,9 @@ import javax.naming.NamingException;
 @Singleton
 @LocalBean
 public class CorreosFacade {
+
+    @EJB
+    protected AsincronoLogFacade ejbLogs;
 
     @Resource(name = "java:/mail/Salutemail")
     private Session jmscorreo;
@@ -50,9 +55,10 @@ public class CorreosFacade {
     }
 
     @Asynchronous
-    public void enviarCorreo(String correo, String motivo, String cuerpo) throws MessagingException, UnsupportedEncodingException {
+    public void enviarCorreo(String correo, String motivo, String cuerpo, String userid, String ip) throws MessagingException, UnsupportedEncodingException {
         try {
             sendMail(correo, motivo, cuerpo);
+            ejbLogs.log(cuerpo, '@', userid, ip);
         } catch (NamingException ex) {
             Logger.getLogger("").log(Level.SEVERE, null, ex);
         }

@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -181,20 +182,23 @@ public class IngresoSistemaBean implements Serializable {
                 Mensajes.advertencia("Sus datos no fueron encontrados en nuestra base de datos, revise los datos que proporciona.");
                 return null;
             } else {
+                Random rand = new Random();
+                int random = rand.nextInt(0x10) + 0x10;
                 Personas p = personas.get(0);
-                p.setClave(Codificador.getEncoded(p.getCedula(), "SHA-256"));
+//                p.setClave(Codificador.getEncoded(p.getCedula(), "SHA-256"));
+                p.setClave(Codificador.getEncoded(random + "", "SHA-256"));
                 ejbPersonas.actualizar(p, "salutem", seguridadBean.getCurrentClientIpAddress());
                 String body = "";
                 body += "<html>";
                 body += "</br>";
                 body += "<p>Estimado/a <b>" + p.toString() + ":</b></p>";
-                body += "<p>Su contraseña para acceder al Sistema Médico Salutem ha sido restablecida. Su usuario es <b><i>" + p.getUserid() + "</i></b> y su contraseña ahora es su número de cédula.</p>";
+                body += "<p>Su contraseña para acceder al Sistema Médico Salutem ha sido restablecida. Su usuario es <b><i>" + p.getUserid() + "</i></b> y su contraseña ahora es " + random + "</i></b>.</p>";
                 body += "<p>Si usted no ha solicitado la recuperación de su contraseña, por favor ignore éste correo electrónico y cambie inmediatamente sus credenciales.</p>";
                 body += "</br></br>";
                 body += "<p>Atentamente:</p>";
                 body += "Salutem, Sistema Médico";
                 body += "<html>";
-                ejbCorreos.enviarCorreo(p.getEmail(), "Recuperación de Contraseña Salutem", body);
+                ejbCorreos.enviarCorreo(p.getEmail(), "Recuperación de Contraseña Salutem", body, "root", seguridadBean.getCurrentClientIpAddress());
                 Mensajes.informacion("Se enviará una notificación a " + p.getEmail());
                 formularioRestablecer.cancelar();
             }
