@@ -4,6 +4,7 @@
  */
 package org.salutem.utilitarios;
 
+import com.google.gson.JsonObject;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -44,21 +45,28 @@ public class CorreosFacade {
 
     @Resource(name = "java:/mail/Salutemail")
     private Session jmscorreo;
+    private final String remitente = "lordonez.ar@gmail.com";
 
     @Asynchronous
-    public void enviarCorreo(String correo, String motivo, String cuerpo, File pdf, File xml) throws MessagingException, UnsupportedEncodingException {
+    public void enviarCorreo(String correo, String asunto, String cuerpo, File pdf, File xml) throws MessagingException, UnsupportedEncodingException {
         try {
-            sendMail(correo, motivo, cuerpo, pdf, xml);
+            sendMail(correo, asunto, cuerpo, pdf, xml);
         } catch (NamingException ex) {
             Logger.getLogger("").log(Level.SEVERE, null, ex);
         }
     }
 
     @Asynchronous
-    public void enviarCorreo(String correo, String motivo, String cuerpo, String userid, String ip) throws MessagingException, UnsupportedEncodingException {
+    public void enviarCorreo(String correo, String asunto, String texto, String userid, String ip) throws MessagingException, UnsupportedEncodingException {
         try {
-            sendMail(correo, motivo, cuerpo);
-            ejbLogs.log(cuerpo, '@', userid, ip);
+            sendMail(correo, asunto, texto);
+            JsonObject json = new JsonObject();
+            json.addProperty("remitente", remitente);
+            json.addProperty("destinatario", correo);
+            json.addProperty("asunto", asunto);
+            json.addProperty("texto", texto);
+
+            ejbLogs.log(0, new String[]{null, json.toString()}, "Emails", '@', userid, ip);
         } catch (NamingException ex) {
             Logger.getLogger("").log(Level.SEVERE, null, ex);
         }
@@ -69,7 +77,7 @@ public class CorreosFacade {
         MimeMessage message = new MimeMessage(jmscorreo);
         message.setSubject(subject);
 
-        message.setFrom(new InternetAddress("lordonez.ar@gmail.com", subject));
+        message.setFrom(new InternetAddress(remitente, subject));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, false));
         Multipart multipart = new MimeMultipart();
         BodyPart htmlPart = new MimeBodyPart();
@@ -100,7 +108,7 @@ public class CorreosFacade {
         MimeMessage message = new MimeMessage(jmscorreo);
         message.setSubject(subject);
 
-        message.setFrom(new InternetAddress("lordonez.ar@gmail.com", subject));
+        message.setFrom(new InternetAddress(remitente, subject));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, false));
         Multipart multipart = new MimeMultipart("alternative");
         MimeBodyPart textPart = new MimeBodyPart();
@@ -121,7 +129,7 @@ public class CorreosFacade {
         MimeMessage message = new MimeMessage(jmscorreo);
         message.setSubject(subject);
 
-        message.setFrom(new InternetAddress("lordonez.ar@gmail.com", subject));
+        message.setFrom(new InternetAddress(remitente, subject));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, false));
         Multipart multipart = new MimeMultipart("alternative");
         //part 1,

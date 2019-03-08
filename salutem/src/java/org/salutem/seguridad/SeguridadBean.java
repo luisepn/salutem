@@ -90,6 +90,7 @@ public class SeguridadBean implements Serializable {
 
     private ExternalContext contexto = FacesContext.getCurrentInstance().getExternalContext();
     private String rutaDeContexto = ((ServletContext) contexto.getContext()).getContextPath();
+    private String ultimaRutaVisitada;
 
     @EJB
     private UsuariosFacade ejbUsuarios;
@@ -164,7 +165,8 @@ public class SeguridadBean implements Serializable {
                 if (!usuarios.isEmpty()) {
                     seleccionarGrupo(usuarios.get(0));
                     ejbLogs.log("Ingreso exitoso", 'I', logueado.getUserid(), getCurrentClientIpAddress());
-                    return usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true";
+                    ultimaRutaVisitada = usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true";
+                    return ultimaRutaVisitada;
                 } else {
                     String mensajeLog = "Usuario no tiene perfil asignado";
                     Mensajes.advertencia(mensajeLog);
@@ -203,7 +205,8 @@ public class SeguridadBean implements Serializable {
     public void cambiarUsuarioPorGrupo(ActionEvent event) {
         try {
             seleccionarGrupo(ejbUsuarios.buscar(Integer.parseInt(event.getComponent().getId().replaceAll("_", ""))));
-            contexto.redirect(rutaDeContexto + usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true");
+            ultimaRutaVisitada = usuario.getModulo().getParametros().trim() + ".salutem?faces-redirect=true";
+            contexto.redirect(rutaDeContexto + ultimaRutaVisitada);
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
             Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -223,8 +226,7 @@ public class SeguridadBean implements Serializable {
         String order = " o.codigo";
         Map parameters = new HashMap();
 
-        parameters.put(
-                "modulo", usuario.getModulo());
+        parameters.put("modulo", usuario.getModulo());
         List<Menus> ml = ejbMenus.buscar(where, parameters, order);
 
         menu = new DefaultMenuModel();
@@ -258,12 +260,9 @@ public class SeguridadBean implements Serializable {
         ExpressionFactory expressionFactory = FacesContext.getCurrentInstance().getApplication().getExpressionFactory();
         submenu = new Submenu();
 
-        submenu.setId(
-                "sm_0000");
-        submenu.setLabel(
-                "Módulo: " + usuario.getModulo().getNombre() + " >> " + "Grupo: " + usuario.getGrupo().getNombre());
-        submenu.setIcon(
-                "ui-icon ui-icon-comment");
+        submenu.setId("sm_0000");
+        submenu.setLabel("Módulo: " + usuario.getModulo().getNombre() + " >> " + "Grupo: " + usuario.getGrupo().getNombre());
+        submenu.setIcon("ui-icon ui-icon-comment");
         for (Usuarios u : usuarios) {
             MenuItem item = new MenuItem();
             item.setId("_" + u.getId());
@@ -283,6 +282,7 @@ public class SeguridadBean implements Serializable {
             if (logueado != null) {
                 ejbLogs.log("Salida exitosa", 'O', logueado.getUserid(), getCurrentClientIpAddress());
             }
+            logueado = null;
             FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             ExternalContext ctx = FacesContext.getCurrentInstance().getExternalContext();
             String ctxPath = ((ServletContext) ctx.getContext()).getContextPath();
@@ -290,8 +290,7 @@ public class SeguridadBean implements Serializable {
 
         } catch (IOException ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(SeguridadBean.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -337,14 +336,13 @@ public class SeguridadBean implements Serializable {
                     }
                     titulo = perfil.getMenu().getNombre();
                 }
-
+                ultimaRutaVisitada = usuario.getModulo().getNombre() + "/" + perfil.getMenu().getFormulario().trim() + ".salutem?faces-redirect=true&p=" + perfil.getId();
                 return perfil;
             }
 
         } catch (ExcepcionDeConsulta | IOException ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(SeguridadBean.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
@@ -369,14 +367,14 @@ public class SeguridadBean implements Serializable {
             return true;
         }
 
-        char clave;
+        char pwd;
         byte contNumero = 0;
         byte contLetraMay = 0;
         byte contLetraMin = 0;
         byte contCaracEsp = 0;
         for (byte i = 0; i < password.length(); i++) {
-            clave = password.charAt(i);
-            String passValue = String.valueOf(clave);
+            pwd = password.charAt(i);
+            String passValue = String.valueOf(pwd);
             if (passValue.matches("[A-Z]")) {
                 contLetraMay++;
             } else if (passValue.matches("[a-z]")) {
@@ -439,8 +437,7 @@ public class SeguridadBean implements Serializable {
             ejbPersonas.actualizar(logueado, logueado.getUserid(), getCurrentClientIpAddress());
         } catch (ExcepcionDeActualizacion ex) {
             Mensajes.fatal(ex.getMessage());
-            Logger.getLogger(SeguridadBean.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SeguridadBean.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         Mensajes.advertencia("Clave se cambio correctamente");
@@ -828,6 +825,20 @@ public class SeguridadBean implements Serializable {
      */
     public void setPaciente(Pacientes paciente) {
         this.paciente = paciente;
+    }
+
+    /**
+     * @return the ultimaRutaVisitada
+     */
+    public String getUltimaRutaVisitada() {
+        return ultimaRutaVisitada;
+    }
+
+    /**
+     * @param ultimaRutaVisitada the ultimaRutaVisitada to set
+     */
+    public void setUltimaRutaVisitada(String ultimaRutaVisitada) {
+        this.ultimaRutaVisitada = ultimaRutaVisitada;
     }
 
 }

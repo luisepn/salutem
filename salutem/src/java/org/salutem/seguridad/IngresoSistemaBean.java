@@ -1,5 +1,6 @@
 package org.salutem.seguridad;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -10,10 +11,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.MessagingException;
+import javax.servlet.ServletContext;
 import org.salutem.controladores.PersonasFacade;
 import org.salutem.entidades.Instituciones;
 import org.salutem.entidades.Personas;
@@ -63,6 +67,18 @@ public class IngresoSistemaBean implements Serializable {
         seguridadBean.iniciar();
         institucion = seguridadBean.getInstitucion();
         estilo = seguridadBean.getEstilo();
+
+        try {
+            if (seguridadBean.getLogueado() != null) {
+                ExternalContext contexto = FacesContext.getCurrentInstance().getExternalContext();
+                String rutaDeContexto = ((ServletContext) contexto.getContext()).getContextPath();
+                contexto.redirect((rutaDeContexto + "/" + seguridadBean.getUltimaRutaVisitada()).replaceAll("\\/\\/", "\\/"));
+            }
+
+        } catch (IOException ex) {
+            Mensajes.fatal(ex.getMessage());
+            Logger.getLogger(IngresoSistemaBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public String login() {

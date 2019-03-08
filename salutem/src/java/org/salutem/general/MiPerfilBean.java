@@ -72,6 +72,60 @@ public class MiPerfilBean implements Serializable {
 
     public String grabar() {
         try {
+            if (persona.getFijo() != null && !persona.getFijo().isEmpty()) {
+                if (!persona.getFijo().toLowerCase().contains("ext")) {
+                    try {
+                        Long l = Long.parseLong(persona.getFijo().trim());
+                    } catch (NumberFormatException e) {
+                        Mensajes.advertencia("Ingrese un número de 9 dígitos para teléfono fijo");
+                        return null;
+                    }
+
+                    String fijo = persona.getFijo().trim();
+                    if (fijo.length() != 9) {
+                        Mensajes.advertencia("Un teléfono fijo debe tener 9 números");
+                        return null;
+                    }
+
+                    String primerosDigitos = fijo.substring(0, 2);
+
+                    switch (primerosDigitos) {
+                        case "02":
+                        case "03":
+                        case "04":
+                        case "06":
+                        case "07":
+                            break;
+                        default:
+                            Mensajes.advertencia("Un teléfono fijo no debe tener más de 9 números con prefijos: 02, 03, 04, 05, 06, 07");
+                            return null;
+                    }
+                }
+            }
+            if (persona.getMovil() != null && !persona.getMovil().isEmpty()) {
+                try {
+                    Long l = Long.parseLong(persona.getMovil().trim());
+                } catch (NumberFormatException e) {
+                    Mensajes.advertencia("Ingrese un número de 10 dígitos para teléfono móvil");
+                    return null;
+                }
+
+                String movil = persona.getMovil().trim();
+                if (movil.length() != 10) {
+                    Mensajes.advertencia("Un teléfono móvil debe tener 10 números");
+                    return null;
+                }
+
+                String primerosDigitos = movil.substring(0, 2);
+
+                switch (primerosDigitos) {
+                    case "09":
+                        break;
+                    default:
+                        Mensajes.advertencia("Un teléfono móvil no debe tener más de 10 números con el prefijo: 09");
+                        return null;
+                }
+            }
             ejbPersonas.actualizar(persona, persona.getUserid(), seguridadBean.getCurrentClientIpAddress());
             formulario.cancelar();
         } catch (ExcepcionDeActualizacion ex) {

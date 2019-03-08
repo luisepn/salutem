@@ -86,7 +86,7 @@ public class AsincronoLogFacade {
                 + ":operacion, "
                 + "'Logs',"
                 + "'0', "
-                + "'{\"" + (operacion == '@' ? "email" : operacion == 'I' ? "login" : "logout") + "\":\"" + mensaje + "\"}');";
+                + "'{\"" + (operacion == 'I' ? "login" : "logout") + "\":\"" + mensaje + "\"}');";
         em.createNativeQuery(query)
                 .setParameter("fecha", new Date())
                 .setParameter("usuario", usuario)

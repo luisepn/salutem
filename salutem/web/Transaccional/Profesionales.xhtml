@@ -37,7 +37,7 @@
                 <ace:panel 
                     header="Resultado Búsqueda"
                     closable="false"
-                    toggleable="true"              >
+                    toggleable="true">
                     <h:panelGrid columns="3" styleClass="centeredPanelGrid">
                         <h:outputLabel  value="Exportar a:"/>
                         <h:selectOneRadio  value="#{salutemProfesionales.formulario.tipo}" required="true">
@@ -259,9 +259,9 @@
                                 <h:outputLabel value="Calle Secundaria:" for="secundaria" />
                                 <ace:textEntry id="secundaria" value="#{salutemProfesionales.persona.secundaria}" title="Secundaria" />
                                 <h:outputLabel value="Teléfono fijo:" />
-                                <ace:textEntry value="#{salutemProfesionales.persona.fijo}" title="Teléfono fijo" />
+                                <ace:textEntry value="#{salutemProfesionales.persona.fijo}" size="9" title="Teléfono fijo" />
                                 <h:outputLabel value="Teléfono móvil:" />
-                                <ace:textEntry value="#{salutemProfesionales.persona.movil}" title="Teléfono móvil" />
+                                <ace:textEntry value="#{salutemProfesionales.persona.movil}" size="10" title="Teléfono móvil" />
                                 <h:outputLabel value="Referencia:"/>
                                 <ace:textAreaEntry value="#{salutemProfesionales.persona.referencia}" 
                                                    rows="2" cols="22"/>

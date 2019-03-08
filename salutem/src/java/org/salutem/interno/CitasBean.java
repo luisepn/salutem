@@ -385,7 +385,7 @@ public class CitasBean implements Serializable, IMantenimiento {
             formulario.cancelar();
 
             try {
-                if (pacientesBean.getPaciente().getPersona().getEmail() != null) {
+                if (pacientesBean.getPaciente().getPersona().getEmail() != null && !pacientesBean.getPaciente().getPersona().getEmail().isEmpty()) {
                     String body = "";
                     body += "<html>";
                     body += "</br>";
