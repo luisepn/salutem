@@ -101,7 +101,7 @@
                                     <h:outputLabel value="CI:" styleClass="bold"  />
                                     <h:outputLabel value="#{salutemPacientes.paciente.persona.cedula}"/>
                                     <h:outputLabel value="Email:" styleClass="bold"  />
-                                    <h:outputLabel  value="#{salutemPacientes.paciente.persona.email}"/>
+                                    <h:outputLabel value="#{salutemPacientes.paciente.persona.email}"/>
                                 </h:panelGrid>
                             </ace:panel>
                             <h:outputLabel/>
@@ -421,6 +421,10 @@
                                             </h:panelGrid>
                                         </ace:panel>
                                         <ace:panel header="Orden de Laboratorio" rendered="#{salutemAtenciones.atencion.especialidad.codigo eq 'OPT'}">
+                                            <ace:dynamicResource
+                                                mimeType="application/pdf"
+                                                resource="#{salutemAtenciones.generarOrdenPdf()}"
+                                                label="Imprimir"/>
                                             <h:panelGrid width="100%">
                                                 <h:panelGrid columns="2">
                                                     <h:outputLabel value="Laboratorio" styleClass="bold"/>
@@ -678,6 +682,18 @@
                                                             <h:outputText value="#{rxfinala.agudezavisual}" style="width: 50px"/>
                                                         </ace:column>
                                                     </ace:dataTable>
+                                                    <h:panelGrid columns="4" width="100%">
+                                                        <h:outputLabel value="Foco:" styleClass="bold"/>
+                                                        <h:outputText value="#{salutemAtenciones.ultimaFormula.material.foco.nombre}"/>
+                                                        <h:outputLabel value="Tipo Material:" styleClass="bold"/>
+                                                        <h:outputText value="#{salutemAtenciones.ultimaFormula.material.tipo.nombre}"/>
+                                                        <h:outputLabel value="Material:" styleClass="bold"/>
+                                                        <h:outputText value="#{salutemAtenciones.ultimaFormula.material.nombre}"/>
+                                                        <h:outputLabel value="Tratamiento:" styleClass="bold"/>
+                                                        <h:outputText value="#{salutemAtenciones.ultimaFormula.tratamiento.nombre}"/>
+                                                        <h:outputLabel value="Altura:" styleClass="bold"/>
+                                                        <h:outputText value="#{salutemAtenciones.ultimaFormula.altura}"/>
+                                                    </h:panelGrid>
                                                 </h:panelGrid>
                                             </ace:panel>
                                         </h:panelGrid>  
@@ -744,6 +760,10 @@
                                             </ace:panel>
 
                                             <ace:panel header="Orden de Laboratorio" rendered="#{salutemAtenciones.ultimaAtencion.especialidad.codigo eq 'OPT' and salutemAtenciones.ultimaOrden ne null}">
+                                                <ace:dynamicResource
+                                                    mimeType="application/pdf"
+                                                    resource="#{salutemAtenciones.generarUltimoOrdenPdf()}"
+                                                    label="Imprimir"/>
                                                 <ace:dataTable
                                                     value="#{salutemAtenciones.ultimaListaRxFinal}"
                                                     resizableColumns="true"
